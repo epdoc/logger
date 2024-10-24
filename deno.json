@@ -15,7 +15,8 @@
     "middleware",
     "loggly",
     "levels",
-    "logger",
+    "logcli",
+    "logstd",
     "msg-console"
   ],
   "license": "MIT",
@@ -31,8 +32,9 @@
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@1",
-    "@epdoc/typeutil": "../@epdoc/typeutil/mod.ts",
-    "@epdoc/timeutil": "../@epdoc/timeutil/mod.ts"
+    "@epdoc/type": "../std/type/mod.ts",
+    "@epdoc/datetime": "../std/datetime/mod.ts",
+    "@epdoc/duration": "../std/duration/mod.ts"
   },
   "fmt": {
     "options": {

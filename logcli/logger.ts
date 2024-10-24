@@ -2,9 +2,9 @@ import type { ILogLevels, LevelName, LogLevel } from '@scope/levels';
 import { cli } from '@scope/levels';
 import type { ILogEmitter } from '@scope/message';
 import { MsgBuilder } from '@scope/msg-console';
-import type { CliLogger } from './cli.ts';
+import type { ILogger } from './cli.ts';
 
-export class Logger implements CliLogger, ILogEmitter {
+export class Logger implements ILogger, ILogEmitter {
   protected _logLevels: ILogLevels;
   protected _threshold: LogLevel;
 

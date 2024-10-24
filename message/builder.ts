@@ -1,4 +1,4 @@
-import { type Integer, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/typeutil';
+import { type Integer, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
 import type { LevelName } from '@scope/levels';
 import { StringEx } from './util.ts';
 

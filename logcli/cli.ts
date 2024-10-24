@@ -1,6 +1,6 @@
 import type { IMsgBuilder } from '@scope/message';
 
-export interface CliLogger {
+export interface ILogger {
   error: IMsgBuilder;
   warn: IMsgBuilder;
   help: IMsgBuilder;

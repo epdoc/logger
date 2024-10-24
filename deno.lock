@@ -2,7 +2,6 @@
   "version": "4",
   "specifiers": {
     "jsr:@std/assert@1": "1.0.6",
-    "jsr:@std/assert@^1.0.6": "1.0.6",
     "jsr:@std/fmt@^1.0.2": "1.0.2",
     "jsr:@std/internal@^1.0.4": "1.0.4",
     "npm:@epdoc/timeutil@^2.6.0": "2.6.0",
@@ -4591,11 +4590,10 @@
       },
       "levels": {
         "dependencies": [
-          "jsr:@std/assert@^1.0.6",
           "jsr:@std/fmt@^1.0.2"
         ]
       },
-      "logger": {
+      "logcli": {
         "dependencies": [
           "jsr:@std/fmt@^1.0.2"
         ]
@@ -4603,6 +4601,11 @@
       "loggly": {
         "dependencies": [
           "jsr:@std/assert@1"
+        ]
+      },
+      "logstd": {
+        "dependencies": [
+          "jsr:@std/fmt@^1.0.2"
         ]
       },
       "message": {
