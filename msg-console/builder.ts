@@ -48,90 +48,166 @@ export const styleFormatters = {
  * pass it to the LogManager. s
  */
 export class MsgBuilder extends core.MsgBuilder {
+  protected _t0: number = performance.now();
+
+  /**
+   * Emits a styled text message.
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public text(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.text, ...args);
   }
+  /**
+   * Emits a styled h1 message.
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public h1(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.h1, ...args);
   }
+  /**
+   * Emits a styled h2 message.
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public h2(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.h2, ...args);
   }
+
+  /**
+   * Emits a styled h3 message.
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public h3(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.h3, ...args);
   }
+
+  /**
+   * Emits a styled action message.
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public action(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.action, ...args);
   }
+
+  /**
+   * Emits a styled label message.
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public label(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.label, ...args);
   }
+
+  /**
+   * Emits a styled highlight message.
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public highlight(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.highlight, ...args);
   }
+
+  /**
+   * Emits a styled value message.
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public value(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.value, ...args);
   }
+
+  /**
+   * Emits a styled path message. Use for displaying file paths or filenames.
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public path(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.path, ...args);
   }
+
+  /**
+   * Emits a styled date message. XXX add more info
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public date(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.date, ...args);
   }
+
+  /**
+   * Emits a styled warning message.
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public warn(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.warn, ...args);
   }
+  /**
+   * Emits a styled error message.
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public error(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.error, ...args);
   }
+
+  /**
+   * Emits a styled strikethru message.
+   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   public strikethru(...args: core.StyleArg[]): this {
     return this.stylize(styleFormatters.strikethru, ...args);
   }
 
-  public mark(aMark: string): this {
-    performance.mark(aMark);
+  /**
+   * Marks the current time for measuring elapsed time. If mark is not called,
+   * the current time is taken from when the MsgBuidler object is created. This
+   * occurs when a logger method such as logger.info or logger.debug is called.
+   * @returns {this} The current instance for method chaining.
+   */
+  public mark(): this {
+    this._t0 = performance.now();
     return this;
   }
 
-  public elapsed(aMark: string, bMark?: string): this {
-    const measure = performance.measure(aMark, bMark);
-    if (measure) {
-      return this.stylize(styleFormatters._elapsed, measure.duration);
+  /**
+   * Calculates and emits the elapsed time since the last mark.
+   * If no time has elapsed, it returns the current instance.
+   * @returns {this} The current instance for method chaining.
+   */
+  public elapsed(): this {
+    const duration = performance.now() - this._t0;
+    if (duration) {
+      return this.stylize(styleFormatters._elapsed, duration);
     }
     return this;
   }
 
   /**
-   * Emits the log line with elapsed time. This is a convenience method for
-   * emitting the log line with elapsed time without having to call `elapsed()`
-   * first.
-   * @param { string } aMark - The start mark.
-   * @param { string } bMark - The end mark.
-   * @returns {string} The log line with elapsed time.
-   * @see elapsed()
+   * @param duration
+   * @returns
    */
-  emitWithTime(aMark: string, bMark?: string): string {
-    return this.ewt(aMark, bMark);
+  emitWithTime(duration?: number): string {
+    return this.ewt(duration);
   }
 
   /**
-   * Emits the log line with elapsed time (Emit With Time = EWT). This is a
-   * convenience method for emitting the log line with elapsed time without
-   * having to call `elapsed()` first.
-   * @param { unknown[]} args - The arguments to emit.
-   * @returns {void}
-   * @see elapsed()
-   * @see emit()
-   * @see emitWithTime()
+   * Emits a message with the elapsed time since the last mark.
+   * If a duration is provided, it will be used; otherwise, the duration
+   * is calculated from the last mark to the current time.
+   *
+   * @param duration - The time duration in milliseconds. If not provided,
+   *                  it defaults to the time elapsed since the last mark.
+   * @returns A formatted string representing the elapsed time.
    */
-  ewt(aMark: string, bMark?: string): string {
-    const measure = performance.measure(aMark, bMark);
-    if (measure) {
-      const description = bMark ? bMark : 'start';
-      return this.stylize(
-        styleFormatters._elapsed,
-        `(${measure.duration.toFixed(3)} ms since ${description})`,
-      ).emit();
+  ewt(duration: number = performance.now() - this._t0): string {
+    if (duration) {
+      return this.stylize(styleFormatters._elapsed, `(${duration.toFixed(3)} ms response)`).emit();
     }
     return this.emit();
   }
