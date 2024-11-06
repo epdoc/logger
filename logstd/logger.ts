@@ -1,7 +1,7 @@
 import type { ILogLevels, LevelName, LogLevel } from '@scope/levels';
 import { std } from '@scope/levels';
 import type { ILogEmitter } from '@scope/message';
-import { MsgBuilder } from '@scope/msg-console';
+import { MsgBuilder } from '@scope/msgconsole';
 import type { ILogger } from './levels.ts';
 
 export class Logger implements ILogger, ILogEmitter {

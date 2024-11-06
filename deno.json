@@ -1,40 +1,31 @@
 {
-  "name": "@epdoc/logger",
-  "version": "3.0.0-beta.1",
   "description": "Logging module with express middleware mixins and extendable transports",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
   },
-  "workspace": [
-    "core",
-    "message",
-    "basic",
-    "express",
-    "koa",
-    "middleware",
-    "loggly",
-    "levels",
-    "logcli",
-    "logstd",
-    "msg-console"
-  ],
+  "workspace": ["message", "levels", "logcli", "logstd", "msgconsole"],
   "license": "MIT",
-  "exports": "./mod.ts",
   "tasks": {
     "test": "deno test --allow-env",
     "lint": "deno lint",
     "build": "deno run -A scripts/build_npm.ts",
     "publish_npm": "cd npm & npm publish --access public"
   },
-  "tests": {
-    "include": ["test/**/*.ts"]
+  "test": {
+    "include": [
+      "message/**/*test.ts",
+      "levels/**/*test.ts",
+      "logcli/**/*test.ts",
+      "logstd/**/*test.ts",
+      "msgconsole/**/*test.ts"
+    ]
+  },
+  "lint": {
+    "include": ["message/**/*.ts", "levels/**/*.ts", "logcli/**/*.ts", "logstd/**/*.ts", "msgconsole/**/*.ts"]
   },
   "imports": {
-    "@std/assert": "jsr:@std/assert@1",
-    "@epdoc/type": "../std/type/mod.ts",
-    "@epdoc/datetime": "../std/datetime/mod.ts",
-    "@epdoc/duration": "../std/duration/mod.ts"
+    "@std/assert": "jsr:@std/assert@1"
   },
   "fmt": {
     "options": {

@@ -72,7 +72,7 @@ export class Middleware extends LoggerMiddleware {
         //sidNew: ( rawCookie ? false : true ),
         ip: ctx.ip,
         query: ctx.query,
-        utctime: new Date(d).toISOString()
+        utctime: new Date(d).toISOString(),
       };
       if (ctx.session && ctx.session.id) {
         data.sid = ctx.session.id;
@@ -93,7 +93,7 @@ export class Middleware extends LoggerMiddleware {
       let data: MiddlewareRouteInfo = {
         method: ctx.method,
         path: decodeURI(ctx.path),
-        ip: ctx.ip
+        ip: ctx.ip,
       };
       if (ctx.session) {
         data.sid = ctx.session.id;

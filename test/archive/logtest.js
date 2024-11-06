@@ -50,7 +50,7 @@ Logger.logMessage({
   message: 'Calling Logger.writeMessage',
   emitter: 'MyModule',
   sid: 'MySessionId',
-  data: { key: 'value' }
+  data: { key: 'value' },
 });
 
 let idx = 0;

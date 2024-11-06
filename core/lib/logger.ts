@@ -37,7 +37,6 @@ import type { LogContextParams, LogMessage, LogMessageConsts } from './types.ts'
  * // Create a new Logger object the easy way using global LogManager.
  * let log = require('epdoc-logger').get('logtest');
  *
- *
  * @param  {LogMgr} logMgr - The parent LogManager object that specifies the transport and
  *   provides lower-level output methods
  * @param [emitter] {string|string[]} The name of the module or emitter that is emitting the

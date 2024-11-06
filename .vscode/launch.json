@@ -57,7 +57,7 @@
     },
     {
       "request": "launch",
-      "name": "Debug msg-console/test.ts",
+      "name": "Debug msgconsole/test.ts",
       "type": "node",
       "cwd": "${workspaceFolder}",
       "env": {},
@@ -69,7 +69,7 @@
         "--allow-sys",
         "--allow-read",
         "--allow-write",
-        "./msg-console/test.ts"
+        "./msgconsole/test.ts"
       ],
       "attachSimplePort": 9229
     },

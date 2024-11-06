@@ -1,5 +1,5 @@
 import { type Dict, isString } from '@epdoc/typeutil';
-import { type LogMgr, Logger } from '../../core/index.ts';
+import { Logger, type LogMgr } from '../../core/index.ts';
 import type { MiddlewareOptions, MiddlewareRouteInfo, MiddlewareSeparator } from './types.ts';
 
 /**

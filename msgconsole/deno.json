@@ -1,5 +1,5 @@
 {
-  "name": "@scope/msg-console",
+  "name": "@epdoc/msgconsole",
   "version": "3.0.0",
   "description": "An implementation of the message module for the CLI",
   "exports": "./mod.ts",

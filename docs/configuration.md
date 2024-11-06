@@ -1,21 +1,16 @@
-
-
 ## Configuration
 
-The easiest way to use the logger is to create and initialize a
-[LogManager](./src/log-manager.ts) object using config settings, then retrieve a
-[Logger](./src/log-manager.ts) object from the LogManager.
-
+The easiest way to use the logger is to create and initialize a [LogManager](./src/log-manager.ts) object using config
+settings, then retrieve a [Logger](./src/log-manager.ts) object from the LogManager.
 
 ```typescript
 import { LogManager } from '@epdoc/logger';
-
 
 let config = require('config');
 let logMgr = elogger.getLogManager(config.elogger).start();
 let log = logMgr.get('emitter.name.goes.here');
 
-log.action('say.hello').set({static1:'value1'}).info("Hello world");
+log.action('say.hello').set({ static1: 'value1' }).info('Hello world');
 ```
 
 An example configuration, illustrating how transports are specified and configured.
@@ -46,12 +41,12 @@ Buffer messages until your logger is set up.
 ```typescript
 let logMgr = require('epdoc-logger').getLogManager();
 let log = logMgr.getLogger('main');
-log.info("Starting application");
+log.info('Starting application');
 
 let config = require('config.json');
-logMgr.setTransport('file',{path:config.logFile,timestamp:'iso'}).start(); 
+logMgr.setTransport('file', { path: config.logFile, timestamp: 'iso' }).start();
 
-log.info("Hello world");
+log.info('Hello world');
 ```
 
 ```bash
@@ -66,21 +61,19 @@ Log to [loggly.com](http://loggly.com), buffering and making batch calls to logg
 ```typescript
 let logMgr = require('epdoc-logger').getLogManager();
 let log = logMgr.getLogger('main');
-log.info("Starting application");
+log.info('Starting application');
 
-logMgr.setTransport('loggly',{token:'MyToken'}); 
+logMgr.setTransport('loggly', { token: 'MyToken' });
 
-log.info("Hello world");
+log.info('Hello world');
 
 // log a message count for all the different log levels
 logMgr.writeCount();
 
 // Shutdown properly so loggly message buffer is flushed
-logMgr.destroying().then(function() {
-    done();
-}, function(err) {
-    done(err);
+logMgr.destroying().then(function () {
+  done();
+}, function (err) {
+  done(err);
 });
-
 ```
-

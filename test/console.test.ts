@@ -17,8 +17,8 @@ describe('Console', () => {
             } catch (err) {
               console.error(err);
             }
-          }
-        }
+          },
+        },
       };
       const logMgr = new LogMgr();
       return logMgr.start().then(() => {
@@ -38,8 +38,8 @@ describe('Console', () => {
         levelThreshold: 'verbose',
         format: {
           type: 'string',
-          colorize: true
-        }
+          colorize: true,
+        },
       };
       const logMgr = new LogMgr().addTransport(transportOpts);
       await logMgr.start();
@@ -61,8 +61,8 @@ describe('Console', () => {
         levelThreshold: 'verbose',
         format: {
           type: 'template',
-          template: '${action} ${ts} $c015{message} $c{level}'
-        }
+          template: '${action} ${ts} $c015{message} $c{level}',
+        },
       };
       const logMgr = new LogMgr().addTransport(transportOpts);
       logMgr.start();

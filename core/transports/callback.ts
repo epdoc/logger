@@ -1,4 +1,4 @@
-import { isFunction, type Function } from '@epdoc/typeutil';
+import { type Function, isFunction } from '@epdoc/typeutil';
 import type { LogMgr } from '../core/index.ts';
 import type { TransportOptions } from '../../src/types.ts';
 import type { LogTransport, LogTransportOpenCallbacks } from './base.ts';

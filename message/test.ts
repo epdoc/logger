@@ -1,5 +1,5 @@
 import { assertEquals } from '@std/assert';
-import { MsgBuilder, type ILogEmitter } from './builder.ts';
+import { type ILogEmitter, MsgBuilder } from './builder.ts';
 
 const emitter: ILogEmitter = {
   emit: () => {},

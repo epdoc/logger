@@ -66,7 +66,6 @@ export class TransportManager {
    * messages to be sent to more than one destination.
    * If you are adding a transport while logging is on, you should first call logMgr.stopping,
    * add the transport, then call logMgr.start.
-   *
    */
   public addTransport(options: TransportOptions): this {
     let newTransport = this._transportFactory.getTransport(options);

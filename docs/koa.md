@@ -6,8 +6,8 @@ The included koa2 middleware are instantiated as follows:
 import { Koa2Middleware } from '@epdoc/logger';
 let middleware = new Koa2Middleware({});
 
-import * as Koa from "koa";
-const app = new Koa()
+import * as Koa from 'koa';
+const app = new Koa();
 
 let app = new Koa();
 app.use(middleware.requestId());
@@ -16,7 +16,6 @@ app.all('*', middleware.requestLogger());
 app.all('*', middleware.routeSeparator());
 app.all('*', middleware.routeInfo());
 ```
-
 
 ```typescript
 let middleware = require('epdoc-logger').koa();

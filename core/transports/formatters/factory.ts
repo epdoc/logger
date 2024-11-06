@@ -43,9 +43,7 @@ export class TransportFormatterFactory {
   }
 
   getFormatter(name: core.FormatterType): TransportFormatter {
-    let factoryMethod: TransportFormatterFactoryMethod | undefined = name
-      ? this._formatters[name]
-      : undefined;
+    let factoryMethod: TransportFormatterFactoryMethod | undefined = name ? this._formatters[name] : undefined;
     if (!factoryMethod) {
       throw new Error(`Formatter ${name} not found`);
     }

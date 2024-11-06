@@ -4578,16 +4578,6 @@
       ]
     },
     "members": {
-      "basic": {
-        "dependencies": [
-          "jsr:@std/assert@1"
-        ]
-      },
-      "core": {
-        "dependencies": [
-          "jsr:@std/fmt@^1.0.2"
-        ]
-      },
       "levels": {
         "dependencies": [
           "jsr:@std/fmt@^1.0.2"
@@ -4596,11 +4586,6 @@
       "logcli": {
         "dependencies": [
           "jsr:@std/fmt@^1.0.2"
-        ]
-      },
-      "loggly": {
-        "dependencies": [
-          "jsr:@std/assert@1"
         ]
       },
       "logstd": {
@@ -4613,12 +4598,7 @@
           "jsr:@std/fmt@^1.0.2"
         ]
       },
-      "middleware": {
-        "dependencies": [
-          "jsr:@std/assert@1"
-        ]
-      },
-      "msg-console": {
+      "msgconsole": {
         "dependencies": [
           "jsr:@std/fmt@^1.0.2"
         ]

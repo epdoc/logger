@@ -119,8 +119,9 @@ export type LogContextParams = Partial<{
  * Properties of a LogMessage that are likely to be constant across a number of
  * log messages.
  */
-export type LogMessageConsts = LogContextParams &
-  Partial<{
+export type LogMessageConsts =
+  & LogContextParams
+  & Partial<{
     /** The name of the emitter, which is typically a string. */
     emitter: string | string[];
     /** The action to log, which is a verb indicating the action being logged. */
@@ -132,8 +133,9 @@ export type LogMessageConsts = LogContextParams &
 /**
  * Properties of a log message. Only the 'message' property is the descriptive string.
  */
-export type LogMessage = LogMessageConsts &
-  Partial<{
+export type LogMessage =
+  & LogMessageConsts
+  & Partial<{
     /** The timer to use for the message, in order to display the current time or elapsed time.*/
     timer: AppTimer;
     /** The level of the message, as a LogLevelValue */
