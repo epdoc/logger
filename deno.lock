@@ -4578,17 +4578,12 @@
       ]
     },
     "members": {
+      "cli": {
+        "dependencies": [
+          "jsr:@std/fmt@^1.0.2"
+        ]
+      },
       "levels": {
-        "dependencies": [
-          "jsr:@std/fmt@^1.0.2"
-        ]
-      },
-      "logcli": {
-        "dependencies": [
-          "jsr:@std/fmt@^1.0.2"
-        ]
-      },
-      "logstd": {
         "dependencies": [
           "jsr:@std/fmt@^1.0.2"
         ]
@@ -4599,6 +4594,11 @@
         ]
       },
       "msgconsole": {
+        "dependencies": [
+          "jsr:@std/fmt@^1.0.2"
+        ]
+      },
+      "std": {
         "dependencies": [
           "jsr:@std/fmt@^1.0.2"
         ]

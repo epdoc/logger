@@ -1,5 +1,5 @@
 {
-  "name": "@scope/logstd",
+  "name": "@scope/std",
   "version": "3.0.0",
   "description": "Color and formatting for console output using std log levels",
   "exports": "./mod.ts",
