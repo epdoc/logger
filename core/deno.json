@@ -1,5 +1,5 @@
 {
-  "name": "@scope/core",
+  "name": "@epdoc/core",
   "version": "3.0.0",
   "description": "Core logger module",
   "exports": "./mod.ts",

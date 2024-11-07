@@ -7,5 +7,5 @@ const emitter: ILogEmitter = {
 
 Deno.test('test', () => {
   const builder = new MsgBuilder('INFO', emitter);
-  assertEquals(builder.emit('test'), 'test');
+  assertEquals(builder.emit('test'), { level: 'INFO', msg: 'test' });
 });

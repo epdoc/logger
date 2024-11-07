@@ -1,5 +1,5 @@
 {
-  "name": "@scope/apptimer",
+  "name": "@epdoc/apptimer",
   "version": "3.0.0",
   "description": "Timer for logging",
   "exports": "./mod.ts",

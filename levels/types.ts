@@ -75,4 +75,10 @@ export interface ILogLevels {
   applyColors(msg: string, level: LevelName): string;
 }
 
+export interface ILoggerThresholds {
+  setThreshold(level: LevelName | LogLevel): ILoggerThresholds;
+  meetsThreshold(level: LogLevel | LevelName, threshold: LogLevel | LevelName): boolean;
+  meetsFlushThreshold(level: LogLevel | LevelName): boolean;
+}
+
 export type LogLevelFactoryMethod = () => ILogLevels;

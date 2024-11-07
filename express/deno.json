@@ -1,5 +1,5 @@
 {
-  "name": "@scope/express",
+  "name": "@epdoc/express",
   "version": "3.0.0",
   "description": "Color and formatting for console output",
   "exports": "./mod.ts",

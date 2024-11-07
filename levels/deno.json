@@ -1,5 +1,5 @@
 {
-  "name": "@scope/levels",
+  "name": "@epdoc/levels",
   "version": "3.0.0",
   "description": "Define logging levels",
   "exports": "./mod.ts",

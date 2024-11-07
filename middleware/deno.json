@@ -1,5 +1,5 @@
 {
-  "name": "@scope/middleware",
+  "name": "@epdoc/middleware",
   "version": "3.0.0-beta.1",
   "description": "Logging module with express middleware mixins and extendable transports",
   "author": {

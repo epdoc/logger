@@ -1,19 +1,25 @@
-import { type Integer, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
-import type { LevelName } from '@scope/levels';
+import type { LevelName } from '@epdoc/levels';
+import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
 import { StringEx } from './util.ts';
 
 const DEFAULT_TAB_SIZE = 2;
 
 export type StyleFormatterFn = (str: string) => string;
-export type StyleArg = string | number;
+export type StyleArg = string | number | Record<string, unknown> | unknown[] | unknown;
 
 export type LogMsgPart = {
   str: string;
   style?: StyleFormatterFn;
 };
 
+export type LogMessage = {
+  level: LevelName;
+  msg: string;
+  data?: Record<string, unknown>;
+};
+
 export interface ILogEmitter {
-  emit(level: LevelName, msg: string): void;
+  emit(msg: LogMessage): void;
 }
 
 export interface IMsgBuilder {
@@ -24,7 +30,8 @@ export interface IMsgBuilder {
   indent(n: Integer | string): this;
   tab(n: Integer): this;
   comment(...args: string[]): this;
-  emit(...args: unknown[]): string;
+  data(data: Record<string, unknown>): this;
+  emit(): LogMessage;
 }
 
 /**
@@ -40,6 +47,7 @@ export class MsgBuilder implements IMsgBuilder {
 
   protected _msgIndent: string = '';
   protected _msgParts: LogMsgPart[] = [];
+  protected _data: Record<string, unknown> | undefined;
   protected _suffix: string[] = [];
   // protected _level: LogLevelValue = logLevel.info;
   protected _showElapsed: boolean = false;
@@ -76,6 +84,7 @@ export class MsgBuilder implements IMsgBuilder {
    */
   clear(): this {
     this._msgParts = [];
+    this._data = undefined;
     return this;
   }
 
@@ -143,7 +152,17 @@ export class MsgBuilder implements IMsgBuilder {
 
   stylize(style: StyleFormatterFn | null, ...args: StyleArg[]): this {
     if (isNonEmptyArray(args)) {
-      this.addMsgPart(args.join(' '), style);
+      const str = args
+        .map((arg) => {
+          if (isNonEmptyString(arg)) {
+            return arg;
+          } else if (isDict(arg) || isNonEmptyArray(arg)) {
+            return JSON.stringify(arg);
+          }
+          return String(arg);
+        })
+        .join(' ');
+      this.addMsgPart(str, style);
     }
     return this;
   }
@@ -157,6 +176,17 @@ export class MsgBuilder implements IMsgBuilder {
     return this.appendMsg(...args);
   }
 
+  data(data: Record<string, unknown>): this {
+    if (isDict(data)) {
+      if (!this._data) {
+        this._data = data;
+      } else {
+        this._data = Object.assign(this._data, data);
+      }
+    }
+    return this;
+  }
+
   /**
    * Emits the log line.
    * @param { unknown[]} args - The arguments to emit.
@@ -164,15 +194,20 @@ export class MsgBuilder implements IMsgBuilder {
    * @see ewt()
    * @see emitWithTime()
    */
-  emit(...args: unknown[]): string {
+  emit(...args: unknown[]): LogMessage {
     this.appendMsg(...args);
-    let result = '';
-    result = this.formatParts();
+    const msg: LogMessage = {
+      level: this._level,
+      msg: this.formatParts(),
+    };
+    if (this._data) {
+      msg.data = this._data;
+    }
     this.clear();
     if (this._emitter) {
-      this._emitter.emit(this._level, result);
+      this._emitter.emit(msg);
     }
-    return result;
+    return msg;
   }
 
   partsAsString(): string {

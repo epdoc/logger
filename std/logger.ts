@@ -1,10 +1,10 @@
-import type { ILogLevels, LevelName, LogLevel } from '@scope/levels';
-import { std } from '@scope/levels';
-import type { ILogEmitter } from '@scope/message';
-import { MsgBuilder } from '@scope/msgconsole';
+import type { ILogLevels, LevelName, LogLevel } from '@epdoc/levels';
+import { type ILoggerThresholds, std } from '@epdoc/levels';
+import type { ILogEmitter, LogMessage } from '@epdoc/message';
+import { MsgBuilder } from '@epdoc/msgconsole';
 import type { ILogger } from './levels.ts';
 
-export class Logger implements ILogger, ILogEmitter {
+export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
   protected _logLevels: ILogLevels;
   protected _threshold: LogLevel;
 
@@ -13,15 +13,28 @@ export class Logger implements ILogger, ILogEmitter {
     this._threshold = this._logLevels.asValue(this._logLevels.defaultLevelName);
   }
 
-  emit(level: LevelName, msg: string): void {
-    if (this._logLevels.meetsThreshold(level, this._threshold)) {
-      console.log(msg);
-    }
-  }
-
   setThreshold(level: LevelName | LogLevel): this {
     this._threshold = this._logLevels.asValue(level);
     return this;
+  }
+
+  meetsThreshold(level: LogLevel | LevelName, threshold: LogLevel | LevelName): boolean {
+    return this._logLevels.meetsThreshold(level, threshold);
+  }
+
+  meetsFlushThreshold(level: LogLevel | LevelName): boolean {
+    return this._logLevels.meetsFlushThreshold(level);
+  }
+
+  emit(msg: LogMessage): void {
+    if (this._logLevels.meetsThreshold(msg.level, this._threshold)) {
+      if (msg.data) {
+        const d = JSON.stringify(msg.data);
+        console.log(msg.msg, d);
+      } else {
+        console.log(msg.msg);
+      }
+    }
   }
 
   /**

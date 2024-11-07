@@ -25,21 +25,32 @@ const launchfile = path.resolve(pwd, '..', '.vscode', 'launch.json');
 
 const result = { version: '0.2.0', configurations: [] };
 
-await Promise.all(
-  pkg.workspace.map(async (scope) => {
-    for await (const entry of Deno.readDir(path.resolve(pwd, '..', scope))) {
-      if (entry.isFile && entry.name.endsWith('test.ts')) {
-        console.log(scope, entry.name);
-        const item = Object.assign({}, template, { name: `Debug ${scope}/${entry.name}` });
-        item.runtimeArgs = [];
-        template.runtimeArgs.forEach((arg) => {
-          item.runtimeArgs.push(arg);
-        });
-        item.runtimeArgs[item.runtimeArgs.length - 1] = `./${scope}/${entry.name}`;
-        result.configurations.push(item as never);
+const addTest = (entry: Deno.DirEntry, name: string) => {
+  if (entry.isFile && entry.name.endsWith('test.ts')) {
+    console.log(name);
+    const item = Object.assign({}, template, { name: `Debug ${name}` });
+    item.runtimeArgs = [];
+    template.runtimeArgs.forEach((arg) => {
+      item.runtimeArgs.push(arg);
+    });
+    item.runtimeArgs[item.runtimeArgs.length - 1] = `./${name}`;
+    result.configurations.push(item as never);
+  }
+};
+
+if (Array.isArray(pkg.workspace)) {
+  await Promise.all(
+    pkg.workspace.map(async (scope) => {
+      for await (const entry of Deno.readDir(path.resolve(pwd, '..', scope))) {
+        const name = `${scope}/${entry.name}`;
+        addTest(entry, name);
       }
-    }
-  }),
-);
+    })
+  );
+} else {
+  for await (const entry of Deno.readDir(path.resolve(pwd, '..'))) {
+    addTest(entry, entry.name);
+  }
+}
 
 Deno.writeTextFileSync(launchfile, JSON.stringify(result, null, 2));

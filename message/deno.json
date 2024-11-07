@@ -1,5 +1,5 @@
 {
-  "name": "@scope/message",
+  "name": "@epdoc/message",
   "version": "3.0.0",
   "description": "Color and formatting for console output",
   "exports": "./mod.ts",
@@ -15,6 +15,6 @@
   "imports": {
     "@std/fmt": "jsr:@std/fmt@^1.0.2",
     "@epdoc/type": "../../std/type/mod.ts",
-    "@scope/levels": "../levels/mod.ts"
+    "@epdoc/levels": "../levels/mod.ts"
   }
 }

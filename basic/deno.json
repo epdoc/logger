@@ -1,5 +1,5 @@
 {
-  "name": "@scope/basic",
+  "name": "@epdoc/basic",
   "version": "3.0.0",
   "description": "Basic logging module that implements the core logger interface",
   "exports": "./mod.ts",

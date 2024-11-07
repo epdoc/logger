@@ -1,4 +1,4 @@
-import * as core from '@scope/core';
+import * as core from '@epdoc/core';
 // import type { LogLevelDef } from '../log-levels.ts';
 import { LogLevelDef } from '../../levels/levels.ts.txt';
 import type { MsgBuilder } from './msg_builder.ts';

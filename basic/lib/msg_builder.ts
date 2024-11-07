@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import * as core from '@scope/core';
+import * as core from '@epdoc/core';
 
 import * as base from '../core/core-index.ts';
 

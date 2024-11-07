@@ -1,4 +1,4 @@
-import type { IMsgBuilder } from '@scope/message';
+import type { IMsgBuilder } from '@epdoc/message';
 
 export interface ILogger {
   error: IMsgBuilder;
