@@ -9,6 +9,7 @@
   },
   "imports": {
     "@std/fmt": "jsr:@std/fmt@^1.0.2",
+    "@epdoc/string": "../../std/string/mod.ts",
     "@epdoc/levels": "../levels/mod.ts",
     "@epdoc/message": "../message/mod.ts",
     "@epdoc/msgconsole": "../msgconsole/mod.ts"

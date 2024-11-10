@@ -2,11 +2,13 @@ import type { ILogLevels, LevelName, LogLevel } from '@epdoc/levels';
 import { type ILoggerThresholds, std } from '@epdoc/levels';
 import type { ILogEmitter, LogMessage } from '@epdoc/message';
 import { MsgBuilder } from '@epdoc/msgconsole';
+import { StringEx } from '@epdoc/string';
 import type { ILogger } from './levels.ts';
 
 export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
   protected _logLevels: ILogLevels;
   protected _threshold: LogLevel;
+  protected _showLevel: boolean = false;
 
   constructor() {
     this._logLevels = std.createLogLevels();
@@ -30,11 +32,29 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
     if (this._logLevels.meetsThreshold(msg.level, this._threshold)) {
       if (msg.data) {
         const d = JSON.stringify(msg.data);
-        console.log(msg.msg, d);
+        if (this._showLevel) {
+          console.log(this.styledLevel(msg.level), msg.msg, d);
+        } else {
+          console.log(msg.msg, d);
+        }
       } else {
-        console.log(msg.msg);
+        if (this._showLevel) {
+          console.log(this.styledLevel(msg.level), msg.msg);
+        } else {
+          console.log(msg.msg);
+        }
       }
     }
+  }
+
+  showLevel(show: boolean): this {
+    this._showLevel = show;
+    return this;
+  }
+
+  styledLevel(level: LevelName): string {
+    const s = '[' + StringEx(level).rightPadAndTruncate(7) + ']';
+    return this._logLevels.applyColors(s, level);
   }
 
   /**

@@ -20,6 +20,7 @@ export type LogMessage = {
 
 export interface ILogEmitter {
   emit(msg: LogMessage): void;
+  showLevel(val?: boolean): this;
 }
 
 export interface IMsgBuilder {

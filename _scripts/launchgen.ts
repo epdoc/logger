@@ -45,7 +45,7 @@ if (Array.isArray(pkg.workspace)) {
         const name = `${scope}/${entry.name}`;
         addTest(entry, name);
       }
-    })
+    }),
   );
 } else {
   for await (const entry of Deno.readDir(path.resolve(pwd, '..'))) {

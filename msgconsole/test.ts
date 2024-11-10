@@ -3,9 +3,14 @@ import { StringEx } from '@epdoc/message';
 import { assertEquals } from '@std/assert';
 import { MsgBuilder } from './builder.ts';
 
-const emitter: ILogEmitter = {
-  emit: () => {},
-};
+class Emitter implements ILogEmitter {
+  emit() {}
+  showLevel(): this {
+    return this;
+  }
+}
+
+const emitter = new Emitter();
 
 Deno.test('test', () => {
   const builder = new MsgBuilder('INFO', emitter);
@@ -31,7 +36,7 @@ Deno.test('display applyColors', () => {
   assertEquals(result.level, 'INFO');
   assertEquals(
     /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*path.*date.*strikethru.*warn.*error.*$/.test(result.msg),
-    true
+    true,
   );
 });
 Deno.test('display no colors', () => {
@@ -86,7 +91,7 @@ Deno.test('action', () => {
   const result = builder.action('action').emit();
   assertEquals(
     StringEx(result.msg).hexEncode(),
-    '001b005b00330030006d001b005b00340033006d0061006300740069006f006e001b005b00340039006d001b005b00330039006d'
+    '001b005b00330030006d001b005b00340033006d0061006300740069006f006e001b005b00340039006d001b005b00330039006d',
   );
 });
 Deno.test('label', () => {
@@ -99,7 +104,7 @@ Deno.test('highlight', () => {
   const result = builder.highlight('highlight').emit();
   assertEquals(
     StringEx(result.msg).hexEncode(),
-    '001b005b00390035006d0068006900670068006c0069006700680074001b005b00330039006d'
+    '001b005b00390035006d0068006900670068006c0069006700680074001b005b00330039006d',
   );
 });
 Deno.test('value', () => {
@@ -107,7 +112,7 @@ Deno.test('value', () => {
   const result = builder.value('value').emit();
   assertEquals(
     StringEx(result.msg).hexEncode(),
-    '001b005b00390034006d00760061006c00750065001b005b00330039006d'
+    '001b005b00390034006d00760061006c00750065001b005b00330039006d',
   );
 });
 Deno.test('path', () => {
@@ -130,7 +135,7 @@ Deno.test('error', () => {
   const result = builder.error('error').emit();
   assertEquals(
     StringEx(result.msg).hexEncode(),
-    '001b005b0031006d001b005b00390031006d006500720072006f0072001b005b00330039006d001b005b00320032006d'
+    '001b005b0031006d001b005b00390031006d006500720072006f0072001b005b00330039006d001b005b00320032006d',
   );
 });
 Deno.test('strikethru', () => {
@@ -138,6 +143,6 @@ Deno.test('strikethru', () => {
   const result = builder.strikethru('strikethru').emit();
   assertEquals(
     StringEx(result.msg).hexEncode(),
-    '001b005b0037006d0073007400720069006b00650074006800720075001b005b00320037006d'
+    '001b005b0037006d0073007400720069006b00650074006800720075001b005b00320037006d',
   );
 });

@@ -5,9 +5,9 @@ import type { LogLevelFactoryMethod } from './types.ts';
 const stdLogLevelDefs: LogLevelsDef = {
   error: { val: 0, fmtFn: colors.red, flush: true },
   warn: { val: 1, fmtFn: colors.yellow },
-  info: { val: 2, fmtFn: colors.green },
-  verbose: { val: 3, fmtFn: colors.cyan },
-  debug: { val: 4, fmtFn: colors.blue },
+  info: { val: 2, fmtFn: colors.gray },
+  verbose: { val: 3, fmtFn: colors.gray },
+  debug: { val: 4, fmtFn: colors.gray },
   trace: { val: 5, fmtFn: colors.gray },
 } as const;
 

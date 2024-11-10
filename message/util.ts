@@ -15,7 +15,7 @@ export class StringUtil {
    * @param {string} [plural] - The plural form of the word (optional).
    * @returns {string} The plural form of the word.
    */
-  plural(n: number, plural?: string): string {
+  pluralize(n: number, plural?: string): string {
     if (n === 1) {
       return this._str;
     }
