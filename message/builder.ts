@@ -12,15 +12,23 @@ export type LogMsgPart = {
   style?: StyleFormatterFn;
 };
 
-export type LogMessage = {
+export type TimeOpt = 'utc' | 'local' | 'elapsed';
+
+export type LogRecord = {
   level: LevelName;
+  timestamp?: Date;
   msg: string;
   data?: Record<string, unknown>;
 };
 
+export type LogEmitterShowOpts = {
+  level?: boolean;
+  timestamp?: TimeOpt;
+};
+
 export interface ILogEmitter {
-  emit(msg: LogMessage): void;
-  showLevel(val?: boolean): this;
+  emit(msg: LogRecord): void;
+  show(val: LogEmitterShowOpts): this;
 }
 
 export interface IMsgBuilder {
@@ -32,7 +40,7 @@ export interface IMsgBuilder {
   tab(n: Integer): this;
   comment(...args: string[]): this;
   data(data: Record<string, unknown>): this;
-  emit(): LogMessage;
+  emit(): LogRecord;
 }
 
 /**
@@ -40,6 +48,7 @@ export interface IMsgBuilder {
  * line, add styling, and emit the log line.
  */
 export class MsgBuilder implements IMsgBuilder {
+  protected _timestamp: Date = new Date();
   protected _level: LevelName;
   protected _emitter: ILogEmitter | undefined;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
@@ -195,9 +204,10 @@ export class MsgBuilder implements IMsgBuilder {
    * @see ewt()
    * @see emitWithTime()
    */
-  emit(...args: unknown[]): LogMessage {
+  emit(...args: unknown[]): LogRecord {
     this.appendMsg(...args);
-    const msg: LogMessage = {
+    const msg: LogRecord = {
+      timestamp: this._timestamp,
       level: this._level,
       msg: this.formatParts(),
     };

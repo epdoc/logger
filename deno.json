@@ -24,6 +24,7 @@
   "lint": {
     "include": ["message/**/*.ts", "levels/**/*.ts", "cli/**/*.ts", "std/**/*.ts", "msgconsole/**/*.ts"]
   },
+  "patch": ["../../@epdoc/std/"],
   "imports": {
     "@std/assert": "jsr:@std/assert@1"
   },

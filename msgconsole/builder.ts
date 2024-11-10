@@ -192,7 +192,7 @@ export class MsgBuilder extends core.MsgBuilder {
    * @param duration
    * @returns
    */
-  emitWithTime(duration?: number): core.LogMessage {
+  emitWithTime(duration?: number): core.LogRecord {
     return this.ewt(duration);
   }
 
@@ -205,7 +205,7 @@ export class MsgBuilder extends core.MsgBuilder {
    *                  it defaults to the time elapsed since the last mark.
    * @returns A formatted string representing the elapsed time.
    */
-  ewt(duration: number = performance.now() - this._t0): core.LogMessage {
+  ewt(duration: number = performance.now() - this._t0): core.LogRecord {
     if (duration) {
       return this.stylize(styleFormatters._elapsed, `(${duration.toFixed(3)} ms response)`).emit();
     }

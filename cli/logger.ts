@@ -1,25 +1,25 @@
 import type { ILogLevels, LevelName, LogLevel } from '@epdoc/levels';
 import { cli, type ILoggerThresholds } from '@epdoc/levels';
-import type { ILogEmitter, LogMessage } from '@epdoc/message';
+import type { ILogEmitter, LogEmitterShowOpts, LogRecord } from '@epdoc/message';
 import { MsgBuilder } from '@epdoc/msgconsole';
 import type { ILogger } from './cli.ts';
 
 export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
   protected _logLevels: ILogLevels;
   protected _threshold: LogLevel;
-  protected _showLevel: boolean = true;
+  protected _show: LogEmitterShowOpts = {};
 
   constructor() {
     this._logLevels = cli.createLogLevels();
     this._threshold = this._logLevels.asValue(this._logLevels.defaultLevelName);
   }
 
-  showLevel(show: boolean = true): this {
-    this._showLevel = show;
+  show(opts: LogEmitterShowOpts): this {
+    this._show = opts;
     return this;
   }
 
-  emit(msg: LogMessage): void {
+  emit(msg: LogRecord): void {
     if (this._logLevels.meetsThreshold(msg.level, this._threshold)) {
       console.log(msg.msg);
     }

@@ -1,18 +1,26 @@
+import { dateEx } from '@epdoc/datetime';
+import { duration } from '@epdoc/duration';
 import type { ILogLevels, LevelName, LogLevel } from '@epdoc/levels';
 import { type ILoggerThresholds, std } from '@epdoc/levels';
-import type { ILogEmitter, LogMessage } from '@epdoc/message';
+import type { ILogEmitter, LogEmitterShowOpts, LogRecord } from '@epdoc/message';
 import { MsgBuilder } from '@epdoc/msgconsole';
 import { StringEx } from '@epdoc/string';
 import type { ILogger } from './levels.ts';
 
 export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
+  protected _t0: Date = new Date();
   protected _logLevels: ILogLevels;
   protected _threshold: LogLevel;
-  protected _showLevel: boolean = false;
+  protected _show: LogEmitterShowOpts = {};
 
   constructor() {
     this._logLevels = std.createLogLevels();
     this._threshold = this._logLevels.asValue(this._logLevels.defaultLevelName);
+  }
+
+  startTime(d: Date): this {
+    this._t0 = d;
+    return this;
   }
 
   setThreshold(level: LevelName | LogLevel): this {
@@ -28,27 +36,34 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
     return this._logLevels.meetsFlushThreshold(level);
   }
 
-  emit(msg: LogMessage): void {
+  emit(msg: LogRecord): void {
     if (this._logLevels.meetsThreshold(msg.level, this._threshold)) {
-      if (msg.data) {
-        const d = JSON.stringify(msg.data);
-        if (this._showLevel) {
-          console.log(this.styledLevel(msg.level), msg.msg, d);
-        } else {
-          console.log(msg.msg, d);
-        }
-      } else {
-        if (this._showLevel) {
-          console.log(this.styledLevel(msg.level), msg.msg);
-        } else {
-          console.log(msg.msg);
-        }
+      const parts: string[] = [];
+      if (this._show.timestamp === 'utc' && msg.timestamp) {
+        parts.push(this._logLevels.applyColors(msg.timestamp.toISOString(), msg.level));
+      } else if (this._show.timestamp === 'local' && msg.timestamp) {
+        parts.push(this._logLevels.applyColors(dateEx(msg.timestamp).toISOLocalString(), msg.level));
+      } else if (this._show.timestamp === 'elapsed' && msg.timestamp) {
+        parts.push(
+          this._logLevels.applyColors(
+            duration().narrow.format(msg.timestamp.getTime() - this._t0.getTime()),
+            msg.level
+          )
+        );
       }
+      if (this._show.level === true) {
+        parts.push(this.styledLevel(msg.level));
+      }
+      parts.push(msg.msg);
+      if (msg.data) {
+        parts.push(JSON.stringify(msg.data));
+      }
+      console.log(...parts);
     }
   }
 
-  showLevel(show: boolean): this {
-    this._showLevel = show;
+  show(opts: LogEmitterShowOpts): this {
+    this._show = opts;
     return this;
   }
 
