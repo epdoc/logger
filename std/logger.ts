@@ -68,7 +68,7 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
   }
 
   styledLevel(level: LevelName): string {
-    const s = '[' + StringEx(level).rightPadAndTruncate(7) + ']';
+    const s = '[' + StringEx(level).rightPad(7) + ']';
     return this._logLevels.applyColors(s, level);
   }
 

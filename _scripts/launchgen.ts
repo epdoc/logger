@@ -1,3 +1,4 @@
+import { walk } from 'jsr:@std/fs/walk';
 import path from 'node:path';
 import pkg from '../deno.json' with { type: 'json' };
 
@@ -41,11 +42,11 @@ const addTest = (entry: Deno.DirEntry, name: string) => {
 if (Array.isArray(pkg.workspace)) {
   await Promise.all(
     pkg.workspace.map(async (scope) => {
-      for await (const entry of Deno.readDir(path.resolve(pwd, '..', scope))) {
+      for await (const entry of walk(path.resolve(pwd, '..', scope), { match: [/test\.ts$/] })) {
         const name = `${scope}/${entry.name}`;
         addTest(entry, name);
       }
-    }),
+    })
   );
 } else {
   for await (const entry of Deno.readDir(path.resolve(pwd, '..'))) {

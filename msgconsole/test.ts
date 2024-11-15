@@ -84,7 +84,7 @@ Deno.test('h2', () => {
 Deno.test('h3', () => {
   const builder = new MsgBuilder('INFO', emitter);
   const result = builder.h3('h3').emit();
-  assertEquals(result.msg, '\x1b[32mh3\x1b[39m');
+  assertEquals(StringEx(result.msg).hexEncode(), '001b005b00330033006d00680033001b005b00330039006d');
 });
 Deno.test('action', () => {
   const builder = new MsgBuilder('INFO', emitter);
@@ -118,7 +118,10 @@ Deno.test('value', () => {
 Deno.test('path', () => {
   const builder = new MsgBuilder('INFO', emitter);
   const result = builder.path('path').emit();
-  assertEquals(result.msg, '\x1b[34mpath\x1b[39m');
+  assertEquals(
+    StringEx(result.msg).hexEncode(),
+    '001b005b0034006d001b005b00390030006d0070006100740068001b005b00330039006d001b005b00320034006d'
+  );
 });
 Deno.test('date', () => {
   const builder = new MsgBuilder('INFO', emitter);
