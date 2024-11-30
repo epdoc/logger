@@ -48,3 +48,14 @@ Deno.test('std logger with elapsed and level', () => {
   log.debug.h1('Level').value('debug').emit('test');
   log.trace.h1('Level').value('trace').emit('emit');
 });
+Deno.test('std logger with elapsed and level and pkg', () => {
+  const log = new Logger()
+    .setThreshold('TRACE')
+    .show({ timestamp: 'elapsed', level: true, package: true })
+    .setPackage('mypkg');
+  log.info.h1('Level').value('info').emit('test');
+  log.error.h1('Level').value('error').error('error').emit('test');
+  log.verbose.h1('Level').value('verbose').emit('test');
+  log.debug.h1('Level').value('debug').emit('test');
+  log.trace.h1('Level').value('trace').emit('emit');
+});

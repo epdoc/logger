@@ -24,11 +24,13 @@ export type LogRecord = {
 export type LogEmitterShowOpts = {
   level?: boolean;
   timestamp?: TimeOpt;
+  package?: boolean;
 };
 
 export interface ILogEmitter {
   emit(msg: LogRecord): void;
   show(val: LogEmitterShowOpts): this;
+  setPackage(val: string): this;
 }
 
 export interface IMsgBuilder {

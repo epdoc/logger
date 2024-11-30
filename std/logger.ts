@@ -5,6 +5,7 @@ import { type ILoggerThresholds, std } from '@epdoc/levels';
 import type { ILogEmitter, LogEmitterShowOpts, LogRecord } from '@epdoc/message';
 import { MsgBuilder } from '@epdoc/msgconsole';
 import { StringEx } from '@epdoc/string';
+import type { Integer } from '@epdoc/type';
 import type { ILogger } from './levels.ts';
 
 export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
@@ -12,6 +13,8 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
   protected _logLevels: ILogLevels;
   protected _threshold: LogLevel;
   protected _show: LogEmitterShowOpts = {};
+  protected _pkg: string = '';
+  protected _pkgWidth: Integer = 0;
 
   constructor() {
     this._logLevels = std.createLogLevels();
@@ -28,8 +31,9 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
     return this;
   }
 
-  meetsThreshold(level: LogLevel | LevelName, threshold: LogLevel | LevelName): boolean {
-    return this._logLevels.meetsThreshold(level, threshold);
+  meetsThreshold(level: LogLevel | LevelName, threshold?: LogLevel | LevelName): boolean {
+    const t = threshold ? this._logLevels.asValue(threshold) : this._threshold;
+    return this._logLevels.meetsThreshold(level, t);
   }
 
   meetsFlushThreshold(level: LogLevel | LevelName): boolean {
@@ -54,6 +58,9 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
       if (this._show.level === true) {
         parts.push(this.styledLevel(msg.level));
       }
+      if (this._show.package === true) {
+        parts.push(this.styledPackage(this._pkg, msg.level));
+      }
       parts.push(msg.msg);
       if (msg.data) {
         parts.push(JSON.stringify(msg.data));
@@ -65,6 +72,20 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
   show(opts: LogEmitterShowOpts): this {
     this._show = opts;
     return this;
+  }
+
+  setPackage(val: string, width: Integer = 0): this {
+    this._pkg = val;
+    this._pkgWidth = width;
+    return this;
+  }
+
+  styledPackage(pkg: string, level: LevelName): string {
+    let s = pkg;
+    if (this._pkgWidth) {
+      s = StringEx(pkg).leftPad(this._pkgWidth);
+    }
+    return this._logLevels.applyColors(`(${s})`, level);
   }
 
   styledLevel(level: LevelName): string {

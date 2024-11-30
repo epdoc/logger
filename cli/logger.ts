@@ -8,6 +8,7 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
   protected _logLevels: ILogLevels;
   protected _threshold: LogLevel;
   protected _show: LogEmitterShowOpts = {};
+  protected _pkg: string = '';
 
   constructor() {
     this._logLevels = cli.createLogLevels();
@@ -25,13 +26,18 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
     }
   }
 
+  setPackage(val: string): this {
+    this._pkg = val;
+    return this;
+  }
+
   setThreshold(level: LevelName | LogLevel): this {
     this._threshold = this._logLevels.asValue(level);
     return this;
   }
 
-  meetsThreshold(level: LogLevel | LevelName, threshold: LogLevel | LevelName): boolean {
-    return this._logLevels.meetsThreshold(level, threshold);
+  meetsThreshold(level: LogLevel | LevelName, threshold?: LogLevel | LevelName): boolean {
+    return this._logLevels.meetsThreshold(level, threshold ? threshold : this._threshold);
   }
 
   meetsFlushThreshold(level: LogLevel | LevelName): boolean {
