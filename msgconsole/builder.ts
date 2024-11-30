@@ -1,4 +1,5 @@
 import * as core from '@epdoc/message';
+import type { Integer } from '@epdoc/type';
 import * as colors from '@std/fmt/colors';
 
 export const styleFormatters = {
@@ -207,7 +208,15 @@ export class MsgBuilder extends core.MsgBuilder {
    */
   ewt(duration: number = performance.now() - this._t0): core.LogRecord {
     if (duration) {
-      return this.stylize(styleFormatters._elapsed, `(${duration.toFixed(3)} ms response)`).emit();
+      let digits: Integer = 3;
+      if (duration > 100) {
+        digits = 0;
+      } else if (duration > 10) {
+        digits = 1;
+      } else if (duration > 1) {
+        digits = 2;
+      }
+      return this.stylize(styleFormatters._elapsed, `(${duration.toFixed(digits)} ms response)`).emit();
     }
     return this.emit();
   }
