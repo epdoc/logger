@@ -5,7 +5,7 @@ import { type ILoggerThresholds, std } from '@epdoc/levels';
 import type { ILogEmitter, LogEmitterShowOpts, LogRecord } from '@epdoc/message';
 import { MsgBuilder } from '@epdoc/msgconsole';
 import { StringEx } from '@epdoc/string';
-import type { Integer } from '@epdoc/type';
+import { type Integer, isNonEmptyString } from '@epdoc/type';
 import type { ILogger } from './levels.ts';
 
 export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
@@ -58,7 +58,7 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
       if (this._show.level === true) {
         parts.push(this.styledLevel(msg.level));
       }
-      if (this._show.package === true) {
+      if (this._show.package === true && isNonEmptyString(this._pkg)) {
         parts.push(this.styledPackage(this._pkg, msg.level));
       }
       parts.push(msg.msg);
