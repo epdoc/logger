@@ -236,6 +236,9 @@ export class MsgBuilder implements IMsgBuilder {
 
   protected formatParts(): string {
     const parts: string[] = [];
+    if (isNonEmptyString(this._msgIndent)) {
+      parts.push(this._msgIndent);
+    }
     this._msgParts.forEach((part: LogMsgPart) => {
       if (part.style && this._applyColors) {
         parts.push(part.style(part.str));
