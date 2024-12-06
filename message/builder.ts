@@ -1,8 +1,11 @@
 import type { LevelName } from '@epdoc/levels';
-import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
+import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString, isString } from '@epdoc/type';
 import { StringEx } from './util.ts';
 
 const DEFAULT_TAB_SIZE = 2;
+const REG = {
+  timeopt: /^(utc|local|elapsed)$/i,
+};
 
 export type StyleFormatterFn = (str: string) => string;
 export type StyleArg = string | number | Record<string, unknown> | unknown[] | unknown;
@@ -13,6 +16,10 @@ export type LogMsgPart = {
 };
 
 export type TimeOpt = 'utc' | 'local' | 'elapsed';
+
+export function isTimeOpt(val: unknown): val is TimeOpt {
+  return isString(val) && REG.timeopt.test(val) ? true : false;
+}
 
 export type LogRecord = {
   level: LevelName;
