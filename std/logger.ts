@@ -5,7 +5,7 @@ import { type ILoggerThresholds, std } from '@epdoc/levels';
 import type { ILogEmitter, LogEmitterShowOpts, LogRecord } from '@epdoc/message';
 import { MsgBuilder } from '@epdoc/msgconsole';
 import { StringEx } from '@epdoc/string';
-import { type Integer, isNonEmptyString } from '@epdoc/type';
+import { type Integer, isNonEmptyString, isNumber, isString } from '@epdoc/type';
 import type { ILogger } from './levels.ts';
 
 export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
@@ -15,6 +15,7 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
   protected _show: LogEmitterShowOpts = {};
   protected _pkg: string = '';
   protected _pkgWidth: Integer = 0;
+  protected _indent: string[] = [];
 
   constructor() {
     this._logLevels = std.createLogLevels();
@@ -61,6 +62,9 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
       if (this._show.package === true && isNonEmptyString(this._pkg)) {
         parts.push(this.styledPackage(this._pkg, msg.level));
       }
+      if (this._indent.length) {
+        parts.push(...this._indent);
+      }
       parts.push(msg.msg);
       if (msg.data) {
         parts.push(JSON.stringify(msg.data));
@@ -91,6 +95,31 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
   styledLevel(level: LevelName): string {
     const s = '[' + StringEx(level).rightPad(7) + ']';
     return this._logLevels.applyColors(s, level);
+  }
+
+  indent(n?: number | string): this {
+    if (isString(n)) {
+      this._indent.push(n);
+    } else if (isNumber(n)) {
+      for (let x = 0; x < n; ++x) {
+        this._indent.push(' ');
+      }
+    } else {
+      this._indent.push(' ');
+    }
+    return this;
+  }
+
+  outdent(n: number = 1): this {
+    for (let x = 0; x < n; ++x) {
+      this._indent.pop();
+    }
+    return this;
+  }
+
+  nodent(): this {
+    this._indent = [];
+    return this;
   }
 
   /**
