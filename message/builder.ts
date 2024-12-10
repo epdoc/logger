@@ -38,6 +38,9 @@ export interface ILogEmitter {
   emit(msg: LogRecord): void;
   show(val: LogEmitterShowOpts): this;
   setPackage(val: string): this;
+  indent(n?: number | string): this;
+  outdent(n?: number): this;
+  nodent(): this;
 }
 
 export interface IMsgBuilder {
