@@ -6,6 +6,9 @@ class Emitter implements ILogEmitter {
   show(): this {
     return this;
   }
+  setPackage(_val: string): this {
+    return this;
+  }
 }
 
 Deno.test('test', () => {

@@ -8,6 +8,9 @@ class Emitter implements ILogEmitter {
   show(): this {
     return this;
   }
+  setPackage(_val: string): this {
+    return this;
+  }
 }
 
 const emitter = new Emitter();
@@ -60,13 +63,13 @@ Deno.test('display no colors', () => {
 });
 Deno.test('display elapsed no color', () => {
   const builder = new MsgBuilder('INFO', emitter).noColors();
-  const result: LogRecord = builder.h1('h1').ewt();
+  const result: LogRecord = builder.h1('h1').ewt(8);
   console.log(result.msg);
   assertEquals(true, /^h1 \([\d\.]+ ms response\)$/.test(result.msg));
 });
 Deno.test('display elapsed applyColor', () => {
   const builder = new MsgBuilder('INFO', emitter);
-  const result = builder.value('value').ewt();
+  const result = builder.value('value').ewt(5);
   console.log(result.msg);
   assertEquals(true, /value/.test(result.msg));
   assertEquals(true, /ms response/.test(result.msg));

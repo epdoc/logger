@@ -1,14 +1,15 @@
 import { dateEx } from '@epdoc/datetime';
-import { duration } from '@epdoc/duration';
-import type { ILogLevels, LevelName, LogLevel } from '@epdoc/levels';
-import { type ILoggerThresholds, std } from '@epdoc/levels';
-import type { ILogEmitter, LogEmitterShowOpts, LogRecord } from '@epdoc/message';
+import { duration, type HrMilliseconds } from '@epdoc/duration';
+import type { ILoggerThresholds, ILogLevels, LevelName, LogLevel } from '@epdoc/levels';
+import { std } from '@epdoc/levels';
+import type { ILogEmitter, ILoggerIndent, ILoggerMark, LogEmitterShowOpts, LogRecord } from '@epdoc/message';
 import { MsgBuilder } from '@epdoc/msgconsole';
 import { StringEx } from '@epdoc/string';
 import { type Integer, isNonEmptyString, isNumber, isString } from '@epdoc/type';
+import { assert } from '@std/assert/assert';
 import type { ILogger } from './levels.ts';
 
-export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
+export class Logger implements ILogger, ILogEmitter, ILoggerMark, ILoggerIndent, ILoggerThresholds {
   protected _t0: Date = new Date();
   protected _logLevels: ILogLevels;
   protected _threshold: LogLevel;
@@ -16,6 +17,7 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
   protected _pkg: string = '';
   protected _pkgWidth: Integer = 0;
   protected _indent: string[] = [];
+  protected _mark: Record<string, HrMilliseconds> = {};
 
   constructor() {
     this._logLevels = std.createLogLevels();
@@ -52,8 +54,8 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
         parts.push(
           this._logLevels.applyColors(
             duration().narrow.format(msg.timestamp.getTime() - this._t0.getTime()),
-            msg.level
-          )
+            msg.level,
+          ),
         );
       }
       if (this._show.level === true) {
@@ -95,6 +97,18 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
   styledLevel(level: LevelName): string {
     const s = '[' + StringEx(level).rightPad(7) + ']';
     return this._logLevels.applyColors(s, level);
+  }
+
+  mark(name: string): this {
+    this._mark[name] = performance.now();
+    return this;
+  }
+
+  demark(name: string): HrMilliseconds {
+    assert(this._mark[name], `No mark set for ${name}`);
+    const result = performance.now() - this._mark[name];
+    delete this._mark[name];
+    return result;
   }
 
   indent(n?: number | string): this {

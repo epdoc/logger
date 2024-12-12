@@ -1,5 +1,6 @@
 import * as core from '@epdoc/message';
-import type { Integer } from '@epdoc/type';
+import { type Integer, isNonEmptyString, isPosNumber } from '@epdoc/type';
+import { assert } from '@std/assert';
 import * as colors from '@std/fmt/colors';
 
 export const styleFormatters = {
@@ -49,8 +50,6 @@ export const styleFormatters = {
  * pass it to the LogManager. s
  */
 export class MsgBuilder extends core.MsgBuilder {
-  protected _t0: number = performance.now();
-
   /**
    * Emits a styled text message.
    * @param {...core.StyleArg[]} args - The arguments to be styled.
@@ -166,48 +165,45 @@ export class MsgBuilder extends core.MsgBuilder {
   }
 
   /**
-   * Marks the current time for measuring elapsed time. If mark is not called,
-   * the current time is taken from when the MsgBuidler object is created. This
-   * occurs when a logger method such as logger.info or logger.debug is called.
-   * @returns {this} The current instance for method chaining.
-   */
-  public mark(): this {
-    this._t0 = performance.now();
-    return this;
-  }
-
-  /**
    * Calculates and emits the elapsed time since the last mark.
    * If no time has elapsed, it returns the current instance.
    * @returns {this} The current instance for method chaining.
    */
-  public elapsed(): this {
-    const duration = performance.now() - this._t0;
-    if (duration) {
-      return this.stylize(styleFormatters._elapsed, duration);
-    }
-    return this;
-  }
+  // public elapsed(): this {
+  //   const duration = performance.now() - this._t0;
+  //   if (duration) {
+  //     return this.stylize(styleFormatters._elapsed, duration);
+  //   }
+  //   return this;
+  // }
 
   /**
    * @param duration
    * @returns
    */
-  emitWithTime(duration?: number): core.LogRecord {
+  emitWithTime(duration: number | string): core.LogRecord {
     return this.ewt(duration);
   }
 
   /**
-   * Emits a message with the elapsed time since the last mark.
-   * If a duration is provided, it will be used; otherwise, the duration
-   * is calculated from the last mark to the current time.
+   * Emits a message with the elapsed time since the last mark. If a duration is
+   * provided, it will be used; otherwise, the duration is calculated from the
+   * last mark to the current time.
    *
-   * @param duration - The time duration in milliseconds. If not provided,
-   *                  it defaults to the time elapsed since the last mark.
+   * @param duration - The time duration in milliseconds. If not provided, it
+   *                  defaults to the time elapsed since the last mark. If a
+   *                  string it looks for the corresponding mark that was set
+   *                  with the mark method.
    * @returns A formatted string representing the elapsed time.
    */
-  ewt(duration: number = performance.now() - this._t0): core.LogRecord {
-    if (duration) {
+  ewt(duration: number | string): core.LogRecord {
+    if (isNonEmptyString(duration)) {
+      assert(this._emitter, 'No logger');
+      if (core.isILoggerMark(this)) {
+        duration = (this._emitter as unknown as core.ILoggerMark).demark(duration) as number;
+      }
+    }
+    if (isPosNumber(duration)) {
       let digits: Integer = 3;
       if (duration > 100) {
         digits = 0;

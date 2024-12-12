@@ -1,3 +1,4 @@
+import type { HrMilliseconds } from '@epdoc/duration';
 import type { LevelName } from '@epdoc/levels';
 import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString, isString } from '@epdoc/type';
 import { StringEx } from './util.ts';
@@ -34,13 +35,21 @@ export type LogEmitterShowOpts = {
   package?: boolean;
 };
 
+export interface ILoggerIndent {
+  indent(n?: number | string): this;
+  outdent(n?: number): this;
+  nodent(): this;
+}
+
+export interface ILoggerMark {
+  mark(name: string): this;
+  demark(name: string): HrMilliseconds;
+}
+
 export interface ILogEmitter {
   emit(msg: LogRecord): void;
   show(val: LogEmitterShowOpts): this;
   setPackage(val: string): this;
-  indent(n?: number | string): this;
-  outdent(n?: number): this;
-  nodent(): this;
 }
 
 export interface IMsgBuilder {
@@ -53,6 +62,10 @@ export interface IMsgBuilder {
   comment(...args: string[]): this;
   data(data: Record<string, unknown>): this;
   emit(): LogRecord;
+}
+
+export function isILoggerMark(val: object): val is ILoggerMark {
+  return (<ILoggerMark> val).mark !== undefined;
 }
 
 /**
