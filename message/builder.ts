@@ -1,71 +1,22 @@
-import type { HrMilliseconds } from '@epdoc/duration';
 import type { LevelName } from '@epdoc/levels';
-import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString, isString } from '@epdoc/type';
+import type * as core from '@epdoc/logcore';
+import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
+import { assert } from '@std/assert';
 import { StringEx } from './util.ts';
 
 const DEFAULT_TAB_SIZE = 2;
-const REG = {
-  timeopt: /^(utc|local|elapsed)$/i,
-};
-
-export type StyleFormatterFn = (str: string) => string;
-export type StyleArg = string | number | Record<string, unknown> | unknown[] | unknown;
-
-export type LogMsgPart = {
-  str: string;
-  style?: StyleFormatterFn;
-};
-
-export type TimeOpt = 'utc' | 'local' | 'elapsed';
-
-export function isTimeOpt(val: unknown): val is TimeOpt {
-  return isString(val) && REG.timeopt.test(val) ? true : false;
-}
-
-export type LogRecord = {
-  level: LevelName;
-  timestamp?: Date;
-  msg: string;
-  data?: Record<string, unknown>;
-};
-
-export type LogEmitterShowOpts = {
-  level?: boolean;
-  timestamp?: TimeOpt;
-  package?: boolean;
-};
-
-export interface ILoggerIndent {
-  indent(n?: number | string): this;
-  outdent(n?: number): this;
-  nodent(): this;
-}
-
-export interface ILoggerMark {
-  mark(name: string): this;
-  demark(name: string, keep: boolean): HrMilliseconds;
-}
-
-export interface ILogEmitter {
-  emit(msg: LogRecord): void;
-  show(val: LogEmitterShowOpts): this;
-  setPackage(val: string): this;
-}
 
 export interface IMsgBuilder {
-  setLevel(level: LevelName): this;
-  setEmitter(emitter: ILogEmitter): this;
+  set level(level: LevelName);
+  set emitter(emitter: core.ILogEmitter);
+  get emitter(): core.ILogEmitter;
   clear(): this;
-  setInitialString(...args: StyleArg[]): this;
+  setInitialString(...args: core.StyleArg[]): this;
   indent(n: Integer | string): this;
   tab(n: Integer): this;
   comment(...args: string[]): this;
   data(data: Record<string, unknown>): this;
-  emit(): LogRecord;
-}
-
-export function isILoggerMark(val: object): val is ILoggerMark {
-  return (<ILoggerMark>val).mark !== undefined;
+  emit(): core.LogRecord;
 }
 
 /**
@@ -75,31 +26,34 @@ export function isILoggerMark(val: object): val is ILoggerMark {
 export class MsgBuilder implements IMsgBuilder {
   protected _timestamp: Date = new Date();
   protected _level: LevelName;
-  protected _emitter: ILogEmitter | undefined;
+  protected _emitter: core.ILogEmitter | undefined;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
   // protected _lineFormat: LoggerLineFormatOpts;
   protected _applyColors: boolean = true;
 
   protected _msgIndent: string = '';
-  protected _msgParts: LogMsgPart[] = [];
+  protected _msgParts: core.LogMsgPart[] = [];
   protected _data: Record<string, unknown> | undefined;
   protected _suffix: string[] = [];
   // protected _level: LogLevelValue = logLevel.info;
   protected _showElapsed: boolean = false;
 
-  constructor(level: LevelName, emitter?: ILogEmitter) {
+  constructor(level: LevelName, emitter?: core.ILogEmitter) {
     this._level = level;
     this._emitter = emitter;
   }
 
-  setLevel(level: LevelName): this {
+  set level(level: LevelName) {
     this._level = level;
-    return this;
   }
 
-  setEmitter(emitter: ILogEmitter): this {
+  set emitter(emitter: core.ILogEmitter) {
     this._emitter = emitter;
-    return this;
+  }
+
+  get emitter(): core.ILogEmitter {
+    assert(this._emitter, 'No logger set');
+    return this._emitter;
   }
 
   applyColors(): this {
@@ -123,7 +77,7 @@ export class MsgBuilder implements IMsgBuilder {
     return this;
   }
 
-  setInitialString(...args: StyleArg[]): this {
+  setInitialString(...args: core.StyleArg[]): this {
     if (args.length) {
       const count = StringEx(args[0]).countTabsAtBeginningOfString();
       if (count) {
@@ -163,9 +117,9 @@ export class MsgBuilder implements IMsgBuilder {
     return this;
   }
 
-  protected addMsgPart(str: string, style?: StyleFormatterFn | null): this {
+  protected addMsgPart(str: string, style?: core.StyleFormatterFn | null): this {
     // const _style = this.stylizeEnabled ? style : undefined;
-    const part: LogMsgPart = { str: str };
+    const part: core.LogMsgPart = { str: str };
     if (style) {
       part.style = style;
     }
@@ -185,7 +139,7 @@ export class MsgBuilder implements IMsgBuilder {
     return this;
   }
 
-  stylize(style: StyleFormatterFn | null, ...args: StyleArg[]): this {
+  stylize(style: core.StyleFormatterFn | null, ...args: core.StyleArg[]): this {
     if (isNonEmptyArray(args)) {
       const str = args
         .map((arg) => {
@@ -229,12 +183,13 @@ export class MsgBuilder implements IMsgBuilder {
    * @see ewt()
    * @see emitWithTime()
    */
-  emit(...args: unknown[]): LogRecord {
+  emit(...args: unknown[]): core.LogRecord {
     this.appendMsg(...args);
-    const msg: LogRecord = {
+    const msg: core.LogRecord = {
       timestamp: this._timestamp,
       level: this._level,
       msg: this.formatParts(),
+      package: this.emitter.package,
     };
     if (this._data) {
       msg.data = this._data;
@@ -255,7 +210,7 @@ export class MsgBuilder implements IMsgBuilder {
     if (isNonEmptyString(this._msgIndent)) {
       parts.push(this._msgIndent);
     }
-    this._msgParts.forEach((part: LogMsgPart) => {
+    this._msgParts.forEach((part: core.LogMsgPart) => {
       if (part.style && this._applyColors) {
         parts.push(part.style(part.str));
       } else {

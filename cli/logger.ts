@@ -1,64 +1,19 @@
-import type { HrMilliseconds } from '@epdoc/duration';
-import type { ILogLevels, LevelName, LogLevel } from '@epdoc/levels';
-import { cli, type ILoggerThresholds } from '@epdoc/levels';
-import type { ILogEmitter, ILoggerMark, LogEmitterShowOpts, LogRecord } from '@epdoc/message';
+import { cli } from '@epdoc/levels';
+import * as core from '@epdoc/logcore';
 import { MsgBuilder } from '@epdoc/msgconsole';
-import { assert } from '@std/assert/assert';
 import type { ILogger } from './cli.ts';
 
-export class Logger implements ILogger, ILogEmitter, ILoggerMark, ILoggerThresholds {
-  protected _logLevels: ILogLevels;
-  protected _threshold: LogLevel;
-  protected _show: LogEmitterShowOpts = {};
-  protected _pkg: string = '';
-  protected _mark: Record<string, HrMilliseconds> = {};
-
+export class Logger extends core.Logger implements ILogger {
   constructor() {
+    super();
     this._logLevels = cli.createLogLevels();
     this._threshold = this._logLevels.asValue(this._logLevels.defaultLevelName);
   }
 
-  show(opts: LogEmitterShowOpts): this {
-    this._show = opts;
-    return this;
-  }
-
-  emit(msg: LogRecord): void {
-    if (this._logLevels.meetsThreshold(msg.level, this._threshold)) {
+  override emit(msg: core.LogRecord): void {
+    if (this.meetsThreshold(msg.level)) {
       console.log(msg.msg);
     }
-  }
-
-  setPackage(val: string): this {
-    this._pkg = val;
-    return this;
-  }
-
-  setThreshold(level: LevelName | LogLevel): this {
-    this._threshold = this._logLevels.asValue(level);
-    return this;
-  }
-
-  meetsThreshold(level: LogLevel | LevelName, threshold?: LogLevel | LevelName): boolean {
-    return this._logLevels.meetsThreshold(level, threshold ? threshold : this._threshold);
-  }
-
-  meetsFlushThreshold(level: LogLevel | LevelName): boolean {
-    return this._logLevels.meetsFlushThreshold(level);
-  }
-
-  mark(name: string): this {
-    this._mark[name] = performance.now();
-    return this;
-  }
-
-  demark(name: string, keep = false): HrMilliseconds {
-    assert(this._mark[name], `No mark set for ${name}`);
-    const result = performance.now() - this._mark[name];
-    if (keep !== true) {
-      delete this._mark[name];
-    }
-    return result;
   }
 
   get error(): MsgBuilder {

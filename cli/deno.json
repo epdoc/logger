@@ -16,6 +16,7 @@
     "@std/fmt": "jsr:@std/fmt@^1.0.2",
     "@epdoc/levels": "../levels/mod.ts",
     "@epdoc/message": "../message/mod.ts",
-    "@epdoc/msgconsole": "../msgconsole/mod.ts"
+    "@epdoc/msgconsole": "../msgconsole/mod.ts",
+    "@epdoc/logcore": "../logcore/mod.ts"
   }
 }

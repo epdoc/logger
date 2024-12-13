@@ -13,6 +13,7 @@
   "imports": {
     "@std/fmt": "jsr:@std/fmt@^1.0.2",
     "@epdoc/message": "../message/mod.ts",
-    "@epdoc/levels": "../levels/mod.ts"
+    "@epdoc/levels": "../levels/mod.ts",
+    "@epdoc/logcore": "../logcore/mod.ts"
   }
 }

@@ -4,7 +4,7 @@
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
   },
-  "workspace": ["message", "levels", "cli", "std", "msgconsole"],
+  "workspace": ["message", "levels", "cli", "std", "msgconsole", "logcore"],
   "license": "MIT",
   "tasks": {
     "test": "deno test --allow-env",
@@ -18,11 +18,19 @@
       "levels/**/*test.ts",
       "cli/**/*test.ts",
       "std/**/*test.ts",
-      "msgconsole/**/*test.ts"
+      "msgconsole/**/*test.ts",
+      "logcore/**/*test.ts"
     ]
   },
   "lint": {
-    "include": ["message/**/*.ts", "levels/**/*.ts", "cli/**/*.ts", "std/**/*.ts", "msgconsole/**/*.ts"]
+    "include": [
+      "message/**/*.ts",
+      "levels/**/*.ts",
+      "cli/**/*.ts",
+      "std/**/*.ts",
+      "msgconsole/**/*.ts",
+      "logcore/**/*.ts"
+    ]
   },
   "patch": ["../../@epdoc/std/"],
   "imports": {

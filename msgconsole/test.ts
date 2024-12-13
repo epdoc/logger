@@ -1,19 +1,10 @@
-import type { ILogEmitter, LogRecord } from '@epdoc/message';
+import * as cli from '@epdoc/cli';
+import type * as core from '@epdoc/logcore';
 import { StringEx } from '@epdoc/message';
 import { assertEquals } from '@std/assert';
 import { MsgBuilder } from './builder.ts';
 
-class Emitter implements ILogEmitter {
-  emit() {}
-  show(): this {
-    return this;
-  }
-  setPackage(_val: string): this {
-    return this;
-  }
-}
-
-const emitter = new Emitter();
+const emitter = new cli.Logger();
 
 Deno.test('test', () => {
   const builder = new MsgBuilder('INFO', emitter);
@@ -63,7 +54,7 @@ Deno.test('display no colors', () => {
 });
 Deno.test('display elapsed no color', () => {
   const builder = new MsgBuilder('INFO', emitter).noColors();
-  const result: LogRecord = builder.h1('h1').ewt(8);
+  const result: core.LogRecord = builder.h1('h1').ewt(8);
   console.log(result.msg);
   assertEquals(true, /^h1 \([\d\.]+ ms response\)$/.test(result.msg));
 });

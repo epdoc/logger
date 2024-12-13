@@ -1,3 +1,4 @@
+import { type ILoggerMark, isILoggerMark, type LogRecord, type StyleArg } from '@epdoc/logcore';
 import * as core from '@epdoc/message';
 import { type Integer, isNonEmptyString, isPosNumber } from '@epdoc/type';
 import { assert } from '@std/assert';
@@ -52,115 +53,115 @@ export const styleFormatters = {
 export class MsgBuilder extends core.MsgBuilder {
   /**
    * Emits a styled text message.
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public text(...args: core.StyleArg[]): this {
+  public text(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.text, ...args);
   }
   /**
    * Emits a styled h1 message.
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public h1(...args: core.StyleArg[]): this {
+  public h1(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.h1, ...args);
   }
   /**
    * Emits a styled h2 message.
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public h2(...args: core.StyleArg[]): this {
+  public h2(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.h2, ...args);
   }
 
   /**
    * Emits a styled h3 message.
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public h3(...args: core.StyleArg[]): this {
+  public h3(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.h3, ...args);
   }
 
   /**
    * Emits a styled action message.
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public action(...args: core.StyleArg[]): this {
+  public action(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.action, ...args);
   }
 
   /**
    * Emits a styled label message.
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public label(...args: core.StyleArg[]): this {
+  public label(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.label, ...args);
   }
 
   /**
    * Emits a styled highlight message.
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public highlight(...args: core.StyleArg[]): this {
+  public highlight(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.highlight, ...args);
   }
 
   /**
    * Emits a styled value message.
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public value(...args: core.StyleArg[]): this {
+  public value(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.value, ...args);
   }
 
   /**
    * Emits a styled path message. Use for displaying file paths or filenames.
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public path(...args: core.StyleArg[]): this {
+  public path(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.path, ...args);
   }
 
   /**
    * Emits a styled date message. XXX add more info
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public date(...args: core.StyleArg[]): this {
+  public date(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.date, ...args);
   }
 
   /**
    * Emits a styled warning message.
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public warn(...args: core.StyleArg[]): this {
+  public warn(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.warn, ...args);
   }
   /**
    * Emits a styled error message.
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public error(...args: core.StyleArg[]): this {
+  public error(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.error, ...args);
   }
 
   /**
    * Emits a styled strikethru message.
-   * @param {...core.StyleArg[]} args - The arguments to be styled.
+   * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public strikethru(...args: core.StyleArg[]): this {
+  public strikethru(...args: StyleArg[]): this {
     return this.stylize(styleFormatters.strikethru, ...args);
   }
 
@@ -181,7 +182,7 @@ export class MsgBuilder extends core.MsgBuilder {
    * @param duration
    * @returns
    */
-  emitWithTime(duration: number | string): core.LogRecord {
+  emitWithTime(duration: number | string): LogRecord {
     return this.ewt(duration);
   }
 
@@ -196,11 +197,11 @@ export class MsgBuilder extends core.MsgBuilder {
    *                  with the mark method.
    * @returns A formatted string representing the elapsed time.
    */
-  ewt(duration: number | string, keep = false): core.LogRecord {
+  ewt(duration: number | string, keep = false): LogRecord {
     if (isNonEmptyString(duration)) {
       assert(this._emitter, 'No logger');
-      if (core.isILoggerMark(this._emitter)) {
-        duration = (this._emitter as unknown as core.ILoggerMark).demark(duration, keep) as number;
+      if (isILoggerMark(this._emitter)) {
+        duration = (this._emitter as unknown as ILoggerMark).demark(duration, keep) as number;
       }
     }
     if (isPosNumber(duration)) {

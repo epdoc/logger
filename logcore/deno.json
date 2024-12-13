@@ -1,7 +1,7 @@
 {
-  "name": "@epdoc/std",
+  "name": "@epdoc/core",
   "version": "3.0.0",
-  "description": "Color and formatting for console output using std log levels",
+  "description": "Core, shared library code",
   "exports": "./mod.ts",
   "tasks": {
     "test": "deno test --allow-env",
@@ -14,7 +14,6 @@
     "@epdoc/message": "../message/mod.ts",
     "@epdoc/msgconsole": "../msgconsole/mod.ts",
     "@epdoc/duration": "../../std/duration/mod.ts",
-    "@epdoc/datetime": "../../std/datetime/mod.ts",
-    "@epdoc/logcore": "../logcore/mod.ts"
+    "@epdoc/datetime": "../../std/datetime/mod.ts"
   }
 }
