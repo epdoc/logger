@@ -7,7 +7,6 @@ import { ILogEmitter, ILoggerMark, LogEmitterShowOpts, LogRecord } from './types
 
 export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
   protected _logMgr: LogMgr;
-  protected _logLevels: ILogLevels | undefined;
   protected _threshold: LogLevel | undefined;
   protected _show: LogEmitterShowOpts = {};
   protected _pkg: string = '';
@@ -75,10 +74,7 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
     if (threshold) {
       return this.logLevels.meetsThreshold(level, threshold);
     }
-    if (this._threshold) {
-      return this.logLevels.meetsThreshold(level, this._threshold);
-    }
-    return this._logMgr.meetsThreshold(level);
+    return this._logMgr.meetsThreshold(level, this.threshold);
   }
 
   meetsFlushThreshold(level: LogLevel | LevelName): boolean {

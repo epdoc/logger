@@ -1,7 +1,6 @@
 import { StringEx } from '@epdoc/string';
 import { type Integer, isNumber, isString } from '@epdoc/type';
 import type { LevelName } from '../../levels/index.ts';
-import { level } from '../../levels/index.ts';
 import { LogMgr } from '../../logmgr.ts';
 import { MsgBuilder } from '../../message/index.ts';
 import { Logger as CoreLogger } from '../logger.ts';
@@ -29,8 +28,6 @@ export class Logger extends CoreLogger implements ILogger, ILoggerIndent {
 
   constructor(logMgr: LogMgr) {
     super(logMgr);
-    this._logLevels = level.std.createLogLevels();
-    this._threshold = this._logLevels.asValue(this._logLevels.defaultLevelName);
   }
 
   startTime(d: Date): this {

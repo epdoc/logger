@@ -1,4 +1,3 @@
-import { level } from '../../levels/index.ts';
 import { LogMgr } from '../../logmgr.ts';
 import { MsgBuilder } from '../../message/index.ts';
 import { Logger as CoreLogger } from '../logger.ts';
@@ -26,8 +25,6 @@ export function getLogger(logMgr: LogMgr) {
 export class Logger extends CoreLogger implements ILogger {
   constructor(logMgr: LogMgr) {
     super(logMgr);
-    this._logLevels = level.cli.createLogLevels();
-    this._threshold = this._logLevels.asValue(this._logLevels.defaultLevelName);
   }
 
   override emit(msg: LogRecord): void {
