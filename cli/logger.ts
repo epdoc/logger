@@ -1,14 +1,17 @@
+import type { HrMilliseconds } from '@epdoc/duration';
 import type { ILogLevels, LevelName, LogLevel } from '@epdoc/levels';
 import { cli, type ILoggerThresholds } from '@epdoc/levels';
-import type { ILogEmitter, LogEmitterShowOpts, LogRecord } from '@epdoc/message';
+import type { ILogEmitter, ILoggerMark, LogEmitterShowOpts, LogRecord } from '@epdoc/message';
 import { MsgBuilder } from '@epdoc/msgconsole';
+import { assert } from '@std/assert/assert';
 import type { ILogger } from './cli.ts';
 
-export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
+export class Logger implements ILogger, ILogEmitter, ILoggerMark, ILoggerThresholds {
   protected _logLevels: ILogLevels;
   protected _threshold: LogLevel;
   protected _show: LogEmitterShowOpts = {};
   protected _pkg: string = '';
+  protected _mark: Record<string, HrMilliseconds> = {};
 
   constructor() {
     this._logLevels = cli.createLogLevels();
@@ -42,6 +45,20 @@ export class Logger implements ILogger, ILogEmitter, ILoggerThresholds {
 
   meetsFlushThreshold(level: LogLevel | LevelName): boolean {
     return this._logLevels.meetsFlushThreshold(level);
+  }
+
+  mark(name: string): this {
+    this._mark[name] = performance.now();
+    return this;
+  }
+
+  demark(name: string, keep = false): HrMilliseconds {
+    assert(this._mark[name], `No mark set for ${name}`);
+    const result = performance.now() - this._mark[name];
+    if (keep !== true) {
+      delete this._mark[name];
+    }
+    return result;
   }
 
   get error(): MsgBuilder {

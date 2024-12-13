@@ -196,11 +196,11 @@ export class MsgBuilder extends core.MsgBuilder {
    *                  with the mark method.
    * @returns A formatted string representing the elapsed time.
    */
-  ewt(duration: number | string): core.LogRecord {
+  ewt(duration: number | string, keep = false): core.LogRecord {
     if (isNonEmptyString(duration)) {
       assert(this._emitter, 'No logger');
-      if (core.isILoggerMark(this)) {
-        duration = (this._emitter as unknown as core.ILoggerMark).demark(duration) as number;
+      if (core.isILoggerMark(this._emitter)) {
+        duration = (this._emitter as unknown as core.ILoggerMark).demark(duration, keep) as number;
       }
     }
     if (isPosNumber(duration)) {

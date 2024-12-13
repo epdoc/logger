@@ -54,8 +54,8 @@ export class Logger implements ILogger, ILogEmitter, ILoggerMark, ILoggerIndent,
         parts.push(
           this._logLevels.applyColors(
             duration().narrow.format(msg.timestamp.getTime() - this._t0.getTime()),
-            msg.level,
-          ),
+            msg.level
+          )
         );
       }
       if (this._show.level === true) {
@@ -104,10 +104,12 @@ export class Logger implements ILogger, ILogEmitter, ILoggerMark, ILoggerIndent,
     return this;
   }
 
-  demark(name: string): HrMilliseconds {
+  demark(name: string, keep = false): HrMilliseconds {
     assert(this._mark[name], `No mark set for ${name}`);
     const result = performance.now() - this._mark[name];
-    delete this._mark[name];
+    if (keep !== true) {
+      delete this._mark[name];
+    }
     return result;
   }
 

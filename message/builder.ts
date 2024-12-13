@@ -43,7 +43,7 @@ export interface ILoggerIndent {
 
 export interface ILoggerMark {
   mark(name: string): this;
-  demark(name: string): HrMilliseconds;
+  demark(name: string, keep: boolean): HrMilliseconds;
 }
 
 export interface ILogEmitter {
@@ -65,7 +65,7 @@ export interface IMsgBuilder {
 }
 
 export function isILoggerMark(val: object): val is ILoggerMark {
-  return (<ILoggerMark> val).mark !== undefined;
+  return (<ILoggerMark>val).mark !== undefined;
 }
 
 /**

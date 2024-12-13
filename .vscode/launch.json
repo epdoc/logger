@@ -90,6 +90,86 @@
         "./levels/test.ts"
       ],
       "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug message/test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "UNIT_TEST": "1"
+      },
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "/Users/jpravetz/dev/@epdoc/log/message/test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug cli/test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "UNIT_TEST": "1"
+      },
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "/Users/jpravetz/dev/@epdoc/log/cli/test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug levels/test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "UNIT_TEST": "1"
+      },
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "/Users/jpravetz/dev/@epdoc/log/levels/test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug msgconsole/test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "UNIT_TEST": "1"
+      },
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "/Users/jpravetz/dev/@epdoc/log/msgconsole/test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug std/test.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "UNIT_TEST": "1"
+      },
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "/Users/jpravetz/dev/@epdoc/log/std/test.ts"
+      ],
+      "attachSimplePort": 9229
     }
   ]
 }
