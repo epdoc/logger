@@ -21,39 +21,8 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@std/assert@1"
-    ],
-    "members": {
-      "cli": {
-        "dependencies": [
-          "jsr:@std/fmt@^1.0.2"
-        ]
-      },
-      "levels": {
-        "dependencies": [
-          "jsr:@std/fmt@^1.0.2"
-        ]
-      },
-      "logcore": {
-        "dependencies": [
-          "jsr:@std/fmt@^1.0.2"
-        ]
-      },
-      "message": {
-        "dependencies": [
-          "jsr:@std/fmt@^1.0.2"
-        ]
-      },
-      "msgconsole": {
-        "dependencies": [
-          "jsr:@std/fmt@^1.0.2"
-        ]
-      },
-      "std": {
-        "dependencies": [
-          "jsr:@std/fmt@^1.0.2"
-        ]
-      }
-    }
+      "jsr:@std/assert@1",
+      "jsr:@std/fmt@^1.0.2"
+    ]
   }
 }
