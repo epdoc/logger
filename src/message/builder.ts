@@ -1,8 +1,8 @@
 import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
 import { assert } from '@std/assert';
-import type { LevelName } from '../levels/index.ts';
-import type { ILogEmitter, LogMsgPart, LogRecord, StyleArg, StyleFormatterFn } from '../logger/index.ts';
-import { StringEx } from './util.ts';
+import type { LevelName } from '../levels/types.ts';
+import type { ILogEmitter, LogMsgPart, LogRecord, StyleArg, StyleFormatterFn } from '../types.ts';
+import { StringUtil } from '../util.ts';
 
 const DEFAULT_TAB_SIZE = 2;
 
@@ -79,7 +79,7 @@ export class MsgBuilder implements IMsgBuilder {
 
   setInitialString(...args: StyleArg[]): this {
     if (args.length) {
-      const count = StringEx(args[0]).countTabsAtBeginningOfString();
+      const count = new StringUtil(args[0]).countTabsAtBeginningOfString();
       if (count) {
         this.tab(count);
         args[0] = String(args[0]).slice(count);

@@ -1,6 +1,6 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isString } from '@epdoc/type';
-import type { LevelName } from '../levels/types.ts';
+import type { LevelName } from './levels/types.ts';
 
 const REG = {
   timeopt: /^(utc|local|elapsed)$/i,

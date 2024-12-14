@@ -1,7 +1,7 @@
 import { type Integer, isNonEmptyString, isPosNumber } from '@epdoc/type';
 import { assert } from '@std/assert';
 import * as colors from '@std/fmt/colors';
-import { type ILoggerMark, isILoggerMark, type LogRecord, type StyleArg } from '../logger/index.ts';
+import { type ILoggerMark, isILoggerMark, type LogRecord, type StyleArg } from '../types.ts';
 import { MsgBuilder as CoreMsgBuilder } from './builder.ts';
 
 export const styleFormatters = {
@@ -35,20 +35,11 @@ export const styleFormatters = {
   _timePrefix: colors.gray,
 } as const;
 
-// export class Style extends base.Style {
-//   constructor() {
-//     super();
-//     this.setStyles(styleFormatters);
-//   }
-// }
-
-// export type StyleName = keyof typeof styleFormatters;
-
 /**
- * Message Builder class for styling messages. Extends the BaseMsgBuilder to
+ * Message Builder class for styling messages. Extends the CoreMsgBuilder to
  * provide custom formatting using chained messages. If you prefer to declare
  * and use a custom set of formatting metchods, declare your own MsgBuilder and
- * pass it to the LogManager. s
+ * pass it to the LogManager.
  */
 export class MsgBuilder extends CoreMsgBuilder {
   /**

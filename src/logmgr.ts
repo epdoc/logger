@@ -1,9 +1,10 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isNonEmptyString } from '@epdoc/type';
 import { assert } from '@std/assert';
-import { ILogLevels, level, type LevelName, LogLevel } from './levels/index.ts';
-import { type LogEmitterShowOpts, type Logger, logger, type LogRecord } from './logger/index.ts';
+import { cli, ILogLevels, type LevelName, LogLevel, std } from './levels/index.ts';
+import { Logger } from './logger.ts';
 import { createConsoleTransport, ITransport } from './transports/index.ts';
+import type { LogEmitterShowOpts, LogRecord } from './types.ts';
 
 export class LogMgr {
   protected _t0: Date = new Date();
@@ -15,15 +16,15 @@ export class LogMgr {
   protected _reqId: string = '';
   protected _mark: Record<string, HrMilliseconds> = {};
   protected _registeredLoggers: Record<string, (logMgr: LogMgr) => Logger> = {
-    cli: logger.cli.getLogger,
-    std: logger.std.getLogger,
+    cli: cli.getLogger,
+    std: std.getLogger,
   };
   // protected _registeredTransports = {
   //   console: ConsoleTransport,
   // };
   protected _registeredLogLevels: Record<string, () => ILogLevels> = {
-    cli: level.cli.createLogLevels,
-    std: level.std.createLogLevels,
+    cli: cli.createLogLevels,
+    std: std.createLogLevels,
   };
   protected _transports: ITransport[] = [];
 

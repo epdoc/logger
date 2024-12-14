@@ -3,8 +3,9 @@ import { duration } from '@epdoc/duration';
 import { StringEx } from '@epdoc/string';
 import { type Integer, isNonEmptyString } from '@epdoc/type';
 import type { LevelName } from '../levels/index.ts';
-import { Logger, type LogRecord } from '../logger/index.ts';
+import { Logger } from '../logger.ts';
 import { LogMgr } from '../logmgr.ts';
+import type { LogRecord } from '../types.ts';
 import { type ITransport, Transport } from './transport.ts';
 
 export function createConsoleTransport(logMgr: LogMgr) {

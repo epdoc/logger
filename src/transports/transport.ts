@@ -1,5 +1,6 @@
-import { Logger, LogRecord } from '../logger/index.ts';
+import { Logger } from '../logger.ts';
 import type { LogMgr } from '../logmgr.ts';
+import type { LogRecord } from '../types.ts';
 
 export interface ITransport {
   emit(msg: LogRecord, logger: Logger): void;

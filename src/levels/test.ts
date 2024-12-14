@@ -1,6 +1,6 @@
 import { assertEquals } from '@std/assert';
 import { describe, test } from 'jsr:@std/testing/bdd';
-import { level } from './index.ts';
+import * as level from './index.ts';
 
 describe('levels', () => {
   describe('cli', () => {

@@ -1,8 +1,8 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isDefined } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
-import type { ILoggerThresholds, ILogLevels, LevelName, LogLevel } from '../levels/index.ts';
-import { LogMgr } from '../logmgr.ts';
+import type { ILoggerThresholds, ILogLevels, LevelName, LogLevel } from './levels/index.ts';
+import { LogMgr } from './logmgr.ts';
 import { ILogEmitter, ILoggerMark, LogEmitterShowOpts, LogRecord } from './types.ts';
 
 export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {

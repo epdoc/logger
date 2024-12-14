@@ -1,8 +1,8 @@
+import { Logger as CoreLogger } from '../../logger.ts';
 import { LogMgr } from '../../logmgr.ts';
 import { MsgBuilder } from '../../message/index.ts';
-import { Logger as CoreLogger } from '../logger.ts';
-import { LogRecord } from '../types.ts';
-import type { ILogger } from './levels.ts';
+import { LogRecord } from '../../types.ts';
+import type { ILogger } from './types.ts';
 
 export function getLogger(logMgr: LogMgr) {
   return new Logger(logMgr);
