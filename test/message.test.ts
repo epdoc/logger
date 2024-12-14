@@ -1,9 +1,11 @@
-import * as cli from '@epdoc/cli';
 import { assertEquals } from '@std/assert';
-import { MsgBuilder } from '../message/builder.ts';
+import { CliLogger, LogMgr, MsgBuilder } from '../mod.ts';
+
+const logMgr = new LogMgr('cli');
 
 Deno.test('test', () => {
-  const builder = new MsgBuilder('INFO', new cli.Logger().setPackage('testpkg').setThreshold('info'));
+  const log: CliLogger = logMgr.getLogger() as CliLogger;
+  const builder = new MsgBuilder('INFO', log.setPackage('testpkg').setThreshold('info'));
   assertEquals(builder.emit('test'), {
     level: 'INFO',
     msg: 'test',

@@ -1,8 +1,10 @@
-import { Logger } from '../mod.ts';
+import { CliLogger, LogMgr } from '../mod.ts';
 
 Deno.test('logger', () => {
-  const log = new Logger();
-  log.info.h1('header').emit('test');
-  log.error.error('error').value('value').emit('test');
-  log.verbose.error('error').value('value').emit('test');
+  const logMgr = new LogMgr('cli').setThreshold('silly');
+  const log: CliLogger = logMgr.getLogger() as CliLogger;
+  log.info.h1('header').emit('info level');
+  log.silly.h1('header').emit('silly level');
+  log.error.error('error').value('error level').emit('test');
+  log.verbose.error('error').value('verbose level').emit('test');
 });

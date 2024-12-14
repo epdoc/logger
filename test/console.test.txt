@@ -1,4 +1,4 @@
-import { LogMgr, TransportOptions } from '../src';
+import { LogMgr, TransportOptions } from './mod.ts';
 
 describe('Console', () => {
   describe('Function callback', () => {

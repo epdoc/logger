@@ -1,8 +1,11 @@
 import { assertEquals } from '@std/assert';
-import { cli } from '../levels/mod.ts';
+import { CliLogger, LogMgr } from '../mod.ts';
+
+const logMgr = new LogMgr('cli');
+const log: CliLogger = logMgr.getLogger() as CliLogger;
 
 Deno.test('cli', () => {
-  const logLevels = cli.createLogLevels();
+  const logLevels = logMgr.logLevels;
   assertEquals(logLevels.names, [
     'ERROR',
     'WARN',
@@ -29,7 +32,7 @@ Deno.test('cli', () => {
 });
 
 Deno.test('cli threshold', () => {
-  const logLevels = cli.createLogLevels();
+  const logLevels = logMgr.logLevels;
   assertEquals(logLevels.meetsThreshold(4, 4), true);
   assertEquals(logLevels.meetsThreshold(4, 5), true);
   assertEquals(logLevels.meetsThreshold(5, 4), false);
@@ -37,7 +40,7 @@ Deno.test('cli threshold', () => {
 });
 
 Deno.test('cli flush threshold', () => {
-  const logLevels = cli.createLogLevels();
+  const logLevels = logMgr.logLevels;
   assertEquals(logLevels.meetsFlushThreshold('INFO'), false);
   assertEquals(logLevels.meetsFlushThreshold('DEBUG'), false);
   assertEquals(logLevels.meetsFlushThreshold('PROMPT'), false);
@@ -53,6 +56,6 @@ Deno.test('cli flush threshold', () => {
 });
 
 Deno.test('cli applyColors', () => {
-  const logLevels = cli.createLogLevels();
+  const logLevels = logMgr.logLevels;
   assertEquals(logLevels.applyColors('hello', 'INFO'), '\u001b[32mhello\u001b[39m');
 });

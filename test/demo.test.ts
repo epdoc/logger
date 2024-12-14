@@ -1,9 +1,6 @@
-import * as Log from '../src/index';
+import { LogMgr, StdLogger } from '../mod.ts';
 
-const appTimer = new Log.AppTimer();
+const logMgr = new LogMgr('cli');
+const log: StdLogger = logMgr.getLogger() as StdLogger;
 
-const logMgr = new Log.LogMgr().timer(appTimer).level('debug');
-
-const logger = logMgr.getLogger('test');
-
-logger.info('Hello, world!').emit();
+log.info.h2('Hello, world!').emit();
