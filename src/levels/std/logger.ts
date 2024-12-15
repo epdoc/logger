@@ -1,10 +1,8 @@
-import { StringEx } from '@epdoc/string';
-import { type Integer, isNumber, isString } from '@epdoc/type';
+import { isNumber, isString } from '@epdoc/type';
 import { Logger as CoreLogger } from '../../logger.ts';
 import { LogMgr } from '../../logmgr.ts';
 import { MsgBuilder } from '../../message/index.ts';
 import { ILoggerIndent, LogRecord } from '../../types.ts';
-import type { LevelName } from '../index.ts';
 import type { ILogger } from './types.ts';
 
 export function getLogger(logMgr: LogMgr) {
@@ -23,7 +21,6 @@ export function getLogger(logMgr: LogMgr) {
 
 export class Logger extends CoreLogger implements ILogger, ILoggerIndent {
   protected _t0: Date = new Date();
-  protected _pkgWidth: Integer = 0;
   protected _indent: string[] = [];
 
   constructor(logMgr: LogMgr) {
@@ -52,19 +49,6 @@ export class Logger extends CoreLogger implements ILogger, ILoggerIndent {
 
       this._logMgr.emit(msg, this);
     }
-  }
-
-  styledPackage(pkg: string, level: LevelName): string {
-    let s = pkg;
-    if (this._pkgWidth) {
-      s = StringEx(pkg).leftPad(this._pkgWidth);
-    }
-    return this.logLevels.applyColors(`(${s})`, level);
-  }
-
-  styledLevel(level: LevelName): string {
-    const s = '[' + StringEx(level).rightPad(7) + ']';
-    return this.logLevels.applyColors(s, level);
   }
 
   indent(n?: number | string): this {

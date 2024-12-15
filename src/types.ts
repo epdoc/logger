@@ -30,10 +30,10 @@ export type LogRecord = {
 };
 
 export type LogEmitterShowOpts = {
-  level?: boolean;
+  level?: boolean | number;
   timestamp?: TimeOpt;
-  reqId?: boolean;
-  package?: boolean;
+  reqId?: boolean | number;
+  package?: boolean | number;
 };
 
 export interface ILoggerIndent {

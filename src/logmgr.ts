@@ -55,7 +55,7 @@ export class LogMgr {
     this._type = type ? type : this._type;
     assert(
       this._type,
-      `Logger type not specified (try one of ${Object.keys(this._registeredLoggers).join(', ')})`
+      `Logger type not specified (try one of ${Object.keys(this._registeredLoggers).join(', ')})`,
     );
     assert(this._registeredLoggers[this._type], `No logger for ${type} levels`);
     assert(this._registeredLogLevels[this._type], `No levels for ${type}`);

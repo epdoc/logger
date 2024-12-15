@@ -2,9 +2,10 @@ import { type Integer, isNonEmptyString, isPosNumber } from '@epdoc/type';
 import { assert } from '@std/assert';
 import * as colors from '@std/fmt/colors';
 import { type ILoggerMark, isILoggerMark, type LogRecord, type StyleArg } from '../types.ts';
+import { StyleFormatterFn } from './../types.ts';
 import { MsgBuilder as CoreMsgBuilder } from './builder.ts';
 
-export const styleFormatters = {
+export const styleFormatters: Record<string, StyleFormatterFn> = {
   text: colors.brightWhite,
   h1: (str: string) => colors.bold(colors.magenta(str)),
   h2: colors.magenta,
@@ -20,11 +21,12 @@ export const styleFormatters = {
   strikethru: colors.inverse,
   _reqId: colors.brightYellow,
   _sid: colors.yellow,
-  _emitter: colors.green,
+  _package: colors.green,
   _action: colors.blue,
   _plain: colors.white,
   _suffix: colors.white,
   _elapsed: colors.white,
+  _level: colors.gray,
   _errorPrefix: colors.red,
   _warnPrefix: colors.cyan,
   _infoPrefix: colors.gray,

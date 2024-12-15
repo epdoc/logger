@@ -5,6 +5,11 @@ import type { ILoggerThresholds, ILogLevels, LevelName, LogLevel } from './level
 import { LogMgr } from './logmgr.ts';
 import { ILogEmitter, ILoggerMark, LogEmitterShowOpts, LogRecord } from './types.ts';
 
+/**
+ * Base Logger class, to be inherited by loggers that implement their own log
+ * level methods.
+ */
+
 export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
   protected _logMgr: LogMgr;
   protected _threshold: LogLevel | undefined;
