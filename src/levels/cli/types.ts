@@ -32,3 +32,5 @@ export interface ILogger {
   input: IMsgBuilder;
   silly: IMsgBuilder;
 }
+
+export const LogLevelNames: string[] = Object.keys(cliLogLevelDefs);

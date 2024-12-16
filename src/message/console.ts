@@ -13,10 +13,10 @@ export const styleFormatters: Record<string, StyleFormatterFn> = {
   action: (str: string) => colors.black(colors.bgYellow(str)),
   label: colors.blue,
   highlight: colors.brightMagenta,
-  value: colors.brightBlue,
+  value: colors.green,
   path: (str: string) => colors.underline(colors.gray(str)),
   date: colors.brightCyan,
-  warn: colors.brightMagenta,
+  warn: colors.brightYellow,
   error: (str: string) => colors.bold(colors.brightRed(str)),
   strikethru: colors.inverse,
   _reqId: colors.brightYellow,
@@ -194,6 +194,7 @@ export class MsgBuilder extends CoreMsgBuilder {
     if (isNonEmptyString(duration)) {
       assert(this._emitter, 'No logger');
       if (isILoggerMark(this._emitter)) {
+        // console.log(duration, JSON.stringify(this._emitter._mark));
         duration = (this._emitter as unknown as ILoggerMark).demark(duration, keep) as number;
       }
     }
