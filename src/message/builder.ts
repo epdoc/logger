@@ -3,21 +3,9 @@ import { assert } from '@std/assert';
 import type { LevelName } from '../levels/types.ts';
 import type { ILogEmitter, LogMsgPart, LogRecord, StyleArg, StyleFormatterFn } from '../types.ts';
 import { StringUtil } from '../util.ts';
+import { IMsgBuilder } from './types.ts';
 
 const DEFAULT_TAB_SIZE = 2;
-
-export interface IMsgBuilder {
-  set level(level: LevelName);
-  set emitter(emitter: ILogEmitter);
-  get emitter(): ILogEmitter;
-  clear(): this;
-  setInitialString(...args: StyleArg[]): this;
-  indent(n: Integer | string): this;
-  tab(n: Integer): this;
-  comment(...args: string[]): this;
-  data(data: Record<string, unknown>): this;
-  emit(): LogRecord;
-}
 
 /**
  * A LoggerLine is a line of output from a Logger. It is used to build up a log

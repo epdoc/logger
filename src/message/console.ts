@@ -37,6 +37,10 @@ export const styleFormatters: Record<string, StyleFormatterFn> = {
   _timePrefix: colors.gray,
 } as const;
 
+// export const createMsgBuilder: MsgBuilderFactoryMethod = (level: LevelName, emitter?: ILogEmitter) => {
+//   return new MsgBuilder(level, emitter);
+// };
+
 /**
  * Message Builder class for styling messages. Extends the CoreMsgBuilder to
  * provide custom formatting using chained messages. If you prefer to declare

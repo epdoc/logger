@@ -1,12 +1,12 @@
 import { Logger as CoreLogger } from '../../logger.ts';
 import { LogMgr } from '../../logmgr.ts';
-import { MsgBuilder } from '../../message/index.ts';
-import { LogRecord } from '../../types.ts';
+import { MsgBuilder } from '../../message/console.ts';
+import { LoggerFactoryMethod, LogRecord } from '../../types.ts';
 import type { ILogger } from './types.ts';
 
-export function getLogger(logMgr: LogMgr) {
+export const getLogger: LoggerFactoryMethod = (logMgr: LogMgr) => {
   return new Logger(logMgr);
-}
+};
 
 /**
  * Logger that implements CLI levels. These levels are:

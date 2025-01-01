@@ -1,28 +1,30 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isNonEmptyString } from '@epdoc/type';
 import { assert } from '@std/assert';
-import { cli, ILogLevels, type LevelName, LogLevel, std } from './levels/index.ts';
+import { cli, ILogLevels, type LevelName, LogLevel, LogLevelFactoryMethod, std } from './levels/index.ts';
 import { Logger } from './logger.ts';
+import { IMsgBuilder } from './message/index.ts';
 import { createConsoleTransport, ITransport } from './transports/index.ts';
-import type { LogEmitterShowOpts, LogRecord } from './types.ts';
+import type { LogEmitterShowOpts, LoggerFactoryMethod, LogRecord } from './types.ts';
 
 export class LogMgr {
   protected _t0: Date = new Date();
   protected _type: string | undefined;
   protected _logLevels: ILogLevels | undefined;
+  protected _msgBuilder: IMsgBuilder | undefined;
   protected _threshold: LogLevel = 5;
   protected _show: LogEmitterShowOpts = {};
   protected _pkg: string = '';
   protected _reqId: string = '';
   protected _mark: Record<string, HrMilliseconds> = {};
-  protected _registeredLoggers: Record<string, (logMgr: LogMgr) => Logger> = {
+  protected _registeredLoggers: Record<string, LoggerFactoryMethod> = {
     cli: cli.getLogger,
     std: std.getLogger,
   };
   // protected _registeredTransports = {
   //   console: ConsoleTransport,
   // };
-  protected _registeredLogLevels: Record<string, () => ILogLevels> = {
+  protected _registeredLogLevels: Record<string, LogLevelFactoryMethod> = {
     cli: cli.createLogLevels,
     std: std.createLogLevels,
   };
@@ -36,6 +38,12 @@ export class LogMgr {
       this._type = type;
       this._logLevels = this._registeredLogLevels[type]();
     }
+  }
+
+  registerLogger(type: string, logger: LoggerFactoryMethod, levels: LogLevelFactoryMethod): this {
+    this._registeredLoggers[type] = logger;
+    this._registeredLogLevels[type] = levels;
+    return this;
   }
 
   get startTime(): Date {
@@ -55,7 +63,7 @@ export class LogMgr {
     this._type = type ? type : this._type;
     assert(
       this._type,
-      `Logger type not specified (try one of ${Object.keys(this._registeredLoggers).join(', ')})`,
+      `Logger type not specified (try one of ${Object.keys(this._registeredLoggers).join(', ')})`
     );
     assert(this._registeredLoggers[this._type], `No logger for ${type} levels`);
     assert(this._registeredLogLevels[this._type], `No levels for ${type}`);
@@ -81,6 +89,10 @@ export class LogMgr {
   }
 
   setThreshold(level: LevelName | LogLevel): this {
+    assert(
+      this._logLevels,
+      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?'
+    );
     this._threshold = this.logLevels.asValue(level);
     return this;
   }

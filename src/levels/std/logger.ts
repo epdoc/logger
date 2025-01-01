@@ -1,25 +1,15 @@
 import { isNumber, isString } from '@epdoc/type';
 import { Logger as CoreLogger } from '../../logger.ts';
 import { LogMgr } from '../../logmgr.ts';
-import { MsgBuilder } from '../../message/index.ts';
-import { ILoggerIndent, LogRecord } from '../../types.ts';
+import { MsgBuilder } from '../../message/console.ts';
+import { ILoggerIndent, LoggerFactoryMethod, LogRecord } from '../../types.ts';
 import type { ILogger } from './types.ts';
 
-export function getLogger(logMgr: LogMgr) {
+export const getLogger: LoggerFactoryMethod = (logMgr: LogMgr) => {
   return new Logger(logMgr);
-}
+};
 
-/**
- * Logger that implements STD levels. These levels are:
- *  - error
- *  - warn
- *  - info
- *  - debug
- *  - verbose
- *  - trace
- */
-
-export class Logger extends CoreLogger implements ILogger, ILoggerIndent {
+export class IndentLogger extends CoreLogger implements ILoggerIndent {
   protected _t0: Date = new Date();
   protected _indent: string[] = [];
 
@@ -75,7 +65,19 @@ export class Logger extends CoreLogger implements ILogger, ILoggerIndent {
     this._indent = [];
     return this;
   }
+}
 
+/**
+ * Logger that implements STD levels. These levels are:
+ *  - error
+ *  - warn
+ *  - info
+ *  - debug
+ *  - verbose
+ *  - trace
+ */
+
+export class Logger extends IndentLogger implements ILogger {
   /**
    * An error message indicates a serious problem in the system. The problem is
    * usually non-recoverable and requires manual intervention.
