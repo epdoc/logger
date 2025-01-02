@@ -4,6 +4,7 @@ import type { LogRecord } from '../types.ts';
 
 export interface ITransport {
   emit(msg: LogRecord, logger: Logger): void;
+  thresholdUpdated(): this;
 }
 
 export class Transport {
@@ -11,5 +12,9 @@ export class Transport {
 
   constructor(logMgr: LogMgr) {
     this._logMgr = logMgr;
+  }
+
+  thresholdUpdated(): this {
+    return this;
   }
 }

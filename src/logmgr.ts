@@ -63,7 +63,7 @@ export class LogMgr {
     this._type = type ? type : this._type;
     assert(
       this._type,
-      `Logger type not specified (try one of ${Object.keys(this._registeredLoggers).join(', ')})`,
+      `Logger type not specified (try one of ${Object.keys(this._registeredLoggers).join(', ')})`
     );
     assert(this._registeredLoggers[this._type], `No logger for ${type} levels`);
     assert(this._registeredLogLevels[this._type], `No levels for ${type}`);
@@ -91,9 +91,12 @@ export class LogMgr {
   setThreshold(level: LevelName | LogLevel): this {
     assert(
       this._logLevels,
-      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?',
+      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?'
     );
     this._threshold = this.logLevels.asValue(level);
+    this._transports.forEach((transport) => {
+      transport.thresholdUpdated();
+    });
     return this;
   }
 

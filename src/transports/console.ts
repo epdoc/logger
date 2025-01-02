@@ -16,9 +16,15 @@ export function createConsoleTransport(logMgr: LogMgr) {
 export class ConsoleTransport extends Transport implements ITransport {
   protected _pkgWidth: Integer = 0;
   protected _reqIdWidth: Integer = 0;
+  protected _levelWidth: Integer = 5;
 
   set packageWidth(val: Integer) {
     this._pkgWidth = val;
+  }
+
+  override thresholdUpdated(): this {
+    this._levelWidth = this._logMgr.logLevels.maxWidth(this._logMgr.threshold);
+    return this;
   }
 
   emit(msg: LogRecord, logger: Logger) {
@@ -35,8 +41,8 @@ export class ConsoleTransport extends Transport implements ITransport {
       parts.push(
         logLevels.applyColors(
           duration().narrow.format(msg.timestamp.getTime() - this._logMgr.startTime.getTime()),
-          msg.level,
-        ),
+          msg.level
+        )
       );
     }
 
@@ -70,8 +76,7 @@ export class ConsoleTransport extends Transport implements ITransport {
   }
 
   styledLevel(level: LevelName, show: boolean | Integer): string {
-    const w = this._logMgr.logLevels.maxWidth(this._logMgr.threshold);
-    let s = StringEx(level).rightPad(w);
+    let s = StringEx(level).rightPad(this._levelWidth);
     if (isInteger(show)) {
       if (show > 0) {
         s = StringEx(level).rightPad(show, ' ', true);
@@ -87,7 +92,7 @@ export class ConsoleTransport extends Transport implements ITransport {
     val: string,
     show: boolean | number,
     colorFn: string,
-    opts?: { pre: string; post: string },
+    opts?: { pre: string; post: string }
   ): string {
     let s = val;
     if (isInteger(show)) {
