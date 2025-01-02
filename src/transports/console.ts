@@ -70,7 +70,8 @@ export class ConsoleTransport extends Transport implements ITransport {
   }
 
   styledLevel(level: LevelName, show: boolean | Integer): string {
-    let s = StringEx(level).rightPad(7);
+    const w = this._logMgr.logLevels.maxWidth(this._logMgr.threshold);
+    let s = StringEx(level).rightPad(w);
     if (isInteger(show)) {
       if (show > 0) {
         s = StringEx(level).rightPad(show, ' ', true);

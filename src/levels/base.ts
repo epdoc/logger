@@ -1,5 +1,5 @@
+import type { Integer } from '@epdoc/type';
 import type { ILogLevels, LevelName, LogLevel } from './types.ts';
-
 /**
  * @fileoverview This module provides a base implementation of log levels that
  * can be used to create custom log levels. By passing a LogLevelsDef object to
@@ -175,6 +175,18 @@ export class LogLevels implements ILogLevels {
   meetsFlushThreshold(level: LogLevel | LevelName): boolean {
     const levelName = this.asName(level);
     return isLogLevelDef(this._levelDef[levelName]) && this._levelDef[levelName].flush === true;
+  }
+
+  maxWidth(threshold: LogLevel | LevelName): Integer {
+    const thresholdVal = this.asValue(threshold);
+    let w = 0;
+    for (let ldx = 0; ldx < thresholdVal; ++ldx) {
+      const len = this.asName(ldx).length;
+      if (len > w) {
+        w = len;
+      }
+    }
+    return w;
   }
 
   /**

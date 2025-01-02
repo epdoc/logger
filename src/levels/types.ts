@@ -1,3 +1,5 @@
+import type { Integer } from '@epdoc/type';
+
 /**
  * @fileoverview This module defines types and interfaces for log levels used in the logging library.
  * It provides a structure for custom log levels and their associated methods.
@@ -65,6 +67,8 @@ export interface ILogLevels {
    * @returns {boolean} True if the log level is above the threshold, false otherwise.
    */
   meetsFlushThreshold(level: LogLevel | LevelName): boolean;
+
+  maxWidth(threshold: LogLevel | LevelName): Integer;
 
   /**
    * Applies color formatting, if any, to a log message based on its level.
