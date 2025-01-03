@@ -1,4 +1,4 @@
-import { isNumber, isString } from '@epdoc/type';
+import { isArray, isNumber, isString } from '@epdoc/type';
 import { Logger as CoreLogger } from '../../logger.ts';
 import { LogMgr } from '../../logmgr.ts';
 import { MsgBuilder } from '../../message/console.ts';
@@ -41,17 +41,25 @@ export class IndentLogger extends CoreLogger implements ILoggerIndent {
     }
   }
 
-  indent(n?: number | string): this {
+  indent(n?: number | string | string[]): this {
     if (isString(n)) {
       this._indent.push(n);
     } else if (isNumber(n)) {
       for (let x = 0; x < n; ++x) {
         this._indent.push(' ');
       }
+    } else if (isArray(n)) {
+      for (let x = 0; x < n.length; ++x) {
+        this._indent.push(n[x]);
+      }
     } else {
       this._indent.push(' ');
     }
     return this;
+  }
+
+  getdent(): string[] {
+    return this._indent;
   }
 
   outdent(n: number = 1): this {

@@ -40,6 +40,7 @@ export type LogEmitterShowOpts = {
 export interface ILoggerIndent {
   indent(n?: number | string): this;
   outdent(n?: number): this;
+  getdent(): string[];
   nodent(): this;
 }
 
@@ -58,7 +59,7 @@ export interface ILogEmitter {
 }
 
 export function isILoggerMark(val: object): val is ILoggerMark {
-  return (<ILoggerMark> val).mark !== undefined;
+  return (<ILoggerMark>val).mark !== undefined;
 }
 
 export type LoggerFactoryMethod = (logMgr: LogMgr) => Logger;
