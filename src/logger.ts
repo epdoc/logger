@@ -76,7 +76,7 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
   }
 
   meetsThreshold(level: LogLevel | LevelName, threshold?: LogLevel | LevelName): boolean {
-    if (threshold) {
+    if (threshold !== undefined) {
       return this.logLevels.meetsThreshold(level, threshold);
     }
     return this._logMgr.meetsThreshold(level, this.threshold);
