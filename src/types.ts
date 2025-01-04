@@ -56,10 +56,11 @@ export interface ILogEmitter {
   set reqId(val: string);
   get package(): string;
   get reqId(): string;
+  getChild(reqId?: string): ILogEmitter;
 }
 
 export function isILoggerMark(val: object): val is ILoggerMark {
-  return (<ILoggerMark>val).mark !== undefined;
+  return (<ILoggerMark> val).mark !== undefined;
 }
 
-export type LoggerFactoryMethod = (logMgr: LogMgr) => Logger;
+export type LoggerFactoryMethod = (logMgr: LogMgr | Logger, reqId?: string) => ILogEmitter;

@@ -2,11 +2,16 @@ import { isArray, isNumber, isString } from '@epdoc/type';
 import { Logger as CoreLogger } from '../../logger.ts';
 import { LogMgr } from '../../logmgr.ts';
 import { MsgBuilder } from '../../message/console.ts';
-import { ILoggerIndent, LoggerFactoryMethod, LogRecord } from '../../types.ts';
+import { ILogEmitter, ILoggerIndent, LoggerFactoryMethod, LogRecord } from '../../types.ts';
 import type { ILogger } from './types.ts';
 
-export const getLogger: LoggerFactoryMethod = (logMgr: LogMgr) => {
-  return new Logger(logMgr);
+export const getLogger: LoggerFactoryMethod = (log: LogMgr | ILogEmitter, reqId?: string) => {
+  if (log instanceof LogMgr) {
+    return new Logger(log).setReqId(reqId);
+  } else if (log instanceof Logger) {
+    return log.getChild(reqId);
+  }
+  throw new Error('Invalid logger type');
 };
 
 export class IndentLogger extends CoreLogger implements ILoggerIndent {

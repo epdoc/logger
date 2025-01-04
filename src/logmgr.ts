@@ -5,7 +5,7 @@ import { cli, ILogLevels, type LevelName, LogLevel, LogLevelFactoryMethod, std }
 import { Logger } from './logger.ts';
 import { IMsgBuilder } from './message/index.ts';
 import { createConsoleTransport, ITransport } from './transports/index.ts';
-import type { LogEmitterShowOpts, LoggerFactoryMethod, LogRecord } from './types.ts';
+import type { ILogEmitter, LogEmitterShowOpts, LoggerFactoryMethod, LogRecord } from './types.ts';
 
 /**
  * LogMgr is responsible for managing loggers, log levels, and transports.
@@ -115,11 +115,11 @@ export class LogMgr {
    * @param {string} [type] - The type of logger to get.
    * @returns {Logger} The logger instance.
    */
-  getLogger(type?: string): Logger {
+  getLogger(type?: string): ILogEmitter {
     this._type = type ? type : this._type;
     assert(
       this._type,
-      `Logger type not specified (try one of ${Object.keys(this._registeredLoggers).join(', ')})`
+      `Logger type not specified (try one of ${Object.keys(this._registeredLoggers).join(', ')})`,
     );
     assert(this._registeredLoggers[this._type], `No logger for ${type} levels`);
     assert(this._registeredLogLevels[this._type], `No levels for ${type}`);
@@ -170,7 +170,7 @@ export class LogMgr {
   setThreshold(level: LevelName | LogLevel): this {
     assert(
       this._logLevels,
-      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?'
+      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?',
     );
     this._threshold = this.logLevels.asValue(level);
     this._transports.forEach((transport) => {

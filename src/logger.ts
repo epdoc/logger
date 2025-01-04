@@ -15,11 +15,23 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
   protected _threshold: LogLevel | undefined;
   protected _show: LogEmitterShowOpts = {};
   protected _pkg: string = '';
-  protected _reqId: string = '';
+  protected _reqId: string[] = [];
   protected _mark: Record<string, HrMilliseconds> = {};
 
   constructor(logMgr: LogMgr) {
     this._logMgr = logMgr;
+  }
+
+  getChild(reqId?: string): Logger {
+    const logger = new Logger(this._logMgr);
+    logger._threshold = this._threshold;
+    logger._show = this._show;
+    logger._pkg = this._pkg;
+    logger._reqId = this._reqId;
+    if (reqId) {
+      logger._reqId.push(reqId);
+    }
+    return logger;
   }
 
   emit(msg: LogRecord): void {
@@ -42,15 +54,17 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
   }
 
   get reqId(): string {
-    return this._reqId;
+    return this._reqId.join('.');
   }
 
   set reqId(val: string) {
-    this._reqId = val;
+    this._reqId.push(val);
   }
 
-  setReqId(val: string): this {
-    this._reqId = val;
+  setReqId(val: string | undefined): this {
+    if (val) {
+      this._reqId.push(val);
+    }
     return this;
   }
 
