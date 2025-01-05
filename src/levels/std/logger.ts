@@ -27,6 +27,12 @@ export class IndentLogger extends CoreLogger implements ILoggerIndent {
     return this;
   }
 
+  override assign(logger: IndentLogger) {
+    super.assign(logger);
+    this._t0 = logger._t0;
+    this._indent = logger._indent;
+  }
+
   override emit(msg: LogRecord): void {
     if (this.meetsThreshold(msg.level)) {
       // Compose the message string
@@ -91,6 +97,12 @@ export class IndentLogger extends CoreLogger implements ILoggerIndent {
  */
 
 export class Logger extends IndentLogger implements ILogger {
+  override copy(): Logger {
+    const result = new Logger(this._logMgr);
+    result.assign(this);
+    return result;
+  }
+
   /**
    * An error message indicates a serious problem in the system. The problem is
    * usually non-recoverable and requires manual intervention.

@@ -23,15 +23,24 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
   }
 
   getChild(reqId?: string): Logger {
-    const logger = new Logger(this._logMgr);
-    logger._threshold = this._threshold;
-    logger._show = this._show;
-    logger._pkg = this._pkg;
-    logger._reqId = this._reqId;
+    const logger = this.copy();
     if (reqId) {
       logger._reqId.push(reqId);
     }
     return logger;
+  }
+
+  copy(): Logger {
+    const result = new Logger(this._logMgr);
+    result.assign(this);
+    return result;
+  }
+
+  assign(logger: Logger) {
+    this._threshold = logger._threshold;
+    this._show = logger._show;
+    this._pkg = logger._pkg;
+    this._reqId = [...logger._reqId];
   }
 
   emit(msg: LogRecord): void {

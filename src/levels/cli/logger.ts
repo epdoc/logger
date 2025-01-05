@@ -32,6 +32,12 @@ export class Logger extends CoreLogger implements ILogger {
     super(logMgr);
   }
 
+  override copy(): Logger {
+    const result = new Logger(this._logMgr);
+    result.assign(this);
+    return result;
+  }
+
   override emit(msg: LogRecord): void {
     if (this.meetsThreshold(msg.level)) {
       console.log(msg.msg);
