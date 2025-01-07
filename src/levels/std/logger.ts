@@ -30,7 +30,7 @@ export class IndentLogger extends CoreLogger implements ILoggerIndent {
   override assign(logger: IndentLogger) {
     super.assign(logger);
     this._t0 = logger._t0;
-    this._indent = logger._indent;
+    this._indent = [...logger._indent];
   }
 
   override emit(msg: LogRecord): void {
