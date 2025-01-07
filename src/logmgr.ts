@@ -42,7 +42,6 @@ export class LogMgr {
       this._type = type;
       this._logLevels = this._registeredLogLevels[type]();
     }
-    this.setThreshold(5);
   }
 
   /**
