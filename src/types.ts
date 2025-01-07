@@ -1,6 +1,6 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isString } from '@epdoc/type';
-import { Logger, LogMgr } from './index.ts';
+import { LogMgr } from './index.ts';
 import type { LevelName } from './levels/types.ts';
 
 const REG = {
@@ -60,7 +60,7 @@ export interface ILogEmitter {
 }
 
 export function isILoggerMark(val: object): val is ILoggerMark {
-  return (<ILoggerMark> val).mark !== undefined;
+  return (<ILoggerMark>val).mark !== undefined;
 }
 
-export type LoggerFactoryMethod = (logMgr: LogMgr | Logger, reqId?: string) => ILogEmitter;
+export type LoggerFactoryMethod = (logMgr: LogMgr | ILogEmitter, reqId?: string) => ILogEmitter;

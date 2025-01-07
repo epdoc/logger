@@ -56,7 +56,7 @@ export class LogLevels implements ILogLevels {
 
     // Convert all keys to uppercase
     this._levelDef = Object.fromEntries(
-      Object.entries(_levelDef).map(([key, value]) => [key.toUpperCase(), value]),
+      Object.entries(_levelDef).map(([key, value]) => [key.toUpperCase(), value])
     );
 
     // Create a list of level values
@@ -83,7 +83,7 @@ export class LogLevels implements ILogLevels {
    */
   get defaultLevelName(): LevelName {
     const defaultLevel = Object.keys(this._levelDef).find(
-      (key) => (this._levelDef[key] as LogLevelDef).default === true,
+      (key) => (this._levelDef[key] as LogLevelDef).default === true
     );
     if (defaultLevel) {
       return defaultLevel;
@@ -180,7 +180,7 @@ export class LogLevels implements ILogLevels {
   maxWidth(threshold: LogLevel | LevelName): Integer {
     const thresholdVal = this.asValue(threshold);
     let w = 0;
-    for (let ldx = 0; ldx < thresholdVal; ++ldx) {
+    for (let ldx = 0; ldx <= thresholdVal; ++ldx) {
       const len = this.asName(ldx).length;
       if (len > w) {
         w = len;
