@@ -1,14 +1,14 @@
 import { Logger as CoreLogger } from '../../logger.ts';
 import { LogMgr } from '../../logmgr.ts';
 import { MsgBuilder } from '../../message/console.ts';
-import { ILogEmitter, LoggerFactoryMethod, LogRecord } from '../../types.ts';
+import { GetChildOpts, ILogEmitter, LoggerFactoryMethod, LogRecord } from '../../types.ts';
 import type { ILogger } from './types.ts';
 
-export const getLogger: LoggerFactoryMethod = (log: LogMgr | ILogEmitter, reqId?: string) => {
+export const getLogger: LoggerFactoryMethod = (log: LogMgr | ILogEmitter, opts: GetChildOpts = {}) => {
   if (log instanceof LogMgr) {
-    return new Logger(log).setReqId(reqId);
+    return new Logger(log).setReqId(opts.reqId).setPackage(opts.pkg);
   } else if (log instanceof Logger) {
-    return log.getChild(reqId);
+    return log.getChild(opts);
   }
   throw new Error('Invalid logger type');
 };

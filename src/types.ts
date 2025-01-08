@@ -49,18 +49,23 @@ export interface ILoggerMark {
   demark(name: string, keep: boolean): HrMilliseconds;
 }
 
+export type GetChildOpts = {
+  reqId?: string;
+  pkg?: string;
+};
+
 export interface ILogEmitter {
   emit(msg: LogRecord): void;
   // show(val: LogEmitterShowOpts): this;
   set package(val: string);
-  set reqId(val: string);
   get package(): string;
+  set reqId(val: string);
   get reqId(): string;
-  getChild(reqId?: string): ILogEmitter;
+  getChild(opts?: GetChildOpts): ILogEmitter;
 }
 
 export function isILoggerMark(val: object): val is ILoggerMark {
-  return (<ILoggerMark>val).mark !== undefined;
+  return (<ILoggerMark> val).mark !== undefined;
 }
 
-export type LoggerFactoryMethod = (logMgr: LogMgr | ILogEmitter, reqId?: string) => ILogEmitter;
+export type LoggerFactoryMethod = (logMgr: LogMgr | ILogEmitter, opts?: GetChildOpts) => ILogEmitter;

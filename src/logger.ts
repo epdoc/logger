@@ -1,9 +1,9 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import { isDefined } from '@epdoc/type';
+import { isDefined, isDict } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import type { ILoggerThresholds, ILogLevels, LevelName, LogLevel } from './levels/index.ts';
 import { LogMgr } from './logmgr.ts';
-import { ILogEmitter, ILoggerMark, LogEmitterShowOpts, LogRecord } from './types.ts';
+import { GetChildOpts, ILogEmitter, ILoggerMark, LogEmitterShowOpts, LogRecord } from './types.ts';
 
 /**
  * Base Logger class, to be inherited by loggers that implement their own log
@@ -14,7 +14,7 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
   protected _logMgr: LogMgr;
   protected _threshold: LogLevel | undefined;
   protected _show: LogEmitterShowOpts = {};
-  protected _pkg: string = '';
+  protected _pkg: string[] = [];
   protected _reqId: string[] = [];
   protected _mark: Record<string, HrMilliseconds> = {};
 
@@ -22,10 +22,15 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
     this._logMgr = logMgr;
   }
 
-  getChild(reqId?: string): Logger {
+  getChild(opts?: GetChildOpts): Logger {
     const logger = this.copy();
-    if (reqId) {
-      logger._reqId.push(reqId);
+    if (isDict(opts)) {
+      if (opts.reqId) {
+        logger._reqId.push(opts.reqId);
+      }
+      if (opts.pkg) {
+        logger._pkg.push(opts.pkg);
+      }
     }
     return logger;
   }
@@ -39,7 +44,7 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
   assign(logger: Logger) {
     this._threshold = logger._threshold;
     this._show = logger._show;
-    this._pkg = logger._pkg;
+    this._pkg = [...logger._pkg];
     this._reqId = [...logger._reqId];
   }
 
@@ -50,15 +55,17 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
   }
 
   get package(): string {
-    return this._pkg;
+    return this._pkg.join('.');
   }
 
   set package(val: string) {
-    this._pkg = val;
+    this._pkg.push(val);
   }
 
-  setPackage(val: string): this {
-    this._pkg = val;
+  setPackage(val: string | undefined): this {
+    if (val) {
+      this._pkg.push(val);
+    }
     return this;
   }
 
