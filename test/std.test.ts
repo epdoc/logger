@@ -80,9 +80,10 @@ Deno.test('std logger with elapsed and level and pkg and mark', () => {
   logMgr.setShow({ timestamp: 'utc', level: true, package: true });
   const log = logMgr.getLogger('std') as std.Logger;
   log.setPackage('mypkg');
-  log.mark('x1').mark('x2');
-  log.info.h1('Level').value('info').ewt('x1', true);
-  log.verbose.h1('Level').value('verbose').ewt('x2');
-  log.debug.h1('Level').value('debug').ewt('x1', true);
-  log.trace.h1('Level').value('trace').ewt('x1');
+  const m1 = log.mark();
+  const m2 = log.mark();
+  log.info.h1('Level').value('info').ewt(m1, true);
+  log.verbose.h1('Level').value('verbose').ewt(m2);
+  log.debug.h1('Level').value('debug').ewt(m1, true);
+  log.trace.h1('Level').value('trace').ewt(m1);
 });

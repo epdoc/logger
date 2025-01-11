@@ -5,6 +5,8 @@ import type { ILoggerThresholds, ILogLevels, LevelName, LogLevel } from './level
 import { LogMgr } from './logmgr.ts';
 import { GetChildOpts, ILogEmitter, ILoggerMark, LogEmitterShowOpts, LogRecord } from './types.ts';
 
+let markId = 0;
+
 /**
  * Base Logger class, to be inherited by loggers that implement their own log
  * level methods.
@@ -116,9 +118,10 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
     return this.logLevels.meetsFlushThreshold(level);
   }
 
-  mark(name: string): this {
+  mark(): string {
+    const name = 'mark.' + ++markId;
     this._mark[name] = performance.now();
-    return this;
+    return name;
   }
 
   demark(name: string, keep = false): HrMilliseconds {

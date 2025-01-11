@@ -45,7 +45,7 @@ export interface ILoggerIndent {
 }
 
 export interface ILoggerMark {
-  mark(name: string): this;
+  mark(): string;
   demark(name: string, keep: boolean): HrMilliseconds;
 }
 
