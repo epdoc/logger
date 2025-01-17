@@ -2,6 +2,7 @@ import type { HrMilliseconds } from '@epdoc/duration';
 import { isString } from '@epdoc/type';
 import { LogMgr } from './index.ts';
 import type { LevelName } from './levels/types.ts';
+import { LogLevel } from './levels/index.ts';
 
 const REG = {
   timeopt: /^(utc|local|elapsed)$/i,
@@ -62,6 +63,7 @@ export interface ILogEmitter {
   set reqId(val: string);
   get reqId(): string;
   getChild(opts?: GetChildOpts): ILogEmitter;
+  meetsThreshold(level: LogLevel | LevelName, threshold?: LogLevel | LevelName): boolean;
 }
 
 export function isILoggerMark(val: object): val is ILoggerMark {

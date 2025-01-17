@@ -1,5 +1,6 @@
 import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
 import { assert } from '@std/assert';
+import { LogLevel } from '../levels/index.ts';
 import type { LevelName } from '../levels/types.ts';
 import type { ILogEmitter, LogMsgPart, LogRecord, StyleArg, StyleFormatterFn } from '../types.ts';
 import { StringUtil } from '../util.ts';
@@ -42,6 +43,10 @@ export class MsgBuilder implements IMsgBuilder {
   get emitter(): ILogEmitter {
     assert(this._emitter, 'No logger set');
     return this._emitter;
+  }
+
+  meetsThreshold(level: LogLevel | LevelName, threshold: LogLevel | LevelName): boolean {
+    return this.emitter.meetsThreshold(level, threshold);
   }
 
   applyColors(): this {
