@@ -27,6 +27,7 @@ export const styleFormatters: Record<string, StyleFormatterFn> = {
   _suffix: colors.white,
   _elapsed: colors.white,
   _level: colors.gray,
+  _source: colors.gray,
   _errorPrefix: colors.red,
   _warnPrefix: colors.cyan,
   _infoPrefix: colors.gray,

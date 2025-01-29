@@ -6,7 +6,7 @@ import type { LevelName } from '../levels/index.ts';
 import { Logger } from '../logger.ts';
 import { LogMgr } from '../logmgr.ts';
 import { styleFormatters } from '../message/console.ts';
-import type { LogRecord } from '../types.ts';
+import type { LogRecord, LogRecordSource } from '../types.ts';
 import { type ITransport, Transport } from './transport.ts';
 
 export function createConsoleTransport(logMgr: LogMgr) {
@@ -64,7 +64,15 @@ export class ConsoleTransport extends Transport implements ITransport {
       parts.push(JSON.stringify(msg.data));
     }
 
+    if (show.source && msg.srcRef) {
+      parts.push(this.styledSource(msg.srcRef, show.source));
+    }
+
     console.log(...parts);
+  }
+
+  styledSource(val: LogRecordSource, show: boolean): string {
+    return this._styledString(`[${val.filename} line ${val.line}]`, show, '_source');
   }
 
   styledPackage(val: string, show: boolean | Integer): string {

@@ -2,7 +2,14 @@ import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } fr
 import { assert } from '@std/assert';
 import { LogLevel } from '../levels/index.ts';
 import type { LevelName } from '../levels/types.ts';
-import type { ILogEmitter, LogMsgPart, LogRecord, StyleArg, StyleFormatterFn } from '../types.ts';
+import type {
+  ILogEmitter,
+  LogMsgPart,
+  LogRecord,
+  LogRecordSource,
+  StyleArg,
+  StyleFormatterFn,
+} from '../types.ts';
 import { StringUtil } from '../util.ts';
 import { IMsgBuilder } from './types.ts';
 
@@ -24,6 +31,7 @@ export class MsgBuilder implements IMsgBuilder {
   protected _msgParts: LogMsgPart[] = [];
   protected _data: Record<string, unknown> | undefined;
   protected _suffix: string[] = [];
+  protected _srcRef?: LogRecordSource;
   // protected _level: LogLevelValue = logLevel.info;
   protected _showElapsed: boolean = false;
 
@@ -110,6 +118,31 @@ export class MsgBuilder implements IMsgBuilder {
     return this;
   }
 
+  src(error: Error): this {
+    // alt implementation
+    // console.log(`Current file: ${new URL(import.meta.url).pathname}`);
+    // console.log(`Current line: ${new Error().stack.split('\n')[1]}`);
+
+    // // Create an Error object to capture the stack trace
+    // const error = new Error();
+
+    // Split the stack trace into lines
+    const stackLines = error.stack?.split('\n') || [];
+
+    // The line we're interested in is the third line (index 2) of the stack trace
+    // Stack trace format: Error\n    at functionName (file:line:column)\n    ...
+    const callerLine = stackLines[2]?.trim() || '';
+
+    // Extract the filename and line number using a regular expression
+    const match = callerLine.match(/at .+ \((.+):(\d+):\d+\)/);
+    if (match) {
+      const filename = match[1];
+      const line = parseInt(match[2], 10);
+      this._srcRef = { filename, line };
+    }
+    return this;
+  }
+
   protected addMsgPart(str: string, style?: StyleFormatterFn | null): this {
     // const _style = this.stylizeEnabled ? style : undefined;
     const part: LogMsgPart = { str: str };
@@ -183,6 +216,7 @@ export class MsgBuilder implements IMsgBuilder {
       level: this._level,
       msg: this.formatParts(),
       package: this.emitter.package,
+      srcRef: this._srcRef,
     };
     if (this._data) {
       msg.data = this._data;

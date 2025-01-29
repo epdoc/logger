@@ -1,8 +1,8 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isString } from '@epdoc/type';
 import { LogMgr } from './index.ts';
-import type { LevelName } from './levels/types.ts';
 import { LogLevel } from './levels/index.ts';
+import type { LevelName } from './levels/types.ts';
 
 const REG = {
   timeopt: /^(utc|local|elapsed)$/i,
@@ -21,7 +21,10 @@ export type TimeOpt = 'utc' | 'local' | 'elapsed';
 export function isTimeOpt(val: unknown): val is TimeOpt {
   return isString(val) && REG.timeopt.test(val) ? true : false;
 }
-
+export type LogRecordSource = {
+  filename: string;
+  line: number;
+};
 export type LogRecord = {
   level: LevelName;
   timestamp?: Date;
@@ -29,6 +32,7 @@ export type LogRecord = {
   data?: Record<string, unknown>;
   reqId?: string;
   package?: string;
+  srcRef?: LogRecordSource;
 };
 
 export type LogEmitterShowOpts = {
@@ -36,6 +40,8 @@ export type LogEmitterShowOpts = {
   timestamp?: TimeOpt;
   reqId?: boolean | number;
   package?: boolean | number;
+  // Show source code file and line number
+  source?: boolean;
 };
 
 export interface ILoggerIndent {
@@ -67,7 +73,7 @@ export interface ILogEmitter {
 }
 
 export function isILoggerMark(val: object): val is ILoggerMark {
-  return (<ILoggerMark> val).mark !== undefined;
+  return (<ILoggerMark>val).mark !== undefined;
 }
 
 export type LoggerFactoryMethod = (logMgr: LogMgr | ILogEmitter, opts?: GetChildOpts) => ILogEmitter;
