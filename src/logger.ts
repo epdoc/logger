@@ -3,14 +3,7 @@ import { isDefined, isDict } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import type { ILoggerThresholds, ILogLevels, LevelName, LogLevel } from './levels/index.ts';
 import { LogMgr } from './logmgr.ts';
-import {
-  GetChildOpts,
-  ILogEmitter,
-  ILoggerMark,
-  LogEmitterShowOpts,
-  LogRecord,
-  LogRecordSource,
-} from './types.ts';
+import { GetChildOpts, ILogEmitter, ILoggerMark, LogEmitterShowOpts, LogRecord } from './types.ts';
 
 let markId = 0;
 
