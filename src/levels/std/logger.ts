@@ -94,6 +94,7 @@ export class IndentLogger extends CoreLogger implements ILoggerIndent {
  *  - debug
  *  - verbose
  *  - trace
+ *  - spam (* bonus level not normlly part of STD)
  */
 
 export class Logger extends IndentLogger implements ILogger {
@@ -159,5 +160,14 @@ export class Logger extends IndentLogger implements ILogger {
    */
   get trace(): MsgBuilder {
     return new MsgBuilder('TRACE', this);
+  }
+
+  /**
+   * A spam message is for developers to display log messages that would
+   * normally be commented out.
+   * @returns A message builder for the SPAM level.
+   */
+  get spam(): MsgBuilder {
+    return new MsgBuilder('SPAM', this);
   }
 }

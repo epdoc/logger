@@ -2,14 +2,7 @@ import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } fr
 import { assert } from '@std/assert';
 import { LogLevel } from '../levels/index.ts';
 import type { LevelName } from '../levels/types.ts';
-import type {
-  ILogEmitter,
-  LogMsgPart,
-  LogRecord,
-  LogRecordSource,
-  StyleArg,
-  StyleFormatterFn,
-} from '../types.ts';
+import type { ILogEmitter, LogMsgPart, LogRecord, LogRecordSource, StyleArg, StyleFormatterFn } from '../types.ts';
 import { StringUtil } from '../util.ts';
 import { IMsgBuilder } from './types.ts';
 

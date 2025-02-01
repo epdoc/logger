@@ -41,8 +41,8 @@ export class ConsoleTransport extends Transport implements ITransport {
       parts.push(
         logLevels.applyColors(
           duration().narrow.format(msg.timestamp.getTime() - this._logMgr.startTime.getTime()),
-          msg.level
-        )
+          msg.level,
+        ),
       );
     }
 
@@ -101,7 +101,7 @@ export class ConsoleTransport extends Transport implements ITransport {
     val: string,
     show: boolean | number,
     colorFn: string,
-    opts?: { pre: string; post: string }
+    opts?: { pre: string; post: string },
   ): string {
     let s = val;
     if (isInteger(show)) {

@@ -73,7 +73,7 @@ export interface ILogEmitter {
 }
 
 export function isILoggerMark(val: object): val is ILoggerMark {
-  return (<ILoggerMark>val).mark !== undefined;
+  return (<ILoggerMark> val).mark !== undefined;
 }
 
 export type LoggerFactoryMethod = (logMgr: LogMgr | ILogEmitter, opts?: GetChildOpts) => ILogEmitter;
