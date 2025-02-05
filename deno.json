@@ -1,0 +1,33 @@
+{
+  "description": "Logging module with express middleware mixins and extendable transports",
+  "author": {
+    "name": "James Pravetz",
+    "email": "jpravetz@epdoc.com"
+  },
+  "license": "MIT",
+  "tasks": {
+    "test": "deno test --allow-env",
+    "lint": "deno lint",
+    "build": "deno run -A scripts/build_npm.ts",
+    "publish_npm": "cd npm & npm publish --access public"
+  },
+  "exports": "./mod.ts",
+  "test": {
+    "include": ["src/**/*test.ts", "test/**/*test.ts"]
+  },
+  "lint": {
+    "include": ["src/**/*.ts"]
+  },
+  "patch": ["../../@epdoc/std/"],
+  "imports": {
+    "@std/fmt": "jsr:@std/fmt@^1.0.2",
+    "@epdoc/string": "../../@epdoc/std/string/mod.ts",
+    "@epdoc/duration": "../../@epdoc/std/duration/mod.ts",
+    "@epdoc/datetime": "../../@epdoc/std/datetime/mod.ts",
+    "@std/assert": "jsr:@std/assert@1"
+  },
+  "fmt": {
+    "singleQuote": true,
+    "lineWidth": 120
+  }
+}
