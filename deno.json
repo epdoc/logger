@@ -1,5 +1,7 @@
 {
-  "description": "Logging module with express middleware mixins and extendable transports",
+  "name": "@epdoc/log",
+  "version": "3.0.0",
+  "description": "Logging module with chainable formatting, express middleware mixins and extendable transports",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
