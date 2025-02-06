@@ -1,5 +1,5 @@
 {
-  "name": "@epdoc/log",
+  "name": "@epdoc/logger",
   "version": "3.0.0",
   "description": "Logging module with chainable formatting, express middleware mixins and extendable transports",
   "author": {
@@ -23,6 +23,7 @@
   "patch": ["../../@epdoc/std/"],
   "imports": {
     "@std/fmt": "jsr:@std/fmt@^1.0.2",
+    "@epdoc/type": "../../@epdoc/std/type/mod.ts",
     "@epdoc/string": "../../@epdoc/std/string/mod.ts",
     "@epdoc/duration": "../../@epdoc/std/duration/mod.ts",
     "@epdoc/datetime": "../../@epdoc/std/datetime/mod.ts",

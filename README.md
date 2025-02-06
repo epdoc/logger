@@ -1,8 +1,9 @@
-# @epdoc/log
+# @epdoc/logger
+
+**NOTE: Version 3.0.0 is incompatible with prior versions of this module**
 
 A logging module supporting built-in and custom transports, webserver response middleware, rich message and data syntax,
-chainable methods for recording log events, and a callback transport to allow unit testing via log messages. Generally
-supports [Winston's](https://github.com/winstonjs/winston) logging method calls for simpler messages, but with the
+chainable methods for recording log events,  with the
 addition of a number of new methods, many of which can be chained to create richer output with more columns of data.
 
 ## Versions
@@ -13,7 +14,7 @@ addition of a number of new methods, many of which can be chained to create rich
   - Maintains the Log Manager and transports concepts of the earlier version
   - Only a console transport has so far been written
   - Express and other middleware are not yet written, but should be easy for any user to create
-  - Reliant on Deno std libraries
+  - Version 3.0.0 is reliant on Deno std libraries for console color (I may change this dependency when I package this for general use)
   - substitutable log levels
   - customizable through class extension
 
