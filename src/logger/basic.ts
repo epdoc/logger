@@ -91,6 +91,10 @@ export class Basic implements Log.IEmitter, Logger.IMark, Logger.IThresholds {
     return this._logMgr.logLevels;
   }
 
+  get logMgr(): LogMgr {
+    return this._logMgr;
+  }
+
   get threshold(): Level.Value {
     if (isDefined(this._threshold)) {
       return this._threshold as Level.Value;
