@@ -1,21 +1,14 @@
 import { DateRanges } from '@epdoc/daterange';
 import { dateEx } from '@epdoc/datetime';
 import { type FileSpec, type FolderSpec, FSError } from '@epdoc/fs';
-import {
-  builder,
-  type GetChildOpts,
-  type ILogEmitter,
-  type LoggerFactoryMethod,
-  LogMgr,
-  std,
-} from '../mod.ts';
+import { Log } from '../mod.ts';
 import { asError, isString } from '@epdoc/type';
 import os from 'node:os';
 import { relative } from 'node:path';
 
 const home = os.userInfo().homedir;
 
-export class MsgBuilder extends builder.Console.MsgBuilder {
+export class MsgBuilder extends Log.MsgBuilder.Console {
   // msg(msg: Message): this {
   //   return this.stylize(builder.Console.styleFormatters.label, msg.idOrPath()).stylize(
   //     builder.Console.styleFormatters.date,
@@ -81,8 +74,11 @@ export class MsgBuilder extends builder.Console.MsgBuilder {
   }
 }
 
-export const getLogger: LoggerFactoryMethod = (log: LogMgr | ILogEmitter, opts: GetChildOpts = {}) => {
-  if (log instanceof LogMgr) {
+export const getLogger: Log.Logger.FactoryMethod = (
+  log: Log.Mgr | Log.IEmitter,
+  opts: Log.GetChildOpts = {}
+) => {
+  if (log instanceof Log.Mgr) {
     return new Logger(log).setReqId(opts.reqId).setPackage(opts.pkg);
   } else if (log instanceof Logger) {
     return log.getChild(opts);
@@ -90,8 +86,8 @@ export const getLogger: LoggerFactoryMethod = (log: LogMgr | ILogEmitter, opts: 
   throw new Error('Invalid logger type');
 };
 
-export class Logger extends std.IndentLogger implements std.ILogger {
-  override getChild(opts: GetChildOpts = {}) {
+export class Logger extends Log.Logger.Indent implements Log.std.ILogger {
+  override getChild(opts: Log.GetChildOpts = {}) {
     const logger = this.copy();
     if (opts.reqId) {
       logger._reqId.push(opts.reqId);
@@ -170,7 +166,7 @@ export class Logger extends std.IndentLogger implements std.ILogger {
   }
 }
 
-export const logMgr = new LogMgr();
-logMgr.registerLogger('finsync', getLogger, std.createLogLevels);
+export const logMgr = new Log.Mgr();
+logMgr.registerLogger('finsync', getLogger, Log.std.createLogLevels);
 export const log: Logger = logMgr.getLogger('finsync') as Logger;
 logMgr.setThreshold('info');

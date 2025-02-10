@@ -1,11 +1,11 @@
 import { type Integer, isNonEmptyString, isPosNumber } from '@epdoc/type';
 import { assert } from '@std/assert';
 import * as colors from '@std/fmt/colors';
-import { type ILoggerMark, isILoggerMark, type LogRecord, type StyleArg } from '../types.ts';
-import { StyleFormatterFn } from './../types.ts';
-import { MsgBuilder as CoreMsgBuilder } from './builder.ts';
+import * as Logger from '../logger/index.ts';
+import type * as Log from '../types.ts';
+import { Basic } from './basic.ts';
 
-export const styleFormatters: Record<string, StyleFormatterFn> = {
+const styleFormatters: Record<string, Log.StyleFormatterFn> = {
   text: colors.brightWhite,
   h1: (str: string) => colors.bold(colors.magenta(str)),
   h2: colors.magenta,
@@ -48,13 +48,15 @@ export const styleFormatters: Record<string, StyleFormatterFn> = {
  * and use a custom set of formatting metchods, declare your own MsgBuilder and
  * pass it to the LogManager.
  */
-export class MsgBuilder extends CoreMsgBuilder {
+export class Console extends Basic {
+  static readonly styleFormatters = styleFormatters;
+
   /**
    * Emits a styled text message.
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public text(...args: StyleArg[]): this {
+  public text(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.text, ...args);
   }
   /**
@@ -62,7 +64,7 @@ export class MsgBuilder extends CoreMsgBuilder {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public h1(...args: StyleArg[]): this {
+  public h1(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.h1, ...args);
   }
   /**
@@ -70,7 +72,7 @@ export class MsgBuilder extends CoreMsgBuilder {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public h2(...args: StyleArg[]): this {
+  public h2(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.h2, ...args);
   }
 
@@ -79,16 +81,16 @@ export class MsgBuilder extends CoreMsgBuilder {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public h3(...args: StyleArg[]): this {
+  public h3(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.h3, ...args);
   }
 
   /**
    * Emits a styled action message.
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * @param {...Log.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public action(...args: StyleArg[]): this {
+  public action(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.action, ...args);
   }
 
@@ -97,7 +99,7 @@ export class MsgBuilder extends CoreMsgBuilder {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public label(...args: StyleArg[]): this {
+  public label(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.label, ...args);
   }
 
@@ -106,7 +108,7 @@ export class MsgBuilder extends CoreMsgBuilder {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public highlight(...args: StyleArg[]): this {
+  public highlight(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.highlight, ...args);
   }
 
@@ -115,7 +117,7 @@ export class MsgBuilder extends CoreMsgBuilder {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public value(...args: StyleArg[]): this {
+  public value(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.value, ...args);
   }
 
@@ -124,7 +126,7 @@ export class MsgBuilder extends CoreMsgBuilder {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public path(...args: StyleArg[]): this {
+  public path(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.path, ...args);
   }
 
@@ -133,16 +135,16 @@ export class MsgBuilder extends CoreMsgBuilder {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public date(...args: StyleArg[]): this {
+  public date(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.date, ...args);
   }
 
   /**
    * Emits a styled warning message.
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * @param {...Log.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public warn(...args: StyleArg[]): this {
+  public warn(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.warn, ...args);
   }
   /**
@@ -150,7 +152,7 @@ export class MsgBuilder extends CoreMsgBuilder {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public error(...args: StyleArg[]): this {
+  public error(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.error, ...args);
   }
 
@@ -159,7 +161,7 @@ export class MsgBuilder extends CoreMsgBuilder {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public strikethru(...args: StyleArg[]): this {
+  public strikethru(...args: Log.StyleArg[]): this {
     return this.stylize(styleFormatters.strikethru, ...args);
   }
 
@@ -180,7 +182,7 @@ export class MsgBuilder extends CoreMsgBuilder {
    * @param duration
    * @returns
    */
-  emitWithTime(duration: number | string): LogRecord {
+  emitWithTime(duration: number | string): Log.Entry {
     return this.ewt(duration);
   }
 
@@ -195,12 +197,12 @@ export class MsgBuilder extends CoreMsgBuilder {
    *                  with the mark method.
    * @returns A formatted string representing the elapsed time.
    */
-  ewt(duration: number | string, keep = false): LogRecord {
+  ewt(duration: number | string, keep = false): Log.Entry {
     if (isNonEmptyString(duration)) {
       assert(this._emitter, 'No logger');
-      if (isILoggerMark(this._emitter)) {
+      if (Logger.isIMark(this._emitter)) {
         // console.log(duration, JSON.stringify(this._emitter._mark));
-        duration = (this._emitter as unknown as ILoggerMark).demark(duration, keep) as number;
+        duration = (this._emitter as unknown as Logger.IMark).demark(duration, keep) as number;
       }
     }
     if (isPosNumber(duration)) {

@@ -1,32 +1,31 @@
 # @epdoc/logger
 
-**NOTE: Version 3.0.0 is incompatible with prior versions of this module**
+**NOTE: Version 1000.0.0 indicates a major rewrite that is incompatible with prior versions of this module**
 
 A logging module supporting built-in and custom transports, webserver response middleware, rich message and data syntax,
-chainable methods for recording log events,  with the
-addition of a number of new methods, many of which can be chained to create richer output with more columns of data.
+chainable methods for recording log events, with the addition of a number of new methods, many of which can be chained
+to create richer output with more columns of data.
 
 ## Versions
 
-- Version prior to version 3.0.0 were used in production, and were last updated at the end of 2016.
-- Version 3.0.0 is a TypeScript rewrite using Deno and is not backwards compatible with earlier versions. The main points for this new version are:
+- Version prior to version 1000.0.0 (versions 2.x.x)were used in production, and were last updated at the end of 2016.
+- Version 1000.0.0 is a TypeScript rewrite using Deno and is not backwards compatible with earlier versions. The main
+  points for this new version are:
   - Chainable methods to allow for easy color formatting of log output when using the console
   - Maintains the Log Manager and transports concepts of the earlier version
   - Only a console transport has so far been written
   - Express and other middleware are not yet written, but should be easy for any user to create
-  - Version 3.0.0 is reliant on Deno std libraries for console color (I may change this dependency when I package this for general use)
+  - Version 1000.0.0 is reliant on Deno std libraries for console color (I may change this dependency when I package
+    this for general use)
   - substitutable log levels
   - customizable through class extension
-
-## The remainder of this document is out of date
-
 
 [This page and API Reference are also formatted and available here](http://jpravetz.github.io/epdoc-logger/out/index.html).
 
 # Install
 
 ```bash
-npm install --save @epdoc/logger
+deno add @epdoc/logger
 ```
 
 # Quick Start
@@ -34,53 +33,74 @@ npm install --save @epdoc/logger
 ## Log to the console
 
 ```typescript
-import { LogManager } from '@epdoc/logger';
+import { Log } from '../mod.ts';
 
-const log = new LogManager().start().getLogger();
+const showOpts: Log.EmitterShowOpts = {
+  level: true,
+  timestamp: 'elapsed',
+  reqId: true,
+  package: true,
+};
 
-log.info('Hello world').emit();
+const logMgr = new Log.Mgr().setShow(showOpts);
+const log = logMgr.getLogger('std') as Log.std.Logger;
+logMgr.setThreshold('verbose');
+
+log.info.text('Hello world').emit();
+
+// Console output
+0.002s [INFO   ] Hello world
 ```
 
-```bash
-["00:00.001","INFO",0,"","logger","logger.push.success","Set logger to Console",{},{"transport":"Console"}]
-["00:00.015","INFO",0,"","","","Hello world",{}]
+```txt
+0.002s [INFO   ] Hello world
 ```
 
-Under the hood, the log manager is creating a single transport for outputting to the console, starting this transport,
-then creating a logger object. Now the logger object can be called with `info`, `data`, `error`, `warn`, `fatal`,
-`debug`, `verbose`, `silly` methods to create and return a new line. This is the same as:
+Under the hood, the log manager is creating a single transport for outputting to
+the console, starting this transport, then creating a logger object. Now the
+logger object can be called with `info`, `error`, `warn`, `debug`, `verbose`,
+`spam` methods to create and return a new MsgBuilder. This is the same as:
 
 ```typescript
-let line: LoggerLine = log.info('Hello world');
+let line: Log.MsgBuilder.Console = log.info;
+line.text('Hello world');
 line.emit();
 ```
 
-Calling `emit` will terminate the line and call the LogManager to output the line to all transports. In this case there
-is just the console transport.
+Calling `emit` will terminate the line and call the LogMgr to output the line to
+all transports. In this case there is just the console transport. And in fact we
+currently only support the console transport.
 
 ## Adding Color to Console Output
 
 The logger has various predefined color definitions for console output.
 
 ```typescript
-log.info().h1('Output').value(requestor).text('to').path(path).emit();
+log.info.h1('Output').value('my value').text('to').path('/Users/me/myfiles').emit();
+
+// Output
+0.034s [INFO   ] Output my value to /Users/me/myfiles
 ```
 
-The `info` method above must be the first call. It returns an object that has the chainable methods h1, value, text, and
-path. These methods are used to add color and other formatting to the output. Again, emit results in the output of the
-message to the console.
+The `info` method above must be the first call. It returns an object that has
+the chainable methods h1, value, text, and path. These methods are used to add
+color and other formatting to the output. Again,calling emit will result in the
+output of the message to the console.
 
-The complete list of chainable methods is styleFormatters:
+The complete list of chainable methods is in [Log.MsgBuilder.Console.styleFormatters](./src/message/console.ts):
 
 `text`, `h1`, `h2`, `h3`, `action`, `label`, `highlight`, `value`, `path`, `date`, `warn`, `error`, `strikethru`,
 
-We will learn how to customize these styles later in this document. We will also learn how to create our own method
-names with our own styles.
+We will learn how to customize these styles later in this document. We will also
+learn how to create our own method names with our own styles.
 
 ## Controlling what is written to the console
 
-A message consists of a date/time, log level and other fields that are joined together on the line with your actual
-message. You can customize which of these fields is output. The example below shows the default settings.
+############# OUT OF DATE #################
+
+A message consists of a date/time, log level and other fields that are joined
+together on the line with your actual message. You can customize which of these
+fields is output. The example below shows the default settings.
 
 ```typescript
 import { LogManager } from '@epdoc/logger';

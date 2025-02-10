@@ -1,6 +1,6 @@
-import { LogMgr, std } from '../mod.ts';
+import { Log } from '../mod.ts';
 
-const logMgr = new LogMgr('cli');
-const log: std.Logger = logMgr.getLogger() as std.Logger;
+const logMgr = new Log.Mgr('cli');
+const log: Log.std.Logger = logMgr.getLogger() as Log.std.Logger;
 
 log.info.h2('Hello, world!').emit();

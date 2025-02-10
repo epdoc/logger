@@ -1,8 +1,5 @@
-import type { HrMilliseconds } from '@epdoc/duration';
 import { isString } from '@epdoc/type';
-import type { LogMgr } from './index.ts';
-import type { LogLevel } from './levels/index.ts';
-import type { LevelName } from './levels/types.ts';
+import type * as Level from './levels/types.ts';
 
 const REG = {
   timeopt: /^(utc|local|elapsed)$/i,
@@ -11,7 +8,7 @@ const REG = {
 export type StyleFormatterFn = (str: string) => string;
 export type StyleArg = string | number | Record<string, unknown> | unknown[] | unknown;
 
-export type LogMsgPart = {
+export type MsgPart = {
   str: string;
   style?: StyleFormatterFn;
 };
@@ -21,21 +18,17 @@ export type TimeOpt = 'utc' | 'local' | 'elapsed';
 export function isTimeOpt(val: unknown): val is TimeOpt {
   return isString(val) && REG.timeopt.test(val) ? true : false;
 }
-export type LogRecordSource = {
-  filename: string;
-  line: number;
-};
-export type LogRecord = {
-  level: LevelName;
+
+export type Entry = {
+  level: Level.Name;
   timestamp?: Date;
   msg: string;
   data?: Record<string, unknown>;
   reqId?: string;
   package?: string;
-  srcRef?: LogRecordSource;
 };
 
-export type LogEmitterShowOpts = {
+export type EmitterShowOpts = {
   level?: boolean | number;
   timestamp?: TimeOpt;
   reqId?: boolean | number;
@@ -44,36 +37,18 @@ export type LogEmitterShowOpts = {
   source?: boolean;
 };
 
-export interface ILoggerIndent {
-  indent(n?: number | string): this;
-  outdent(n?: number): this;
-  getdent(): string[];
-  nodent(): this;
-}
-
-export interface ILoggerMark {
-  mark(): string;
-  demark(name: string, keep: boolean): HrMilliseconds;
-}
-
 export type GetChildOpts = {
   reqId?: string;
   pkg?: string;
 };
 
-export interface ILogEmitter {
-  emit(msg: LogRecord): void;
+export interface IEmitter {
+  emit(msg: Entry): void;
   // show(val: LogEmitterShowOpts): this;
   set package(val: string);
   get package(): string;
   set reqId(val: string);
   get reqId(): string;
-  getChild(opts?: GetChildOpts): ILogEmitter;
-  meetsThreshold(level: LogLevel | LevelName, threshold?: LogLevel | LevelName): boolean;
+  getChild(opts?: GetChildOpts): IEmitter;
+  meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean;
 }
-
-export function isILoggerMark(val: object): val is ILoggerMark {
-  return (<ILoggerMark>val).mark !== undefined;
-}
-
-export type LoggerFactoryMethod = (logMgr: LogMgr | ILogEmitter, opts?: GetChildOpts) => ILogEmitter;

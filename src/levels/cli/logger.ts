@@ -1,10 +1,13 @@
-import { Logger as CoreLogger } from '../../logger.ts';
+import * as CoreLogger from '../../logger/index.ts';
 import { LogMgr } from '../../logmgr.ts';
-import { MsgBuilder } from '../../message/console.ts';
-import { GetChildOpts, ILogEmitter, LoggerFactoryMethod, LogRecord } from '../../types.ts';
-import type { ILogger } from './types.ts';
+import * as MsgBuilder from '../../message/index.ts';
+import type * as Log from '../../types.ts';
+import type * as cli from './types.ts';
 
-export const getLogger: LoggerFactoryMethod = (log: LogMgr | ILogEmitter, opts: GetChildOpts = {}) => {
+export const getLogger: CoreLogger.FactoryMethod = (
+  log: LogMgr | Log.IEmitter,
+  opts: Log.GetChildOpts = {}
+) => {
   if (log instanceof LogMgr) {
     return new Logger(log).setReqId(opts.reqId).setPackage(opts.pkg);
   } else if (log instanceof Logger) {
@@ -27,7 +30,7 @@ export const getLogger: LoggerFactoryMethod = (log: LogMgr | ILogEmitter, opts: 
  *  - silly
  */
 
-export class Logger extends CoreLogger implements ILogger {
+export class Logger extends CoreLogger.Basic implements cli.ILogger {
   constructor(logMgr: LogMgr) {
     super(logMgr);
   }
@@ -38,40 +41,40 @@ export class Logger extends CoreLogger implements ILogger {
     return result;
   }
 
-  override emit(msg: LogRecord): void {
+  override emit(msg: Log.Entry): void {
     if (this.meetsThreshold(msg.level)) {
       console.log(msg.msg);
     }
   }
 
-  get error(): MsgBuilder {
-    return new MsgBuilder('ERROR', this);
+  get error(): MsgBuilder.Console {
+    return new MsgBuilder.Console('ERROR', this);
   }
-  get warn(): MsgBuilder {
-    return new MsgBuilder('WARN', this);
+  get warn(): MsgBuilder.Console {
+    return new MsgBuilder.Console('WARN', this);
   }
-  get help(): MsgBuilder {
-    return new MsgBuilder('HELP', this);
+  get help(): MsgBuilder.Console {
+    return new MsgBuilder.Console('HELP', this);
   }
-  get data(): MsgBuilder {
-    return new MsgBuilder('DATA', this);
+  get data(): MsgBuilder.Console {
+    return new MsgBuilder.Console('DATA', this);
   }
-  get info(): MsgBuilder {
-    return new MsgBuilder('INFO', this);
+  get info(): MsgBuilder.Console {
+    return new MsgBuilder.Console('INFO', this);
   }
-  get debug(): MsgBuilder {
-    return new MsgBuilder('DEBUG', this);
+  get debug(): MsgBuilder.Console {
+    return new MsgBuilder.Console('DEBUG', this);
   }
-  get prompt(): MsgBuilder {
-    return new MsgBuilder('PROMPT', this);
+  get prompt(): MsgBuilder.Console {
+    return new MsgBuilder.Console('PROMPT', this);
   }
-  get verbose(): MsgBuilder {
-    return new MsgBuilder('VERBOSE', this);
+  get verbose(): MsgBuilder.Console {
+    return new MsgBuilder.Console('VERBOSE', this);
   }
-  get input(): MsgBuilder {
-    return new MsgBuilder('INPUT', this);
+  get input(): MsgBuilder.Console {
+    return new MsgBuilder.Console('INPUT', this);
   }
-  get silly(): MsgBuilder {
-    return new MsgBuilder('SILLY', this);
+  get silly(): MsgBuilder.Console {
+    return new MsgBuilder.Console('SILLY', this);
   }
 }

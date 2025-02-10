@@ -8,12 +8,12 @@ import type { Integer } from '@epdoc/type';
 /**
  * Represents the name of a log level.
  */
-export type LevelName = string;
+export type Name = string;
 
 /**
  * Represents the numeric value of a log level.
  */
-export type LogLevel = number;
+export type Value = number;
 
 /**
  * Log levels interface used throughout the library, allowing for custom log
@@ -25,64 +25,58 @@ export type LogLevel = number;
  * you will need to subclasss the Logger class and implement the methods for
  * your log levels.
  */
-export interface ILogLevels {
+export interface IBasic {
   /**
    * The array of log level names that are supported by the logger. These names
    * will be uppercased.
-   * @type {LevelName[]}
+   * @type {Name[]}
    */
-  names: LevelName[];
+  names: Name[];
   // levelDefs: LogLevelDef;
   /**
    * Converts a log level name to its corresponding numeric value.
-   * @param {LevelName} level - The name of the log level to convert.
-   * @returns {LogLevel} The numeric value of the log level.
+   * @param {Name} level - The name of the log level to convert.
+   * @returns {Value} The numeric value of the log level.
    */
-  asValue(level: LevelName | LogLevel): LogLevel;
+  asValue(level: Name | Value): Value;
 
   /**
    * Converts a numeric log level value to its corresponding name.
-   * @param {LogLevel} level - The numeric value of the log level to convert.
-   * @returns {LevelName} The name of the log level.
+   * @param {Value} level - The numeric value of the log level to convert.
+   * @returns {Name} The name of the log level.
    */
 
-  asName(level: LevelName | LogLevel): LevelName;
+  asName(level: Name | Value): Name;
   /**
    * The name of the default log level. Usually this is "INFO"
-   * @type {LevelName}
+   * @type {Name}
    */
-  defaultLevelName: LevelName;
+  defaultLevelName: Name;
 
   /**
    * Checks if a log level meets a specified threshold.
-   * @param {LogLevel} level - The log level to check.
-   * @param {LogLevel} threshold - The threshold to compare against.
+   * @param {Value} level - The log level to check.
+   * @param {Value} threshold - The threshold to compare against.
    * @returns {boolean} True if the log level is above the threshold, false otherwise.
    */
-  meetsThreshold(level: LogLevel | LevelName, threshold: LogLevel | LevelName): boolean;
+  meetsThreshold(level: Value | Name, threshold: Value | Name): boolean;
 
   /**
    * Checks if a log level should result in a flush.
-   * @param {LevelName} level - The log level to check.
+   * @param {Name} level - The log level to check.
    * @returns {boolean} True if the log level is above the threshold, false otherwise.
    */
-  meetsFlushThreshold(level: LogLevel | LevelName): boolean;
+  meetsFlushThreshold(level: Value | Name): boolean;
 
-  maxWidth(threshold: LogLevel | LevelName): Integer;
+  maxWidth(threshold: Value | Name): Integer;
 
   /**
    * Applies color formatting, if any, to a log message based on its level.
    * @param {string} msg - The message to format.
-   * @param {LevelName} level - The log level associated with the message.
+   * @param {Name} level - The log level associated with the message.
    * @returns {string} The formatted message with color applied.
    */
-  applyColors(msg: string, level: LevelName): string;
+  applyColors(msg: string, level: Name): string;
 }
 
-export interface ILoggerThresholds {
-  setThreshold(level: LevelName | LogLevel): ILoggerThresholds;
-  meetsThreshold(level: LogLevel | LevelName, threshold: LogLevel | LevelName): boolean;
-  meetsFlushThreshold(level: LogLevel | LevelName): boolean;
-}
-
-export type LogLevelFactoryMethod = () => ILogLevels;
+export type FactoryMethod = () => IBasic;

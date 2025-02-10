@@ -1,9 +1,10 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isDefined, isDict } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
-import type { ILoggerThresholds, ILogLevels, LevelName, LogLevel } from './levels/index.ts';
-import type { LogMgr } from './logmgr.ts';
-import type { GetChildOpts, ILogEmitter, ILoggerMark, LogEmitterShowOpts, LogRecord } from './types.ts';
+import type { Level } from '../levels/index.ts';
+import type { LogMgr } from '../logmgr.ts';
+import type * as Log from '../types.ts';
+import type * as Logger from './types.ts';
 
 let markId = 0;
 
@@ -12,10 +13,10 @@ let markId = 0;
  * level methods.
  */
 
-export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
+export class Basic implements Log.IEmitter, Logger.IMark, Logger.IThresholds {
   protected _logMgr: LogMgr;
-  protected _threshold: LogLevel | undefined;
-  protected _show: LogEmitterShowOpts = {};
+  protected _threshold: Level.Value | undefined;
+  protected _show: Log.EmitterShowOpts = {};
   protected _pkg: string[] = [];
   protected _reqId: string[] = [];
   protected _mark: Record<string, HrMilliseconds> = {};
@@ -24,7 +25,7 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
     this._logMgr = logMgr;
   }
 
-  getChild(opts?: GetChildOpts): Logger {
+  getChild(opts?: Log.GetChildOpts): Basic {
     const logger = this.copy();
     if (isDict(opts)) {
       if (opts.reqId) {
@@ -37,20 +38,20 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
     return logger;
   }
 
-  copy(): Logger {
-    const result = new Logger(this._logMgr);
+  copy(): Basic {
+    const result = new Basic(this._logMgr);
     result.assign(this);
     return result;
   }
 
-  assign(logger: Logger) {
+  assign(logger: Basic) {
     this._threshold = logger._threshold;
     this._show = logger._show;
     this._pkg = [...logger._pkg];
     this._reqId = [...logger._reqId];
   }
 
-  emit(msg: LogRecord): void {
+  emit(msg: Log.Entry): void {
     if (this.meetsThreshold(msg.level)) {
       console.log(msg.msg);
     }
@@ -86,13 +87,13 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
     return this;
   }
 
-  get logLevels(): ILogLevels {
+  get logLevels(): Level.IBasic {
     return this._logMgr.logLevels;
   }
 
-  get threshold(): LogLevel {
+  get threshold(): Level.Value {
     if (isDefined(this._threshold)) {
-      return this._threshold as LogLevel;
+      return this._threshold as Level.Value;
     }
     return this._logMgr.threshold;
   }
@@ -102,19 +103,19 @@ export class Logger implements ILogEmitter, ILoggerMark, ILoggerThresholds {
    * @param level
    * @returns
    */
-  setThreshold(level: LevelName | LogLevel): this {
+  setThreshold(level: Level.Name | Level.Value): this {
     this._threshold = this.logLevels.asValue(level);
     return this;
   }
 
-  meetsThreshold(level: LogLevel | LevelName, threshold?: LogLevel | LevelName): boolean {
+  meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean {
     if (threshold !== undefined) {
       return this.logLevels.meetsThreshold(level, threshold);
     }
     return this._logMgr.meetsThreshold(level, this.threshold);
   }
 
-  meetsFlushThreshold(level: LogLevel | LevelName): boolean {
+  meetsFlushThreshold(level: Level.Value | Level.Name): boolean {
     return this.logLevels.meetsFlushThreshold(level);
   }
 

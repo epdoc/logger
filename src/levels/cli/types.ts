@@ -1,7 +1,7 @@
 import * as colors from '@std/fmt/colors';
-import { IMsgBuilder } from '../../message/index.ts';
+import type * as MsgBuilder from '../../message/index.ts';
 import { LogLevels, type LogLevelsDef } from '../base.ts';
-import type { LogLevelFactoryMethod } from '../types.ts';
+import type { FactoryMethod } from '../types.ts';
 
 const cliLogLevelDefs: LogLevelsDef = {
   error: { val: 0, fmtFn: colors.red, flush: true },
@@ -16,21 +16,21 @@ const cliLogLevelDefs: LogLevelsDef = {
   silly: { val: 9, fmtFn: colors.magenta },
 } as const;
 
-export const createLogLevels: LogLevelFactoryMethod = () => {
+export const createLogLevels: FactoryMethod = () => {
   return new LogLevels(cliLogLevelDefs);
 };
 
 export interface ILogger {
-  error: IMsgBuilder;
-  warn: IMsgBuilder;
-  help: IMsgBuilder;
-  data: IMsgBuilder;
-  info: IMsgBuilder;
-  debug: IMsgBuilder;
-  prompt: IMsgBuilder;
-  verbose: IMsgBuilder;
-  input: IMsgBuilder;
-  silly: IMsgBuilder;
+  error: MsgBuilder.ICore;
+  warn: MsgBuilder.ICore;
+  help: MsgBuilder.ICore;
+  data: MsgBuilder.ICore;
+  info: MsgBuilder.ICore;
+  debug: MsgBuilder.ICore;
+  prompt: MsgBuilder.ICore;
+  verbose: MsgBuilder.ICore;
+  input: MsgBuilder.ICore;
+  silly: MsgBuilder.ICore;
 }
 
 export const LogLevelNames: string[] = Object.keys(cliLogLevelDefs);

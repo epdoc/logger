@@ -1,18 +1,18 @@
-import { type Integer } from '@epdoc/type';
-import type { LevelName } from '../levels/types.ts';
-import type { ILogEmitter, LogRecord, StyleArg } from '../types.ts';
+import type { Integer } from '@epdoc/type';
+import type { Name } from '../levels/types.ts';
+import type * as Log from '../types.ts';
 
-export interface IMsgBuilder {
-  set level(level: LevelName);
-  set emitter(emitter: ILogEmitter);
-  get emitter(): ILogEmitter;
+export interface ICore {
+  set level(level: Name);
+  set emitter(emitter: Log.IEmitter);
+  get emitter(): Log.IEmitter;
   clear(): this;
-  setInitialString(...args: StyleArg[]): this;
+  setInitialString(...args: Log.StyleArg[]): this;
   indent(n: Integer | string): this;
   tab(n: Integer): this;
   comment(...args: string[]): this;
   data(data: Record<string, unknown>): this;
-  emit(): LogRecord;
+  emit(): Log.Entry;
 }
 
 // export type MsgBuilderFactoryMethod = (level: LevelName, emitter?: ILogEmitter) => IMsgBuilder;

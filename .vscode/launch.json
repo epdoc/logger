@@ -90,6 +90,24 @@
         "./levels/test.ts"
       ],
       "attachSimplePort": 9229
+    },
+    {
+      "request": "launch",
+      "name": "Debug examples/simple.ts",
+      "type": "node",
+      "cwd": "${workspaceFolder}",
+      "env": {},
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "--allow-env",
+        "--allow-sys",
+        "--allow-read",
+        "--allow-write",
+        "./examples/simple.ts"
+      ],
+      "attachSimplePort": 9229
     }
   ]
 }

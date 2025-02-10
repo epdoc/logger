@@ -2,18 +2,19 @@ import { dateEx } from '@epdoc/datetime';
 import { duration } from '@epdoc/duration';
 import { StringEx } from '@epdoc/string';
 import { type Integer, isInteger, isNonEmptyString } from '@epdoc/type';
-import type { LevelName } from '../levels/index.ts';
-import { Logger } from '../logger.ts';
-import { LogMgr } from '../logmgr.ts';
-import { styleFormatters } from '../message/console.ts';
-import type { LogRecord, LogRecordSource } from '../types.ts';
-import { type ITransport, Transport } from './transport.ts';
+import type { Level } from '../levels/index.ts';
+import type * as Logger from '../logger/basic.ts';
+import type { LogMgr } from '../logmgr.ts';
+import * as MsgBuilder from '../message/index.ts';
+import type * as Log from '../types.ts';
+import { Basic } from './basic.ts';
+import type * as Transport from './types.ts';
 
-export function createConsoleTransport(logMgr: LogMgr) {
-  return new ConsoleTransport(logMgr);
+export function createConsole(logMgr: LogMgr) {
+  return new Console(logMgr);
 }
 
-export class ConsoleTransport extends Transport implements ITransport {
+export class Console extends Basic implements Transport.IBasic {
   protected _pkgWidth: Integer = 0;
   protected _reqIdWidth: Integer = 0;
   protected _levelWidth: Integer = 5;
@@ -27,7 +28,7 @@ export class ConsoleTransport extends Transport implements ITransport {
     return this;
   }
 
-  emit(msg: LogRecord, logger: Logger) {
+  emit(msg: Log.Entry, logger: Logger.Basic) {
     const parts: string[] = [];
 
     const logLevels = this._logMgr.logLevels;
@@ -41,8 +42,8 @@ export class ConsoleTransport extends Transport implements ITransport {
       parts.push(
         logLevels.applyColors(
           duration().narrow.format(msg.timestamp.getTime() - this._logMgr.startTime.getTime()),
-          msg.level,
-        ),
+          msg.level
+        )
       );
     }
 
@@ -64,15 +65,7 @@ export class ConsoleTransport extends Transport implements ITransport {
       parts.push(JSON.stringify(msg.data));
     }
 
-    if (show.source && msg.srcRef) {
-      parts.push(this.styledSource(msg.srcRef, show.source));
-    }
-
     console.log(...parts);
-  }
-
-  styledSource(val: LogRecordSource, show: boolean): string {
-    return this._styledString(`[${val.filename} line ${val.line}]`, show, '_source');
   }
 
   styledPackage(val: string, show: boolean | Integer): string {
@@ -83,7 +76,7 @@ export class ConsoleTransport extends Transport implements ITransport {
     return this._styledString(val, show, '_reqId');
   }
 
-  styledLevel(level: LevelName, show: boolean | Integer): string {
+  styledLevel(level: Level.Name, show: boolean | Integer): string {
     let s = StringEx(level).rightPad(this._levelWidth);
     if (isInteger(show)) {
       if (show > 0) {
@@ -101,7 +94,7 @@ export class ConsoleTransport extends Transport implements ITransport {
     val: string,
     show: boolean | number,
     colorFn: string,
-    opts?: { pre: string; post: string },
+    opts?: { pre: string; post: string }
   ): string {
     let s = val;
     if (isInteger(show)) {
@@ -119,8 +112,8 @@ export class ConsoleTransport extends Transport implements ITransport {
         s += opts.post;
       }
     }
-    if (styleFormatters[colorFn]) {
-      return styleFormatters[colorFn](s);
+    if (MsgBuilder.Console.styleFormatters[colorFn]) {
+      return MsgBuilder.Console.styleFormatters[colorFn](s);
     }
     return s;
   }
