@@ -9,8 +9,8 @@ Transports are where log messages are written. These can include:
 - a logging application
 - Loggly, an online logging application
 
-Currently only the console transport is implemented. However `@epdoc/logger` is
-written to allow extension via other transports.
+Currently only the console transport is implemented. However `@epdoc/logger` is written to allow extension via other
+transports.
 
 ## Log Message Parts
 
@@ -34,40 +34,38 @@ export type Entry = {
 };
 ```
 
-The user of the logging module can control which of these fields are displayed.
-Here is an example of showing timestamp and level as console output.
+The user of the logging module can control which of these fields are displayed. Here is an example of showing timestamp
+and level as console output.
 
 ```txt
 2025-02-12T14:43:42.114Z [INFO   ] This is my message string. It is not showing reqId and package.
 ```
 
-With other transports, for example a Loggly transport, the different properties
-can be passed to Loggly so they can be displayed in separate columns.
+With other transports, for example a Loggly transport, the different properties can be passed to Loggly so they can be
+displayed in separate columns.
 
 ## Log Levels
 
-Log levels are levels such as 'error', 'warn', 'info', etc.. `@epdoc/logger`
-allows the user of the module to use any log levels that they wish to define.
-`@epdoc/logger` currently supports the 'std' and 'cli' log levels.
+Log levels are levels such as 'error', 'warn', 'info', etc.. `@epdoc/logger` allows the user of the module to use any
+log levels that they wish to define. `@epdoc/logger` currently supports the 'std' and 'cli' log levels.
 
 - std log levels: 'error', 'warn', 'info', 'verbose', 'debug', 'trace' and 'spam'
 - cli log levels: 'error', 'warn', 'help', 'data', 'info', 'debug', 'prompt', 'verbose', 'input', 'silly'
 
 ## Messages
 
-The msg field in a log Entry is created using a MsgBuilder class. A MsgBuilder
-can take a series of values and compose them into a string. For Console output
-the string can contain formatting information. We have chainable methods that
-allow a message to be composed. Our default message builder is the [`compose` message builder](../src/message/console.ts). 
+The msg field in a log Entry is created using a MsgBuilder class. A MsgBuilder can take a series of values and compose
+them into a string. For Console output the string can contain formatting information. We have chainable methods that
+allow a message to be composed. Our default message builder is the [compose message builder](../src/message/console.ts).
 
-Users of `@epdoc/logger` can subclass the [basic](../src/message/basic.ts) or
-[compose](../src/message/console.ts) MsgBuilder to add their own methods. This
-can be helpful when a user must repeatedly output some data or object to the
+Users of `@epdoc/logger` can subclass the [basic](../src/message/basic.ts) or [compose](../src/message/console.ts)
+MsgBuilder to add their own methods. This can be helpful when a user must repeatedly output some data or object to the
 console.
 
 ## Logger
 
-A logger is what is used to output a message.
+A logger instance is used to output a message. This is done by specifying the log level and returning a MsgBuilder
+instance. The MsgBuilder is then used to compose the log line (Entry).
 
 ## Log Manager
 
@@ -75,8 +73,8 @@ A LogMgr is used to manage transports and obtain loggers.
 
 ## Code Organization
 
-Levels, loggers, transports and message builders (MsgBuilder) are all organized
-under their own folders. Only the LogMgr.ts is defined at the top level.
+Levels, loggers, transports and message builders (MsgBuilder) are all organized under their own folders. Only the
+LogMgr.ts is defined at the top level.
 
 ```txt
 src/
@@ -92,7 +90,7 @@ src/
 │   └── types.ts
 └── transports/
     └── index.ts
-```    
+```
 
 The code is exposed as modules and submodules as follows:
 
@@ -123,5 +121,22 @@ Log
 
 We recommend the following changes to improve this module:
 
-- A user must be able to extend `MsgBuilder.Basic` or `MsgBuilder.Console` and use their new class with a Logger without having to write their own Logger class. 
-- A user should, if possible, be able to define their own log levels (names, values and color formatting) without having to write their own Logger class and logger classs factory methods for this Logger.
+- A user must be able to extend `MsgBuilder.Basic` or `MsgBuilder.Console` and use their new class with a Logger without
+  having to write their own Logger class.
+- A user must be able to extend Logger.Basic with their own implementations that implement custom log levels. The cli
+  and std log levels should be rewritten to use this same syntax.
+- The user must be able to use Logger.Console
+- When creating a logMgr instance, the user must be able to specify the classes of MsgBuilder and Logger that they wish
+  to use.
+  - The Logger implementation will implement the different log level methods 'error', 'warn', etc.
+  - These methods will return the MsgBuilder that was specified when creating the LogMgr instance.
+  - Code completion should work when returning a MsgBuilder so that the user can create a message.
+
+For example, a user should be able to do the following. The coding IDE will know that log.info returns a MsgBuilder that
+implements the h1 method.
+
+```ts
+const logMgr = new Log.Mgr<M, L>();
+const log = logMgr.getLogger();
+log.info.h1('My application is called').value(pkg.name).emit();
+```

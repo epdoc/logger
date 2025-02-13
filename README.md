@@ -56,9 +56,8 @@ log.info.text('Hello world').emit();
 0.002s [INFO   ] Hello world
 ```
 
-Under the hood, the log manager is creating a single transport for outputting to
-the console, starting this transport, then creating a logger object. Now the
-logger object can be called with `info`, `error`, `warn`, `debug`, `verbose`,
+Under the hood, the log manager is creating a single transport for outputting to the console, starting this transport,
+then creating a logger object. Now the logger object can be called with `info`, `error`, `warn`, `debug`, `verbose`,
 `spam` methods to create and return a new MsgBuilder. This is the same as:
 
 ```typescript
@@ -67,9 +66,8 @@ line.text('Hello world');
 line.emit();
 ```
 
-Calling `emit` will terminate the line and call the LogMgr to output the line to
-all transports. In this case there is just the console transport. And in fact we
-currently only support the console transport.
+Calling `emit` will terminate the line and call the LogMgr to output the line to all transports. In this case there is
+just the console transport. And in fact we currently only support the console transport.
 
 ## Adding Color to Console Output
 
@@ -82,25 +80,23 @@ log.info.h1('Output').value('my value').text('to').path('/Users/me/myfiles').emi
 0.034s [INFO   ] Output my value to /Users/me/myfiles
 ```
 
-The `info` method above must be the first call. It returns an object that has
-the chainable methods h1, value, text, and path. These methods are used to add
-color and other formatting to the output. Again,calling emit will result in the
+The `info` method above must be the first call. It returns an object that has the chainable methods h1, value, text, and
+path. These methods are used to add color and other formatting to the output. Again,calling emit will result in the
 output of the message to the console.
 
 The complete list of chainable methods is in [Log.MsgBuilder.Console.styleFormatters](./src/message/console.ts):
 
 `text`, `h1`, `h2`, `h3`, `action`, `label`, `highlight`, `value`, `path`, `date`, `warn`, `error`, `strikethru`,
 
-We will learn how to customize these styles later in this document. We will also
-learn how to create our own method names with our own styles.
+We will learn how to customize these styles later in this document. We will also learn how to create our own method
+names with our own styles.
 
 ## Controlling what is written to the console
 
 ############# OUT OF DATE #################
 
-A message consists of a date/time, log level and other fields that are joined
-together on the line with your actual message. You can customize which of these
-fields is output. The example below shows the default settings.
+A message consists of a date/time, log level and other fields that are joined together on the line with your actual
+message. You can customize which of these fields is output. The example below shows the default settings.
 
 ```typescript
 import { LogManager } from '@epdoc/logger';

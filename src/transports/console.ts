@@ -42,8 +42,8 @@ export class Console extends Basic implements Transport.IBasic {
       parts.push(
         logLevels.applyColors(
           duration().narrow.format(msg.timestamp.getTime() - this._logMgr.startTime.getTime()),
-          msg.level
-        )
+          msg.level,
+        ),
       );
     }
 
@@ -94,7 +94,7 @@ export class Console extends Basic implements Transport.IBasic {
     val: string,
     show: boolean | number,
     colorFn: string,
-    opts?: { pre: string; post: string }
+    opts?: { pre: string; post: string },
   ): string {
     let s = val;
     if (isInteger(show)) {

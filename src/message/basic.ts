@@ -1,6 +1,7 @@
 import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
 import { assert } from '@std/assert';
 import type { Level } from '../levels/index.ts';
+import type * as Logger from '../logger/types.ts';
 import type * as Log from '../types.ts';
 import { StringUtil } from '../util.ts';
 import type * as MsgBuilder from './types.ts';
@@ -11,10 +12,10 @@ const DEFAULT_TAB_SIZE = 2;
  * A LoggerLine is a line of output from a Logger. It is used to build up a log
  * line, add styling, and emit the log line.
  */
-export class Basic implements MsgBuilder.ICore {
+export class Basic implements MsgBuilder.IBasic {
   protected _timestamp: Date = new Date();
   protected _level: Level.Name;
-  protected _emitter: Log.IEmitter | undefined;
+  protected _emitter: Logger.IEmitter | undefined;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
   // protected _lineFormat: LoggerLineFormatOpts;
   protected _applyColors: boolean = true;
@@ -26,7 +27,7 @@ export class Basic implements MsgBuilder.ICore {
   // protected _level: LogLevelValue = logLevel.info;
   protected _showElapsed: boolean = false;
 
-  constructor(level: Level.Name, emitter?: Log.IEmitter) {
+  constructor(level: Level.Name, emitter?: Logger.IEmitter) {
     this._level = level;
     this._emitter = emitter;
   }
@@ -35,11 +36,11 @@ export class Basic implements MsgBuilder.ICore {
     this._level = level;
   }
 
-  set emitter(emitter: Log.IEmitter) {
+  set emitter(emitter: Logger.IEmitter) {
     this._emitter = emitter;
   }
 
-  get emitter(): Log.IEmitter {
+  get emitter(): Logger.IEmitter {
     assert(this._emitter, 'No logger set');
     return this._emitter;
   }

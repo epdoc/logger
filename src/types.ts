@@ -41,14 +41,3 @@ export type GetChildOpts = {
   reqId?: string;
   pkg?: string;
 };
-
-export interface IEmitter {
-  emit(msg: Entry): void;
-  // show(val: LogEmitterShowOpts): this;
-  set package(val: string);
-  get package(): string;
-  set reqId(val: string);
-  get reqId(): string;
-  getChild(opts?: GetChildOpts): IEmitter;
-  meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean;
-}

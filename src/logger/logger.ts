@@ -8,7 +8,7 @@ import type * as Log from '../types.ts';
 
 let markId = 0;
 
-export class Detailed implements Log.IEmitter, Logger.IMark, Logger.IThresholds {
+export class Detailed implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
   protected _logMgr: LogMgr;
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = {};

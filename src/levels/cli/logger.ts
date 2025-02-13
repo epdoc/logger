@@ -5,8 +5,8 @@ import type * as Log from '../../types.ts';
 import type * as cli from './types.ts';
 
 export const getLogger: CoreLogger.FactoryMethod = (
-  log: LogMgr | Log.IEmitter,
-  opts: Log.GetChildOpts = {}
+  log: LogMgr | CoreLogger.IEmitter,
+  opts: Log.GetChildOpts = {},
 ) => {
   if (log instanceof LogMgr) {
     return new Logger(log).setReqId(opts.reqId).setPackage(opts.pkg);

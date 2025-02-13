@@ -1,11 +1,12 @@
 import type { Integer } from '@epdoc/type';
 import type { Name } from '../levels/types.ts';
+import type * as Logger from '../logger/types.ts';
 import type * as Log from '../types.ts';
 
-export interface ICore {
+export interface IBasic {
   set level(level: Name);
-  set emitter(emitter: Log.IEmitter);
-  get emitter(): Log.IEmitter;
+  set emitter(emitter: Logger.IEmitter);
+  get emitter(): Logger.IEmitter;
   clear(): this;
   setInitialString(...args: Log.StyleArg[]): this;
   indent(n: Integer | string): this;

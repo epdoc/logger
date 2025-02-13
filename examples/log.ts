@@ -48,7 +48,7 @@ export class MsgBuilder extends Log.MsgBuilder.Console {
       dateRanges.ranges.forEach((range) => {
         const bBefore = range.before && range.before < new Date() ? true : false;
         this.label(bBefore ? 'from' : 'after').date(
-          range.after ? dateEx(range.after).format('yyyy/MM/dd HH:mm:ss') : '2000'
+          range.after ? dateEx(range.after).format('yyyy/MM/dd HH:mm:ss') : '2000',
         );
         if (bBefore) {
           this.label('to').date(dateEx(range.before).format('yyyy/MM/dd HH:mm:ss'));
@@ -76,7 +76,7 @@ export class MsgBuilder extends Log.MsgBuilder.Console {
 
 export const getLogger: Log.Logger.FactoryMethod = (
   log: Log.Mgr | Log.IEmitter,
-  opts: Log.GetChildOpts = {}
+  opts: Log.GetChildOpts = {},
 ) => {
   if (log instanceof Log.Mgr) {
     return new Logger(log).setReqId(opts.reqId).setPackage(opts.pkg);

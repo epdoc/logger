@@ -1,40 +1,17 @@
 import type { Integer } from '@epdoc/type';
+import type { IBasic } from './ibasic.ts';
 import type * as Level from './types.ts';
+
 /**
  * @fileoverview This module provides a base implementation of log levels that
  * can be used to create custom log levels. By passing a LogLevelsDef object to
  * the constructor, a LogLevels object is created.
  */
 
-/**
- * Function type for formatting log messages.
- * @param {string} msg - The message to format.
- * @returns {string} The formatted message.
- */
-export type FormatFn = (msg: string) => string;
-
-/**
- * Represents the definition of an individual log level that can be used with
- * the {@linkcode LogLevels} class.
- */
-export type LogLevelDef = {
-  val: number;
-  fmtFn?: FormatFn;
-  default?: boolean;
-  flush?: boolean;
-};
-
 /** Type guard for LogLevelDef */
-function isLogLevelDef(levelDef: unknown): levelDef is LogLevelDef {
+export function isLogLevelDef(levelDef: unknown): levelDef is Level.LogLevelDef {
   return typeof levelDef === 'object' && levelDef !== null;
 }
-
-/**
- * Type representing a dictionary with multiple log level definitions. The
- * dictionary keys are the names of the log levels (eg. info, debug). All log
- * levels are internally resolved to uppercase names.
- */
-export type LogLevelsDef = Record<string, LogLevelDef>;
 
 /**
  * Class representing the log levels that are to be used with the
@@ -42,8 +19,8 @@ export type LogLevelsDef = Record<string, LogLevelDef>;
  * order for these classes to be availalbe as Logger methods, you must subclass
  * the Logger class and add your methods to your subclasses.
  */
-export class LogLevels implements Level.IBasic {
-  protected _levelDef: LogLevelsDef;
+export class LogLevels implements IBasic {
+  protected _levelDef: Level.LogLevelsDef;
   protected _increasing: boolean = false;
   protected _levelValues: Level.Value[];
 
@@ -51,8 +28,8 @@ export class LogLevels implements Level.IBasic {
    * Creates an instance of LogLevels.
    * @param levelDef - Optional custom log level definitions.
    */
-  constructor(levelDef: LogLevelsDef) {
-    const _levelDef: LogLevelsDef = levelDef as LogLevelsDef;
+  constructor(levelDef: Level.LogLevelsDef) {
+    const _levelDef: Level.LogLevelsDef = levelDef as Level.LogLevelsDef;
 
     // Convert all keys to uppercase
     this._levelDef = Object.fromEntries(
@@ -83,7 +60,7 @@ export class LogLevels implements Level.IBasic {
    */
   get defaultLevelName(): Level.Name {
     const defaultLevel = Object.keys(this._levelDef).find(
-      (key) => (this._levelDef[key] as LogLevelDef).default === true,
+      (key) => (this._levelDef[key] as Level.LogLevelDef).default === true,
     );
     if (defaultLevel) {
       return defaultLevel;
@@ -103,7 +80,7 @@ export class LogLevels implements Level.IBasic {
    * Retrieves the log level definitions.
    * @returns The log level definitions.
    */
-  protected get levelDefs(): LogLevelsDef {
+  protected get levelDefs(): Level.LogLevelsDef {
     return this._levelDef;
   }
 

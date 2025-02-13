@@ -13,7 +13,7 @@ let markId = 0;
  * level methods.
  */
 
-export class Basic implements Log.IEmitter, Logger.IMark, Logger.IThresholds {
+export class Basic implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
   protected _logMgr: LogMgr;
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = {};
