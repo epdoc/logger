@@ -1,17 +1,16 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import { isNonEmptyString } from '@epdoc/type';
 import { assert } from '@std/assert';
 // import { cli, ILogLevels, type Level.Name, Level.Value, LogLevelFactoryMethod, std } from './levels/index.ts';
 import { cli, type Level, std } from './levels/index.ts';
 import type * as Logger from './logger/index.ts';
-import type * as MsgBuilder from './message/index.ts';
+import * as MsgBuilder from './message/index.ts';
 import * as Transport from './transports/index.ts';
 import type * as Log from './types.ts';
 
 /**
  * LogMgr is responsible for managing loggers, log levels, and transports.
  */
-export class LogMgr {
+export class LogMgr<M> {
   protected _t0: Date = new Date();
   protected _type: string | undefined;
   protected _logLevels: Level.IBasic | undefined;
@@ -21,10 +20,11 @@ export class LogMgr {
   protected _pkg: string = '';
   protected _reqId: string = '';
   protected _mark: Record<string, HrMilliseconds> = {};
-  protected _registeredLoggers: Record<string, Logger.FactoryMethod> = {
-    cli: cli.getLogger,
-    std: std.getLogger,
-  };
+
+  // Holds the constructor for M and L
+  protected _msgBuilderFactory: MsgBuilder.FactoryMethod;
+  protected _getLogger: Logger.FactoryMethod<M>;
+
   protected _registeredLogLevels: Record<string, Level.FactoryMethod> = {
     cli: cli.createLogLevels,
     std: std.createLogLevels,
@@ -33,33 +33,38 @@ export class LogMgr {
 
   /**
    * Creates an instance of LogMgr.
-   * @param {string} [type] - The type of logger to use.
+   *
+   * @param createLoggerClass - The Logger implementation class.
+   * @param msgBuilderFactory - The MsgBuilder implementation class.
+   * @param type - Optional logger type (for selecting log levels, etc.).
    */
-  constructor(type?: string) {
+  constructor(
+    msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.factoryMethod,
+    loggerFactory: Logger.FactoryMethod<M> = std.getLogger,
+    levelsFactory: Level.FactoryMethod = std.createLogLevels
+  ) {
+    this._getLogger = loggerFactory;
+    this._msgBuilderFactory = msgBuilderFactory;
+    this._logLevels = levelsFactory();
     this._transports = [Transport.createConsole(this)];
-    if (isNonEmptyString(type)) {
-      assert(this._registeredLoggers[type], `No logger for ${type} levels`);
-      assert(this._registeredLogLevels[type], `No levels for ${type}`);
-      this._type = type;
-      this._logLevels = this._registeredLogLevels[type]();
-    }
   }
 
   /**
-   * Registers a new logger and its corresponding log levels. This would
-   * normally require a custom logger factory method. If using an existing log
-   * level set, you can use an existing log level factory method (eg.
-   * std.getLogger)
-   * @param {string} type - The unique identifying name for this logger. Use
-   * this same name when calling getLogger.
-   * @param {LoggerFactoryMethod} logger - The logger factory method.
-   * @param {LogLevelFactoryMethod} levels - The log level factory method.
-   * @returns {this} The instance of LogMgr.
+   * Returns a logger instance by invoking new on the stored logger class.
    */
-  registerLogger(type: string, logger: Logger.FactoryMethod, levels: Level.FactoryMethod): this {
-    this._registeredLoggers[type] = logger;
-    this._registeredLogLevels[type] = levels;
-    return this;
+  getLogger(): Logger.IEmitter {
+    return this._getLogger(this);
+  }
+
+  /**
+   * Returns a new MsgBuilder instance for the given level using new on the stored class.
+   * Note: Typically a logger would call this method passing itself.
+   *
+   * @param level - The log level.
+   * @param logger - The logger instance to associate with this message builder.
+   */
+  getMsgBuilder(level: string, logger: Logger.IEmitter): M {
+    return this._msgBuilderFactory(level, logger) as M;
   }
 
   /**
@@ -114,30 +119,13 @@ export class LogMgr {
   }
 
   /**
-   * Gets a logger of the specified type. The two built-in types are 'cli' and 'std'.
-   * @param {string} [type] - The type of logger to get.
-   * @returns {Logger.Basic} The logger instance.
-   */
-  getLogger(type?: string): Logger.IEmitter {
-    this._type = type ? type : this._type;
-    assert(
-      this._type,
-      `Logger type not specified (try one of ${Object.keys(this._registeredLoggers).join(', ')})`,
-    );
-    assert(this._registeredLoggers[this._type], `No logger for ${type} levels`);
-    assert(this._registeredLogLevels[this._type], `No levels for ${type}`);
-    this._logLevels = this._registeredLogLevels[this._type]();
-    return this._registeredLoggers[this._type](this);
-  }
-
-  /**
    * Emits a log message using the specified logger. This is called by the
    * Logger implementation which, in turn, is called by the {@link IMsgBuilder}
    * implementation.
    * @param {Entry} msg - The log message to emit.
    * @param {Logger.Basic} logger - The logger to use for emitting the message.
    */
-  emit(msg: Log.Entry, logger: Logger.Basic): void {
+  emit(msg: Log.Entry, logger: Logger.IEmitter): void {
     if (this.meetsThreshold(msg.level)) {
       this._transports.forEach((transport) => {
         transport.emit(msg, logger);
@@ -173,7 +161,7 @@ export class LogMgr {
   setThreshold(level: Level.Name | Level.Value): this {
     assert(
       this._logLevels,
-      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?',
+      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?'
     );
     this._threshold = this.logLevels.asValue(level);
     this._transports.forEach((transport) => {

@@ -1,4 +1,5 @@
 import type { Integer } from '@epdoc/type';
+import type { Level } from '../levels/index.ts';
 import type { Name } from '../levels/types.ts';
 import type * as Logger from '../logger/types.ts';
 import type * as Log from '../types.ts';
@@ -16,4 +17,6 @@ export interface IBasic {
   emit(): Log.Entry;
 }
 
-// export type MsgBuilderFactoryMethod = (level: LevelName, emitter?: ILogEmitter) => IMsgBuilder;
+export type FactoryMethod = (level: Level.Name, emitter?: Logger.IEmitter) => IBasic;
+
+export type ClassConstructor<M> = new (level: string, logger: Logger.IEmitter) => M;

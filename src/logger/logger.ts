@@ -8,19 +8,23 @@ import type * as Log from '../types.ts';
 
 let markId = 0;
 
-export class Detailed implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
-  protected _logMgr: LogMgr;
+export class Detailed<M> implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
+  protected _logMgr: LogMgr<M>;
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = {};
   protected _pkg: string[] = [];
   protected _reqId: string[] = [];
   protected _mark: Record<string, HrMilliseconds> = {};
 
-  constructor(logMgr: LogMgr) {
+  constructor(logMgr: LogMgr<M>) {
     this._logMgr = logMgr;
   }
 
-  getChild(opts?: Log.GetChildOpts): Detailed {
+  // static factoryMethod<M>(logMgr: LogMgr<M>): Detailed<M> {
+  //   return new Detailed<M>(logMgr);
+  // }
+
+  getChild(opts?: Log.GetChildOpts): Detailed<M> {
     const logger = this.copy();
     if (isDict(opts)) {
       if (opts.reqId) {
@@ -33,13 +37,13 @@ export class Detailed implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
     return logger;
   }
 
-  copy(): Detailed {
-    const result = new Detailed(this._logMgr);
+  copy(): Detailed<M> {
+    const result = new Detailed<M>(this._logMgr);
     result.assign(this);
     return result;
   }
 
-  assign(logger: Detailed) {
+  assign(logger: Detailed<M>) {
     this._threshold = logger._threshold;
     this._show = logger._show;
     this._pkg = [...logger._pkg];

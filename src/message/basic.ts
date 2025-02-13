@@ -32,6 +32,10 @@ export class Basic implements MsgBuilder.IBasic {
     this._emitter = emitter;
   }
 
+  static factoryMethod(level: Level.Name, emitter?: Logger.IEmitter): Basic {
+    return new Basic(level, emitter);
+  }
+
   set level(level: Level.Name) {
     this._level = level;
   }

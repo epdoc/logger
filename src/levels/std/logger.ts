@@ -1,17 +1,13 @@
 import * as Logger from '../../logger/index.ts';
 import { LogMgr } from '../../logmgr.ts';
-import * as MsgBuilder from '../../message/index.ts';
 import type * as Log from '../../types.ts';
 import type * as std from './types.ts';
 
-export const getLogger: Logger.FactoryMethod = (
-  log: LogMgr | Logger.IEmitter,
-  opts: Log.GetChildOpts = {},
-) => {
+export const getLogger = <M>(log: LogMgr<M> | Logger.IEmitter, opts: Log.GetChildOpts = {}): StdLogger<M> => {
   if (log instanceof LogMgr) {
-    return new StdLogger(log).setReqId(opts.reqId).setPackage(opts.pkg);
+    return new StdLogger<M>(log).setReqId(opts.reqId).setPackage(opts.pkg);
   } else if (log instanceof StdLogger) {
-    return log.getChild(opts);
+    return log.getChild(opts) as StdLogger<M>;
   }
   throw new Error('Invalid logger type');
 };
@@ -27,9 +23,9 @@ export const getLogger: Logger.FactoryMethod = (
  *  - spam (* bonus level not normlly part of STD)
  */
 
-export class StdLogger extends Logger.Indent implements std.ILogger {
-  override copy(): StdLogger {
-    const result = new StdLogger(this._logMgr);
+export class StdLogger<M> extends Logger.Indent<M> implements std.ILogger<M> {
+  override copy(): StdLogger<M> {
+    const result = new StdLogger<M>(this._logMgr);
     result.assign(this);
     return result;
   }
@@ -39,8 +35,9 @@ export class StdLogger extends Logger.Indent implements std.ILogger {
    * usually non-recoverable and requires manual intervention.
    * @returns A message builder for the ERROR level.
    */
-  get error(): MsgBuilder.Console {
-    return new MsgBuilder.Console('ERROR', this);
+  get error(): M {
+    return this._logMgr.getMsgBuilder('ERROR', this);
+    // return this._logMgr.getMessageBuilder('ERROR');
   }
 
   /**
@@ -49,8 +46,8 @@ export class StdLogger extends Logger.Indent implements std.ILogger {
    * anyway.
    * @returns A message builder for the WARN level.
    */
-  get warn(): MsgBuilder.Console {
-    return new MsgBuilder.Console('WARN', this);
+  get warn(): M {
+    return this._logMgr.getMsgBuilder('WARN', this);
   }
 
   /**
@@ -59,8 +56,8 @@ export class StdLogger extends Logger.Indent implements std.ILogger {
    * applications, these are messages that the user is meant to see.
    * @returns A message builder for the INFO level.
    */
-  get info(): MsgBuilder.Console {
-    return new MsgBuilder.Console('INFO', this);
+  get info(): M {
+    return this._logMgr.getMsgBuilder('INFO', this);
   }
 
   /**
@@ -69,8 +66,8 @@ export class StdLogger extends Logger.Indent implements std.ILogger {
    * while verbose messages spill all the details.
    * @returns A message builder for the VERBOSE level.
    */
-  get verbose(): MsgBuilder.Console {
-    return new MsgBuilder.Console('VERBOSE', this);
+  get verbose(): M {
+    return this._logMgr.getMsgBuilder('VERBOSE', this);
   }
 
   /**
@@ -79,8 +76,8 @@ export class StdLogger extends Logger.Indent implements std.ILogger {
    * appropriate level to dump stack trace information, where it exists.
    * @returns A message builder for the DEBUG level.
    */
-  get debug(): MsgBuilder.Console {
-    return new MsgBuilder.Console('DEBUG', this);
+  get debug(): M {
+    return this._logMgr.getMsgBuilder('DEBUG', this);
   }
 
   /**
@@ -88,8 +85,8 @@ export class StdLogger extends Logger.Indent implements std.ILogger {
    * usually to help during development.
    * @returns A message builder for the TRACE level.
    */
-  get trace(): MsgBuilder.Console {
-    return new MsgBuilder.Console('TRACE', this);
+  get trace(): M {
+    return this._logMgr.getMsgBuilder('TRACE', this);
   }
 
   /**
@@ -97,7 +94,7 @@ export class StdLogger extends Logger.Indent implements std.ILogger {
    * normally be commented out.
    * @returns A message builder for the SPAM level.
    */
-  get spam(): MsgBuilder.Console {
-    return new MsgBuilder.Console('SPAM', this);
+  get spam(): M {
+    return this._logMgr.getMsgBuilder('SPAM', this);
   }
 }

@@ -1,9 +1,11 @@
 import { type Integer, isNonEmptyString, isPosNumber } from '@epdoc/type';
 import { assert } from '@std/assert';
 import * as colors from '@std/fmt/colors';
+import type { Level } from '../levels/index.ts';
 import * as Logger from '../logger/index.ts';
 import type * as Log from '../types.ts';
 import { Basic } from './basic.ts';
+import type * as MsgBuilder from './types.ts';
 
 const styleFormatters: Record<string, Log.StyleFormatterFn> = {
   text: colors.brightWhite,
@@ -38,9 +40,9 @@ const styleFormatters: Record<string, Log.StyleFormatterFn> = {
   _timePrefix: colors.gray,
 } as const;
 
-// export const createMsgBuilder: MsgBuilderFactoryMethod = (level: LevelName, emitter?: ILogEmitter) => {
-//   return new MsgBuilder(level, emitter);
-// };
+export const createMsgBuilder: MsgBuilder.FactoryMethod = (level: Level.Name, emitter?: Logger.IEmitter) => {
+  return new Console(level, emitter);
+};
 
 /**
  * Message Builder class for styling messages. Extends the CoreMsgBuilder to
@@ -50,6 +52,10 @@ const styleFormatters: Record<string, Log.StyleFormatterFn> = {
  */
 export class Console extends Basic {
   static readonly styleFormatters = styleFormatters;
+
+  static override factoryMethod(level: Level.Name, emitter?: Logger.IEmitter): Console {
+    return new Console(level, emitter);
+  }
 
   /**
    * Emits a styled text message.

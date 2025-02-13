@@ -13,19 +13,23 @@ let markId = 0;
  * level methods.
  */
 
-export class Basic implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
-  protected _logMgr: LogMgr;
+export class Basic<M> implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
+  protected _logMgr: LogMgr<M>;
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = {};
   protected _pkg: string[] = [];
   protected _reqId: string[] = [];
   protected _mark: Record<string, HrMilliseconds> = {};
 
-  constructor(logMgr: LogMgr) {
+  constructor(logMgr: LogMgr<M>) {
     this._logMgr = logMgr;
   }
 
-  getChild(opts?: Log.GetChildOpts): Basic {
+  // static factoryMethod<M>(logMgr: LogMgr<M>): Basic<M> {
+  //   return new Basic<M>(logMgr);
+  // }
+
+  getChild(opts?: Log.GetChildOpts): Basic<M> {
     const logger = this.copy();
     if (isDict(opts)) {
       if (opts.reqId) {
@@ -38,13 +42,13 @@ export class Basic implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
     return logger;
   }
 
-  copy(): Basic {
-    const result = new Basic(this._logMgr);
+  copy(): Basic<M> {
+    const result = new Basic<M>(this._logMgr);
     result.assign(this);
     return result;
   }
 
-  assign(logger: Basic) {
+  assign(logger: Basic<M>) {
     this._threshold = logger._threshold;
     this._show = logger._show;
     this._pkg = [...logger._pkg];
@@ -91,7 +95,7 @@ export class Basic implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
     return this._logMgr.logLevels;
   }
 
-  get logMgr(): LogMgr {
+  get logMgr(): LogMgr<M> {
     return this._logMgr;
   }
 

@@ -4,20 +4,24 @@ import type * as Log from '../types.ts';
 import { Basic } from './basic.ts';
 import type * as Logger from './types.ts';
 
-export class Indent extends Basic implements Logger.IIndent {
+export class Indent<M> extends Basic<M> implements Logger.IIndent {
   protected _t0: Date = new Date();
   protected _indent: string[] = [];
 
-  constructor(logMgr: LogMgr) {
+  constructor(logMgr: LogMgr<M>) {
     super(logMgr);
   }
+
+  // static override factoryMethod<M>(logMgr: LogMgr<M>): Basic<M> {
+  //   return new Basic<M>(logMgr);
+  // }
 
   startTime(d: Date): this {
     this._t0 = d;
     return this;
   }
 
-  override assign(logger: Indent) {
+  override assign(logger: Indent<M>) {
     super.assign(logger);
     this._t0 = logger._t0;
     this._indent = [...logger._indent];

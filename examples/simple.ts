@@ -1,14 +1,8 @@
 import { Log } from '../mod.ts';
 
-const showOpts: Log.EmitterShowOpts = {
-  level: true,
-  timestamp: 'elapsed',
-  reqId: true,
-  package: true,
-};
-
-const logMgr = new Log.Mgr().setShow(showOpts);
-const log = logMgr.getLogger('std') as Log.std.Logger;
+type M = Log.MsgBuilder.Console;
+const logMgr = new Log.Mgr<M>();
+const log = logMgr.getLogger() as Log.std.Logger<M>;
 logMgr.setThreshold('verbose');
 
 log.info.text('Hello world').emit();

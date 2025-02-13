@@ -37,4 +37,6 @@ export function isIMark(val: object): val is IMark {
   return (<IMark> val).mark !== undefined;
 }
 
-export type FactoryMethod = (logMgr: LogMgr | IEmitter, opts?: Log.GetChildOpts) => IEmitter;
+export type FactoryMethod<M> = (logMgr: LogMgr<M> | IEmitter, opts?: Log.GetChildOpts) => IEmitter;
+
+export type ClassConstructor<M> = new (logMgr: LogMgr<M>) => IEmitter;
