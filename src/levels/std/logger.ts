@@ -1,16 +1,16 @@
-import * as CoreLogger from '../../logger/index.ts';
+import * as Logger from '../../logger/index.ts';
 import { LogMgr } from '../../logmgr.ts';
 import * as MsgBuilder from '../../message/index.ts';
 import type * as Log from '../../types.ts';
 import type * as std from './types.ts';
 
-export const getLogger: CoreLogger.FactoryMethod = (
-  log: LogMgr | CoreLogger.IEmitter,
+export const getLogger: Logger.FactoryMethod = (
+  log: LogMgr | Logger.IEmitter,
   opts: Log.GetChildOpts = {},
 ) => {
   if (log instanceof LogMgr) {
-    return new Logger(log).setReqId(opts.reqId).setPackage(opts.pkg);
-  } else if (log instanceof Logger) {
+    return new StdLogger(log).setReqId(opts.reqId).setPackage(opts.pkg);
+  } else if (log instanceof StdLogger) {
     return log.getChild(opts);
   }
   throw new Error('Invalid logger type');
@@ -27,9 +27,9 @@ export const getLogger: CoreLogger.FactoryMethod = (
  *  - spam (* bonus level not normlly part of STD)
  */
 
-export class Logger extends CoreLogger.Indent implements std.ILogger {
-  override copy(): Logger {
-    const result = new Logger(this._logMgr);
+export class StdLogger extends Logger.Indent implements std.ILogger {
+  override copy(): StdLogger {
+    const result = new StdLogger(this._logMgr);
     result.assign(this);
     return result;
   }

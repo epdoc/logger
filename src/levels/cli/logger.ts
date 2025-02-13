@@ -1,16 +1,16 @@
-import * as CoreLogger from '../../logger/index.ts';
+import * as Logger from '../../logger/index.ts';
 import { LogMgr } from '../../logmgr.ts';
 import * as MsgBuilder from '../../message/index.ts';
 import type * as Log from '../../types.ts';
 import type * as cli from './types.ts';
 
-export const getLogger: CoreLogger.FactoryMethod = (
-  log: LogMgr | CoreLogger.IEmitter,
-  opts: Log.GetChildOpts = {},
+export const getLogger: Logger.FactoryMethod = (
+  log: LogMgr | Logger.IEmitter,
+  opts: Log.GetChildOpts = {}
 ) => {
   if (log instanceof LogMgr) {
-    return new Logger(log).setReqId(opts.reqId).setPackage(opts.pkg);
-  } else if (log instanceof Logger) {
+    return new CliLogger(log).setReqId(opts.reqId).setPackage(opts.pkg);
+  } else if (log instanceof CliLogger) {
     return log.getChild(opts);
   }
   throw new Error('Invalid logger type');
@@ -30,13 +30,13 @@ export const getLogger: CoreLogger.FactoryMethod = (
  *  - silly
  */
 
-export class Logger extends CoreLogger.Basic implements cli.ILogger {
+export class CliLogger extends Logger.Basic implements cli.ILogger {
   constructor(logMgr: LogMgr) {
     super(logMgr);
   }
 
-  override copy(): Logger {
-    const result = new Logger(this._logMgr);
+  override copy(): CliLogger {
+    const result = new CliLogger(this._logMgr);
     result.assign(this);
     return result;
   }
