@@ -4,11 +4,12 @@ import { assert } from '@std/assert/assert';
 import type { Level } from '../levels/index.ts';
 import type * as Logger from '../logger/types.ts';
 import type { LogMgr } from '../logmgr.ts';
+import type * as MsgBuilder from '../message/index.ts';
 import type * as Log from '../types.ts';
 
 let markId = 0;
 
-export class Detailed<M> implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
+export class Detailed<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
   protected _logMgr: LogMgr<M>;
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = {};

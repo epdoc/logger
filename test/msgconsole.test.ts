@@ -4,8 +4,10 @@ import { expect } from 'jsr:@std/expect';
 import { describe, test } from 'jsr:@std/testing/bdd';
 import { Log } from '../mod.ts';
 
-const logMgr = new Log.Mgr('std');
-const log: Log.std.Logger = logMgr.getLogger() as Log.std.Logger;
+type M = Log.MsgBuilder.Console;
+
+const logMgr = new Log.Mgr();
+const log: Log.std.Logger<M> = logMgr.getLogger() as Log.std.Logger<M>;
 
 describe('MsgBuilder.Console', () => {
   test('test', () => {
@@ -31,7 +33,7 @@ describe('MsgBuilder.Console', () => {
     console.log(result.msg);
     expect(result.level).toBe('INFO');
     expect(result.msg).toMatch(
-      /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*path.*date.*strikethru.*warn.*error.*$/,
+      /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*path.*date.*strikethru.*warn.*error.*$/
     );
   });
   test('display no colors', () => {
@@ -86,7 +88,7 @@ describe('MsgBuilder.Console', () => {
     const result = msgBuilder.action('action').emit();
     assertEquals(
       StringEx(result.msg).hexEncode(),
-      '001b005b00330030006d001b005b00340033006d0061006300740069006f006e001b005b00340039006d001b005b00330039006d',
+      '001b005b00330030006d001b005b00340033006d0061006300740069006f006e001b005b00340039006d001b005b00330039006d'
     );
   });
   test('label', () => {
@@ -99,7 +101,7 @@ describe('MsgBuilder.Console', () => {
     const result = msgBuilder.highlight('highlight').emit();
     assertEquals(
       StringEx(result.msg).hexEncode(),
-      '001b005b00390035006d0068006900670068006c0069006700680074001b005b00330039006d',
+      '001b005b00390035006d0068006900670068006c0069006700680074001b005b00330039006d'
     );
   });
   test('value', () => {
@@ -107,7 +109,7 @@ describe('MsgBuilder.Console', () => {
     const result = msgBuilder.value('value').emit();
     assertEquals(
       StringEx(result.msg).hexEncode(),
-      '001b005b00330032006d00760061006c00750065001b005b00330039006d',
+      '001b005b00330032006d00760061006c00750065001b005b00330039006d'
     );
   });
   test('path', () => {
@@ -115,7 +117,7 @@ describe('MsgBuilder.Console', () => {
     const result = msgBuilder.path('path').emit();
     assertEquals(
       StringEx(result.msg).hexEncode(),
-      '001b005b0034006d001b005b00390030006d0070006100740068001b005b00330039006d001b005b00320034006d',
+      '001b005b0034006d001b005b00390030006d0070006100740068001b005b00330039006d001b005b00320034006d'
     );
   });
   test('date', () => {
@@ -123,7 +125,7 @@ describe('MsgBuilder.Console', () => {
     const result = msgBuilder.date('date').emit();
     assertEquals(
       StringEx(result.msg).hexEncode(),
-      '001b005b00390036006d0064006100740065001b005b00330039006d',
+      '001b005b00390036006d0064006100740065001b005b00330039006d'
     );
   });
   test('warn', () => {
@@ -131,7 +133,7 @@ describe('MsgBuilder.Console', () => {
     const result = msgBuilder.warn('warn').emit();
     assertEquals(
       StringEx(result.msg).hexEncode(),
-      '001b005b00390033006d007700610072006e001b005b00330039006d',
+      '001b005b00390033006d007700610072006e001b005b00330039006d'
     );
   });
   test('error', () => {
@@ -139,7 +141,7 @@ describe('MsgBuilder.Console', () => {
     const result = msgBuilder.error('error').emit();
     assertEquals(
       StringEx(result.msg).hexEncode(),
-      '001b005b0031006d001b005b00390031006d006500720072006f0072001b005b00330039006d001b005b00320032006d',
+      '001b005b0031006d001b005b00390031006d006500720072006f0072001b005b00330039006d001b005b00320032006d'
     );
   });
   test('strikethru', () => {
@@ -147,7 +149,7 @@ describe('MsgBuilder.Console', () => {
     const result = msgBuilder.strikethru('strikethru').emit();
     assertEquals(
       StringEx(result.msg).hexEncode(),
-      '001b005b0037006d0073007400720069006b00650074006800720075001b005b00320037006d',
+      '001b005b0037006d0073007400720069006b00650074006800720075001b005b00320037006d'
     );
   });
 });

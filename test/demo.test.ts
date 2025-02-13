@@ -1,6 +1,8 @@
 import { Log } from '../mod.ts';
 
-const logMgr = new Log.Mgr('cli');
-const log: Log.std.Logger = logMgr.getLogger() as Log.std.Logger;
+type M = Log.MsgBuilder.Console;
+
+const logMgr = new Log.Mgr<M>();
+const log = logMgr.getLogger() as Log.std.Logger<M>;
 
 log.info.h2('Hello, world!').emit();

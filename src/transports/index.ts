@@ -1,2 +1,2 @@
-export { createConsole } from './console.ts';
+export { createTransport } from './console.ts';
 export type { IBasic } from './types.ts';

@@ -3,8 +3,9 @@ import type { LogMgr } from '../logmgr.ts';
 import type * as Log from '../types.ts';
 import { Basic } from './basic.ts';
 import type * as Logger from './types.ts';
+import type * as MsgBuilder from '../message/index.ts';
 
-export class Indent<M> extends Basic<M> implements Logger.IIndent {
+export class Indent<M extends MsgBuilder.IBasic> extends Basic<M> implements Logger.IIndent {
   protected _t0: Date = new Date();
   protected _indent: string[] = [];
 

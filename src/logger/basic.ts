@@ -5,6 +5,7 @@ import type { Level } from '../levels/index.ts';
 import type { LogMgr } from '../logmgr.ts';
 import type * as Log from '../types.ts';
 import type * as Logger from './types.ts';
+import type * as MsgBuilder from '../message/index.ts';
 
 let markId = 0;
 
@@ -13,7 +14,7 @@ let markId = 0;
  * level methods.
  */
 
-export class Basic<M> implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
+export class Basic<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
   protected _logMgr: LogMgr<M>;
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = {};

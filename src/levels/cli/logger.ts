@@ -2,8 +2,12 @@ import * as Logger from '../../logger/index.ts';
 import { LogMgr } from '../../logmgr.ts';
 import type * as Log from '../../types.ts';
 import type * as cli from './types.ts';
+import type * as MsgBuilder from '../../message/index.ts';
 
-export const getLogger = <M>(log: LogMgr<M> | Logger.IEmitter, opts: Log.GetChildOpts = {}): CliLogger<M> => {
+export const getLogger = <M extends MsgBuilder.IBasic>(
+  log: LogMgr<M> | Logger.IEmitter,
+  opts: Log.GetChildOpts = {},
+): CliLogger<M> => {
   if (log instanceof LogMgr) {
     return new CliLogger<M>(log).setReqId(opts.reqId).setPackage(opts.pkg);
   } else if (log instanceof CliLogger) {
@@ -26,7 +30,7 @@ export const getLogger = <M>(log: LogMgr<M> | Logger.IEmitter, opts: Log.GetChil
  *  - silly
  */
 
-export class CliLogger<M> extends Logger.Basic<M> implements cli.ILogger<M> {
+export class CliLogger<M extends MsgBuilder.IBasic> extends Logger.Basic<M> implements cli.ILogger<M> {
   constructor(logMgr: LogMgr<M>) {
     super(logMgr);
   }

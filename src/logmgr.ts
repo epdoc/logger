@@ -10,7 +10,7 @@ import type * as Log from './types.ts';
 /**
  * LogMgr is responsible for managing loggers, log levels, and transports.
  */
-export class LogMgr<M> {
+export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
   protected _t0: Date = new Date();
   protected _type: string | undefined;
   protected _logLevels: Level.IBasic | undefined;
@@ -22,14 +22,14 @@ export class LogMgr<M> {
   protected _mark: Record<string, HrMilliseconds> = {};
 
   // Holds the constructor for M and L
-  protected _msgBuilderFactory: MsgBuilder.FactoryMethod;
-  protected _getLogger: Logger.FactoryMethod<M>;
+  protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.factoryMethod;
+  protected _getLogger: Logger.FactoryMethod<M> = std.getLogger<M>;
 
   protected _registeredLogLevels: Record<string, Level.FactoryMethod> = {
     cli: cli.createLogLevels,
     std: std.createLogLevels,
   };
-  protected _transports: Transport.IBasic[] = [];
+  protected _transports: Transport.IBasic<M>[] = [];
 
   /**
    * Creates an instance of LogMgr.
@@ -38,15 +38,19 @@ export class LogMgr<M> {
    * @param msgBuilderFactory - The MsgBuilder implementation class.
    * @param type - Optional logger type (for selecting log levels, etc.).
    */
-  constructor(
-    msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.factoryMethod,
-    loggerFactory: Logger.FactoryMethod<M> = std.getLogger,
-    levelsFactory: Level.FactoryMethod = std.createLogLevels
-  ) {
-    this._getLogger = loggerFactory;
-    this._msgBuilderFactory = msgBuilderFactory;
+  constructor(levelsFactory: Level.FactoryMethod = std.createLogLevels) {
     this._logLevels = levelsFactory();
-    this._transports = [Transport.createConsole(this)];
+    this._transports = [Transport.createTransport<M>(this)];
+  }
+
+  msgBuilder(msgBuilderFactory: MsgBuilder.FactoryMethod): this {
+    this._msgBuilderFactory = msgBuilderFactory;
+    return this;
+  }
+
+  logger(loggerFactory: Logger.FactoryMethod<M>): this {
+    this._getLogger = loggerFactory;
+    return this;
   }
 
   /**
@@ -73,7 +77,7 @@ export class LogMgr<M> {
    * @param transport
    * @returns
    */
-  setTransport(transport: Transport.IBasic): this {
+  setTransport(transport: Transport.IBasic<M>): this {
     this._transports = [transport];
     this.setThreshold(5);
     return this;
@@ -85,7 +89,7 @@ export class LogMgr<M> {
    * @param transport
    * @returns
    */
-  addTransport(transport: Transport.IBasic): this {
+  addTransport(transport: Transport.IBasic<M>): this {
     this._transports.push(transport);
     this.setThreshold(5);
     return this;

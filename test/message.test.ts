@@ -3,11 +3,13 @@ import { expect } from 'jsr:@std/expect';
 import { describe, test } from 'jsr:@std/testing/bdd';
 import { Log } from '../mod.ts';
 
-const logMgr = new Log.Mgr('std');
+type M = Log.MsgBuilder.Console;
+
+const logMgr = new Log.Mgr<M>();
 
 describe('Log.Entity', () => {
   test('test', () => {
-    const log: Log.std.Logger = logMgr.getLogger() as Log.std.Logger;
+    const log: Log.std.Logger<M> = logMgr.getLogger() as Log.std.Logger<M>;
     const msgBuilder = new Log.MsgBuilder.Console('INFO', log.setPackage('testpkg').setThreshold('info'));
     const record = msgBuilder.emit('test');
     expect(record.level).toBe('INFO');

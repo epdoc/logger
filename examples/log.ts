@@ -6,7 +6,7 @@ const home = os.userInfo().homedir;
 
 const createCustomMsgBuilder: Log.MsgBuilder.FactoryMethod = (
   level: Log.Level.Name,
-  emitter?: Log.Logger.IEmitter
+  emitter?: Log.Logger.IEmitter,
 ) => {
   return new CustomMsgBuilder(level, emitter);
 };
@@ -36,6 +36,6 @@ export class CustomMsgBuilder extends Log.MsgBuilder.Console {
   }
 }
 
-export const logMgr = new Log.Mgr<CustomMsgBuilder>(createCustomMsgBuilder);
+export const logMgr = new Log.Mgr<CustomMsgBuilder>().msgBuilder(createCustomMsgBuilder);
 export const log = logMgr.getLogger() as Log.std.Logger<CustomMsgBuilder>;
 logMgr.setThreshold('info');

@@ -10,11 +10,11 @@ import type * as Log from '../types.ts';
 import { Basic } from './basic.ts';
 import type * as Transport from './types.ts';
 
-export function createConsole(logMgr: LogMgr) {
-  return new Console(logMgr);
+export function createTransport<M extends MsgBuilder.IBasic>(logMgr: LogMgr<M>) {
+  return new Console<M>(logMgr);
 }
 
-export class Console extends Basic implements Transport.IBasic {
+export class Console<M extends MsgBuilder.IBasic> extends Basic<M> implements Transport.IBasic<M> {
   protected _pkgWidth: Integer = 0;
   protected _reqIdWidth: Integer = 0;
   protected _levelWidth: Integer = 5;
@@ -28,7 +28,7 @@ export class Console extends Basic implements Transport.IBasic {
     return this;
   }
 
-  emit(msg: Log.Entry, logger: Logger.Basic) {
+  emit(msg: Log.Entry, logger: Logger.Basic<M>) {
     const parts: string[] = [];
 
     const logLevels = this._logMgr.logLevels;
@@ -42,8 +42,8 @@ export class Console extends Basic implements Transport.IBasic {
       parts.push(
         logLevels.applyColors(
           duration().narrow.format(msg.timestamp.getTime() - this._logMgr.startTime.getTime()),
-          msg.level,
-        ),
+          msg.level
+        )
       );
     }
 
@@ -94,7 +94,7 @@ export class Console extends Basic implements Transport.IBasic {
     val: string,
     show: boolean | number,
     colorFn: string,
-    opts?: { pre: string; post: string },
+    opts?: { pre: string; post: string }
   ): string {
     let s = val;
     if (isInteger(show)) {

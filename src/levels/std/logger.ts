@@ -1,9 +1,13 @@
 import * as Logger from '../../logger/index.ts';
 import { LogMgr } from '../../logmgr.ts';
+import type * as MsgBuilder from '../../message/index.ts';
 import type * as Log from '../../types.ts';
 import type * as std from './types.ts';
 
-export const getLogger = <M>(log: LogMgr<M> | Logger.IEmitter, opts: Log.GetChildOpts = {}): StdLogger<M> => {
+export const getLogger = <M extends MsgBuilder.IBasic>(
+  log: LogMgr<M> | Logger.IEmitter,
+  opts: Log.GetChildOpts = {},
+): StdLogger<M> => {
   if (log instanceof LogMgr) {
     return new StdLogger<M>(log).setReqId(opts.reqId).setPackage(opts.pkg);
   } else if (log instanceof StdLogger) {
@@ -23,7 +27,7 @@ export const getLogger = <M>(log: LogMgr<M> | Logger.IEmitter, opts: Log.GetChil
  *  - spam (* bonus level not normlly part of STD)
  */
 
-export class StdLogger<M> extends Logger.Indent<M> implements std.ILogger<M> {
+export class StdLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> implements std.ILogger<M> {
   override copy(): StdLogger<M> {
     const result = new StdLogger<M>(this._logMgr);
     result.assign(this);
