@@ -1,4 +1,6 @@
 import * as colors from '@std/fmt/colors';
+import type * as Logger from '../../logger/index.ts';
+import type * as MsgBuilder from '../../message/index.ts';
 import { LogLevels } from '../base.ts';
 import type * as Level from '../types.ts';
 
@@ -19,7 +21,7 @@ export const createLogLevels: Level.FactoryMethod = () => {
   return new LogLevels(cliLogLevelDefs);
 };
 
-export interface ILogger<M> {
+export interface ILogger<M extends MsgBuilder.IBasic> {
   error: M;
   warn: M;
   help: M;
