@@ -165,7 +165,7 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
   setThreshold(level: Level.Name | Level.Value): this {
     assert(
       this._logLevels,
-      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?'
+      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?',
     );
     this._threshold = this.logLevels.asValue(level);
     this._transports.forEach((transport) => {

@@ -12,7 +12,7 @@ export interface IEmitter {
   set reqId(val: string);
   get reqId(): string;
   getChild(opts?: Log.GetChildOpts): IEmitter;
-  meetsThreshold(level: Level.Value | Level.Name, threshold: Level.Value | Level.Name): boolean;
+  meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean;
 }
 
 export interface IIndent {
