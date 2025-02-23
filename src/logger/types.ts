@@ -13,8 +13,8 @@ export interface IInherit {
 export interface IEmitter {
   emit(msg: Log.Entry): void;
   // show(val: LogEmitterShowOpts): this;
-  set package(val: string);
-  get package(): string;
+  set pkg(val: string);
+  get pkg(): string;
   set reqId(val: string);
   get reqId(): string;
   sid: string | undefined;
@@ -46,5 +46,5 @@ export function isIMark(val: object): val is IMark {
 
 export type FactoryMethod<M extends MsgBuilder.IBasic> = (
   logMgr: LogMgr<M> | IEmitter,
-  opts?: Log.GetChildOpts,
+  opts?: Log.IParams,
 ) => IEmitter;

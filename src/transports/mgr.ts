@@ -6,7 +6,7 @@ import type * as Log from '../types.ts';
 import type { Base } from './base.ts';
 import { Console } from './console.ts';
 
-export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
+export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> implements Log.IEmitter {
   protected _bRunning = false;
   protected _logMgr: LogMgr<M>;
   transports: Base<M>[] = [];
@@ -92,7 +92,7 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
       msg: `Removed transport '${name}'`,
     };
 
-    this.emitToAll(msg);
+    this.emit(msg);
   }
 
   async stop(): Promise<void> {
@@ -103,7 +103,7 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
     await Promise.all(jobs);
   }
 
-  emitToAll(msg: Log.Entry) {
+  emit(msg: Log.Entry): void {
     for (const transport of this.transports) {
       transport.emit(msg);
     }

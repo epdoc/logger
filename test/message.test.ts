@@ -10,15 +10,22 @@ const logMgr = new Log.Mgr<M>();
 describe('Log.Entity', () => {
   test('test', () => {
     const log: Log.std.Logger<M> = logMgr.getLogger() as Log.std.Logger<M>;
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log.setPackage('testpkg').setThreshold('info'));
-    const record = msgBuilder.emit('test');
-    expect(record.level).toBe('INFO');
-    expect(record.msg).toBe('test');
-    expect(record.package).toBe('testpkg');
-    expect(record.timestamp).toBeInstanceOf(Date);
-    if (isDate(record.timestamp)) {
-      const diff = Math.abs(record.timestamp.getTime() - new Date().getTime());
-      expect(diff).toBeLessThan(10);
+    log.setPackage('testpkg').setThreshold('info');
+    const msgBuilder = new Log.MsgBuilder.Console('INFO', log, log);
+    msgBuilder.h1('message heading');
+    const str = msgBuilder.format(false);
+    const record = msgBuilder.emit('parameter passed to emit');
+    expect(record).toBeDefined();
+    if (record) {
+      expect(record.level).toBe('INFO');
+      expect(record.msg).toBeInstanceOf(Log.MsgBuilder.Console);
+      expect(record.package).toBe('testpkg');
+      expect(record.timestamp).toBeInstanceOf(Date);
+      if (isDate(record.timestamp)) {
+        const diff = Math.abs(record.timestamp.getTime() - new Date().getTime());
+        expect(diff).toBeLessThan(10);
+      }
     }
+    expect(str).toEqual('message heading');
   });
 });

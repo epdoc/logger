@@ -1,10 +1,8 @@
 import { type Integer, isNonEmptyString, isPosNumber } from '@epdoc/type';
-import { assert } from '@std/assert';
 import * as colors from '@std/fmt/colors';
 import type { Level } from '../levels/index.ts';
-import * as Logger from '../logger/index.ts';
 import type * as Log from '../types.ts';
-import { Basic } from './basic.ts';
+import { Base } from './base.ts';
 import type * as MsgBuilder from './types.ts';
 
 const styleFormatters: Record<string, MsgBuilder.StyleFormatterFn> = {
@@ -40,21 +38,22 @@ const styleFormatters: Record<string, MsgBuilder.StyleFormatterFn> = {
   _timePrefix: colors.gray,
 } as const;
 
-export const createMsgBuilder: MsgBuilder.FactoryMethod = (level: Level.Name, emitter?: Logger.IEmitter) => {
-  return new Console(level, emitter);
-};
-
 /**
  * Message Builder class for styling messages. Extends the CoreMsgBuilder to
  * provide custom formatting using chained messages. If you prefer to declare
  * and use a custom set of formatting metchods, declare your own MsgBuilder and
  * pass it to the LogManager.
  */
-export class Console extends Basic implements MsgBuilder.IFormat {
+export class Console extends Base implements MsgBuilder.IFormat {
   static readonly styleFormatters = styleFormatters;
 
-  static override factoryMethod(level: Level.Name, emitter?: Logger.IEmitter): Console {
-    return new Console(level, emitter);
+  static override factoryMethod(
+    level: Level.Name,
+    params: Log.IParams,
+    emitter?: Log.IEmitter,
+    meetsThreshold: boolean = true,
+  ): Console {
+    return new Console(level, params, emitter, meetsThreshold);
   }
 
   /**
@@ -188,7 +187,7 @@ export class Console extends Basic implements MsgBuilder.IFormat {
    * @param duration
    * @returns
    */
-  emitWithTime(duration: number | string): Log.Entry {
+  emitWithTime(duration: number | string): Log.Entry | undefined {
     return this.ewt(duration);
   }
 
@@ -203,25 +202,23 @@ export class Console extends Basic implements MsgBuilder.IFormat {
    *                  with the mark method.
    * @returns A formatted string representing the elapsed time.
    */
-  ewt(duration: number | string, keep = false): Log.Entry {
-    if (isNonEmptyString(duration)) {
-      assert(this._emitter, 'No logger');
-      if (Logger.isIMark(this._emitter)) {
-        // console.log(duration, JSON.stringify(this._emitter._mark));
-        duration = (this._emitter as unknown as Logger.IMark).demark(duration, keep) as number;
+  ewt(duration: number | string, keep = false): Log.Entry | undefined {
+    if (this._meetsThreshold) {
+      if (isNonEmptyString(duration)) {
+        duration = this._params.demark(duration, keep);
       }
-    }
-    if (isPosNumber(duration)) {
-      let digits: Integer = 3;
-      if (duration > 100) {
-        digits = 0;
-      } else if (duration > 10) {
-        digits = 1;
-      } else if (duration > 1) {
-        digits = 2;
+      if (isPosNumber(duration)) {
+        let digits: Integer = 3;
+        if (duration > 100) {
+          digits = 0;
+        } else if (duration > 10) {
+          digits = 1;
+        } else if (duration > 1) {
+          digits = 2;
+        }
+        return this.stylize(styleFormatters._elapsed, `(${duration.toFixed(digits)} ms response)`).emit();
       }
-      return this.stylize(styleFormatters._elapsed, `(${duration.toFixed(digits)} ms response)`).emit();
+      return this.emit();
     }
-    return this.emit();
   }
 }

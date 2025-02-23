@@ -1,9 +1,8 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import { isDict, isString } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import type { Level } from '../levels/index.ts';
 import type { LogMgr } from '../logmgr.ts';
-import * as MsgBuilder from '../message/index.ts';
+import type * as MsgBuilder from '../message/index.ts';
 import type * as Log from '../types.ts';
 import type * as Logger from './types.ts';
 
@@ -15,7 +14,7 @@ let markId = 0;
  */
 
 export class Base<M extends MsgBuilder.IBasic>
-  implements Logger.IEmitter, Logger.IMark, Logger.ILevels, Logger.IInherit {
+  implements Logger.IEmitter, Logger.IMark, Logger.ILevels, Logger.IInherit, Log.IParams {
   protected _logMgr: LogMgr<M>;
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = {};
@@ -24,32 +23,38 @@ export class Base<M extends MsgBuilder.IBasic>
   protected _sid: string | undefined;
   protected _mark: Record<string, HrMilliseconds> = {};
 
-  constructor(logMgr: LogMgr<M>) {
+  constructor(logMgr: LogMgr<M>, params?: Log.IParams) {
     this._logMgr = logMgr;
+    this.#appendParams(params);
   }
 
   // static factoryMethod<M>(logMgr: LogMgr<M>): Basic<M> {
   //   return new Basic<M>(logMgr);
   // }
 
-  getChild(opts?: Log.GetChildOpts): Base<M> {
+  getChild(params?: Log.IParams): Base<M> {
     const logger = this.copy();
-    if (isDict(opts)) {
-      if (opts.reqId) {
-        logger._reqId.push(opts.reqId);
-      }
-      if (opts.sid) {
-        logger._sid = opts.sid;
-      }
-      if (opts.pkg) {
-        logger._pkg.push(opts.pkg);
-      }
-    }
+    this.#appendParams(params);
     return logger;
   }
 
+  #appendParams(params?: Log.IParams): this {
+    if (params) {
+      if (params.reqIds.length) {
+        this._reqId = [...this._reqId, ...params.reqIds];
+      }
+      if (params.sid) {
+        this._sid = params.sid;
+      }
+      if (params.pkgs.length) {
+        this._pkg = [...this._pkg, ...params.pkgs];
+      }
+    }
+    return this;
+  }
+
   copy(): Base<M> {
-    const result = new Base<M>(this._logMgr);
+    const result = new Base<M>(this._logMgr, this);
     result.assign(this);
     return result;
   }
@@ -57,25 +62,24 @@ export class Base<M extends MsgBuilder.IBasic>
   assign(logger: Base<M>) {
     this._threshold = logger._threshold;
     this._show = logger._show;
-    this._pkg = [...logger._pkg];
-    this._reqId = [...logger._reqId];
+    this.#appendParams(logger);
   }
 
   emit(msg: Log.Entry): void {
     if (this.meetsThreshold(msg.level) && msg.msg) {
-      if (isString(msg.msg)) {
-        console.log(msg.msg);
-      } else if (msg.msg instanceof MsgBuilder.Basic) {
-        console.log(msg.msg.format(false, MsgBuilder.Format.text));
-      }
+      this._logMgr.emit(msg);
     }
   }
 
-  get package(): string {
+  get pkgs(): string[] {
+    return this._pkg;
+  }
+
+  get pkg(): string {
     return this._pkg.join('.');
   }
 
-  set package(val: string) {
+  set pkg(val: string) {
     this._pkg.push(val);
   }
 
@@ -92,6 +96,10 @@ export class Base<M extends MsgBuilder.IBasic>
       this._pkg.push(val);
     }
     return this;
+  }
+
+  get reqIds(): string[] {
+    return this._reqId;
   }
 
   get reqId(): string {

@@ -1,10 +1,8 @@
 import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
-import { assert } from '@std/assert';
 import type { Level } from '../levels/index.ts';
-import type * as Logger from '../logger/types.ts';
-import * as MsgBuilder from '../message/index.ts';
 import type * as Log from '../types.ts';
 import { StringUtil } from '../util.ts';
+import * as MsgBuilder from './index.ts';
 
 const DEFAULT_TAB_SIZE = 2;
 
@@ -12,10 +10,12 @@ const DEFAULT_TAB_SIZE = 2;
  * A LoggerLine is a line of output from a Logger. It is used to build up a log
  * line, add styling, and emit the log line.
  */
-export class Basic implements MsgBuilder.IBasic, MsgBuilder.IFormat {
+export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   protected _timestamp: Date = new Date();
   protected _level: Level.Name;
-  protected _emitter: Logger.IEmitter | undefined;
+  protected _emitter: Log.IEmitter | undefined;
+  protected _params: Log.IParams;
+  protected _meetsThreshold: boolean = true;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
 
   protected _msgIndent: string = '';
@@ -25,30 +25,29 @@ export class Basic implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   // protected _level: LogLevelValue = logLevel.info;
   protected _showElapsed: boolean = false;
 
-  constructor(level: Level.Name, emitter?: Logger.IEmitter) {
+  constructor(
+    level: Level.Name,
+    params: Log.IParams,
+    emitter?: Log.IEmitter,
+    meetsThreshold: boolean = true
+  ) {
     this._level = level;
+    this._params = params;
     this._emitter = emitter;
+    this._meetsThreshold = meetsThreshold;
   }
 
-  static factoryMethod(level: Level.Name, emitter?: Logger.IEmitter): Basic {
-    return new Basic(level, emitter);
+  static factoryMethod(
+    level: Level.Name,
+    params: Log.IParams,
+    emitter?: Log.IEmitter,
+    meetsThreshold: boolean = true
+  ): Base {
+    return new Base(level, params, emitter, meetsThreshold);
   }
 
   set level(level: Level.Name) {
     this._level = level;
-  }
-
-  set emitter(emitter: Logger.IEmitter) {
-    this._emitter = emitter;
-  }
-
-  get emitter(): Logger.IEmitter {
-    assert(this._emitter, 'No logger set');
-    return this._emitter;
-  }
-
-  meetsThreshold(level: Level.Value | Level.Name, threshold: Level.Value | Level.Name): boolean {
-    return this.emitter.meetsThreshold(level, threshold);
   }
 
   /**
@@ -159,7 +158,7 @@ export class Basic implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   }
 
   data(data: Record<string, unknown>): this {
-    if (isDict(data)) {
+    if (isDict(data) && this._meetsThreshold) {
       if (!this._data) {
         this._data = data;
       } else {
@@ -170,31 +169,35 @@ export class Basic implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   }
 
   /**
-   * Emits the log line.
-   * @param { unknown[]} args - The arguments to emit.
+   * Emits the log line, and also returns the object that will have been
+   * emitted.
+   * @param { unknown[]} args - Optional additional arguments to emit as unformatted text.
    * @returns {void}
    * @see ewt()
    * @see emitWithTime()
    */
-  emit(...args: unknown[]): Log.Entry {
-    if (this._emitter && this._emitter.meetsThreshold(this._level)) {
+  emit(...args: unknown[]): Log.Entry | undefined {
+    if (this._meetsThreshold) {
       this.appendMsg(...args);
-      const msg: Log.Entry = {
+      const entry: Log.Entry = {
         timestamp: this._timestamp,
         level: this._level,
-        // msg: this.format(),
+        data: this._data,
+        sid: this._params.sid,
         msg: this,
-        package: this.emitter.package,
       };
-      if (this._data) {
-        msg.data = this._data;
+      if (this._params.reqIds.length) {
+        entry.reqId = this._params.reqIds.join('.');
       }
-      this._emitter.emit(msg);
+      if (this._params.pkgs.length) {
+        entry.package = this._params.pkgs.join('.');
+      }
+      if (this._emitter) {
+        this._emitter.emit(entry);
+      }
       this.clear();
-      return msg;
+      return entry;
     }
-    this.clear();
-    return { timestamp: this._timestamp, level: this._level, msg: undefined };
   }
 
   partsAsString(): string {

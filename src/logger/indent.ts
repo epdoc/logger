@@ -1,5 +1,4 @@
 import { isArray, isNumber, isString } from '@epdoc/type';
-import type { LogMgr } from '../logmgr.ts';
 import * as MsgBuilder from '../message/index.ts';
 import type * as Log from '../types.ts';
 import { Base } from './base.ts';
@@ -8,10 +7,6 @@ import type * as Logger from './types.ts';
 export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logger.IIndent {
   protected _t0: Date = new Date();
   protected _indent: string[] = [];
-
-  constructor(logMgr: LogMgr<M>) {
-    super(logMgr);
-  }
 
   // static override factoryMethod<M>(logMgr: LogMgr<M>): Basic<M> {
   //   return new Basic<M>(logMgr);
@@ -31,15 +26,15 @@ export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logg
   override emit(msg: Log.Entry): void {
     if (isString(msg.msg)) {
       msg.msg = [...this._indent, msg.msg].join(' ');
-    } else if (msg.msg) {
+    } else if (msg.msg instanceof MsgBuilder.Base) {
       this._indent.forEach((indent) => {
-        if (msg.msg instanceof MsgBuilder.Basic) {
+        if (msg.msg instanceof MsgBuilder.Base) {
           msg.msg.prependMsgPart(indent);
         }
       });
     }
     // Hand off emitting to LogMgr, which will direct to all transports
-    this._logMgr.emit(msg);
+    this._logMgr.transportMgr.emit(msg);
   }
 
   indent(n?: number | string | string[]): this {

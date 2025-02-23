@@ -66,7 +66,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
     });
 
     entry.timestamp = this.dateToString(msg.timestamp, show.timestamp ?? 'local');
-    if (msg.msg instanceof MsgBuilder.Basic) {
+    if (msg.msg instanceof MsgBuilder.Base) {
       entry.msg = msg.msg.format(this._color, this._format);
     } else if (isString(msg.msg)) {
       entry.msg = msg.msg;

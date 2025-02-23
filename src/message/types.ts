@@ -1,7 +1,6 @@
 import type { Integer } from '@epdoc/type';
 import type { Log } from '../../mod.ts';
 import type { Level } from '../levels/index.ts';
-import type { Name } from '../levels/types.ts';
 import type * as Logger from '../logger/types.ts';
 
 export type StyleFormatterFn = (str: string) => string;
@@ -26,18 +25,20 @@ export interface IFormat {
 }
 
 export interface IBasic {
-  set level(level: Name);
-  set emitter(emitter: Logger.IEmitter);
-  get emitter(): Logger.IEmitter;
   clear(): this;
   setInitialString(...args: StyleArg[]): this;
   indent(n: Integer | string): this;
   tab(n: Integer): this;
   comment(...args: string[]): this;
   data(data: Record<string, unknown>): this;
-  emit(): Log.Entry;
+  emit(): Log.Entry | undefined;
 }
 
-export type FactoryMethod = (level: Level.Name, emitter?: Logger.IEmitter) => IBasic;
+export type FactoryMethod = (
+  level: Level.Name,
+  params: Log.IParams,
+  emitter: Log.IEmitter,
+  meetsThreshold: boolean,
+) => IBasic;
 
 export type ClassConstructor<M> = new (level: string, logger: Logger.IEmitter) => M;

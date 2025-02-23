@@ -6,12 +6,12 @@ import type * as std from './types.ts';
 
 export const getLogger = <M extends MsgBuilder.IBasic>(
   log: LogMgr<M> | Logger.IEmitter,
-  opts: Log.GetChildOpts = {},
+  params?: Log.IParams,
 ): StdLogger<M> => {
   if (log instanceof LogMgr) {
-    return new StdLogger<M>(log).setReqId(opts.reqId).setPackage(opts.pkg);
+    return new StdLogger<M>(log, params);
   } else if (log instanceof StdLogger) {
-    return log.getChild(opts) as StdLogger<M>;
+    return log.getChild(params) as StdLogger<M>;
   }
   throw new Error('Invalid logger type');
 };
@@ -40,7 +40,7 @@ export class StdLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> imp
    * @returns A message builder for the ERROR level.
    */
   get error(): M {
-    return this._logMgr.getMsgBuilder('ERROR', this);
+    return this._logMgr.getMsgBuilder('ERROR', this, this);
     // return this._logMgr.getMessageBuilder('ERROR');
   }
 
@@ -51,7 +51,7 @@ export class StdLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> imp
    * @returns A message builder for the WARN level.
    */
   get warn(): M {
-    return this._logMgr.getMsgBuilder('WARN', this);
+    return this._logMgr.getMsgBuilder('WARN', this, this);
   }
 
   /**
@@ -61,7 +61,7 @@ export class StdLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> imp
    * @returns A message builder for the INFO level.
    */
   get info(): M {
-    return this._logMgr.getMsgBuilder('INFO', this);
+    return this._logMgr.getMsgBuilder('INFO', this, this);
   }
 
   /**
@@ -71,7 +71,7 @@ export class StdLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> imp
    * @returns A message builder for the VERBOSE level.
    */
   get verbose(): M {
-    return this._logMgr.getMsgBuilder('VERBOSE', this);
+    return this._logMgr.getMsgBuilder('VERBOSE', this, this);
   }
 
   /**
@@ -81,7 +81,7 @@ export class StdLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> imp
    * @returns A message builder for the DEBUG level.
    */
   get debug(): M {
-    return this._logMgr.getMsgBuilder('DEBUG', this);
+    return this._logMgr.getMsgBuilder('DEBUG', this, this);
   }
 
   /**
@@ -90,7 +90,7 @@ export class StdLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> imp
    * @returns A message builder for the TRACE level.
    */
   get trace(): M {
-    return this._logMgr.getMsgBuilder('TRACE', this);
+    return this._logMgr.getMsgBuilder('TRACE', this, this);
   }
 
   /**
@@ -99,6 +99,6 @@ export class StdLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> imp
    * @returns A message builder for the SPAM level.
    */
   get spam(): M {
-    return this._logMgr.getMsgBuilder('SPAM', this);
+    return this._logMgr.getMsgBuilder('SPAM', this, this);
   }
 }

@@ -12,7 +12,7 @@ import type * as Log from './types.ts';
  * LogMgr is responsible for managing loggers, log levels, and transports.
  */
 export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
-  protected _t0: Date = new Date();
+  protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
   protected _logLevels: Level.IBasic | undefined;
   protected _rootLogger: Logger.IEmitter | undefined;
@@ -24,7 +24,7 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
   protected _mark: Record<string, HrMilliseconds> = {};
   protected _bRunning = true;
   protected _queue: Log.Entry[] = [];
-  protected transportMgr: Transport.Mgr<M> = new Transport.Mgr<M>(this);
+  readonly transportMgr: Transport.Mgr<M> = new Transport.Mgr<M>(this);
 
   // Holds the constructor for M and L
   protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.factoryMethod;
@@ -81,8 +81,9 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
    * @param level - The log level.
    * @param logger - The logger instance to associate with this message builder.
    */
-  getMsgBuilder(level: string, logger: Logger.IEmitter): M {
-    return this._msgBuilderFactory(level, logger) as M;
+  getMsgBuilder(level: string, emitter: Log.IEmitter, params: Log.IParams): M {
+    const meetsThreshold = this.meetsThreshold(level);
+    return this._msgBuilderFactory(level, params, emitter, meetsThreshold) as M;
   }
 
   /**
@@ -144,7 +145,7 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
       if (this.transportMgr.allReady()) {
         const nextMsg = this._queue.shift();
         if (nextMsg) {
-          this.transportMgr.emitToAll(nextMsg);
+          this.transportMgr.emit(nextMsg);
           for (let idx = 0; idx < this.transportMgr.transports.length; idx++) {
             const transport = this.transportMgr.transports[idx];
             // const logLevel = transport.level || nextMsg.level || this.logLevel;
@@ -183,7 +184,7 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
    */
   emit(msg: Log.Entry): void {
     if (this.meetsThreshold(msg.level)) {
-      this.transportMgr.emitToAll(msg);
+      this.transportMgr.emit(msg);
     }
   }
 
