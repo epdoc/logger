@@ -1,11 +1,11 @@
 import { isArray, isNumber, isString } from '@epdoc/type';
 import type { LogMgr } from '../logmgr.ts';
+import * as MsgBuilder from '../message/index.ts';
 import type * as Log from '../types.ts';
-import { Basic } from './basic.ts';
+import { Base } from './base.ts';
 import type * as Logger from './types.ts';
-import type * as MsgBuilder from '../message/index.ts';
 
-export class Indent<M extends MsgBuilder.IBasic> extends Basic<M> implements Logger.IIndent {
+export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logger.IIndent {
   protected _t0: Date = new Date();
   protected _indent: string[] = [];
 
@@ -29,22 +29,17 @@ export class Indent<M extends MsgBuilder.IBasic> extends Basic<M> implements Log
   }
 
   override emit(msg: Log.Entry): void {
-    if (this.meetsThreshold(msg.level)) {
-      // Compose the message string
-      const parts: string[] = [];
-      if (this._indent.length) {
-        parts.push(...this._indent);
-      }
-      parts.push(msg.msg);
-      if (msg.data) {
-        parts.push(JSON.stringify(msg.data));
-      }
-      msg.msg = parts.join(' ');
-
-      // Hand off emitting to LogMgr, which will direct to all transports
-
-      this._logMgr.emit(msg, this);
+    if (isString(msg.msg)) {
+      msg.msg = [...this._indent, msg.msg].join(' ');
+    } else if (msg.msg) {
+      this._indent.forEach((indent) => {
+        if (msg.msg instanceof MsgBuilder.Basic) {
+          msg.msg.prependMsgPart(indent);
+        }
+      });
     }
+    // Hand off emitting to LogMgr, which will direct to all transports
+    this._logMgr.emit(msg);
   }
 
   indent(n?: number | string | string[]): this {

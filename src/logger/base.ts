@@ -1,11 +1,11 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import { isDefined, isDict } from '@epdoc/type';
+import { isDict, isString } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import type { Level } from '../levels/index.ts';
 import type { LogMgr } from '../logmgr.ts';
+import * as MsgBuilder from '../message/index.ts';
 import type * as Log from '../types.ts';
 import type * as Logger from './types.ts';
-import type * as MsgBuilder from '../message/index.ts';
 
 let markId = 0;
 
@@ -14,12 +14,14 @@ let markId = 0;
  * level methods.
  */
 
-export class Basic<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logger.IMark, Logger.ILevels {
+export class Base<M extends MsgBuilder.IBasic>
+  implements Logger.IEmitter, Logger.IMark, Logger.ILevels, Logger.IInherit {
   protected _logMgr: LogMgr<M>;
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = {};
   protected _pkg: string[] = [];
   protected _reqId: string[] = [];
+  protected _sid: string | undefined;
   protected _mark: Record<string, HrMilliseconds> = {};
 
   constructor(logMgr: LogMgr<M>) {
@@ -30,11 +32,14 @@ export class Basic<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logg
   //   return new Basic<M>(logMgr);
   // }
 
-  getChild(opts?: Log.GetChildOpts): Basic<M> {
+  getChild(opts?: Log.GetChildOpts): Base<M> {
     const logger = this.copy();
     if (isDict(opts)) {
       if (opts.reqId) {
         logger._reqId.push(opts.reqId);
+      }
+      if (opts.sid) {
+        logger._sid = opts.sid;
       }
       if (opts.pkg) {
         logger._pkg.push(opts.pkg);
@@ -43,13 +48,13 @@ export class Basic<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logg
     return logger;
   }
 
-  copy(): Basic<M> {
-    const result = new Basic<M>(this._logMgr);
+  copy(): Base<M> {
+    const result = new Base<M>(this._logMgr);
     result.assign(this);
     return result;
   }
 
-  assign(logger: Basic<M>) {
+  assign(logger: Base<M>) {
     this._threshold = logger._threshold;
     this._show = logger._show;
     this._pkg = [...logger._pkg];
@@ -57,8 +62,12 @@ export class Basic<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logg
   }
 
   emit(msg: Log.Entry): void {
-    if (this.meetsThreshold(msg.level)) {
-      console.log(msg.msg);
+    if (this.meetsThreshold(msg.level) && msg.msg) {
+      if (isString(msg.msg)) {
+        console.log(msg.msg);
+      } else if (msg.msg instanceof MsgBuilder.Basic) {
+        console.log(msg.msg.format(false, MsgBuilder.Format.text));
+      }
     }
   }
 
@@ -68,6 +77,14 @@ export class Basic<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logg
 
   set package(val: string) {
     this._pkg.push(val);
+  }
+
+  get sid(): string | undefined {
+    return this._sid;
+  }
+
+  set sid(val: string | undefined) {
+    this._sid = val;
   }
 
   setPackage(val: string | undefined): this {
@@ -100,15 +117,16 @@ export class Basic<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logg
     return this._logMgr;
   }
 
-  get threshold(): Level.Value {
-    if (isDefined(this._threshold)) {
-      return this._threshold as Level.Value;
-    }
-    return this._logMgr.threshold;
-  }
+  // get threshold(): Level.Value {
+  //   if (isDefined(this._threshold)) {
+  //     return this._threshold as Level.Value;
+  //   }
+  //   return this._logMgr.threshold;
+  // }
 
   /**
-   * Can set threshold on Logger or LogMgr level
+   * Can set threshold on a per-Logger basis. But usually we set it at the
+   * LogMgr or Transport.
    * @param level
    * @returns
    */
@@ -121,7 +139,7 @@ export class Basic<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logg
     if (threshold !== undefined) {
       return this.logLevels.meetsThreshold(level, threshold);
     }
-    return this._logMgr.meetsThreshold(level, this.threshold);
+    return this._logMgr.meetsThreshold(level, this._threshold);
   }
 
   meetsFlushThreshold(level: Level.Value | Level.Name): boolean {

@@ -2,9 +2,9 @@ import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } fr
 import { assert } from '@std/assert';
 import type { Level } from '../levels/index.ts';
 import type * as Logger from '../logger/types.ts';
+import * as MsgBuilder from '../message/index.ts';
 import type * as Log from '../types.ts';
 import { StringUtil } from '../util.ts';
-import type * as MsgBuilder from './types.ts';
 
 const DEFAULT_TAB_SIZE = 2;
 
@@ -12,16 +12,14 @@ const DEFAULT_TAB_SIZE = 2;
  * A LoggerLine is a line of output from a Logger. It is used to build up a log
  * line, add styling, and emit the log line.
  */
-export class Basic implements MsgBuilder.IBasic {
+export class Basic implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   protected _timestamp: Date = new Date();
   protected _level: Level.Name;
   protected _emitter: Logger.IEmitter | undefined;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
-  // protected _lineFormat: LoggerLineFormatOpts;
-  protected _applyColors: boolean = true;
 
   protected _msgIndent: string = '';
-  protected _msgParts: Log.MsgPart[] = [];
+  protected _msgParts: MsgBuilder.MsgPart[] = [];
   protected _data: Record<string, unknown> | undefined;
   protected _suffix: string[] = [];
   // protected _level: LogLevelValue = logLevel.info;
@@ -53,16 +51,6 @@ export class Basic implements MsgBuilder.IBasic {
     return this.emitter.meetsThreshold(level, threshold);
   }
 
-  applyColors(): this {
-    this._applyColors = true;
-    return this;
-  }
-
-  noColors(): this {
-    this._applyColors = false;
-    return this;
-  }
-
   /**
    * Clears the current line, essentially resetting the output line. This does
    * not clear the reqId, sid or emitter values.
@@ -74,7 +62,7 @@ export class Basic implements MsgBuilder.IBasic {
     return this;
   }
 
-  setInitialString(...args: Log.StyleArg[]): this {
+  setInitialString(...args: MsgBuilder.StyleArg[]): this {
     if (args.length) {
       const count = new StringUtil(args[0]).countTabsAtBeginningOfString();
       if (count) {
@@ -87,9 +75,9 @@ export class Basic implements MsgBuilder.IBasic {
 
   indent(n: Integer | string = DEFAULT_TAB_SIZE): this {
     if (isInteger(n)) {
-      this.addMsgPart(' '.repeat(n - 1));
+      this.appendMsgPart(' '.repeat(n - 1));
     } else if (isNonEmptyString(n)) {
-      this.addMsgPart(n);
+      this.appendMsgPart(n);
     }
     return this;
   }
@@ -114,9 +102,8 @@ export class Basic implements MsgBuilder.IBasic {
     return this;
   }
 
-  protected addMsgPart(str: string, style?: Log.StyleFormatterFn | null): this {
-    // const _style = this.stylizeEnabled ? style : undefined;
-    const part: Log.MsgPart = { str: str };
+  appendMsgPart(str: string, style?: MsgBuilder.StyleFormatterFn | null): this {
+    const part: MsgBuilder.MsgPart = { str: str }; // Updated to use MsgBuilder.MsgPart
     if (style) {
       part.style = style;
     }
@@ -124,9 +111,18 @@ export class Basic implements MsgBuilder.IBasic {
     return this;
   }
 
+  prependMsgPart(str: string, style?: MsgBuilder.StyleFormatterFn | null): this {
+    const part: MsgBuilder.MsgPart = { str: str }; // Updated to use MsgBuilder.MsgPart
+    if (style) {
+      part.style = style;
+    }
+    this._msgParts.unshift(part);
+    return this;
+  }
+
   protected appendMsg(...args: unknown[]): this {
     if (isNonEmptyArray(args)) {
-      this.addMsgPart(args.join(' '));
+      this.appendMsgPart(args.join(' '));
     }
     return this;
   }
@@ -136,7 +132,7 @@ export class Basic implements MsgBuilder.IBasic {
     return this;
   }
 
-  stylize(style: Log.StyleFormatterFn | null, ...args: Log.StyleArg[]): this {
+  stylize(style: MsgBuilder.StyleFormatterFn | null, ...args: MsgBuilder.StyleArg[]): this {
     if (isNonEmptyArray(args)) {
       const str = args
         .map((arg) => {
@@ -148,7 +144,7 @@ export class Basic implements MsgBuilder.IBasic {
           return String(arg);
         })
         .join(' ');
-      this.addMsgPart(str, style);
+      this.appendMsgPart(str, style);
     }
     return this;
   }
@@ -181,34 +177,37 @@ export class Basic implements MsgBuilder.IBasic {
    * @see emitWithTime()
    */
   emit(...args: unknown[]): Log.Entry {
-    this.appendMsg(...args);
-    const msg: Log.Entry = {
-      timestamp: this._timestamp,
-      level: this._level,
-      msg: this.formatParts(),
-      package: this.emitter.package,
-    };
-    if (this._data) {
-      msg.data = this._data;
+    if (this._emitter && this._emitter.meetsThreshold(this._level)) {
+      this.appendMsg(...args);
+      const msg: Log.Entry = {
+        timestamp: this._timestamp,
+        level: this._level,
+        // msg: this.format(),
+        msg: this,
+        package: this.emitter.package,
+      };
+      if (this._data) {
+        msg.data = this._data;
+      }
+      this._emitter.emit(msg);
+      this.clear();
+      return msg;
     }
     this.clear();
-    if (this._emitter) {
-      this._emitter.emit(msg);
-    }
-    return msg;
+    return { timestamp: this._timestamp, level: this._level, msg: undefined };
   }
 
   partsAsString(): string {
     return this._msgParts?.map((p) => p.str).join(' ') || '';
   }
 
-  protected formatParts(): string {
+  format(color: boolean, _target: MsgBuilder.OutputFormat = MsgBuilder.Format.text): string {
     const parts: string[] = [];
     if (isNonEmptyString(this._msgIndent)) {
       parts.push(this._msgIndent);
     }
-    this._msgParts.forEach((part: Log.MsgPart) => {
-      if (part.style && this._applyColors) {
+    this._msgParts.forEach((part: MsgBuilder.MsgPart) => {
+      if (part.style && color) {
         parts.push(part.style(part.str));
       } else {
         parts.push(part.str);

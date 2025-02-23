@@ -4,6 +4,12 @@ import type { LogMgr } from '../logmgr.ts';
 import type * as MsgBuilder from '../message/index.ts';
 import type * as Log from '../types.ts';
 
+export interface IInherit {
+  copy(): IInherit;
+  assign(logger: this): void;
+  getChild(opts?: Log.GetChildOpts): IInherit;
+}
+
 export interface IEmitter {
   emit(msg: Log.Entry): void;
   // show(val: LogEmitterShowOpts): this;
@@ -11,7 +17,7 @@ export interface IEmitter {
   get package(): string;
   set reqId(val: string);
   get reqId(): string;
-  getChild(opts?: Log.GetChildOpts): IEmitter;
+  sid: string | undefined;
   meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean;
 }
 

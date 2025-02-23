@@ -7,7 +7,7 @@ import type * as Log from '../types.ts';
 import { Basic } from './basic.ts';
 import type * as MsgBuilder from './types.ts';
 
-const styleFormatters: Record<string, Log.StyleFormatterFn> = {
+const styleFormatters: Record<string, MsgBuilder.StyleFormatterFn> = {
   text: colors.brightWhite,
   h1: (str: string) => colors.bold(colors.magenta(str)),
   h2: colors.magenta,
@@ -50,7 +50,7 @@ export const createMsgBuilder: MsgBuilder.FactoryMethod = (level: Level.Name, em
  * and use a custom set of formatting metchods, declare your own MsgBuilder and
  * pass it to the LogManager.
  */
-export class Console extends Basic {
+export class Console extends Basic implements MsgBuilder.IFormat {
   static readonly styleFormatters = styleFormatters;
 
   static override factoryMethod(level: Level.Name, emitter?: Logger.IEmitter): Console {
@@ -62,7 +62,7 @@ export class Console extends Basic {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public text(...args: Log.StyleArg[]): this {
+  public text(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.text, ...args);
   }
   /**
@@ -70,7 +70,7 @@ export class Console extends Basic {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public h1(...args: Log.StyleArg[]): this {
+  public h1(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.h1, ...args);
   }
   /**
@@ -78,7 +78,7 @@ export class Console extends Basic {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public h2(...args: Log.StyleArg[]): this {
+  public h2(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.h2, ...args);
   }
 
@@ -87,16 +87,16 @@ export class Console extends Basic {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public h3(...args: Log.StyleArg[]): this {
+  public h3(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.h3, ...args);
   }
 
   /**
    * Emits a styled action message.
-   * @param {...Log.StyleArg[]} args - The arguments to be styled.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public action(...args: Log.StyleArg[]): this {
+  public action(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.action, ...args);
   }
 
@@ -105,7 +105,7 @@ export class Console extends Basic {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public label(...args: Log.StyleArg[]): this {
+  public label(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.label, ...args);
   }
 
@@ -114,7 +114,7 @@ export class Console extends Basic {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public highlight(...args: Log.StyleArg[]): this {
+  public highlight(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.highlight, ...args);
   }
 
@@ -123,7 +123,7 @@ export class Console extends Basic {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public value(...args: Log.StyleArg[]): this {
+  public value(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.value, ...args);
   }
 
@@ -132,7 +132,7 @@ export class Console extends Basic {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public path(...args: Log.StyleArg[]): this {
+  public path(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.path, ...args);
   }
 
@@ -141,16 +141,16 @@ export class Console extends Basic {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public date(...args: Log.StyleArg[]): this {
+  public date(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.date, ...args);
   }
 
   /**
    * Emits a styled warning message.
-   * @param {...Log.StyleArg[]} args - The arguments to be styled.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public warn(...args: Log.StyleArg[]): this {
+  public warn(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.warn, ...args);
   }
   /**
@@ -158,7 +158,7 @@ export class Console extends Basic {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public error(...args: Log.StyleArg[]): this {
+  public error(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.error, ...args);
   }
 
@@ -167,7 +167,7 @@ export class Console extends Basic {
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public strikethru(...args: Log.StyleArg[]): this {
+  public strikethru(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.strikethru, ...args);
   }
 

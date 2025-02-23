@@ -136,12 +136,14 @@ export class LogLevels implements IBasic {
    * @returns True if the log level is above the threshold, false otherwise.
    */
   meetsThreshold(level: Level.Value | Level.Name, threshold: Level.Value | Level.Name): boolean {
-    const levelVal = this.asValue(level);
-    const thresholdVal = this.asValue(threshold);
+    return this.meetsThresholdValue(this.asValue(level), this.asValue(threshold));
+  }
+
+  meetsThresholdValue(levelVal: Level.Value, thresholdVal: Level.Value): boolean {
     if (this._increasing) {
       return levelVal <= thresholdVal;
     }
-    return level >= threshold;
+    return levelVal >= thresholdVal;
   }
 
   /**

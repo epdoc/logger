@@ -46,6 +46,7 @@ export interface IBasic {
    * @returns {boolean} True if the log level is above the threshold, false otherwise.
    */
   meetsThreshold(level: Value | Name, threshold: Value | Name): boolean;
+  meetsThresholdValue(levelVal: Value, thresholdVal: Value): boolean;
 
   /**
    * Checks if a log level should result in a flush.
