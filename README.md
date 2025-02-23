@@ -2,25 +2,24 @@
 
 **NOTE: Version 1000.0.0 indicates a major rewrite that is incompatible with prior versions of this module**
 
-A logging module supporting built-in and custom transports, webserver response middleware, rich message and data syntax,
-chainable methods for recording log events, with the addition of a number of new methods, many of which can be chained
-to create richer output with more columns of data.
+A logging module supporting built-in and custom transports, webserver response
+middleware, rich message and data syntax with color console output, chainable
+methods for recording log events, with the addition of a number of new methods,
+many of which can be chained to create richer output with more columns of data.
 
 ## Versions
 
-- Version prior to version 1000.0.0 (versions 2.x.x)were used in production, and were last updated at the end of 2016.
+- Version prior to version 1000.0.0 (versions 2.x.x) were used in production, and were last updated at the end of 2016.
 - Version 1000.0.0 is a TypeScript rewrite using Deno and is not backwards compatible with earlier versions. The main
   points for this new version are:
   - Chainable methods to allow for easy color formatting of log output when using the console
   - Maintains the Log Manager and transports concepts of the earlier version
-  - Only a console transport has so far been written
+  - Only a console and file transport have so far been written
   - Express and other middleware are not yet written, but should be easy for any user to create
   - Version 1000.0.0 is reliant on Deno std libraries for console color (I may change this dependency when I package
     this for general use)
-  - substitutable log levels
+  - substitutable log levels (e.g 'info','input','data' instead of 'info', 'verbose', 'debug')
   - customizable through class extension
-
-[This page and API Reference are also formatted and available here](http://jpravetz.github.io/epdoc-logger/out/index.html).
 
 # Install
 
@@ -44,7 +43,7 @@ const showOpts: Log.EmitterShowOpts = {
 
 const logMgr = new Log.Mgr().setShow(showOpts);
 const log = logMgr.getLogger('std') as Log.std.Logger;
-logMgr.setThreshold('verbose');
+logMgr.threshold = 'verbose';
 
 log.info.text('Hello world').emit();
 
@@ -66,8 +65,9 @@ line.text('Hello world');
 line.emit();
 ```
 
-Calling `emit` will terminate the line and call the LogMgr to output the line to all transports. In this case there is
-just the console transport. And in fact we currently only support the console transport.
+Calling `emit` will terminate the line and call the LogMgr to output the line to
+all transports. In this case there is just the console transport. And in fact we
+currently only support the console and file transports.
 
 ## Adding Color to Console Output
 
@@ -93,19 +93,16 @@ names with our own styles.
 
 ## Controlling what is written to the console
 
-############# OUT OF DATE #################
 
 A message consists of a date/time, log level and other fields that are joined together on the line with your actual
 message. You can customize which of these fields is output. The example below shows the default settings.
 
 ```typescript
-import { LogManager } from '@epdoc/logger';
-import { style } from './styles/default';
+import { Log } from '@epdoc/logger';
 
-const logMgr: LogManager = new LogManager();
-logMgr.addTransport({
-  name: 'console',
-  type: 'string',
+const logMgr = new Log.Mgr();
+const transportOpts = {
+  filepath: '/my/filepath.log',
   show: {
     timestamp: 'elapsed', // can also be 'interval''utc' or 'local'
     level: true,
@@ -115,31 +112,41 @@ logMgr.addTransport({
     emitter: true,
     action: true,
     data: true,
-  },
-  style: style,
-});
-
+  }
+}
+const transport = new Log.Transport.File( transportOpts )
 logMgr.start();
-log.info('Hello world').emit();
+log.info.h1('Hello world').emit();
 ```
 
-Fields such as `reqId` and `sid` are used to identify the request and session when using an express or koa server. The
-other fields `emitter`, `action`, `static` and data are also not likely to be needed for basic string output, so these
-are set to false by default.
+Fields such as `reqId` and `sid` are used to identify the request and session
+when using an express or other backend server. 
+
+~~The other fields `emitter`,
+`action`, `static` and data are also not likely to be needed for basic string
+output, so these are set to false by default.~~
 
 You can also specify what format your output is written to the console. You can specify that the output is a string,
-JSON object, or array of JSON objects. You can further customize the output format by registering your own formatters,
-but we won't cover this topic here. Instead you will have to delve into the `TransportFormatterFactoryMethod` to learn
-how.
+JSON object, or array of JSON objects. ~~~You can further customize the output format by registering your own formatters,
+but we won't cover this topic here.~~~
+
+```ts
+export const Format = {
+  text: 'text',
+  json: 'json',
+  jsonArray: 'jsonArray',
+} as const;
+```
 
 Notes:
 
-- The timestamp value is of type `TimePrefix` which can be one of `elapsed`, `interval`, `utc`, or `local`. TODO:
+- The timestamp value is of type `TimePrefix` which can be one of `elapsed`, `utc`, or `local`. TODO:
   support custom time formatters.
-- The type value is of type `FormatterType` which can be one of `string`, `json`, `json-array`, or a custom transport
-  name.
 - Before `start` is called you have the opportunity to configure your transports. Oherwise a single console transport is
   created by default.
+
+# OUT OF DATE
+
 
 ### {@link Logger} Method Chaining
 
@@ -170,16 +177,31 @@ The following methods result in a message output with log level set to INFO:
   - `level` - Optional level (defaults to `info`)
   - `msg` - String to output, formatted with `util.format`
 
+
+# Why Another Logger?
+
+I use logging extensively to 
+- trace proper executing of my code and also to
+- enhance CLI applications with detailed output
+
+None of the existing loggers that I could find supported the following requirements:
+- easy colorization using chaninable methods
+- ability to customize log levels to my own liking
+- ability to extend existing classes with my own functionality (most modules default to making code private rather than protected)
+- middleware to support backend server display of reqId, session ID so that log messaages could be filtered by request ID.
+- custom transports: 
+  - at various points I have had transports for [Loggly](http://loggly.com) and SOS (a defunct desktop log display application)
+  - external transports requires open and close support, or equivalent.
+- JSON, JSON array and console text output all supported
+
 ## Action Items
 
 - More unit tests
-- Document and add unit tests for {@link LogListener}, an object that makes it easier to use log the callback transport
-  in unit tests.
 - Update SOS transport as a general HTTP transport and rename to 'http' transport (beware).
 
 ## Author
 
-Jim Pravetz <jpravetz@epdoc.com> Includes console colorize code from [Winston](https://github.com/winstonjs/winston).
+Jim Pravetz <jpravetz@epdoc.com>.
 
 ## License
 
