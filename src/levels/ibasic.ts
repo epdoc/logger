@@ -38,6 +38,7 @@ export interface IBasic {
    * @type {Name}
    */
   defaultLevelName: Name;
+  lowestLevelName: Name;
 
   /**
    * Checks if a log level meets a specified threshold.

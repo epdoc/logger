@@ -31,6 +31,7 @@ export type LogLevelDef = {
   fmtFn?: FormatFn;
   default?: boolean;
   flush?: boolean;
+  lowest?: boolean;
 };
 
 /**

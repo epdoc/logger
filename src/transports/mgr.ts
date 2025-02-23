@@ -67,11 +67,14 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> impl
     this.transports.unshift(transport);
     const name = transport.toString();
     const topts = transport.getOptions();
-    this._logMgr._rootEmit('SPAM', 'logger.transport.add', `Added transport '${name}'`, {
-      transport: name,
-      options: topts,
-    });
     this._bRunning = true;
+    const lowestLogLevel = this._logMgr.logLevels.lowestLevelName;
+    if (this.meetsAnyThresholdValue(this._logMgr.logLevels.asValue(lowestLogLevel))) {
+      this._logMgr._rootEmit(lowestLogLevel, 'logger.transport.add', `Added transport '${name}'`, {
+        transport: name,
+        options: topts,
+      });
+    }
     // this.setThreshold(5);
   }
 

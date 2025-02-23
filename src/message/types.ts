@@ -33,6 +33,7 @@ export type FactoryMethod = (
   params: Log.IParams,
   emitter: Log.IEmitter,
   meetsThreshold: boolean,
+  meetsFlushThreshold: boolean,
 ) => IBasic;
 
 export type ClassConstructor<M> = new (level: string, logger: Logger.IEmitter) => M;

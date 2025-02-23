@@ -17,6 +17,7 @@ export abstract class Base<M extends MsgBuilder.IBasic> {
   protected _opts: BaseOptions;
   protected _level: Level.Value; // = Level.Value.debug;
   protected _threshold: Level.Value;
+  protected _flushThreshold: Level.Value;
   protected _show: Log.EmitterShowOpts = {};
 
   constructor(logMgr: LogMgr<M>, opts: BaseOptions = {}) {
@@ -24,6 +25,7 @@ export abstract class Base<M extends MsgBuilder.IBasic> {
     this._opts = opts;
     this._level = logMgr.logLevels.asValue('info');
     this._threshold = logMgr.threshold;
+    this._flushThreshold = logMgr.logLevels.asValue('warn');
     this._show = opts.show ?? logMgr.show;
   }
 
@@ -58,6 +60,10 @@ export abstract class Base<M extends MsgBuilder.IBasic> {
   msgMeetsThreshold(msg: Log.Entry): boolean {
     const levelValue = this._logMgr.logLevels.asValue(msg.level);
     return this._logMgr.logLevels.meetsThresholdValue(levelValue, this._threshold);
+  }
+
+  meetsFlushThresholdValue(level: Level.Value): boolean {
+    return this._logMgr.logLevels.meetsThresholdValue(level, this._threshold);
   }
 
   thresholdUpdated(): Base<M> {

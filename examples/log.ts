@@ -8,7 +8,7 @@ const createCustomMsgBuilder: Log.MsgBuilder.FactoryMethod = (
   level: Log.Level.Name,
   params: Log.IParams,
   emitter: Log.IEmitter,
-  meetsThreshold: boolean
+  meetsThreshold: boolean,
 ) => {
   return new CustomMsgBuilder(level, params, emitter, meetsThreshold);
 };

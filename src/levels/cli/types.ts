@@ -13,7 +13,7 @@ const cliLogLevelDefs: Level.LogLevelsDef = {
   prompt: { val: 6, fmtFn: colors.gray },
   verbose: { val: 7, fmtFn: colors.cyan },
   input: { val: 8, fmtFn: colors.gray },
-  silly: { val: 9, fmtFn: colors.magenta },
+  silly: { val: 9, fmtFn: colors.magenta, lowest: true },
 } as const;
 
 export const createLogLevels: Level.FactoryMethod = () => {

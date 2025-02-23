@@ -17,6 +17,7 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   protected _emitter: Log.IEmitter | undefined;
   protected _params: Log.IParams;
   protected _meetsThreshold: boolean = true;
+  protected _meetsFlushThreshold: boolean = true;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
 
   protected _msgIndent: string = '';
@@ -31,11 +32,13 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     params: Log.IParams,
     emitter?: Log.IEmitter,
     meetsThreshold: boolean = true,
+    meetsFlushThreshold: boolean = true,
   ) {
     this._level = level;
     this._params = params;
     this._emitter = emitter;
     this._meetsThreshold = meetsThreshold;
+    this._meetsFlushThreshold = meetsFlushThreshold;
   }
 
   static factoryMethod(
@@ -43,8 +46,9 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     params: Log.IParams,
     emitter?: Log.IEmitter,
     meetsThreshold: boolean = true,
+    meetsFlushThreshold: boolean = true,
   ): Base {
-    return new Base(level, params, emitter, meetsThreshold);
+    return new Base(level, params, emitter, meetsThreshold, meetsFlushThreshold);
   }
 
   set level(level: Level.Name) {

@@ -33,7 +33,7 @@ export class LogLevels implements IBasic {
 
     // Convert all keys to uppercase
     this._levelDef = Object.fromEntries(
-      Object.entries(_levelDef).map(([key, value]) => [key.toUpperCase(), value]),
+      Object.entries(_levelDef).map(([key, value]) => [key.toUpperCase(), value])
     );
 
     // Create a list of level values
@@ -60,7 +60,17 @@ export class LogLevels implements IBasic {
    */
   get defaultLevelName(): Level.Name {
     const defaultLevel = Object.keys(this._levelDef).find(
-      (key) => (this._levelDef[key] as Level.LogLevelDef).default === true,
+      (key) => (this._levelDef[key] as Level.LogLevelDef).default === true
+    );
+    if (defaultLevel) {
+      return defaultLevel;
+    }
+    return 'INFO';
+  }
+
+  get lowestLevelName(): Level.Name {
+    const defaultLevel = Object.keys(this._levelDef).find(
+      (key) => (this._levelDef[key] as Level.LogLevelDef).lowest === true
     );
     if (defaultLevel) {
       return defaultLevel;

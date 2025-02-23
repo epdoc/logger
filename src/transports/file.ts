@@ -1,4 +1,5 @@
 import type { Integer } from '@epdoc/type';
+import { Level } from '../index.ts';
 import type { LogMgr } from '../logmgr.ts';
 import type * as MsgBuilder from '../message/index.ts';
 import { Console, type ConsoleOptions } from './console.ts';
@@ -55,7 +56,7 @@ export class File<M extends MsgBuilder.IBasic> extends Console<M> {
     this._resetBuffer();
   }
 
-  override async output(msg: string): Promise<void> {
+  override async output(msg: string, levelValue: Level.Value): Promise<void> {
     const bytes = this.encoder.encode(msg + '\n');
     if (bytes.byteLength > this.buf.byteLength - this.pointer) {
       await this.flush();
@@ -65,6 +66,9 @@ export class File<M extends MsgBuilder.IBasic> extends Console<M> {
     } else {
       this.buf.set(bytes, this.pointer);
       this.pointer += bytes.byteLength;
+    }
+    if (this.meetsFlushThresholdValue(levelValue)) {
+      await this.flush();
     }
   }
 

@@ -53,7 +53,8 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
   }
 
   override emit(msg: Log.Entry) {
-    if (!this.msgMeetsThreshold(msg)) {
+    const levelValue: Level.Value = this._logMgr.logLevels.asValue(msg.level);
+    if (!this.meetsThresholdValue(levelValue)) {
       return;
     }
 
@@ -76,7 +77,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
     entry.data = msg.data;
 
     if (this._format === 'json') {
-      this.output(JSON.stringify(entry));
+      this.output(JSON.stringify(entry), levelValue);
     } else if (this._format === 'jsonArray') {
       const parts: (string | null | object)[] = [];
       if (entry.timestamp) {
@@ -90,7 +91,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
       parts.push(entry.reqId ?? null);
       parts.push(entry.msg ?? null);
       parts.push(entry.data ?? null);
-      this.output(JSON.stringify(parts));
+      this.output(JSON.stringify(parts), levelValue);
     } else {
       const parts: string[] = [];
       if (isString(entry.timestamp) && show.timestamp) {
@@ -120,11 +121,11 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
       if (msg.data && show.data) {
         parts.push(JSON.stringify(msg.data));
       }
-      this.output(parts.join(' '));
+      this.output(parts.join(' '), levelValue);
     }
   }
 
-  output(str: string): Promise<void> {
+  output(str: string, _levelValue: Level.Value): Promise<void> {
     console.log(str);
     return Promise.resolve();
   }

@@ -124,7 +124,8 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
    */
   getMsgBuilder(level: string, emitter: Log.IEmitter, params: Log.IParams): M {
     const meetsThreshold = this.meetsThreshold(level);
-    return this._msgBuilderFactory(level, params, emitter, meetsThreshold) as M;
+    const meetsFlushThreshold = this.meetsFlushThreshold(level);
+    return this._msgBuilderFactory(level, params, emitter, meetsThreshold, meetsFlushThreshold) as M;
   }
 
   /**
@@ -207,6 +208,9 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
   emit(msg: Log.Entry): void {
     if (this.meetsThreshold(msg.level)) {
       this.transportMgr.emit(msg);
+      if (this.meetsFlushThreshold(msg.level)) {
+        this.flushQueue();
+      }
     }
   }
 

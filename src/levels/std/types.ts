@@ -20,6 +20,7 @@ const logLevelDefs: Level.LogLevelsDef = {
     fmtFn: (str: string) => {
       return colors.dim(colors.gray(str));
     },
+    lowest: true,
   },
 } as const;
 
