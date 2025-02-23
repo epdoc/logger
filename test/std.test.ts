@@ -1,7 +1,8 @@
 import { Log } from '../mod.ts';
 type M = Log.MsgBuilder.Console;
 
-const logMgr = new Log.Mgr<M>().setThreshold('spam');
+const logMgr = new Log.Mgr<M>();
+logMgr.threshold = 'spam';
 
 Deno.test('std logger', () => {
   const log = logMgr.getLogger() as Log.std.Logger<M>;
@@ -15,7 +16,7 @@ Deno.test('std logger', () => {
   log.spam.h1('Level').value('spam').emit('emit');
 });
 Deno.test('std logger with level', () => {
-  logMgr.setShow({ level: true });
+  logMgr.show = { level: true };
   const log = logMgr.getLogger() as Log.std.Logger<M>;
   log.info.h1('test:').value('std logger').emit();
   log.info.h1('Level').value('info').emit('test');
@@ -26,7 +27,7 @@ Deno.test('std logger with level', () => {
   log.spam.h1('Level').value('spam').emit('emit');
 });
 Deno.test('std logger with utc', () => {
-  logMgr.setShow({ timestamp: 'utc' });
+  logMgr.show = { timestamp: 'utc' };
   const log = logMgr.getLogger() as Log.std.Logger<M>;
   log.info.h1('test:').value('std logger').emit();
   log.info.h1('Level').value('info').emit('test');
@@ -37,7 +38,7 @@ Deno.test('std logger with utc', () => {
   log.spam.h1('Level').value('spam').emit('emit');
 });
 Deno.test('std logger with local', () => {
-  logMgr.setShow({ timestamp: 'local' });
+  logMgr.show = { timestamp: 'local' };
   const log = logMgr.getLogger() as Log.std.Logger<M>;
   log.info.h1('test:').value('std logger with local').emit();
   log.info.h1('Level').value('info').emit('test');
@@ -48,7 +49,7 @@ Deno.test('std logger with local', () => {
   log.spam.h1('Level').value('spam').emit('emit');
 });
 Deno.test('std logger with elapsed', () => {
-  logMgr.setShow({ timestamp: 'elapsed' });
+  logMgr.show = { timestamp: 'elapsed' };
   const log = logMgr.getLogger() as Log.std.Logger<M>;
   log.info.h1('test:').value('std logger with elapsed').emit();
   log.info.h1('Level').value('info').emit('test');
@@ -59,7 +60,7 @@ Deno.test('std logger with elapsed', () => {
   log.spam.h1('Level').value('spam').emit('emit');
 });
 Deno.test('std logger with elapsed and level', () => {
-  logMgr.setShow({ timestamp: 'utc', level: true });
+  logMgr.show = { timestamp: 'utc', level: true };
   const log = logMgr.getLogger() as Log.std.Logger<M>;
   log.info.h1('std logger with elapsed and level').emit();
   log.error.h2('Level').value('error').error('error').emit('test');
@@ -71,10 +72,10 @@ Deno.test('std logger with elapsed and level', () => {
   log.spam.h2('Level').value('spam').emit('emit');
 });
 Deno.test('std logger with elapsed and level and threshold', () => {
-  logMgr.setShow({ timestamp: 'utc', level: true });
+  logMgr.show = { timestamp: 'utc', level: true };
   const log = logMgr.getLogger() as Log.std.Logger<M>;
   log.info.h1('test:').value('std logger with elapsed and level and threshold').emit();
-  logMgr.setThreshold('info');
+  logMgr.threshold = 'info';
   log.info.h1('Level').value('info').emit('test');
   log.error.h1('Level').value('error').error('error').emit('test');
   log.verbose.h1('Level').value('verbose').emit('test');
@@ -83,7 +84,7 @@ Deno.test('std logger with elapsed and level and threshold', () => {
   log.spam.h1('Level').value('spam').emit('emit');
 });
 Deno.test('std logger with elapsed and level and pkg', () => {
-  logMgr.setShow({ timestamp: 'utc', level: true, package: true });
+  logMgr.show = { timestamp: 'utc', level: true, package: true };
   const log = logMgr.getLogger() as Log.std.Logger<M>;
   log.info.h1('test:').value('std logger with elapsed and level and pkg').emit();
   log.setPackage('mypkg');
@@ -95,7 +96,7 @@ Deno.test('std logger with elapsed and level and pkg', () => {
   log.spam.h1('Level').value('spam').emit('emit');
 });
 Deno.test('std logger with elapsed and level and pkg and mark', () => {
-  logMgr.setShow({ timestamp: 'utc', level: true, package: true });
+  logMgr.show = { timestamp: 'utc', level: true, package: true };
   const log = logMgr.getLogger() as Log.std.Logger<M>;
   log.setPackage('mypkg');
   const m1 = log.mark();

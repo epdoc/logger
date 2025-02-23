@@ -136,6 +136,46 @@
         "/Users/jpravetz/dev/@epdoc/log/src/levels/test.ts"
       ],
       "attachSimplePort": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "./examples/log.ts ",
+      "program": "${workspaceFolder}/./examples/log.ts",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "UNIT_TEST": "1"
+      },
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "run",
+        "--inspect-wait",
+        "--allow-all"
+      ],
+      "attachSimplePort": 9229,
+      "args": [
+        ""
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "./examples/custom_builder.ts ",
+      "program": "${workspaceFolder}/./examples/custom_builder.ts",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "UNIT_TEST": "1"
+      },
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "run",
+        "--inspect-wait",
+        "--allow-all"
+      ],
+      "attachSimplePort": 9229,
+      "args": [
+        ""
+      ]
     }
   ]
 }

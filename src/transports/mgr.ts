@@ -67,7 +67,7 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> impl
     this.transports.unshift(transport);
     const name = transport.toString();
     const topts = transport.getOptions();
-    this._logMgr._rootEmit('verbose', 'logger.transport.add', `Added transport '${name}'`, {
+    this._logMgr._rootEmit('SPAM', 'logger.transport.add', `Added transport '${name}'`, {
       transport: name,
       options: topts,
     });

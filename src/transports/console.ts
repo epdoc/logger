@@ -57,20 +57,23 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
       return;
     }
 
-    const show = this._logMgr.getShow();
+    const show = this._show;
     const logLevels = this._logMgr.logLevels;
     const color = this._color;
 
-    const entry: Transport.Entry = Object.assign({}, pick(msg, 'level', 'package', 'sid', 'reqId', 'data'), {
-      timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
-    });
+    const entry: Transport.Entry = Object.assign(
+      {
+        timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
+      },
+      pick(msg, 'level', 'package', 'sid', 'reqId')
+    );
 
-    entry.timestamp = this.dateToString(msg.timestamp, show.timestamp ?? 'local');
     if (msg.msg instanceof MsgBuilder.Base) {
       entry.msg = msg.msg.format(this._color, this._format);
     } else if (isString(msg.msg)) {
       entry.msg = msg.msg;
     }
+    entry.data = msg.data;
 
     if (this._format === 'json') {
       this.output(JSON.stringify(entry));
@@ -87,7 +90,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
       parts.push(entry.reqId ?? null);
       parts.push(entry.msg ?? null);
       parts.push(entry.data ?? null);
-      this.output(JSON.stringify(entry));
+      this.output(JSON.stringify(parts));
     } else {
       const parts: string[] = [];
       if (isString(entry.timestamp) && show.timestamp) {

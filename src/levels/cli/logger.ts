@@ -6,7 +6,7 @@ import type * as cli from './types.ts';
 
 export const getLogger = <M extends MsgBuilder.IBasic>(
   log: LogMgr<M> | Logger.IEmitter,
-  params?: Log.IParams
+  params?: Log.IParams,
 ): CliLogger<M> => {
   if (log instanceof LogMgr) {
     return new CliLogger<M>(log, params);

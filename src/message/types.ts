@@ -2,6 +2,7 @@ import type { Integer } from '@epdoc/type';
 import type { Log } from '../../mod.ts';
 import type { Level } from '../levels/index.ts';
 import type * as Logger from '../logger/types.ts';
+import type * as Transport from '../transports/types.ts';
 
 export type StyleFormatterFn = (str: string) => string;
 export type StyleArg = string | number | Record<string, unknown> | unknown[] | unknown;
@@ -11,15 +12,8 @@ export type MsgPart = {
   style?: StyleFormatterFn;
 };
 
-export const Format = {
-  text: 'text',
-  json: 'json',
-  jsonArray: 'jsonArray',
-} as const;
-export type OutputFormat = keyof typeof Format;
-
 export interface IFormat {
-  format(color: boolean, target: OutputFormat): string;
+  format(color: boolean, target: Transport.OutputFormat): string;
   appendMsgPart(str: string, style?: StyleFormatterFn | null): IFormat;
   prependMsgPart(str: string, style?: StyleFormatterFn | null): IFormat;
 }

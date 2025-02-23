@@ -3,7 +3,8 @@ import { Log } from '../mod.ts';
 
 type M = Log.MsgBuilder.Console;
 
-const logMgr = new Log.Mgr<M>(Log.cli.createLogLevels).logger(Log.cli.getLogger);
+const logMgr = new Log.Mgr<M>(Log.cli.createLogLevels);
+logMgr.loggerFactory = Log.cli.getLogger;
 const log = logMgr.getLogger() as Log.cli.Logger<M>;
 
 Deno.test('cli', () => {

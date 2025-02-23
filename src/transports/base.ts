@@ -1,6 +1,6 @@
 import { dateEx } from '@epdoc/datetime';
 import { duration } from '@epdoc/duration';
-import { isValidDate } from '@epdoc/type';
+import { isNonEmptyString, isValidDate } from '@epdoc/type';
 import type { Level } from '../levels/index.ts';
 import type { LogMgr } from '../logmgr.ts';
 import type * as MsgBuilder from '../message/index.ts';
@@ -24,7 +24,7 @@ export abstract class Base<M extends MsgBuilder.IBasic> {
     this._opts = opts;
     this._level = logMgr.logLevels.asValue('info');
     this._threshold = logMgr.threshold;
-    this._show = opts.show ?? logMgr.getShow();
+    this._show = opts.show ?? logMgr.show;
   }
 
   getOptions(): BaseOptions {
@@ -33,13 +33,14 @@ export abstract class Base<M extends MsgBuilder.IBasic> {
 
   setThreshold(level: Level.Name | Level.Value): this {
     this._threshold = this._logMgr.logLevels.asValue(level);
+    this.thresholdUpdated();
     return this;
   }
 
   show(opts: Log.EmitterShowOpts): this {
     Object.keys(opts).forEach((key) => {
       const k: Log.EmitterShowKey = key as Log.EmitterShowKey;
-      if (opts[k] === true || opts[k] === false) {
+      if (opts[k] === true || opts[k] === false || isNonEmptyString(opts[k])) {
         // @ts-ignore this is okay
         this._show[k] = opts[k];
       }

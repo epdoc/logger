@@ -6,9 +6,11 @@ const home = os.userInfo().homedir;
 
 const createCustomMsgBuilder: Log.MsgBuilder.FactoryMethod = (
   level: Log.Level.Name,
-  emitter?: Log.Logger.IEmitter,
+  params: Log.IParams,
+  emitter: Log.IEmitter,
+  meetsThreshold: boolean
 ) => {
-  return new CustomMsgBuilder(level, emitter);
+  return new CustomMsgBuilder(level, params, emitter, meetsThreshold);
 };
 
 export class CustomMsgBuilder extends Log.MsgBuilder.Console {
@@ -36,6 +38,12 @@ export class CustomMsgBuilder extends Log.MsgBuilder.Console {
   }
 }
 
-export const logMgr = new Log.Mgr<CustomMsgBuilder>().msgBuilder(createCustomMsgBuilder);
+export const logMgr = new Log.Mgr<CustomMsgBuilder>();
+logMgr.msgBuilderFactory = createCustomMsgBuilder;
+logMgr.show = { level: true, timestamp: 'elapsed', reqId: true, sid: true, package: true };
+logMgr.threshold = 'info';
 export const log = logMgr.getLogger() as Log.std.Logger<CustomMsgBuilder>;
-logMgr.setThreshold('info');
+
+log.info.h1('h1(header)').label('label(text)').emit();
+log.info.section('heading').emit();
+log.info.err(new Error('my error')).emit();

@@ -1,8 +1,9 @@
 import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
 import type { Level } from '../levels/index.ts';
+import * as Transport from '../transports/types.ts';
 import type * as Log from '../types.ts';
 import { StringUtil } from '../util.ts';
-import * as MsgBuilder from './index.ts';
+import type * as MsgBuilder from './index.ts';
 
 const DEFAULT_TAB_SIZE = 2;
 
@@ -29,7 +30,7 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     level: Level.Name,
     params: Log.IParams,
     emitter?: Log.IEmitter,
-    meetsThreshold: boolean = true
+    meetsThreshold: boolean = true,
   ) {
     this._level = level;
     this._params = params;
@@ -41,7 +42,7 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     level: Level.Name,
     params: Log.IParams,
     emitter?: Log.IEmitter,
-    meetsThreshold: boolean = true
+    meetsThreshold: boolean = true,
   ): Base {
     return new Base(level, params, emitter, meetsThreshold);
   }
@@ -204,7 +205,7 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     return this._msgParts?.map((p) => p.str).join(' ') || '';
   }
 
-  format(color: boolean, _target: MsgBuilder.OutputFormat = MsgBuilder.Format.text): string {
+  format(color: boolean, _target: Transport.OutputFormat = Transport.Format.text): string {
     const parts: string[] = [];
     if (isNonEmptyString(this._msgIndent)) {
       parts.push(this._msgIndent);

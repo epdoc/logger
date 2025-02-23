@@ -3,6 +3,13 @@ import type { LogMgr } from '../logmgr.ts';
 import type * as MsgBuilder from '../message/index.ts';
 import type * as Log from '../types.ts';
 
+export const Format = {
+  text: 'text',
+  json: 'json',
+  jsonArray: 'jsonArray',
+} as const;
+export type OutputFormat = keyof typeof Format;
+
 export interface IBasic<M extends MsgBuilder.IBasic> {
   get type(): string;
   emit(msg: Log.Entry, logger: Logger.IEmitter): void;

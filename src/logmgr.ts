@@ -25,10 +25,8 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
   protected _bRunning = true;
   protected _queue: Log.Entry[] = [];
   readonly transportMgr: Transport.Mgr<M> = new Transport.Mgr<M>(this);
-
-  // Holds the constructor for M and L
   protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.factoryMethod;
-  protected _getLogger: Logger.FactoryMethod<M> = std.getLogger<M>;
+  protected _loggerFactory: Logger.FactoryMethod<M> = std.getLogger<M>;
 
   protected _registeredLogLevels: Record<string, Level.FactoryMethod> = {
     cli: cli.createLogLevels,
@@ -47,14 +45,57 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
     // this._transports = [Transport.factoryMethod<M>(this)];
   }
 
-  msgBuilder(msgBuilderFactory: MsgBuilder.FactoryMethod): this {
+  set msgBuilderFactory(msgBuilderFactory: MsgBuilder.FactoryMethod) {
     this._msgBuilderFactory = msgBuilderFactory;
-    return this;
   }
 
-  logger(loggerFactory: Logger.FactoryMethod<M>): this {
-    this._getLogger = loggerFactory;
-    return this;
+  get msgBuilderFactory(): MsgBuilder.FactoryMethod {
+    return this._msgBuilderFactory;
+  }
+
+  set loggerFactory(loggerFactory: Logger.FactoryMethod<M>) {
+    this._loggerFactory = loggerFactory;
+  }
+
+  get loggerFactory(): Logger.FactoryMethod<M> {
+    return this._loggerFactory;
+  }
+
+  /**
+   * Sets the log threshold level. This will apply across all transports.
+   * @param {Level.Name | Level.Value} level - The new threshold level.
+   * @returns {this} The instance of LogMgr.
+   * @throws Will throw an error if log levels are not set.
+   */
+  set threshold(level: Level.Name | Level.Value) {
+    assert(
+      this._logLevels,
+      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?'
+    );
+    this._threshold = this.logLevels.asValue(level);
+    this.transportMgr.setThreshold(this._threshold);
+  }
+
+  /**
+   * Gets the current log threshold level.
+   * @returns {Level.Value} The current threshold level as an Integer.
+   */
+  get threshold(): Level.Value {
+    return this._threshold;
+  }
+
+  /**
+   * Sets the show options for log emission. What is shown may also depend on
+   * the transport being used.
+   * @param {EmitterShowOpts} opts - The show options.
+   * @returns {this} The instance of LogMgr.
+   */
+  set show(opts: Log.EmitterShowOpts) {
+    this._show = opts;
+    this.transportMgr.show(opts);
+  }
+  get show(): Log.EmitterShowOpts {
+    return this._show;
   }
 
   /**
@@ -62,14 +103,14 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
    */
   getLogger(): Logger.IEmitter {
     if (!this.transportMgr.transports.length) {
-      const transport = new Transport.Console(this);
+      const transport = new Transport.Console(this, { show: this._show });
       this.transportMgr.add(transport);
     }
     if (!this.transportMgr.running) {
       this.start();
     }
     if (!this._rootLogger) {
-      this._rootLogger = this._getLogger(this);
+      this._rootLogger = this._loggerFactory(this);
     }
     return this._rootLogger;
   }
@@ -92,26 +133,6 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
    */
   get startTime(): Date {
     return this._t0;
-  }
-
-  /**
-   * Sets the show options for log emission. What is shown may also depend on
-   * the transport being used.
-   * @param {EmitterShowOpts} opts - The show options.
-   * @returns {this} The instance of LogMgr.
-   */
-  setShow(opts: Log.EmitterShowOpts): this {
-    this._show = opts;
-    this.transportMgr.show(opts);
-    return this;
-  }
-
-  /**
-   * Gets the current show options for log emission.
-   * @returns {EmitterShowOpts} The current show options.
-   */
-  getShow(): Log.EmitterShowOpts {
-    return this._show;
   }
 
   addTransport(transport: Transport.Base<M>): this {
@@ -163,6 +184,7 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
 
   _rootEmit(level: string, pkg: string, msg: string, data?: Dict): void {
     const entry: Log.Entry = {
+      timestamp: new Date(),
       level: level,
       package: pkg,
       data: data,
@@ -197,30 +219,6 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
   get logLevels(): Level.IBasic {
     assert(this._logLevels, 'LogLevels not set for Logger');
     return this._logLevels as Level.IBasic;
-  }
-
-  /**
-   * Gets the current log threshold level.
-   * @returns {Level.Value} The current threshold level as an Integer.
-   */
-  get threshold(): Level.Value {
-    return this._threshold;
-  }
-
-  /**
-   * Sets the log threshold level. This will apply across all transports.
-   * @param {Level.Name | Level.Value} level - The new threshold level.
-   * @returns {this} The instance of LogMgr.
-   * @throws Will throw an error if log levels are not set.
-   */
-  setThreshold(level: Level.Name | Level.Value): this {
-    assert(
-      this._logLevels,
-      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?'
-    );
-    this._threshold = this.logLevels.asValue(level);
-    this.transportMgr.setThreshold(this._threshold);
-    return this;
   }
 
   /**
