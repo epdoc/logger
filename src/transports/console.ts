@@ -66,7 +66,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
       {
         timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
       },
-      pick(msg, 'level', 'package', 'sid', 'reqId')
+      pick(msg, 'level', 'package', 'sid', 'reqId'),
     );
 
     if (msg.msg instanceof MsgBuilder.Base) {
@@ -150,7 +150,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
     val: string,
     show: boolean | number,
     colorFn: string,
-    opts?: { pre: string; post: string }
+    opts?: { pre: string; post: string },
   ): string {
     let s = val;
     if (isInteger(show)) {

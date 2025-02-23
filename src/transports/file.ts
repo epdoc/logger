@@ -1,5 +1,5 @@
 import type { Integer } from '@epdoc/type';
-import { Level } from '../index.ts';
+import type { Level } from '../index.ts';
 import type { LogMgr } from '../logmgr.ts';
 import type * as MsgBuilder from '../message/index.ts';
 import { Console, type ConsoleOptions } from './console.ts';
