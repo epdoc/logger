@@ -1,0 +1,51 @@
+import { Context, Hono, HonoRequest } from 'hono';
+import { poweredBy } from 'hono/powered-by';
+import * as Log from '../src/log.ts';
+
+export class Request extends HonoRequest {
+
+}
+export class 
+type xContext = {
+  req: HonoRequest
+  _reqId: number;
+  _startTime: number;
+  log: Log.Logger
+};
+type Next = () => Promise<void>;
+
+let reqId = 0;
+
+export const logReqId = (ctx: Context, next: Next) => {
+  ctx._reqId = ++reqId;
+  ctx._startTime = performance.now();
+  next();
+};
+
+export const routeLogger = (ctx: Context, next: Next) => {
+
+    //var rawCookie = req.cookies['connect.sid'];
+
+    let req : HonoRequest = ctx.req
+    let d = ctx._startTime;
+    ctx.log.pushName('app');
+    let data = {
+        method: ctx.method,
+        path: ctx.path,
+        protocol: ctx.protocol,
+        //sidNew: ( rawCookie ? false : true ),
+        ip: ctx.ip,
+        query: ctx.query,
+        utctime: (d).toISOString()
+    };
+    if( ctx.session && ctx.session.id ) {
+        data.sid = ctx.session.id;
+    }
+    if( ctx.method ctx req.method.toLowerCase() === 'post' ) {
+        data['content-length'] = ctx.get('Content-Length');
+    }
+    ctx.log.action('routeInfo').data(data)._info();
+    ctx.log.popName();
+
+    next();
+};

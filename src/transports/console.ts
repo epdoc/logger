@@ -1,25 +1,50 @@
-import { dateEx } from '@epdoc/datetime';
-import { duration } from '@epdoc/duration';
 import { StringEx } from '@epdoc/string';
-import { type Integer, isInteger, isNonEmptyString } from '@epdoc/type';
-import type { LevelName } from '../levels/index.ts';
-import { Logger } from '../logger.ts';
-import { LogMgr } from '../logmgr.ts';
-import { styleFormatters } from '../message/console.ts';
-import type { LogRecord, LogRecordSource } from '../types.ts';
-import { type ITransport, Transport } from './transport.ts';
+import { type Integer, isInteger, isNonEmptyString, isString, pick } from '@epdoc/type';
+import type { Level } from '../levels/index.ts';
+import type { LogMgr } from '../logmgr.ts';
+import * as MsgBuilder from '../message/index.ts';
+import type * as Log from '../types.ts';
+import { Base, type BaseOptions } from './base.ts';
+import type * as Transport from './types.ts';
 
-export function createConsoleTransport(logMgr: LogMgr) {
-  return new ConsoleTransport(logMgr);
+// export function factoryMethod<M extends MsgBuilder.IBasic>(
+//   logMgr: LogMgr<M>,
+//   opts: HandlerOptions
+// ): Handler<M> {
+//   return new Handler<M>(logMgr, opts);
+// }
+
+export type ConsoleOutputFormat = 'text' | 'json' | 'jsonArray';
+
+export interface ConsoleOptions extends BaseOptions {
+  format?: ConsoleOutputFormat;
+  color?: boolean;
 }
 
-export class ConsoleTransport extends Transport implements ITransport {
-  protected _pkgWidth: Integer = 0;
-  protected _reqIdWidth: Integer = 0;
+export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
   protected _levelWidth: Integer = 5;
+  protected _format: ConsoleOutputFormat = 'text';
+  protected _color: boolean = true;
 
-  set packageWidth(val: Integer) {
-    this._pkgWidth = val;
+  // static create<M extends MsgBuilder.IBasic>(logMgr: LogMgr<M>): Console<M> {
+  //   return new Console<M>(logMgr);
+  // }
+
+  constructor(logMgr: LogMgr<M>, opts: ConsoleOptions = {}) {
+    super(logMgr, opts);
+    if (opts.format) {
+      this._format = opts.format;
+    }
+    this._color = opts.color ?? true;
+    this._bReady = true;
+  }
+
+  get useColor(): boolean {
+    return this._color;
+  }
+
+  override toString(): string {
+    return `Console[${this._format}]`;
   }
 
   override thresholdUpdated(): this {
@@ -27,63 +52,85 @@ export class ConsoleTransport extends Transport implements ITransport {
     return this;
   }
 
-  emit(msg: LogRecord, logger: Logger) {
-    const parts: string[] = [];
+  override emit(msg: Log.Entry) {
+    const levelValue: Level.Value = this._logMgr.logLevels.asValue(msg.level);
+    if (!this.meetsThresholdValue(levelValue)) {
+      return;
+    }
 
+    const show = this._show;
     const logLevels = this._logMgr.logLevels;
-    const show = this._logMgr.getShow();
+    const color = this._color;
 
-    if (show.timestamp === 'utc' && msg.timestamp) {
-      parts.push(logLevels.applyColors(msg.timestamp.toISOString(), msg.level));
-    } else if (show.timestamp === 'local' && msg.timestamp) {
-      parts.push(logLevels.applyColors(dateEx(msg.timestamp).toISOLocalString(), msg.level));
-    } else if (show.timestamp === 'elapsed' && msg.timestamp) {
-      parts.push(
-        logLevels.applyColors(
-          duration().narrow.format(msg.timestamp.getTime() - this._logMgr.startTime.getTime()),
-          msg.level,
-        ),
-      );
+    const entry: Transport.Entry = Object.assign(
+      {
+        timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
+      },
+      pick(msg, 'level', 'package', 'sid', 'reqId')
+    );
+
+    if (msg.msg instanceof MsgBuilder.Base) {
+      entry.msg = msg.msg.format(this._color, this._format);
+    } else if (isString(msg.msg)) {
+      entry.msg = msg.msg;
     }
+    entry.data = msg.data;
 
-    if (show.level) {
-      parts.push(logLevels.applyColors(this.styledLevel(msg.level, show.level), msg.level));
+    if (this._format === 'json') {
+      this.output(JSON.stringify(entry), levelValue);
+    } else if (this._format === 'jsonArray') {
+      const parts: (string | null | object)[] = [];
+      if (entry.timestamp) {
+        parts.push(color ? logLevels.applyColors(entry.timestamp, msg.level) : entry.timestamp);
+      } else {
+        parts.push(null);
+      }
+      parts.push(entry.level ? this.styledLevel(entry.level, show.level) : null);
+      parts.push(entry.package ?? null);
+      parts.push(entry.sid ?? null);
+      parts.push(entry.reqId ?? null);
+      parts.push(entry.msg ?? null);
+      parts.push(entry.data ?? null);
+      this.output(JSON.stringify(parts), levelValue);
+    } else {
+      const parts: string[] = [];
+      if (isString(entry.timestamp) && show.timestamp) {
+        parts.push(color ? logLevels.applyColors(entry.timestamp, msg.level) : entry.timestamp);
+      }
+
+      if (show.level && entry.level) {
+        parts.push(this.styledLevel(entry.level, show.level));
+      }
+
+      if (show.package && isNonEmptyString(entry.package)) {
+        parts.push(entry.package);
+      }
+
+      if (show.sid && isNonEmptyString(entry.sid)) {
+        parts.push(entry.sid);
+      }
+
+      if (show.reqId && isNonEmptyString(entry.reqId)) {
+        parts.push(entry.reqId);
+      }
+
+      if (entry.msg) {
+        parts.push(entry.msg);
+      }
+
+      if (msg.data && show.data) {
+        parts.push(JSON.stringify(msg.data));
+      }
+      this.output(parts.join(' '), levelValue);
     }
-
-    if (show.package && isNonEmptyString(msg.package)) {
-      parts.push(this.styledPackage(msg.package, show.package));
-    }
-
-    if (show.reqId && isNonEmptyString(logger.reqId)) {
-      parts.push(this.styledReqId(logger.reqId, show.reqId));
-    }
-
-    parts.push(msg.msg);
-
-    if (msg.data) {
-      parts.push(JSON.stringify(msg.data));
-    }
-
-    if (show.source && msg.srcRef) {
-      parts.push(this.styledSource(msg.srcRef, show.source));
-    }
-
-    console.log(...parts);
   }
 
-  styledSource(val: LogRecordSource, show: boolean): string {
-    return this._styledString(`[${val.filename} line ${val.line}]`, show, '_source');
+  output(str: string, _levelValue: Level.Value): Promise<void> {
+    console.log(str);
+    return Promise.resolve();
   }
 
-  styledPackage(val: string, show: boolean | Integer): string {
-    return this._styledString(val, show, '_package');
-  }
-
-  styledReqId(val: string, show: boolean | Integer): string {
-    return this._styledString(val, show, '_reqId');
-  }
-
-  styledLevel(level: LevelName, show: boolean | Integer): string {
+  styledLevel(level: Level.Name, show: boolean | Integer | undefined): string {
     let s = StringEx(level).rightPad(this._levelWidth);
     if (isInteger(show)) {
       if (show > 0) {
@@ -93,15 +140,17 @@ export class ConsoleTransport extends Transport implements ITransport {
       }
     }
     s = '[' + s + ']';
-    return this._logMgr.logLevels.applyColors(s, level);
-    // return styleFormatters._level(s);
+    if (this._color) {
+      return this._logMgr.logLevels.applyColors(s, level);
+    }
+    return s;
   }
 
   _styledString(
     val: string,
     show: boolean | number,
     colorFn: string,
-    opts?: { pre: string; post: string },
+    opts?: { pre: string; post: string }
   ): string {
     let s = val;
     if (isInteger(show)) {
@@ -119,8 +168,8 @@ export class ConsoleTransport extends Transport implements ITransport {
         s += opts.post;
       }
     }
-    if (styleFormatters[colorFn]) {
-      return styleFormatters[colorFn](s);
+    if (this._color && MsgBuilder.Console.styleFormatters[colorFn]) {
+      return MsgBuilder.Console.styleFormatters[colorFn](s);
     }
     return s;
   }

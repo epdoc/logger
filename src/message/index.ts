@@ -1,3 +1,3 @@
-export * as Core from './builder.ts';
-export * as Console from './console.ts';
-export type { IMsgBuilder } from './types.ts';
+export { Base } from './base.ts';
+export { Console } from './console.ts';
+export * from './types.ts';

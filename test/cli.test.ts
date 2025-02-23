@@ -1,8 +1,12 @@
-import { cli, LogMgr } from '../mod.ts';
+import { Log } from '../mod.ts';
+
+type M = Log.MsgBuilder.Console;
 
 Deno.test('logger', () => {
-  const logMgr = new LogMgr('cli').setThreshold('silly');
-  const log: cli.Logger = logMgr.getLogger() as cli.Logger;
+  const logMgr = new Log.Mgr<M>(Log.cli.createLogLevels);
+  logMgr.loggerFactory = Log.cli.getLogger<M>;
+  logMgr.threshold = 'silly';
+  const log: Log.cli.Logger<M> = logMgr.getLogger() as Log.cli.Logger<M>;
   log.info.h1('header').emit('info level');
   log.silly.h1('header').emit('silly level');
   log.error.error('error').value('error level').emit('test');

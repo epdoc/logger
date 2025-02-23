@@ -1,0 +1,16 @@
+{
+  "groups": [
+    {
+      "program": "./examples/log.ts",
+      "runtimeArgs": ["run", "--inspect-wait", "--allow-all"],
+      "scriptArgs": [],
+      "scripts": [""]
+    },
+    {
+      "program": "./examples/custom_builder.ts",
+      "runtimeArgs": ["run", "--inspect-wait", "--allow-all"],
+      "scriptArgs": [],
+      "scripts": [""]
+    }
+  ]
+}

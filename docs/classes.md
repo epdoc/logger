@@ -1,28 +1,80 @@
-## Classes
+## Getting Started
 
 There are two main objects you will use when logging messages:
 
 - [LogManager](#logmanager-class)
   - Usually a singleton
-  - Used to configure the transports, set global options, buffer log messages until writing to transports is turned on,
-    and start writing to the transports
-  - Can also be used to directly write to the transports (see {@link LogManager#logMessage})
-- [Logger](#logger-class)
-  - A per-emitter object
-  - Advise is to create a new Logger object for every file (emitter), or for every request (_e.g._ express), or every
-    major operation, or just create one logger and use it throughout your code.
+  - Contains a Transport Manager (see {@link LogManager#transports}) that
+    - manages the transports (setup and teardown)
+    - buffers log messages until the transports are turned on
+    - writes to emitted messages to all transports
+  - Called to get a new Logger object
+- [Logger](#logger-class) object
+  - Can use just one logger object for all your logging needs
+  - Can create a new logger object for every module, or for every request (e.g. express request), or every major
+    operation (usually just for requests).
   - Provides chainable methods by which to write log output
 
 ```typescript
-import { LogManager } from '@epdoc/logger';
+// Simplest example of writing a log message to the console
 
-let logMgr = new LogManager();
-let log = logMgr.getLogger('MyClassName');
+import { Log } from '@epdoc/logger';
+
+let logMgr = new Log.Mgr().setThreshold('debug');
+let log = logMgr.getLogger();
+
+log.info.h1('Hello, world!').emit();
 ```
+
+Thresholds are set at the LogManager level, but can also be overridden at the transport level.
+
+Transports allow directing output to the console, to a file, to a database, or to a remote server. If none are specified
+then the default is to log to the console.
+
+```typescript
+// Add a file transport to the previous example
+
+const fileTranport = new Log.FileTransport({ filename: 'my.log' });
+logMgr.addTransport(fileTranport);
+
+log.info.h1('This will be written to the console and to').path('my.log').emit();
+```
+
+Calls to log.info, log.debug, etc. return a [MsgBuilder](./src/msg-builder.ts) object that can be used to build a log
+message. The MsgBuilder object is chainable and can be used to build a message in parts.
+
+```typescript
+log.info
+  .h1('This is a header')
+  .label('label').value('value')
+  .emit();
+```
+
+When writing to the console, the above example will output in color.
+
+You can also control whether the log level and a timestamp are displayed on a log line.
+
+```typescript
+logMgr.show({ level: true, timestamp: 'elapsed' });
+```
+
+What is displayed is set at the LogManager level, but can also be overridden at the transport level.
+
+And, if you are working within express or some other backend framework, you can set the session ID and the request ID
+and have these output as well.
+
+```typescript
+req.log = log.getChild({ sid: req.sessionID, reqId: req.id });
+log.info.text('Request received').emit();
+```
+
+### Hierarchy
+
+![image](./images/epdoc_logger.png)
 
 ### LogMgr Class
 
-A shortcut for getting a {@link LogManager} singleton is to call the module's `getLogManager` method.
+A shortcut for getting a [LogMgr](../src/logmgr.ts) singleton is to call the module's `getLogManager` method.
 
 ```typescript
 import { LogManager } from '@epdoc/logger';

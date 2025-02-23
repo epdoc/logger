@@ -3,9 +3,20 @@
   "specifiers": {
     "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@^1.0.6": "1.0.6",
+    "jsr:@std/bytes@*": "1.0.4",
+    "jsr:@std/bytes@^1.0.4": "1.0.4",
+    "jsr:@std/bytes@^1.0.5": "1.0.5",
+    "jsr:@std/expect@*": "1.0.4",
     "jsr:@std/fmt@^1.0.2": "1.0.2",
+    "jsr:@std/fs@*": "1.0.11",
+    "jsr:@std/fs@^1.0.4": "1.0.11",
     "jsr:@std/internal@^1.0.4": "1.0.4",
-    "jsr:@std/testing@*": "1.0.3"
+    "jsr:@std/io@0.225": "0.225.2",
+    "jsr:@std/path@^1.0.8": "1.0.8",
+    "jsr:@std/testing@*": "1.0.3",
+    "npm:checksum@1": "1.0.0",
+    "npm:pdf-lib@*": "1.17.1",
+    "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
     "@std/assert@1.0.6": {
@@ -14,11 +25,39 @@
         "jsr:@std/internal"
       ]
     },
+    "@std/bytes@1.0.4": {
+      "integrity": "11a0debe522707c95c7b7ef89b478c13fb1583a7cfb9a85674cd2cc2e3a28abc"
+    },
+    "@std/bytes@1.0.5": {
+      "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
+    },
+    "@std/expect@1.0.4": {
+      "integrity": "97f68a445a9de0d9670200d2b7a19a7505a01b2cb390a983ba8d97d90ce30c4f",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.6",
+        "jsr:@std/internal"
+      ]
+    },
     "@std/fmt@1.0.2": {
       "integrity": "87e9dfcdd3ca7c066e0c3c657c1f987c82888eb8103a3a3baa62684ffeb0f7a7"
     },
+    "@std/fs@1.0.11": {
+      "integrity": "ba674672693340c5ebdd018b4fe1af46cb08741f42b4c538154e97d217b55bdd",
+      "dependencies": [
+        "jsr:@std/path"
+      ]
+    },
     "@std/internal@1.0.4": {
       "integrity": "62e8e4911527e5e4f307741a795c0b0a9e6958d0b3790716ae71ce085f755422"
+    },
+    "@std/io@0.225.2": {
+      "integrity": "3c740cd4ee4c082e6cfc86458f47e2ab7cb353dc6234d5e9b1f91a2de5f4d6c7",
+      "dependencies": [
+        "jsr:@std/bytes@^1.0.5"
+      ]
+    },
+    "@std/path@1.0.8": {
+      "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
     },
     "@std/testing@1.0.3": {
       "integrity": "f98c2bee53860a5916727d7e7d3abe920dd6f9edace022e2d059f00d05c2cf42",
@@ -26,6 +65,50 @@
         "jsr:@std/assert@^1.0.6",
         "jsr:@std/internal"
       ]
+    }
+  },
+  "npm": {
+    "@pdf-lib/standard-fonts@1.0.0": {
+      "integrity": "sha512-hU30BK9IUN/su0Mn9VdlVKsWBS6GyhVfqjwl1FjZN4TxP6cCw0jP2w7V3Hf5uX7M0AZJ16vey9yE0ny7Sa59ZA==",
+      "dependencies": [
+        "pako"
+      ]
+    },
+    "@pdf-lib/upng@1.0.1": {
+      "integrity": "sha512-dQK2FUMQtowVP00mtIksrlZhdFXQZPC+taih1q4CvPZ5vqdxR/LKBaFg0oAfzd1GlHZXXSPdQfzQnt+ViGvEIQ==",
+      "dependencies": [
+        "pako"
+      ]
+    },
+    "checksum@1.0.0": {
+      "integrity": "sha512-68bHejnM/sBQhjXcXd2mFusICnqAwikZ9RVMURIacWh7moNjgOdHKimS6yk30Np/PwfR00dceY4b1GwWanu5cg==",
+      "dependencies": [
+        "optimist"
+      ]
+    },
+    "optimist@0.3.7": {
+      "integrity": "sha512-TCx0dXQzVtSCg2OgY/bO9hjM9cV4XYx09TVK+s3+FhkjT6LovsLe+pPMzpWf+6yXK/hUizs2gUoTw3jHM0VaTQ==",
+      "dependencies": [
+        "wordwrap"
+      ]
+    },
+    "pako@1.0.11": {
+      "integrity": "sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw=="
+    },
+    "pdf-lib@1.17.1": {
+      "integrity": "sha512-V/mpyJAoTsN4cnP31vc0wfNA1+p20evqqnap0KLoRUN0Yk/p3wN52DOEsL4oBFcLdb76hlpKPtzJIgo67j/XLw==",
+      "dependencies": [
+        "@pdf-lib/standard-fonts",
+        "@pdf-lib/upng",
+        "pako",
+        "tslib"
+      ]
+    },
+    "tslib@1.14.1": {
+      "integrity": "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="
+    },
+    "wordwrap@0.0.3": {
+      "integrity": "sha512-1tMA907+V4QmxV7dbRvb4/8MaRALK6q9Abid3ndMYnbyo8piisCmeONVqVSXqQA3KaP4SLt5b7ud6E2sqP8TFw=="
     }
   },
   "workspace": {

@@ -1,88 +1,44 @@
-import type { Integer } from '@epdoc/type';
-
 /**
  * @fileoverview This module defines types and interfaces for log levels used in the logging library.
  * It provides a structure for custom log levels and their associated methods.
  */
 
+import type { IBasic } from './ibasic.ts';
+
 /**
  * Represents the name of a log level.
  */
-export type LevelName = string;
+export type Name = string;
 
 /**
  * Represents the numeric value of a log level.
  */
-export type LogLevel = number;
+export type Value = number;
 
 /**
- * Log levels interface used throughout the library, allowing for custom log
- * levels. A default implementation is provided by the `LogLevels` class, and is
- * accessed via the `DEFAULT_LOG_LEVELS_FACTORY_METHOD` constant.
- *
- * The Logger class implements methods for each log level (info, debug, etc..)
- * for each of the default logger levels. If you are using custom log levels,
- * you will need to subclasss the Logger class and implement the methods for
- * your log levels.
+ * Function type for formatting log messages.
+ * @param {string} msg - The message to format.
+ * @returns {string} The formatted message.
  */
-export interface ILogLevels {
-  /**
-   * The array of log level names that are supported by the logger. These names
-   * will be uppercased.
-   * @type {LevelName[]}
-   */
-  names: LevelName[];
-  // levelDefs: LogLevelDef;
-  /**
-   * Converts a log level name to its corresponding numeric value.
-   * @param {LevelName} level - The name of the log level to convert.
-   * @returns {LogLevel} The numeric value of the log level.
-   */
-  asValue(level: LevelName | LogLevel): LogLevel;
+export type FormatFn = (msg: string) => string;
 
-  /**
-   * Converts a numeric log level value to its corresponding name.
-   * @param {LogLevel} level - The numeric value of the log level to convert.
-   * @returns {LevelName} The name of the log level.
-   */
+/**
+ * Represents the definition of an individual log level that can be used with
+ * the {@linkcode LogLevels} class.
+ */
+export type LogLevelDef = {
+  val: number;
+  fmtFn?: FormatFn;
+  default?: boolean;
+  flush?: boolean;
+  lowest?: boolean;
+};
 
-  asName(level: LevelName | LogLevel): LevelName;
-  /**
-   * The name of the default log level. Usually this is "INFO"
-   * @type {LevelName}
-   */
-  defaultLevelName: LevelName;
+/**
+ * Type representing a dictionary with multiple log level definitions. The
+ * dictionary keys are the names of the log levels (eg. info, debug). All log
+ * levels are internally resolved to uppercase names.
+ */
+export type LogLevelsDef = Record<string, LogLevelDef>;
 
-  /**
-   * Checks if a log level meets a specified threshold.
-   * @param {LogLevel} level - The log level to check.
-   * @param {LogLevel} threshold - The threshold to compare against.
-   * @returns {boolean} True if the log level is above the threshold, false otherwise.
-   */
-  meetsThreshold(level: LogLevel | LevelName, threshold: LogLevel | LevelName): boolean;
-
-  /**
-   * Checks if a log level should result in a flush.
-   * @param {LevelName} level - The log level to check.
-   * @returns {boolean} True if the log level is above the threshold, false otherwise.
-   */
-  meetsFlushThreshold(level: LogLevel | LevelName): boolean;
-
-  maxWidth(threshold: LogLevel | LevelName): Integer;
-
-  /**
-   * Applies color formatting, if any, to a log message based on its level.
-   * @param {string} msg - The message to format.
-   * @param {LevelName} level - The log level associated with the message.
-   * @returns {string} The formatted message with color applied.
-   */
-  applyColors(msg: string, level: LevelName): string;
-}
-
-export interface ILoggerThresholds {
-  setThreshold(level: LevelName | LogLevel): ILoggerThresholds;
-  meetsThreshold(level: LogLevel | LevelName, threshold: LogLevel | LevelName): boolean;
-  meetsFlushThreshold(level: LogLevel | LevelName): boolean;
-}
-
-export type LogLevelFactoryMethod = () => ILogLevels;
+export type FactoryMethod = () => IBasic;

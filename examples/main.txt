@@ -1,0 +1,50 @@
+import { asError, delayPromise } from '@epdoc/type';
+import { Hono } from 'hono';
+import { poweredBy } from 'hono/powered-by';
+import * as Log from './log.ts';
+
+type ICtx = {
+  log: Log.Logger;
+};
+const appLog: Log.Logger = Log.log;
+
+const ctx: ICtx = {
+  log: Log.log,
+};
+
+const begin = appLog.mark();
+
+const app = new Hono();
+
+app.use('*', poweredBy());
+
+app.use('*', async (ctx, next) => {
+  ctx._reqId = ++reqId;
+  ctx._startTime = performance.now();
+  next();
+  ctx.log = appLog.getChild({ reqId: 1 });
+  await next();
+  const ms = Date.now() - start;
+  ctx.header('X-Response-Time', `${ms}ms`);
+});
+
+app.get('/', async (ctx) => {
+  await delayPromise(200);
+  ctx.log.info();
+  return ctx.text('Hello hono!');
+});
+
+app.get('/home', async (ctx) => {
+  return ctx.text('home');
+});
+
+app.notFound((c) => c.json({ message: 'Not Found', ok: false }, 404));
+
+// Error handling
+app.onError((error, c) => {
+  const err = asError(error);
+  log.error.error(err.message).h2('Unknown error').emit();
+  return c.text('Error encountered:' + err.message, 500);
+});
+
+export default app;

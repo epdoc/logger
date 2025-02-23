@@ -1,9 +1,9 @@
 import * as colors from '@std/fmt/colors';
-import type { IMsgBuilder } from '../../message/index.ts';
-import { LogLevels, type LogLevelsDef } from '../base.ts';
-import type { LogLevelFactoryMethod } from '../types.ts';
+import type * as MsgBuilder from '../../message/index.ts';
+import { LogLevels } from '../base.ts';
+import type * as Level from '../types.ts';
 
-const logLevelDefs: LogLevelsDef = {
+const logLevelDefs: Level.LogLevelsDef = {
   error: { val: 0, fmtFn: colors.red, flush: true },
   warn: { val: 1, fmtFn: colors.brightYellow },
   info: { val: 2, fmtFn: colors.white },
@@ -20,21 +20,22 @@ const logLevelDefs: LogLevelsDef = {
     fmtFn: (str: string) => {
       return colors.dim(colors.gray(str));
     },
+    lowest: true,
   },
 } as const;
 
-export const createLogLevels: LogLevelFactoryMethod = () => {
+export const createLogLevels: Level.FactoryMethod = () => {
   return new LogLevels(logLevelDefs);
 };
 
-export interface ILogger {
-  error: IMsgBuilder;
-  warn: IMsgBuilder;
-  info: IMsgBuilder;
-  verbose: IMsgBuilder;
-  debug: IMsgBuilder;
-  trace: IMsgBuilder;
-  spam: IMsgBuilder;
+export interface ILogger<M extends MsgBuilder.IBasic> {
+  error: M;
+  warn: M;
+  info: M;
+  verbose: M;
+  debug: M;
+  trace: M;
+  spam: M;
 }
 
 export const LogLevelNames: string[] = Object.keys(logLevelDefs);

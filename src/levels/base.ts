@@ -1,40 +1,17 @@
 import type { Integer } from '@epdoc/type';
-import type { ILogLevels, LevelName, LogLevel } from './types.ts';
+import type { IBasic } from './ibasic.ts';
+import type * as Level from './types.ts';
+
 /**
  * @fileoverview This module provides a base implementation of log levels that
  * can be used to create custom log levels. By passing a LogLevelsDef object to
  * the constructor, a LogLevels object is created.
  */
 
-/**
- * Function type for formatting log messages.
- * @param {string} msg - The message to format.
- * @returns {string} The formatted message.
- */
-export type FormatFn = (msg: string) => string;
-
-/**
- * Represents the definition of an individual log level that can be used with
- * the {@linkcode LogLevels} class.
- */
-export type LogLevelDef = {
-  val: number;
-  fmtFn?: FormatFn;
-  default?: boolean;
-  flush?: boolean;
-};
-
 /** Type guard for LogLevelDef */
-function isLogLevelDef(levelDef: unknown): levelDef is LogLevelDef {
+export function isLogLevelDef(levelDef: unknown): levelDef is Level.LogLevelDef {
   return typeof levelDef === 'object' && levelDef !== null;
 }
-
-/**
- * Type representing a dictionary with multiple log level definitions. The
- * dictionary keys are the names of the log levels (eg. info, debug). All log
- * levels are internally resolved to uppercase names.
- */
-export type LogLevelsDef = Record<string, LogLevelDef>;
 
 /**
  * Class representing the log levels that are to be used with the
@@ -42,25 +19,25 @@ export type LogLevelsDef = Record<string, LogLevelDef>;
  * order for these classes to be availalbe as Logger methods, you must subclass
  * the Logger class and add your methods to your subclasses.
  */
-export class LogLevels implements ILogLevels {
-  protected _levelDef: LogLevelsDef;
+export class LogLevels implements IBasic {
+  protected _levelDef: Level.LogLevelsDef;
   protected _increasing: boolean = false;
-  protected _levelValues: LogLevel[];
+  protected _levelValues: Level.Value[];
 
   /**
    * Creates an instance of LogLevels.
    * @param levelDef - Optional custom log level definitions.
    */
-  constructor(levelDef: LogLevelsDef) {
-    const _levelDef: LogLevelsDef = levelDef as LogLevelsDef;
+  constructor(levelDef: Level.LogLevelsDef) {
+    const _levelDef: Level.LogLevelsDef = levelDef as Level.LogLevelsDef;
 
     // Convert all keys to uppercase
     this._levelDef = Object.fromEntries(
-      Object.entries(_levelDef).map(([key, value]) => [key.toUpperCase(), value]),
+      Object.entries(_levelDef).map(([key, value]) => [key.toUpperCase(), value])
     );
 
     // Create a list of level values
-    const levelNames: LevelName[] = Object.keys(this._levelDef);
+    const levelNames: Level.Name[] = Object.keys(this._levelDef);
     this._levelValues = levelNames.map((key) => {
       return this._levelDef[key] ? this._levelDef[key].val : 0;
     });
@@ -68,8 +45,8 @@ export class LogLevels implements ILogLevels {
     // Check if the levels are increasing. Use more lines than necessary to calm
     // down the type checker.
     if (levelNames.length > 1) {
-      const firstLevel: LevelName = levelNames[0] as LevelName;
-      const lastLevel: LevelName = levelNames[levelNames.length - 1] as LevelName;
+      const firstLevel: Level.Name = levelNames[0] as Level.Name;
+      const lastLevel: Level.Name = levelNames[levelNames.length - 1] as Level.Name;
       this._increasing =
         // @ts-ignore ts should just stop whinging
         this._levelDef[firstLevel].val < this._levelDef[lastLevel].val;
@@ -81,9 +58,19 @@ export class LogLevels implements ILogLevels {
    * depending on the LogLevelDef, but usually it will be "INFO".
    * @returns The default log level name.
    */
-  get defaultLevelName(): LevelName {
+  get defaultLevelName(): Level.Name {
     const defaultLevel = Object.keys(this._levelDef).find(
-      (key) => (this._levelDef[key] as LogLevelDef).default === true,
+      (key) => (this._levelDef[key] as Level.LogLevelDef).default === true
+    );
+    if (defaultLevel) {
+      return defaultLevel;
+    }
+    return 'INFO';
+  }
+
+  get lowestLevelName(): Level.Name {
+    const defaultLevel = Object.keys(this._levelDef).find(
+      (key) => (this._levelDef[key] as Level.LogLevelDef).lowest === true
     );
     if (defaultLevel) {
       return defaultLevel;
@@ -95,7 +82,7 @@ export class LogLevels implements ILogLevels {
    * Retrieves the names of all log levels.
    * @returns An array of log level names.
    */
-  get names(): LevelName[] {
+  get names(): Level.Name[] {
     return Object.keys(this._levelDef);
   }
 
@@ -103,7 +90,7 @@ export class LogLevels implements ILogLevels {
    * Retrieves the log level definitions.
    * @returns The log level definitions.
    */
-  protected get levelDefs(): LogLevelsDef {
+  protected get levelDefs(): Level.LogLevelsDef {
     return this._levelDef;
   }
 
@@ -120,12 +107,12 @@ export class LogLevels implements ILogLevels {
    * @throws Error - If the level name is not found or the numeric log level is
    * not valid.
    */
-  asValue(level: LevelName | LogLevel): LogLevel {
+  asValue(level: Level.Name | Level.Value): Level.Value {
     if (typeof level === 'string' && isLogLevelDef(this._levelDef[level.toUpperCase()])) {
-      return this._levelDef[level.toUpperCase()].val as LogLevel;
+      return this._levelDef[level.toUpperCase()].val as Level.Value;
     }
     if (typeof level === 'number' && this._levelValues.includes(level)) {
-      return level as LogLevel;
+      return level as Level.Value;
     }
     throw new Error(`Cannot get log level: no name for level: ${level}`);
   }
@@ -139,13 +126,13 @@ export class LogLevels implements ILogLevels {
    * @throws Error - If the level name is not found or the numeric log level is
    * not valid.
    */
-  asName(level: LogLevel | LevelName): LevelName {
+  asName(level: Level.Value | Level.Name): Level.Name {
     if (level in this._levelDef) {
-      return level as LevelName;
+      return level as Level.Name;
     }
-    const result: LevelName = Object.keys(this._levelDef).find((key) => {
+    const result: Level.Name = Object.keys(this._levelDef).find((key) => {
       return isLogLevelDef(this._levelDef[key]) && this._levelDef[key].val === level;
-    }) as LevelName;
+    }) as Level.Name;
     if (result) {
       return result;
     }
@@ -158,13 +145,15 @@ export class LogLevels implements ILogLevels {
    * @param threshold - The threshold to compare against.
    * @returns True if the log level is above the threshold, false otherwise.
    */
-  meetsThreshold(level: LogLevel | LevelName, threshold: LogLevel | LevelName): boolean {
-    const levelVal = this.asValue(level);
-    const thresholdVal = this.asValue(threshold);
+  meetsThreshold(level: Level.Value | Level.Name, threshold: Level.Value | Level.Name): boolean {
+    return this.meetsThresholdValue(this.asValue(level), this.asValue(threshold));
+  }
+
+  meetsThresholdValue(levelVal: Level.Value, thresholdVal: Level.Value): boolean {
     if (this._increasing) {
       return levelVal <= thresholdVal;
     }
-    return level >= threshold;
+    return levelVal >= thresholdVal;
   }
 
   /**
@@ -172,12 +161,12 @@ export class LogLevels implements ILogLevels {
    * @param level - The log level to check.
    * @returns True if the log level is above the threshold, false otherwise.
    */
-  meetsFlushThreshold(level: LogLevel | LevelName): boolean {
+  meetsFlushThreshold(level: Level.Value | Level.Name): boolean {
     const levelName = this.asName(level);
     return isLogLevelDef(this._levelDef[levelName]) && this._levelDef[levelName].flush === true;
   }
 
-  maxWidth(threshold: LogLevel | LevelName): Integer {
+  maxWidth(threshold: Level.Value | Level.Name): Integer {
     const thresholdVal = this.asValue(threshold);
     let w = 0;
     for (let ldx = 0; ldx <= thresholdVal; ++ldx) {
@@ -195,7 +184,7 @@ export class LogLevels implements ILogLevels {
    * @param level - The log level associated with the message.
    * @returns The formatted message with color applied.
    */
-  applyColors(msg: string, level: LevelName): string {
+  applyColors(msg: string, level: Level.Name): string {
     if (isLogLevelDef(this._levelDef[level])) {
       const colorFn = this._levelDef[level].fmtFn;
       if (colorFn) {

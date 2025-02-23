@@ -1,10 +1,9 @@
 import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
-import { assert } from '@std/assert';
-import { LogLevel } from '../levels/index.ts';
-import type { LevelName } from '../levels/types.ts';
-import type { ILogEmitter, LogMsgPart, LogRecord, LogRecordSource, StyleArg, StyleFormatterFn } from '../types.ts';
+import type { Level } from '../levels/index.ts';
+import * as Transport from '../transports/types.ts';
+import type * as Log from '../types.ts';
 import { StringUtil } from '../util.ts';
-import { IMsgBuilder } from './types.ts';
+import type * as MsgBuilder from './index.ts';
 
 const DEFAULT_TAB_SIZE = 2;
 
@@ -12,52 +11,48 @@ const DEFAULT_TAB_SIZE = 2;
  * A LoggerLine is a line of output from a Logger. It is used to build up a log
  * line, add styling, and emit the log line.
  */
-export class MsgBuilder implements IMsgBuilder {
+export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   protected _timestamp: Date = new Date();
-  protected _level: LevelName;
-  protected _emitter: ILogEmitter | undefined;
+  protected _level: Level.Name;
+  protected _emitter: Log.IEmitter | undefined;
+  protected _params: Log.IParams;
+  protected _meetsThreshold: boolean = true;
+  protected _meetsFlushThreshold: boolean = true;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
-  // protected _lineFormat: LoggerLineFormatOpts;
-  protected _applyColors: boolean = true;
 
   protected _msgIndent: string = '';
-  protected _msgParts: LogMsgPart[] = [];
+  protected _msgParts: MsgBuilder.MsgPart[] = [];
   protected _data: Record<string, unknown> | undefined;
   protected _suffix: string[] = [];
-  protected _srcRef?: LogRecordSource;
   // protected _level: LogLevelValue = logLevel.info;
   protected _showElapsed: boolean = false;
 
-  constructor(level: LevelName, emitter?: ILogEmitter) {
+  constructor(
+    level: Level.Name,
+    params: Log.IParams,
+    emitter?: Log.IEmitter,
+    meetsThreshold: boolean = true,
+    meetsFlushThreshold: boolean = true,
+  ) {
     this._level = level;
+    this._params = params;
     this._emitter = emitter;
+    this._meetsThreshold = meetsThreshold;
+    this._meetsFlushThreshold = meetsFlushThreshold;
   }
 
-  set level(level: LevelName) {
+  static factoryMethod(
+    level: Level.Name,
+    params: Log.IParams,
+    emitter?: Log.IEmitter,
+    meetsThreshold: boolean = true,
+    meetsFlushThreshold: boolean = true,
+  ): Base {
+    return new Base(level, params, emitter, meetsThreshold, meetsFlushThreshold);
+  }
+
+  set level(level: Level.Name) {
     this._level = level;
-  }
-
-  set emitter(emitter: ILogEmitter) {
-    this._emitter = emitter;
-  }
-
-  get emitter(): ILogEmitter {
-    assert(this._emitter, 'No logger set');
-    return this._emitter;
-  }
-
-  meetsThreshold(level: LogLevel | LevelName, threshold: LogLevel | LevelName): boolean {
-    return this.emitter.meetsThreshold(level, threshold);
-  }
-
-  applyColors(): this {
-    this._applyColors = true;
-    return this;
-  }
-
-  noColors(): this {
-    this._applyColors = false;
-    return this;
   }
 
   /**
@@ -71,7 +66,7 @@ export class MsgBuilder implements IMsgBuilder {
     return this;
   }
 
-  setInitialString(...args: StyleArg[]): this {
+  setInitialString(...args: MsgBuilder.StyleArg[]): this {
     if (args.length) {
       const count = new StringUtil(args[0]).countTabsAtBeginningOfString();
       if (count) {
@@ -84,9 +79,9 @@ export class MsgBuilder implements IMsgBuilder {
 
   indent(n: Integer | string = DEFAULT_TAB_SIZE): this {
     if (isInteger(n)) {
-      this.addMsgPart(' '.repeat(n - 1));
+      this.appendMsgPart(' '.repeat(n - 1));
     } else if (isNonEmptyString(n)) {
-      this.addMsgPart(n);
+      this.appendMsgPart(n);
     }
     return this;
   }
@@ -111,34 +106,8 @@ export class MsgBuilder implements IMsgBuilder {
     return this;
   }
 
-  src(error: Error): this {
-    // alt implementation
-    // console.log(`Current file: ${new URL(import.meta.url).pathname}`);
-    // console.log(`Current line: ${new Error().stack.split('\n')[1]}`);
-
-    // // Create an Error object to capture the stack trace
-    // const error = new Error();
-
-    // Split the stack trace into lines
-    const stackLines = error.stack?.split('\n') || [];
-
-    // The line we're interested in is the third line (index 2) of the stack trace
-    // Stack trace format: Error\n    at functionName (file:line:column)\n    ...
-    const callerLine = stackLines[2]?.trim() || '';
-
-    // Extract the filename and line number using a regular expression
-    const match = callerLine.match(/at .+ \((.+):(\d+):\d+\)/);
-    if (match) {
-      const filename = match[1];
-      const line = parseInt(match[2], 10);
-      this._srcRef = { filename, line };
-    }
-    return this;
-  }
-
-  protected addMsgPart(str: string, style?: StyleFormatterFn | null): this {
-    // const _style = this.stylizeEnabled ? style : undefined;
-    const part: LogMsgPart = { str: str };
+  appendMsgPart(str: string, style?: MsgBuilder.StyleFormatterFn | null): this {
+    const part: MsgBuilder.MsgPart = { str: str }; // Updated to use MsgBuilder.MsgPart
     if (style) {
       part.style = style;
     }
@@ -146,9 +115,18 @@ export class MsgBuilder implements IMsgBuilder {
     return this;
   }
 
+  prependMsgPart(str: string, style?: MsgBuilder.StyleFormatterFn | null): this {
+    const part: MsgBuilder.MsgPart = { str: str }; // Updated to use MsgBuilder.MsgPart
+    if (style) {
+      part.style = style;
+    }
+    this._msgParts.unshift(part);
+    return this;
+  }
+
   protected appendMsg(...args: unknown[]): this {
     if (isNonEmptyArray(args)) {
-      this.addMsgPart(args.join(' '));
+      this.appendMsgPart(args.join(' '));
     }
     return this;
   }
@@ -158,7 +136,7 @@ export class MsgBuilder implements IMsgBuilder {
     return this;
   }
 
-  stylize(style: StyleFormatterFn | null, ...args: StyleArg[]): this {
+  stylize(style: MsgBuilder.StyleFormatterFn | null, ...args: MsgBuilder.StyleArg[]): this {
     if (isNonEmptyArray(args)) {
       const str = args
         .map((arg) => {
@@ -170,7 +148,7 @@ export class MsgBuilder implements IMsgBuilder {
           return String(arg);
         })
         .join(' ');
-      this.addMsgPart(str, style);
+      this.appendMsgPart(str, style);
     }
     return this;
   }
@@ -185,7 +163,7 @@ export class MsgBuilder implements IMsgBuilder {
   }
 
   data(data: Record<string, unknown>): this {
-    if (isDict(data)) {
+    if (isDict(data) && this._meetsThreshold) {
       if (!this._data) {
         this._data = data;
       } else {
@@ -196,42 +174,48 @@ export class MsgBuilder implements IMsgBuilder {
   }
 
   /**
-   * Emits the log line.
-   * @param { unknown[]} args - The arguments to emit.
+   * Emits the log line, and also returns the object that will have been
+   * emitted.
+   * @param { unknown[]} args - Optional additional arguments to emit as unformatted text.
    * @returns {void}
    * @see ewt()
    * @see emitWithTime()
    */
-  emit(...args: unknown[]): LogRecord {
-    this.appendMsg(...args);
-    const msg: LogRecord = {
-      timestamp: this._timestamp,
-      level: this._level,
-      msg: this.formatParts(),
-      package: this.emitter.package,
-      srcRef: this._srcRef,
-    };
-    if (this._data) {
-      msg.data = this._data;
+  emit(...args: unknown[]): Log.Entry | undefined {
+    if (this._meetsThreshold) {
+      this.appendMsg(...args);
+      const entry: Log.Entry = {
+        timestamp: this._timestamp,
+        level: this._level,
+        data: this._data,
+        sid: this._params.sid,
+        msg: this,
+      };
+      if (this._params.reqIds.length) {
+        entry.reqId = this._params.reqIds.join('.');
+      }
+      if (this._params.pkgs.length) {
+        entry.package = this._params.pkgs.join('.');
+      }
+      if (this._emitter) {
+        this._emitter.emit(entry);
+      }
+      this.clear();
+      return entry;
     }
-    this.clear();
-    if (this._emitter) {
-      this._emitter.emit(msg);
-    }
-    return msg;
   }
 
   partsAsString(): string {
     return this._msgParts?.map((p) => p.str).join(' ') || '';
   }
 
-  protected formatParts(): string {
+  format(color: boolean, _target: Transport.OutputFormat = Transport.Format.text): string {
     const parts: string[] = [];
     if (isNonEmptyString(this._msgIndent)) {
       parts.push(this._msgIndent);
     }
-    this._msgParts.forEach((part: LogMsgPart) => {
-      if (part.style && this._applyColors) {
+    this._msgParts.forEach((part: MsgBuilder.MsgPart) => {
+      if (part.style && color) {
         parts.push(part.style(part.str));
       } else {
         parts.push(part.str);
