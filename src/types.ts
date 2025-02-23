@@ -34,6 +34,7 @@ export type EmitterShowOpts = {
   source?: boolean;
   data?: boolean;
 };
+export type EmitterShowKey = keyof EmitterShowOpts;
 
 export type GetChildOpts = {
   reqId?: string[];

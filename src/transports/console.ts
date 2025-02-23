@@ -146,7 +146,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
     val: string,
     show: boolean | number,
     colorFn: string,
-    opts?: { pre: string; post: string },
+    opts?: { pre: string; post: string }
   ): string {
     let s = val;
     if (isInteger(show)) {

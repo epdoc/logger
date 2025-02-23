@@ -7,7 +7,7 @@ import type * as MsgBuilder from '../message/index.ts';
 import * as Log from '../types.ts';
 
 export interface BaseOptions {
-  x?: boolean;
+  show?: Log.EmitterShowOpts;
 }
 
 export abstract class Base<M extends MsgBuilder.IBasic> {
@@ -24,6 +24,7 @@ export abstract class Base<M extends MsgBuilder.IBasic> {
     this._opts = opts;
     this._level = logMgr.logLevels.asValue('info');
     this._threshold = logMgr.threshold;
+    this._show = opts.show ?? logMgr.getShow();
   }
 
   getOptions(): BaseOptions {
@@ -35,8 +36,14 @@ export abstract class Base<M extends MsgBuilder.IBasic> {
     return this;
   }
 
-  setShow(opts: Log.EmitterShowOpts): this {
-    this._show = opts;
+  show(opts: Log.EmitterShowOpts): this {
+    Object.keys(opts).forEach((key) => {
+      const k: Log.EmitterShowKey = key as Log.EmitterShowKey;
+      if (opts[k] === true || opts[k] === false) {
+        // @ts-ignore this is okay
+        this._show[k] = opts[k];
+      }
+    });
     return this;
   }
 

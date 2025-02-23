@@ -102,7 +102,7 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
    */
   setShow(opts: Log.EmitterShowOpts): this {
     this._show = opts;
-    this.transportMgr.setShow(opts);
+    this.transportMgr.show(opts);
     return this;
   }
 
@@ -216,7 +216,7 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
   setThreshold(level: Level.Name | Level.Value): this {
     assert(
       this._logLevels,
-      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?',
+      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?'
     );
     this._threshold = this.logLevels.asValue(level);
     this.transportMgr.setThreshold(this._threshold);

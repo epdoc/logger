@@ -31,13 +31,14 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> impl
     });
   }
 
-  setShow(opts: Log.EmitterShowOpts): this {
+  show(opts: Log.EmitterShowOpts): this {
     this.transports.forEach((transport) => {
-      transport.setShow(opts);
+      transport.show(opts);
       // transport.thresholdUpdated();
     });
     return this;
   }
+
   start(): Promise<void> {
     if (!this.transports.length) {
       const transport = new Console(this._logMgr);
