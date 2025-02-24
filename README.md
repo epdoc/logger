@@ -1,6 +1,5 @@
 # @epdoc/logger
 
-**NOTE: Version 1000.0.0 indicates a major rewrite that is incompatible with prior versions of this module**
 
 A logging module supporting built-in and custom transports, webserver response
 middleware, rich message and data syntax with color console output, chainable
@@ -9,9 +8,11 @@ many of which can be chained to create richer output with more columns of data.
 
 ## Versions
 
+**Version 1000.0.0 indicates a major rewrite that is incompatible with prior versions of this module**
+
 - Version prior to version 1000.0.0 (versions 2.x.x) were used in production, and were last updated at the end of 2016.
-- Version 1000.0.0 is a TypeScript rewrite using Deno and is not backwards compatible with earlier versions. The main
-  points for this new version are:
+- Version 1000.0.0 is a TypeScript rewrite using Deno and is not backwards
+  compatible with earlier versions. The main points for this new version are:
   - Chainable methods to allow for easy color formatting of log output when using the console
   - Maintains the Log Manager and transports concepts of the earlier version
   - Only a console and file transport have so far been written
@@ -26,6 +27,14 @@ many of which can be chained to create richer output with more columns of data.
 ```bash
 deno add @epdoc/logger
 ```
+
+# Documentation
+
+- [Classes](/docs/classes.md)
+- [Log Levels](/docs/log-levels.md)
+- [Transports](/docs/transports.md)
+- [Middleware](/docs/middleware.md)
+- [Customization Overview](/docs/cutomization.md)
 
 # Quick Start
 
@@ -144,6 +153,7 @@ Notes:
   support custom time formatters.
 - Before `start` is called you have the opportunity to configure your transports. Oherwise a single console transport is
   created by default.
+
 
 # OUT OF DATE
 

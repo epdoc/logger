@@ -1,4 +1,4 @@
-## Configuration
+## Configuration (OUT OF DATE - DO NOT USE)
 
 The easiest way to use the logger is to create and initialize a [LogManager](./src/log-manager.ts) object using config
 settings, then retrieve a [Logger](./src/log-manager.ts) object from the LogManager.

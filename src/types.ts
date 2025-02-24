@@ -30,8 +30,6 @@ export type EmitterShowOpts = {
   sid?: boolean;
   reqId?: boolean | number;
   package?: boolean | number;
-  // Show source code file and line number
-  source?: boolean;
   data?: boolean;
 };
 export type EmitterShowKey = keyof EmitterShowOpts;
