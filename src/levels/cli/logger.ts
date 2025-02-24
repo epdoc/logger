@@ -1,12 +1,11 @@
 import * as Logger from '../../logger/index.ts';
 import { LogMgr } from '../../logmgr.ts';
 import type * as MsgBuilder from '../../message/index.ts';
-import type * as Log from '../../types.ts';
 import type * as cli from './types.ts';
 
 export const getLogger = <M extends MsgBuilder.IBasic>(
   log: LogMgr<M> | Logger.IEmitter,
-  params?: Log.IParams,
+  params?: Logger.ChildParams,
 ): CliLogger<M> => {
   if (log instanceof LogMgr) {
     return new CliLogger<M>(log, params);
@@ -31,7 +30,7 @@ export const getLogger = <M extends MsgBuilder.IBasic>(
  */
 
 export class CliLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> implements cli.ILogger<M> {
-  constructor(logMgr: LogMgr<M>, params?: Log.IParams) {
+  constructor(logMgr: LogMgr<M>, params?: Logger.ChildParams) {
     super(logMgr, params);
   }
 
@@ -42,33 +41,33 @@ export class CliLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> imp
   }
 
   get error(): M {
-    return this._logMgr.getMsgBuilder('ERROR', this, this);
+    return this._logMgr.getMsgBuilder('ERROR', this);
   }
   get warn(): M {
-    return this._logMgr.getMsgBuilder('WARN', this, this);
+    return this._logMgr.getMsgBuilder('WARN', this);
   }
   get help(): M {
-    return this._logMgr.getMsgBuilder('HELP', this, this);
+    return this._logMgr.getMsgBuilder('HELP', this);
   }
   get data(): M {
-    return this._logMgr.getMsgBuilder('DATA', this, this);
+    return this._logMgr.getMsgBuilder('DATA', this);
   }
   get info(): M {
-    return this._logMgr.getMsgBuilder('INFO', this, this);
+    return this._logMgr.getMsgBuilder('INFO', this);
   }
   get debug(): M {
-    return this._logMgr.getMsgBuilder('DEBUG', this, this);
+    return this._logMgr.getMsgBuilder('DEBUG', this);
   }
   get prompt(): M {
-    return this._logMgr.getMsgBuilder('PROMPT', this, this);
+    return this._logMgr.getMsgBuilder('PROMPT', this);
   }
   get verbose(): M {
-    return this._logMgr.getMsgBuilder('VERBOSE', this, this);
+    return this._logMgr.getMsgBuilder('VERBOSE', this);
   }
   get input(): M {
-    return this._logMgr.getMsgBuilder('INPUT', this, this);
+    return this._logMgr.getMsgBuilder('INPUT', this);
   }
   get silly(): M {
-    return this._logMgr.getMsgBuilder('SILLY', this, this);
+    return this._logMgr.getMsgBuilder('SILLY', this);
   }
 }

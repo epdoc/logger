@@ -30,8 +30,7 @@ export interface IBasic {
 
 export type FactoryMethod = (
   level: Level.Name,
-  params: Log.IParams,
-  emitter: Log.IEmitter,
+  emitter: Logger.IEmitter,
   meetsThreshold: boolean,
   meetsFlushThreshold: boolean,
 ) => IBasic;

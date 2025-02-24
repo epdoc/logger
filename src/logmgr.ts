@@ -122,10 +122,10 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
    * @param level - The log level.
    * @param logger - The logger instance to associate with this message builder.
    */
-  getMsgBuilder(level: string, emitter: Log.IEmitter, params: Log.IParams): M {
+  getMsgBuilder(level: string, emitter: Logger.IEmitter): M {
     const meetsThreshold = this.meetsThreshold(level);
     const meetsFlushThreshold = this.meetsFlushThreshold(level);
-    return this._msgBuilderFactory(level, params, emitter, meetsThreshold, meetsFlushThreshold) as M;
+    return this._msgBuilderFactory(level, emitter, meetsThreshold, meetsFlushThreshold) as M;
   }
 
   /**

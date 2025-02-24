@@ -7,17 +7,20 @@ import type * as Log from '../types.ts';
 export interface IInherit {
   copy(): IInherit;
   assign(logger: this): void;
-  getChild(opts?: Log.GetChildOpts): IInherit;
+  getChild(opts?: ChildParams): IInherit;
 }
 
-export interface IEmitter {
+export interface IEmitter extends IMark {
   emit(msg: Log.Entry): void;
   // show(val: LogEmitterShowOpts): this;
   set pkg(val: string);
   get pkg(): string;
+  get pkgs(): string[];
   set reqId(val: string);
   get reqId(): string;
-  sid: string | undefined;
+  get reqIds(): string[];
+  set sid(val: string);
+  get sid(): string | undefined;
   meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean;
 }
 
@@ -33,6 +36,12 @@ export interface IMark {
   demark(name: string, keep: boolean): HrMilliseconds;
 }
 
+export type ChildParams = {
+  sid?: string;
+  reqIds?: string[];
+  pkgs?: string[];
+};
+
 export interface ILevels {
   get logLevels(): Level.IBasic;
   setThreshold(level: Level.Name | Level.Value): ILevels;
@@ -46,5 +55,5 @@ export function isIMark(val: object): val is IMark {
 
 export type FactoryMethod<M extends MsgBuilder.IBasic> = (
   logMgr: LogMgr<M> | IEmitter,
-  opts?: Log.IParams,
+  opts?: ChildParams,
 ) => IEmitter;

@@ -1,6 +1,7 @@
 import { type Integer, isNonEmptyString, isPosNumber } from '@epdoc/type';
 import * as colors from '@std/fmt/colors';
 import type { Level } from '../levels/index.ts';
+import type * as Logger from '../logger/types.ts';
 import type * as Log from '../types.ts';
 import { Base } from './base.ts';
 import type * as MsgBuilder from './types.ts';
@@ -49,11 +50,10 @@ export class Console extends Base implements MsgBuilder.IFormat {
 
   static override factoryMethod(
     level: Level.Name,
-    params: Log.IParams,
-    emitter?: Log.IEmitter,
+    emitter: Logger.IEmitter,
     meetsThreshold: boolean = true,
   ): Console {
-    return new Console(level, params, emitter, meetsThreshold);
+    return new Console(level, emitter, meetsThreshold);
   }
 
   /**
@@ -205,7 +205,7 @@ export class Console extends Base implements MsgBuilder.IFormat {
   ewt(duration: number | string, keep = false): Log.Entry | undefined {
     if (this._meetsThreshold) {
       if (isNonEmptyString(duration)) {
-        duration = this._params.demark(duration, keep);
+        duration = this._emitter.demark(duration, keep);
       }
       if (isPosNumber(duration)) {
         let digits: Integer = 3;

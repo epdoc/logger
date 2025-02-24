@@ -11,7 +11,7 @@ describe('Log.Entity', () => {
   test('test', () => {
     const log: Log.std.Logger<M> = logMgr.getLogger() as Log.std.Logger<M>;
     log.setPackage('testpkg').setThreshold('info');
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log, log);
+    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
     msgBuilder.h1('message heading');
     const str = msgBuilder.format(false);
     const record = msgBuilder.emit('parameter passed to emit');

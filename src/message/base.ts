@@ -1,5 +1,6 @@
 import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
 import type { Level } from '../levels/index.ts';
+import type * as Logger from '../logger/types.ts';
 import * as Transport from '../transports/types.ts';
 import type * as Log from '../types.ts';
 import { StringUtil } from '../util.ts';
@@ -14,8 +15,7 @@ const DEFAULT_TAB_SIZE = 2;
 export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   protected _timestamp: Date = new Date();
   protected _level: Level.Name;
-  protected _emitter: Log.IEmitter | undefined;
-  protected _params: Log.IParams;
+  protected _emitter: Logger.IEmitter;
   protected _meetsThreshold: boolean = true;
   protected _meetsFlushThreshold: boolean = true;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
@@ -29,13 +29,11 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
 
   constructor(
     level: Level.Name,
-    params: Log.IParams,
-    emitter?: Log.IEmitter,
+    emitter: Logger.IEmitter,
     meetsThreshold: boolean = true,
     meetsFlushThreshold: boolean = true,
   ) {
     this._level = level;
-    this._params = params;
     this._emitter = emitter;
     this._meetsThreshold = meetsThreshold;
     this._meetsFlushThreshold = meetsFlushThreshold;
@@ -43,12 +41,11 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
 
   static factoryMethod(
     level: Level.Name,
-    params: Log.IParams,
-    emitter?: Log.IEmitter,
+    emitter: Logger.IEmitter,
     meetsThreshold: boolean = true,
     meetsFlushThreshold: boolean = true,
   ): Base {
-    return new Base(level, params, emitter, meetsThreshold, meetsFlushThreshold);
+    return new Base(level, emitter, meetsThreshold, meetsFlushThreshold);
   }
 
   set level(level: Level.Name) {
@@ -188,14 +185,17 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
         timestamp: this._timestamp,
         level: this._level,
         data: this._data,
-        sid: this._params.sid,
+        sid: this._emitter.sid,
         msg: this,
       };
-      if (this._params.reqIds.length) {
-        entry.reqId = this._params.reqIds.join('.');
+      if (this._emitter.sid) {
+        entry.sid = this._emitter.sid;
       }
-      if (this._params.pkgs.length) {
-        entry.package = this._params.pkgs.join('.');
+      if (isNonEmptyArray(this._emitter.reqIds)) {
+        entry.reqId = this._emitter.reqIds.join('.');
+      }
+      if (isNonEmptyArray(this._emitter.pkgs)) {
+        entry.package = this._emitter.pkgs.join('.');
       }
       if (this._emitter) {
         this._emitter.emit(entry);

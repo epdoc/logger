@@ -1,6 +1,5 @@
 import { isString } from '@epdoc/type';
 import type * as Level from './levels/types.ts';
-import type * as Logger from './logger/index.ts';
 import type * as MsgBuilder from './message/index.ts';
 
 const REG = {
@@ -34,18 +33,6 @@ export type EmitterShowOpts = {
 };
 export type EmitterShowKey = keyof EmitterShowOpts;
 
-export type GetChildOpts = {
-  reqId?: string[];
-  sid?: string;
-  pkg?: string[];
-};
-
 export interface IEmitter {
   emit(msg: Entry): void;
-}
-
-export interface IParams extends Logger.IMark {
-  sid?: string;
-  reqIds: string[];
-  pkgs: string[];
 }

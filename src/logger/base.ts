@@ -1,4 +1,5 @@
 import type { HrMilliseconds } from '@epdoc/duration';
+import { isNonEmptyString } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import type { Level } from '../levels/index.ts';
 import type { LogMgr } from '../logmgr.ts';
@@ -13,8 +14,7 @@ let markId = 0;
  * level methods.
  */
 
-export class Base<M extends MsgBuilder.IBasic>
-  implements Logger.IEmitter, Logger.IMark, Logger.ILevels, Logger.IInherit, Log.IParams {
+export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logger.ILevels, Logger.IInherit {
   protected _logMgr: LogMgr<M>;
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = {};
@@ -23,30 +23,30 @@ export class Base<M extends MsgBuilder.IBasic>
   protected _sid: string | undefined;
   protected _mark: Record<string, HrMilliseconds> = {};
 
-  constructor(logMgr: LogMgr<M>, params?: Log.IParams) {
+  constructor(logMgr: LogMgr<M>, params?: Logger.ChildParams) {
     this._logMgr = logMgr;
-    this.#appendParams(params);
+    this.#appendParams(params as Logger.ChildParams);
   }
 
   // static factoryMethod<M>(logMgr: LogMgr<M>): Basic<M> {
   //   return new Basic<M>(logMgr);
   // }
 
-  getChild(params?: Log.IParams): Base<M> {
+  getChild(params?: Logger.ChildParams): Base<M> {
     const logger = this.copy();
     this.#appendParams(params);
     return logger;
   }
 
-  #appendParams(params?: Log.IParams): this {
+  #appendParams(params?: Logger.ChildParams): this {
     if (params) {
-      if (params.reqIds.length) {
+      if (isNonEmptyString(params.reqIds)) {
         this._reqId = [...this._reqId, ...params.reqIds];
       }
       if (params.sid) {
         this._sid = params.sid;
       }
-      if (params.pkgs.length) {
+      if (isNonEmptyString(params.pkgs)) {
         this._pkg = [...this._pkg, ...params.pkgs];
       }
     }
