@@ -14,7 +14,7 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/log/test/demo.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/test/demo.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -31,7 +31,7 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/log/test/msgconsole.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/test/msgconsole.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -48,7 +48,7 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/log/test/message.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/test/message.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -65,7 +65,24 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/log/test/file.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/test/file.test.ts"
+      ],
+      "attachSimplePort": 9229
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug recurse.test.ts",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "UNIT_TEST": "1"
+      },
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/test/recurse.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -82,7 +99,7 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/log/test/std.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/test/std.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -99,7 +116,7 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/log/test/levels.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/test/levels.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -116,7 +133,7 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/log/test/cli.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/test/cli.test.ts"
       ],
       "attachSimplePort": 9229
     },
@@ -133,7 +150,7 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/log/src/levels/test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/src/levels/test.ts"
       ],
       "attachSimplePort": 9229
     },

@@ -1,5 +1,5 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import { isNonEmptyString } from '@epdoc/type';
+import { isNonEmptyArray } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import type { Level } from '../levels/index.ts';
 import type { LogMgr } from '../logmgr.ts';
@@ -18,8 +18,8 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   protected _logMgr: LogMgr<M>;
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = {};
-  protected _pkg: string[] = [];
-  protected _reqId: string[] = [];
+  protected _pkgs: string[] = [];
+  protected _reqIds: string[] = [];
   protected _sid: string | undefined;
   protected _mark: Record<string, HrMilliseconds> = {};
 
@@ -34,20 +34,20 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
 
   getChild(params?: Logger.ChildParams): Base<M> {
     const logger = this.copy();
-    this.#appendParams(params);
+    logger.#appendParams(params);
     return logger;
   }
 
   #appendParams(params?: Logger.ChildParams): this {
     if (params) {
-      if (isNonEmptyString(params.reqIds)) {
-        this._reqId = [...this._reqId, ...params.reqIds];
+      if (isNonEmptyArray(params.reqIds)) {
+        this._reqIds = [...this._reqIds, ...params.reqIds];
       }
       if (params.sid) {
         this._sid = params.sid;
       }
-      if (isNonEmptyString(params.pkgs)) {
-        this._pkg = [...this._pkg, ...params.pkgs];
+      if (isNonEmptyArray(params.pkgs)) {
+        this._pkgs = [...this._pkgs, ...params.pkgs];
       }
     }
     return this;
@@ -72,15 +72,15 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   }
 
   get pkgs(): string[] {
-    return this._pkg;
+    return this._pkgs;
   }
 
   get pkg(): string {
-    return this._pkg.join('.');
+    return this._pkgs.join('.');
   }
 
   set pkg(val: string) {
-    this._pkg.push(val);
+    this._pkgs.push(val);
   }
 
   get sid(): string | undefined {
@@ -93,26 +93,26 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
 
   setPackage(val: string | undefined): this {
     if (val) {
-      this._pkg.push(val);
+      this._pkgs.push(val);
     }
     return this;
   }
 
   get reqIds(): string[] {
-    return this._reqId;
+    return this._reqIds;
   }
 
   get reqId(): string {
-    return this._reqId.join('.');
+    return this._reqIds.join('.');
   }
 
   set reqId(val: string) {
-    this._reqId.push(val);
+    this._reqIds.push(val);
   }
 
   setReqId(val: string | undefined): this {
     if (val) {
-      this._reqId.push(val);
+      this._reqIds.push(val);
     }
     return this;
   }

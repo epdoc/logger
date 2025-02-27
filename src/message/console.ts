@@ -21,7 +21,7 @@ const styleFormatters: Record<string, MsgBuilder.StyleFormatterFn> = {
   error: (str: string) => colors.bold(colors.brightRed(str)),
   strikethru: colors.inverse,
   _reqId: colors.brightYellow,
-  _sid: colors.yellow,
+  _sid: (str: string) => colors.underline(colors.yellow(str)),
   _package: colors.green,
   _action: colors.blue,
   _plain: colors.white,
@@ -51,7 +51,7 @@ export class Console extends Base implements MsgBuilder.IFormat {
   static override factoryMethod(
     level: Level.Name,
     emitter: Logger.IEmitter,
-    meetsThreshold: boolean = true,
+    meetsThreshold: boolean = true
   ): Console {
     return new Console(level, emitter, meetsThreshold);
   }

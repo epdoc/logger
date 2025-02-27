@@ -66,7 +66,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
       {
         timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
       },
-      pick(msg, 'level', 'package', 'sid', 'reqId'),
+      pick(msg, 'level', 'package', 'sid', 'reqId')
     );
 
     if (msg.msg instanceof MsgBuilder.Base) {
@@ -103,15 +103,15 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
       }
 
       if (show.package && isNonEmptyString(entry.package)) {
-        parts.push(entry.package);
+        parts.push(this._styledString(entry.package, false, '_package'));
       }
 
       if (show.sid && isNonEmptyString(entry.sid)) {
-        parts.push(entry.sid);
+        parts.push(this._styledString(entry.sid, false, '_sid'));
       }
 
       if (show.reqId && isNonEmptyString(entry.reqId)) {
-        parts.push(entry.reqId);
+        parts.push(this._styledString(entry.reqId, false, '_reqId'));
       }
 
       if (entry.msg) {
@@ -150,7 +150,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
     val: string,
     show: boolean | number,
     colorFn: string,
-    opts?: { pre: string; post: string },
+    opts?: { pre: string; post: string }
   ): string {
     let s = val;
     if (isInteger(show)) {
