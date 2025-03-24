@@ -20,7 +20,7 @@ export type Entry = {
   package?: string;
   // msg?: string;
   msg: string | MsgBuilder.IFormat | undefined;
-  data?: Record<string, unknown>;
+  data?: unknown | undefined;
 };
 
 export type EmitterShowOpts = {

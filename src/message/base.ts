@@ -22,7 +22,7 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
 
   protected _msgIndent: string = '';
   protected _msgParts: MsgBuilder.MsgPart[] = [];
-  protected _data: Record<string, unknown> | undefined;
+  protected _data: unknown | undefined;
   protected _suffix: string[] = [];
   // protected _level: LogLevelValue = logLevel.info;
   protected _showElapsed: boolean = false;
@@ -159,12 +159,12 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     return this.appendMsg(...args);
   }
 
-  data(data: Record<string, unknown>): this {
+  data(data: unknown): this {
     if (isDict(data) && this._meetsThreshold) {
-      if (!this._data) {
-        this._data = data;
-      } else {
+      if (isDict(this._data)) {
         this._data = Object.assign(this._data, data);
+      } else {
+        this._data = data;
       }
     }
     return this;

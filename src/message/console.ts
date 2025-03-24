@@ -51,7 +51,7 @@ export class Console extends Base implements MsgBuilder.IFormat {
   static override factoryMethod(
     level: Level.Name,
     emitter: Logger.IEmitter,
-    meetsThreshold: boolean = true
+    meetsThreshold: boolean = true,
   ): Console {
     return new Console(level, emitter, meetsThreshold);
   }

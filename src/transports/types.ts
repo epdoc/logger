@@ -58,5 +58,5 @@ export type Entry = Partial<{
   sid: string;
   reqId: string;
   msg: string;
-  data: object;
+  data: unknown;
 }>;

@@ -1,5 +1,5 @@
 import { StringEx } from '@epdoc/string';
-import { type Integer, isInteger, isNonEmptyString, isString, pick } from '@epdoc/type';
+import { type Integer, isInteger, isNonEmptyString, isNullOrUndefined, isString, pick } from '@epdoc/type';
 import type { Level } from '../levels/index.ts';
 import type { LogMgr } from '../logmgr.ts';
 import * as MsgBuilder from '../message/index.ts';
@@ -66,7 +66,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
       {
         timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
       },
-      pick(msg, 'level', 'package', 'sid', 'reqId')
+      pick(msg, 'level', 'package', 'sid', 'reqId'),
     );
 
     if (msg.msg instanceof MsgBuilder.Base) {
@@ -118,7 +118,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
         parts.push(entry.msg);
       }
 
-      if (msg.data && show.data) {
+      if (!isNullOrUndefined(msg.data) && show.data) {
         parts.push(JSON.stringify(msg.data));
       }
       this.output(parts.join(' '), levelValue);
@@ -150,7 +150,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
     val: string,
     show: boolean | number,
     colorFn: string,
-    opts?: { pre: string; post: string }
+    opts?: { pre: string; post: string },
   ): string {
     let s = val;
     if (isInteger(show)) {
