@@ -26,7 +26,9 @@ export class File<M extends MsgBuilder.IBasic> extends Console<M> {
   protected mode: FileLogMode = 'a';
   protected buf: Uint8Array;
   protected pointer: Integer = 0;
-  protected unloadCallback = (() => this.destroy()).bind(this);
+  protected unloadCallback = async (): Promise<void> => {
+    await this.destroy();
+  };
 
   constructor(logMgr: LogMgr<M>, opts: FileOptions) {
     super(logMgr, opts);

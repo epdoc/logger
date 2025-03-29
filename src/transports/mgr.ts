@@ -54,7 +54,7 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> impl
     });
   }
 
-  get running() {
+  get running(): boolean {
     return this._bRunning;
   }
 
