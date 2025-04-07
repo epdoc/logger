@@ -30,14 +30,14 @@ export interface IBasic {
 
 export interface IEmitDuration {
   emitWithTime(duration: number | string): Entry | undefined;
-  ewt(duration: number | string, keep: boolean): Entry | undefined;
+  ewt(duration: number | string, keep?: boolean): Entry | undefined;
 }
 
 export type FactoryMethod = (
   level: Level.Name,
   emitter: Logger.IEmitter,
   meetsThreshold: boolean,
-  meetsFlushThreshold: boolean,
+  meetsFlushThreshold: boolean
 ) => IBasic;
 
 export type ClassConstructor<M> = new (level: string, logger: Logger.IEmitter) => M;
