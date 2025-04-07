@@ -1,8 +1,8 @@
 import type { Integer } from '@epdoc/type';
-import type { Log } from '../../mod.ts';
 import type { Level } from '../levels/index.ts';
 import type * as Logger from '../logger/types.ts';
 import type * as Transport from '../transports/types.ts';
+import type { Entry } from '../types.ts';
 
 export type StyleFormatterFn = (str: string) => string;
 export type StyleArg = string | number | Record<string, unknown> | unknown[] | unknown;
@@ -25,7 +25,12 @@ export interface IBasic {
   tab(n: Integer): this;
   comment(...args: string[]): this;
   data(data: Record<string, unknown>): this;
-  emit(): Log.Entry | undefined;
+  emit(): Entry | undefined;
+}
+
+export interface IEmitDuration {
+  emitWithTime(duration: number | string): Entry | undefined;
+  ewt(duration: number | string, keep: boolean): Entry | undefined;
 }
 
 export type FactoryMethod = (

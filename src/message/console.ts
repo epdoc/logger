@@ -39,13 +39,29 @@ const styleFormatters: Record<string, MsgBuilder.StyleFormatterFn> = {
   _timePrefix: colors.gray,
 } as const;
 
+export interface IConsole extends MsgBuilder.IFormat, MsgBuilder.IBasic, MsgBuilder.IEmitDuration {
+  text(...args: MsgBuilder.StyleArg[]): this;
+  h1(...args: MsgBuilder.StyleArg[]): this;
+  h2(...args: MsgBuilder.StyleArg[]): this;
+  h3(...args: MsgBuilder.StyleArg[]): this;
+  action(...args: MsgBuilder.StyleArg[]): this;
+  label(...args: MsgBuilder.StyleArg[]): this;
+  highlight(...args: MsgBuilder.StyleArg[]): this;
+  value(...args: MsgBuilder.StyleArg[]): this;
+  path(...args: MsgBuilder.StyleArg[]): this;
+  date(...args: MsgBuilder.StyleArg[]): this;
+  warn(...args: MsgBuilder.StyleArg[]): this;
+  error(...args: MsgBuilder.StyleArg[]): this;
+  strikethru(...args: MsgBuilder.StyleArg[]): this;
+}
+
 /**
  * Message Builder class for styling messages. Extends the CoreMsgBuilder to
  * provide custom formatting using chained messages. If you prefer to declare
  * and use a custom set of formatting metchods, declare your own MsgBuilder and
  * pass it to the LogManager.
  */
-export class Console extends Base implements MsgBuilder.IFormat {
+export class Console extends Base implements IConsole {
   static readonly styleFormatters = styleFormatters;
 
   static override factoryMethod(
