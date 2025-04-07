@@ -39,7 +39,7 @@ const styleFormatters: Record<string, MsgBuilder.StyleFormatterFn> = {
   _timePrefix: colors.gray,
 } as const;
 
-export interface IConsole extends MsgBuilder.IFormat, MsgBuilder.IBasic, MsgBuilder.IEmitDuration {
+export interface IConsole {
   text(...args: MsgBuilder.StyleArg[]): this;
   h1(...args: MsgBuilder.StyleArg[]): this;
   h2(...args: MsgBuilder.StyleArg[]): this;
@@ -61,13 +61,13 @@ export interface IConsole extends MsgBuilder.IFormat, MsgBuilder.IBasic, MsgBuil
  * and use a custom set of formatting metchods, declare your own MsgBuilder and
  * pass it to the LogManager.
  */
-export class Console extends Base implements IConsole {
+export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration {
   static readonly styleFormatters = styleFormatters;
 
   static override factoryMethod(
     level: Level.Name,
     emitter: Logger.IEmitter,
-    meetsThreshold: boolean = true,
+    meetsThreshold: boolean = true
   ): Console {
     return new Console(level, emitter, meetsThreshold);
   }
