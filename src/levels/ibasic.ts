@@ -1,5 +1,5 @@
 import type { Integer } from '@epdoc/type';
-import type { Name, Value } from './types.ts';
+import type { LogLevelsDef, Name, Value } from './types.ts';
 
 /**
  * Log levels interface used throughout the library, allowing for custom log
@@ -39,6 +39,8 @@ export interface IBasic {
    */
   defaultLevelName: Name;
   lowestLevelName: Name;
+
+  get levelDefs(): LogLevelsDef;
 
   /**
    * Checks if a log level meets a specified threshold.
