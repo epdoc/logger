@@ -17,7 +17,7 @@ export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logg
     return this;
   }
 
-  override assign(logger: Indent<M>) {
+  override assign(logger: Indent<M>): void {
     super.assign(logger);
     this._t0 = logger._t0;
     this._indent = [...logger._indent];

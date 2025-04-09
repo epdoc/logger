@@ -22,7 +22,7 @@
   },
   "imports": {
     "@std/fmt": "jsr:@std/fmt@^1.0.6",
-    "@epdoc/type": "jsr:@epdoc/type@1.0.2",
+    "@epdoc/type": "jsr:@epdoc/type@1.0.3",
     "@epdoc/string": "jsr:@epdoc/string@0.1.0",
     "@epdoc/duration": "jsr:@epdoc/duration@0.1.0",
     "@epdoc/datetime": "jsr:@epdoc/datetime@1.0.0",

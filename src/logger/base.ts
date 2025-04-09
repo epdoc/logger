@@ -59,7 +59,7 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
     return result;
   }
 
-  assign(logger: Base<M>) {
+  assign(logger: Base<M>): void {
     this._threshold = logger._threshold;
     this._show = logger._show;
     this.#appendParams(logger);
