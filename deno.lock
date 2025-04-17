@@ -1,8 +1,8 @@
 {
   "version": "4",
   "specifiers": {
-    "jsr:@epdoc/datetime@1.0.1": "1.0.1",
-    "jsr:@epdoc/duration@0.1.0": "0.1.0",
+    "jsr:@epdoc/datetime@1.0.3": "1.0.3",
+    "jsr:@epdoc/duration@0.1.1": "0.1.1",
     "jsr:@epdoc/string@0.1.0": "0.1.0",
     "jsr:@epdoc/type@1.0.2": "1.0.2",
     "jsr:@epdoc/type@1.0.4": "1.0.4",
@@ -26,16 +26,16 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
-    "@epdoc/datetime@1.0.1": {
-      "integrity": "6959607db97cbb89ac6e9a1022b5340e3d47569532eae792612e479e6dcda844",
+    "@epdoc/datetime@1.0.3": {
+      "integrity": "b5ea2bcf33fe5cdd864b03c7052749d79c245c77112e164550e59f4526c79261",
       "dependencies": [
         "jsr:@epdoc/type@1.0.4"
       ]
     },
-    "@epdoc/duration@0.1.0": {
-      "integrity": "996ae578f0e47b220004118ce6e487e1fa83e93d97a19f3bdaa89e23f1cff6d2",
+    "@epdoc/duration@0.1.1": {
+      "integrity": "88d9d581c076ccc635a8d60c731162faab63fbfc6db9445348ee8590e72a2c4d",
       "dependencies": [
-        "jsr:@epdoc/type@1.0.2"
+        "jsr:@epdoc/type@1.0.4"
       ]
     },
     "@epdoc/string@0.1.0": {
@@ -154,8 +154,8 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@epdoc/datetime@1.0.1",
-      "jsr:@epdoc/duration@0.1.0",
+      "jsr:@epdoc/datetime@1.0.3",
+      "jsr:@epdoc/duration@0.1.1",
       "jsr:@epdoc/string@0.1.0",
       "jsr:@epdoc/type@1.0.4",
       "jsr:@std/assert@1.0.12",
