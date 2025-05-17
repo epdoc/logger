@@ -5,7 +5,7 @@ import type * as std from './types.ts';
 
 export const getLogger = <M extends MsgBuilder.IBasic>(
   log: LogMgr<M> | Logger.IEmitter,
-  params?: Logger.ChildParams,
+  params?: Logger.IGetChildParams,
 ): StdLogger<M> => {
   if (log instanceof LogMgr) {
     return new StdLogger<M>(log, params);

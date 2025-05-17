@@ -23,22 +23,22 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   protected _sid: string | undefined;
   protected _mark: Record<string, HrMilliseconds> = {};
 
-  constructor(logMgr: LogMgr<M>, params?: Logger.ChildParams) {
+  constructor(logMgr: LogMgr<M>, params?: Logger.IGetChildParams) {
     this._logMgr = logMgr;
-    this.#appendParams(params as Logger.ChildParams);
+    this.#appendParams(params as Logger.IGetChildParams);
   }
 
   // static factoryMethod<M>(logMgr: LogMgr<M>): Basic<M> {
   //   return new Basic<M>(logMgr);
   // }
 
-  getChild(params?: Logger.ChildParams): Base<M> {
+  getChild(params?: Logger.IGetChildParams): Base<M> {
     const logger = this.copy();
     logger.#appendParams(params);
     return logger;
   }
 
-  #appendParams(params?: Logger.ChildParams): this {
+  #appendParams(params?: Logger.IGetChildParams): this {
     if (params) {
       if (isNonEmptyArray(params.reqIds)) {
         this._reqIds = [...this._reqIds, ...params.reqIds];

@@ -5,7 +5,7 @@ import type * as cli from './types.ts';
 
 export const getLogger = <M extends MsgBuilder.IBasic>(
   log: LogMgr<M> | Logger.IEmitter,
-  params?: Logger.ChildParams,
+  params?: Logger.IGetChildParams,
 ): CliLogger<M> => {
   if (log instanceof LogMgr) {
     return new CliLogger<M>(log, params);
@@ -30,7 +30,7 @@ export const getLogger = <M extends MsgBuilder.IBasic>(
  */
 
 export class CliLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> implements cli.ILogger<M> {
-  constructor(logMgr: LogMgr<M>, params?: Logger.ChildParams) {
+  constructor(logMgr: LogMgr<M>, params?: Logger.IGetChildParams) {
     super(logMgr, params);
   }
 

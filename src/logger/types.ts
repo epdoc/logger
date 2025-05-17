@@ -7,7 +7,7 @@ import type * as Log from '../types.ts';
 export interface IInherit {
   copy(): IInherit;
   assign(logger: this): void;
-  getChild(opts?: ChildParams): IInherit;
+  getChild(opts?: IGetChildParams): IInherit;
 }
 
 export interface IEmitter extends IMark {
@@ -36,11 +36,11 @@ export interface IMark {
   demark(name: string, keep: boolean): HrMilliseconds;
 }
 
-export type ChildParams = {
+export interface IGetChildParams {
   sid?: string;
   reqIds?: string[];
   pkgs?: string[];
-};
+}
 
 export interface ILevels {
   get logLevels(): Level.IBasic;
@@ -55,5 +55,5 @@ export function isIMark(val: object): val is IMark {
 
 export type FactoryMethod<M extends MsgBuilder.IBasic> = (
   logMgr: LogMgr<M> | IEmitter,
-  opts?: ChildParams,
+  opts?: IGetChildParams,
 ) => IEmitter;
