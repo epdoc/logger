@@ -38,8 +38,8 @@ export interface IMark {
 
 export interface IGetChildParams {
   sid?: string;
-  reqIds?: string[];
-  pkgs?: string[];
+  reqId?: string | string[];
+  pkg?: string | string[];
 }
 
 export interface ILevels {

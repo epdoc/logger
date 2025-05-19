@@ -1,5 +1,5 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import { isNonEmptyArray } from '@epdoc/type';
+import { isNonEmptyArray, isString } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import type { Level } from '../levels/index.ts';
 import type { LogMgr } from '../logmgr.ts';
@@ -40,14 +40,19 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
 
   #appendParams(params?: Logger.IGetChildParams): this {
     if (params) {
-      if (isNonEmptyArray(params.reqIds)) {
-        this._reqIds = [...this._reqIds, ...params.reqIds];
+      // Handle reqId efficiently
+      if (isNonEmptyArray(params.reqId)) {
+        this._reqIds.push(...params.reqId);
+      } else if (isString(params.reqId)) {
+        this._reqIds.push(params.reqId);
       }
       if (params.sid) {
         this._sid = params.sid;
       }
-      if (isNonEmptyArray(params.pkgs)) {
-        this._pkgs = [...this._pkgs, ...params.pkgs];
+      if (isNonEmptyArray(params.pkg)) {
+        this._pkgs.push(...params.pkg);
+      } else if (isString(params.pkg)) {
+        this._pkgs.push(params.pkg);
       }
     }
     return this;

@@ -31,12 +31,12 @@ describe('recurse', () => {
       expect(obj.package).toBe('pkg1');
       expect(obj.msg).toBeInstanceOf(Log.MsgBuilder.Console);
     }
-    const log2a = log1.getChild({ reqIds: ['req2a'], pkgs: ['pkg2a'], sid: 'sid2a' }) as Log.std.Logger<M>;
+    const log2a = log1.getChild({ reqId: ['req2a'], pkg: ['pkg2a'], sid: 'sid2a' }) as Log.std.Logger<M>;
     log2a.info.h1('log2a').label('label').value('info').emit();
-    const log3 = log2a.getChild({ reqIds: ['req3'], pkgs: ['pkg3'], sid: 'sid3' }) as Log.std.Logger<M>;
+    const log3 = log2a.getChild({ reqId: ['req3'], pkg: ['pkg3'], sid: 'sid3' }) as Log.std.Logger<M>;
     log3.info.h1('log3').label('label').value('info').emit();
     log3.warn.h1('header').emit('silly level');
-    const log2b = log1.getChild({ reqIds: ['req2b'], pkgs: ['pkg2b'], sid: 'sid2b' }) as Log.std.Logger<M>;
+    const log2b = log1.getChild({ reqId: ['req2b'], pkg: ['pkg2b'], sid: 'sid2b' }) as Log.std.Logger<M>;
     log1.info.h1('log1').label('label').value('info').ewt(mark, true);
     const mb3 = log3.info.h1('log3').label('label').value('info');
     const str3 = mb3.format(false);
