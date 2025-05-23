@@ -41,16 +41,16 @@ deno add @epdoc/logger
 ```typescript
 import { Log } from '../mod.ts';
 
-const showOpts: Log.EmitterShowOpts = {
+type M = Log.MsgBuilder.Console;
+const logMgr = new Log.Mgr<M>();
+logMgr.threshold = 'verbose';
+logMgr.show = {
   level: true,
   timestamp: 'elapsed',
-  reqId: true,
   package: true,
+  reqId: true,
 };
-
-const logMgr = new Log.Mgr().setShow(showOpts);
-const log = logMgr.getLogger('std') as Log.std.Logger;
-logMgr.threshold = 'verbose';
+const log = logMgr.getLogger() as Log.std.Logger<M>;
 
 log.info.text('Hello world').emit();
 
@@ -149,36 +149,71 @@ Notes:
 - Before `start` is called you have the opportunity to configure your transports. Oherwise a single console transport is
   created by default.
 
-# OUT OF DATE
+# Supporting @epdoc/logger in a module
 
-### {@link Logger} Method Chaining
+If you have a library module in which you wish to support `@epdoc/logger`, and
 
-Most {@link Logger} methods support chaining.
+- assuming you want to use the default logger configuration,
+- you do not want to require the importer of your module to also use `@epdoc/logger`
 
-The following methods all add column values to the message that is output but do not output the message:
+You can attach the logger to a context, create logger object interfaces, then only call the logger when the context log
+value is set. Here we create a `context.ts` file.
 
-- `action` - Sets the action column value to this string.
-- `data` - Sets the data column value. Either pass in a key value pair, which is then added to the data object, or an
-  object, which the data object is then set to.
-- `set` - Sets a value in a `custom` column and keeps this value for the duration of the Log object's lifespan. This
-  column is currently only output to the loggly transport.
+```ts
+export type StyleArg = string | number | Record<string, unknown> | unknown[] | unknown;
 
-The following methods result in a message being output with the corresponding log level set:
+interface IMB {
+  text(...args: StyleArg[]): this;
+  h2(...args: StyleArg[]): this;
+  h3(...args: StyleArg[]): this;
+  label(...args: StyleArg[]): this;
+  value(...args: StyleArg[]): this;
+  action(...args: StyleArg[]): this;
+  warn(...args: StyleArg[]): this;
+  error(...args: StyleArg[]): this;
+  path(...args: StyleArg[]): this;
+  err(error: unknown): this;
+  data(data: unknown): this;
+  emit(): void;
+  ewt(duration: number): void;
+}
 
-- `info`
-- `warn`
-- `debug`
-- `verbose`
-- `error`
-- `fatal`
+export interface ILogger {
+  get spam(): IMB;
+  get trace(): IMB;
+  get error(): IMB;
+  get debug(): IMB;
+  get warn(): IMB;
+  get info(): IMB;
+  get verbose(): IMB;
+  set pkg(value: string);
+  indent(): this;
+  outdent(): this;
+}
 
-The following methods result in a message output with log level set to INFO:
+export interface ICtx {
+  log: ILogger;
+}
+```
 
-- `separator` - Output a separator line containing # characters
-- `date` - Outputs localtime, utctime and uptime
-- `log` - Outputs level and string message, for example: `log.log( 'info', "Found %d lines", iLines )`.
-  - `level` - Optional level (defaults to `info`)
-  - `msg` - String to output, formatted with `util.format`
+Then, if we want to use this in our main application, we can:
+
+```ts
+type M = Log.MsgBuilder.Console;
+const logMgr = new Log.Mgr<M>();
+logMgr.threshold = 'verbose';
+logMgr.show = {
+  level: true,
+  timestamp: 'elapsed',
+  package: true,
+  reqId: true,
+};
+const ctx: ICtx = {
+  log: logMgr.getLogger() as Log.std.Logger<M>,
+};
+```
+
+Or, if we don't want to use this in our main application, pass in null for context.
 
 # Why Another Logger?
 
@@ -213,3 +248,39 @@ Jim Pravetz <jpravetz@epdoc.com>.
 ## License
 
 [MIT](https://github.com/strongloop/express/blob/master/LICENSE)
+
+```
+# OUT OF DATE
+
+### {@link Logger} Method Chaining
+
+Most {@link Logger} methods support chaining.
+
+The following methods all add column values to the message that is output but do not output the message:
+
+- `action` - Sets the action column value to this string.
+- `data` - Sets the data column value. Either pass in a key value pair, which is then added to the data object, or an
+  object, which the data object is then set to.
+- `set` - Sets a value in a `custom` column and keeps this value for the duration of the Log object's lifespan. This
+  column is currently only output to the loggly transport.
+
+The following methods result in a message being output with the corresponding log level set:
+
+- `info`
+- `warn`
+- `debug`
+- `verbose`
+- `error`
+- `fatal`
+
+The following methods result in a message output with log level set to INFO:
+
+- `separator` - Output a separator line containing # characters
+- `date` - Outputs localtime, utctime and uptime
+- `log` - Outputs level and string message, for example: `log.log( 'info', "Found %d lines", iLines )`.
+  - `level` - Optional level (defaults to `info`)
+  - `msg` - String to output, formatted with `util.format`
+```
+
+```
+```
