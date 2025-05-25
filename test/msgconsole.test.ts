@@ -1,151 +1,224 @@
-import { StringEx } from '@epdoc/string';
+import { CodeError } from '@epdoc/type';
 import { assertEquals } from '@std/assert';
 import { expect } from 'jsr:@std/expect';
 import { describe, test } from 'jsr:@std/testing/bdd';
+import os from 'node:os';
 import { Log } from '../mod.ts';
+import { disable, enable } from './color-map.ts';
 
 type M = Log.MsgBuilder.Console;
+const home = os.userInfo().homedir;
 
 const logMgr = new Log.Mgr();
 const log: Log.std.Logger<M> = logMgr.getLogger() as Log.std.Logger<M>;
 
 describe('MsgBuilder.Console', () => {
-  test('display applyColors', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const builder = msgBuilder
-      .h1('h1')
-      .h2('h2')
-      .h3('h3')
-      .action('action')
-      .label('label')
-      .highlight('highlight')
-      .value('value')
-      .path('path')
-      .date('date')
-      .strikethru('strikethru')
-      .warn('warn')
-      .error('error');
-    const result = builder.format(true, 'text');
-    console.log(result);
-    expect(result).toMatch(
-      /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*path.*date.*strikethru.*warn.*error.*$/,
-    );
-    const r2 = builder.format(false);
-    console.log(r2);
-    expect(r2).toEqual('h1 h2 h3 action label highlight value path date strikethru warn error');
-    const obj = builder.emit();
-    expect(obj).toBeDefined();
-    expect(obj!.level).toBe('INFO');
-  });
-  test('display no colors', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder
-      .h1('h1')
-      .h2('h2')
-      .h3('h3')
-      .action('action')
-      .label('label')
-      .highlight('highlight')
-      .value('value')
-      .path('path')
-      .date('date')
-      .strikethru('strikethru')
-      .warn('warn')
-      .error('error')
-      .format(false, 'text');
-    console.log(result);
-    assertEquals(result, 'h1 h2 h3 action label highlight value path date strikethru warn error');
-  });
-  test('display elapsed no color', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.h1('h1').ewt(8);
-    expect(result).toBeDefined();
-    assertEquals(result!.level, 'INFO');
+  describe('general', () => {
+    test('display applyColors', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const builder = msgBuilder
+        .h1('h1')
+        .h2('h2')
+        .h3('h3')
+        .action('action')
+        .label('label')
+        .highlight('highlight')
+        .value('value')
+        .path('path')
+        .date('date')
+        .strikethru('strikethru')
+        .warn('warn')
+        .error('error');
+      const result = builder.format(true, 'text');
+      console.log(result);
+      expect(result).toMatch(
+        /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*path.*date.*strikethru.*warn.*error.*$/
+      );
+      const r2 = builder.format(false);
+      console.log(r2);
+      expect(r2).toEqual('h1 h2 h3 action label highlight value path date strikethru warn error');
+      const obj = builder.emit();
+      expect(obj).toBeDefined();
+      expect(obj!.level).toBe('INFO');
+    });
+    test('display no colors', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder
+        .h1('h1')
+        .h2('h2')
+        .h3('h3')
+        .action('action')
+        .label('label')
+        .highlight('highlight')
+        .value('value')
+        .path('path')
+        .date('date')
+        .strikethru('strikethru')
+        .warn('warn')
+        .error('error')
+        .format(false, 'text');
+      console.log(result);
+      assertEquals(result, 'h1 h2 h3 action label highlight value path date strikethru warn error');
+    });
+    test('display elapsed no color', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.h1('h1').ewt(8);
+      expect(result).toBeDefined();
+      assertEquals(result!.level, 'INFO');
 
-    // assertEquals(true, /^h1 \([\d\.]+ ms response\)$/.test(str));
+      // assertEquals(true, /^h1 \([\d\.]+ ms response\)$/.test(str));
+    });
+    test('display elapsed applyColor', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const str = msgBuilder.value('value').format(true, 'text');
+      console.log(str);
+      assertEquals(true, /value/.test(str));
+    });
   });
-  test('display elapsed applyColor', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const str = msgBuilder.value('value').format(true, 'text');
-    console.log(str);
-    assertEquals(true, /value/.test(str));
+  describe('specific methods', () => {
+    test('h1', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.h1('h1').format(true);
+      assertEquals(result, enable.h1 + 'h1' + disable.h1);
+    });
+    test('h2', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.h2('h2').format(true);
+      assertEquals(result, enable.h2 + 'h2' + disable.h2);
+    });
+    test('h3', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.h3('h3').format(true);
+      assertEquals(result, enable.h3 + 'h3' + disable.h3);
+    });
+    test('action', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.action('action').format(true);
+      assertEquals(result, enable.action + 'action' + disable.action);
+    });
+    test('label', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.label('label').format(true);
+      assertEquals(result, '\x1b[34mlabel\x1b[39m');
+    });
+    test('highlight', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.highlight('highlight').format(true);
+      assertEquals(result, enable.highlight + 'highlight' + disable.highlight);
+    });
+    test('value', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.value('value').format(true);
+      assertEquals(result, enable.value + 'value' + disable.value);
+    });
+    test('path', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.path('path').format(true);
+      console.log(result);
+      assertEquals(result, enable.path + 'path' + disable.path);
+    });
+    test('relative to home', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const path = `${home}/relative/to/home`;
+      const result = msgBuilder.relative(path).format(true);
+      assertEquals(result, enable.path + '~/relative/to/home' + disable.path);
+    });
+    test('relative to root', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const path = '/relative/to/root';
+      const result = msgBuilder.relative(path).format(true);
+      assertEquals(result, enable.path + '~/../../relative/to/root' + disable.path);
+    });
+    test('date', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.date('date').format(true);
+      assertEquals(result, enable.date + 'date' + disable.date);
+    });
+    test('section', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.section('SECTION').format(true);
+      assertEquals(
+        result,
+        enable.h1 +
+          '----------------------------------- SECTION ------------------------------------' +
+          disable.h1
+      );
+    });
+    test('warn', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.warn('warn').format(true);
+      assertEquals(result, enable.warn + 'warn' + disable.warn);
+    });
+    test('error', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.error('error').format(true);
+      assertEquals(result, enable.error + 'error' + disable.error);
+    });
+    test('strikethru', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.strikethru('strikethru').format(true);
+      assertEquals(result, enable.strikethru + 'strikethru' + disable.strikethru);
+    });
   });
-  test('h1', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.h1('h1').format(true);
-    assertEquals(result, '\x1b[1m\x1b[35mh1\x1b[39m\x1b[22m');
-  });
-  test('h2', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.h2('h2').format(true);
-    assertEquals(result, '\x1b[35mh2\x1b[39m');
-  });
-  test('h3', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.h3('h3').format(true);
-    assertEquals(StringEx(result).hexEncode(), '001b005b00330033006d00680033001b005b00330039006d');
-  });
-  test('action', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.action('action').format(true);
-    assertEquals(
-      StringEx(result).hexEncode(),
-      '001b005b00330030006d001b005b00340033006d0061006300740069006f006e001b005b00340039006d001b005b00330039006d',
-    );
-  });
-  test('label', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.label('label').format(true);
-    assertEquals(result, '\x1b[34mlabel\x1b[39m');
-  });
-  test('highlight', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.highlight('highlight').format(true);
-    assertEquals(
-      StringEx(result).hexEncode(),
-      '001b005b00390035006d0068006900670068006c0069006700680074001b005b00330039006d',
-    );
-  });
-  test('value', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.value('value').format(true);
-    assertEquals(
-      StringEx(result).hexEncode(),
-      '001b005b00330032006d00760061006c00750065001b005b00330039006d',
-    );
-  });
-  test('path', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.path('path').format(true);
-    assertEquals(
-      StringEx(result).hexEncode(),
-      '001b005b0034006d001b005b00390030006d0070006100740068001b005b00330039006d001b005b00320034006d',
-    );
-  });
-  test('date', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.date('date').format(true);
-    assertEquals(StringEx(result).hexEncode(), '001b005b00390036006d0064006100740065001b005b00330039006d');
-  });
-  test('warn', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.warn('warn').format(true);
-    assertEquals(StringEx(result).hexEncode(), '001b005b00390033006d007700610072006e001b005b00330039006d');
-  });
-  test('error', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.error('error').format(true);
-    assertEquals(
-      StringEx(result).hexEncode(),
-      '001b005b0031006d001b005b00390031006d006500720072006f0072001b005b00330039006d001b005b00320032006d',
-    );
-  });
-  test('strikethru', () => {
-    const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-    const result = msgBuilder.strikethru('strikethru').format(true);
-    assertEquals(
-      StringEx(result).hexEncode(),
-      '001b005b0037006d0073007400720069006b00650074006800720075001b005b00320037006d',
-    );
+  describe('err method', () => {
+    const err = new CodeError('message');
+    const errOpts = { code: 32, path: `${home}/relative/to/home`, cause: 'unit tests' };
+    Object.assign(err, errOpts);
+    test('default minus stack', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.err(err, { stack: false }).format(true);
+      assertEquals(
+        result,
+        enable.error +
+          'message' +
+          disable.error +
+          ' ' +
+          enable.label +
+          'cause:' +
+          disable.label +
+          ' ' +
+          enable.value +
+          errOpts.cause +
+          disable.value +
+          ' ' +
+          enable.path +
+          '~/relative/to/home' +
+          disable.path
+      );
+    });
+    test('default minus stack, cause', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.err(err, { stack: false, cause: false }).format(true);
+      assertEquals(
+        result,
+        enable.error + 'message' + disable.error + ' ' + enable.path + '~/relative/to/home' + disable.path
+      );
+    });
+    test('default minus stack, path plus code', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.err(err, { stack: false, path: false, code: true }).format(true);
+      assertEquals(
+        result,
+        enable.error +
+          'message' +
+          disable.error +
+          ' ' +
+          enable.label +
+          'code:' +
+          disable.label +
+          ' ' +
+          enable.value +
+          errOpts.code +
+          disable.value +
+          ' ' +
+          enable.label +
+          'cause:' +
+          disable.label +
+          ' ' +
+          enable.value +
+          errOpts.cause +
+          disable.value
+      );
+    });
   });
 });

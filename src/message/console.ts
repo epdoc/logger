@@ -1,10 +1,14 @@
-import { type Integer, isNonEmptyString, isPosNumber } from '@epdoc/type';
+import { asError, type Integer, isNonEmptyString, isPosNumber } from '@epdoc/type';
 import * as colors from '@std/fmt/colors';
+import os from 'node:os';
+import { relative } from 'node:path';
 import type { Level } from '../levels/index.ts';
 import type * as Logger from '../logger/types.ts';
 import type * as Log from '../types.ts';
 import { Base } from './base.ts';
 import type * as MsgBuilder from './types.ts';
+
+const home = os.userInfo().homedir;
 
 const styleFormatters: Record<string, MsgBuilder.StyleFormatterFn> = {
   text: colors.brightWhite,
@@ -55,6 +59,13 @@ export interface IConsole {
   strikethru(...args: MsgBuilder.StyleArg[]): this;
 }
 
+export type ErrOpts = Partial<{
+  code: boolean;
+  cause: boolean;
+  path: boolean;
+  stack: boolean;
+}>;
+
 /**
  * Message Builder class for styling messages. Extends the CoreMsgBuilder to
  * provide custom formatting using chained messages. If you prefer to declare
@@ -67,7 +78,7 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   static override factoryMethod(
     level: Level.Name,
     emitter: Logger.IEmitter,
-    meetsThreshold: boolean = true,
+    meetsThreshold: boolean = true
   ): Console {
     return new Console(level, emitter, meetsThreshold);
   }
@@ -152,12 +163,63 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
+   * Emits a styled file or folder path, displaying the path relative to the
+   * user's home directory. Use for displaying file paths or filenames.
+   * @param {string} path - The path to be stylized.
+   * @returns {this} The current instance for method chaining.
+   */
+  relative(path: string): this {
+    const s = '~/' + relative(home, path);
+    return this.path(s);
+  }
+
+  /**
    * Emits a styled date message. XXX add more info
    * @param {...StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   public date(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.date, ...args);
+  }
+
+  /**
+   * Emits a section delimiter with an optinoal title
+   * @param {string} str - The title.
+   * @returns {this} The current instance for method chaining.
+   */
+  section(str: string = ''): this {
+    const len = (80 - str.length - 2) / 2;
+    return this.h1('-'.repeat(Math.floor(len)) + ' ' + str + ' ' + '-'.repeat(Math.ceil(len)));
+  }
+
+  /**
+   * Emits a message for an Error object. If error is not an error object, it is
+   * converted to one.
+   * @param {Error|unknown} error - The error object, or string
+   * @param {boolean} opts.stack - Set opts.stack true to always display the error stack,
+   * false to never display, otherwise it is diplayed if the stack threshold is
+   * met.
+   * @param {boolean} opts.code - Set to true to display err.code (default false)
+   * @param {boolean} opts.cause - Set to false to not display err.cause (default true)
+   * @param {boolean} opts.path - Set to false to not display err.path (default true)
+   * @returns {this} The current instance for method chaining.
+   */
+  err(error: unknown, opts: ErrOpts = {}): this {
+    const err = asError(error);
+    this.error(err.message);
+    if (opts.code === true && 'code' in err) {
+      this.label('code:').value((err as { code: string | number }).code);
+    }
+    if (opts.cause !== false && 'cause' in err) {
+      this.label('cause:').value(err.cause);
+    }
+    if (opts.path !== false && 'path' in err) {
+      this.relative((err as { path: string }).path);
+    }
+    if (opts.stack !== false && (this._meetsThreshold || opts.stack === true)) {
+      this.text('\n' + err.stack);
+    }
+    return this;
   }
 
   /**

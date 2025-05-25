@@ -21,6 +21,7 @@
     "jsr:@std/io@0.225": "0.225.2",
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/testing@*": "1.0.3",
+    "npm:@types/node@*": "22.15.15",
     "npm:checksum@1": "1.0.0",
     "npm:pdf-lib@*": "1.17.1",
     "npm:pdf-lib@^1.17.1": "1.17.1"
@@ -121,6 +122,12 @@
         "pako"
       ]
     },
+    "@types/node@22.15.15": {
+      "integrity": "sha512-R5muMcZob3/Jjchn5LcO8jdKwSCbzqmPB6ruBxMcf9kbxtniZHP327s6C37iOfuw8mbKK3cAQa7sEl7afLrQ8A==",
+      "dependencies": [
+        "undici-types"
+      ]
+    },
     "checksum@1.0.0": {
       "integrity": "sha512-68bHejnM/sBQhjXcXd2mFusICnqAwikZ9RVMURIacWh7moNjgOdHKimS6yk30Np/PwfR00dceY4b1GwWanu5cg==",
       "dependencies": [
@@ -148,6 +155,9 @@
     },
     "tslib@1.14.1": {
       "integrity": "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="
+    },
+    "undici-types@6.21.0": {
+      "integrity": "sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ=="
     },
     "wordwrap@0.0.3": {
       "integrity": "sha512-1tMA907+V4QmxV7dbRvb4/8MaRALK6q9Abid3ndMYnbyo8piisCmeONVqVSXqQA3KaP4SLt5b7ud6E2sqP8TFw=="
