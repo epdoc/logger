@@ -53,7 +53,10 @@ export interface IConsole {
   highlight(...args: MsgBuilder.StyleArg[]): this;
   value(...args: MsgBuilder.StyleArg[]): this;
   path(...args: MsgBuilder.StyleArg[]): this;
+  relative(path: string): this;
   date(...args: MsgBuilder.StyleArg[]): this;
+  section(str: string): this;
+  err(error: unknown, opts: ErrOpts): this;
   warn(...args: MsgBuilder.StyleArg[]): this;
   error(...args: MsgBuilder.StyleArg[]): this;
   strikethru(...args: MsgBuilder.StyleArg[]): this;
@@ -78,7 +81,7 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   static override factoryMethod(
     level: Level.Name,
     emitter: Logger.IEmitter,
-    meetsThreshold: boolean = true
+    meetsThreshold: boolean = true,
   ): Console {
     return new Console(level, emitter, meetsThreshold);
   }

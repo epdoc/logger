@@ -1,13 +1,14 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/datetime@1.0.3": "1.0.3",
-    "jsr:@epdoc/duration@0.1.1": "0.1.1",
-    "jsr:@epdoc/string@0.1.0": "0.1.0",
-    "jsr:@epdoc/type@1.0.2": "1.0.2",
-    "jsr:@epdoc/type@1.0.4": "1.0.4",
+    "jsr:@epdoc/datetime@1.0": "1.0.4",
+    "jsr:@epdoc/duration@0.1": "0.1.2",
+    "jsr:@epdoc/string@0.1": "0.1.1",
+    "jsr:@epdoc/type@1.1": "1.1.0",
+    "jsr:@epdoc/type@^1.1.0": "1.1.0",
     "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@1.0.13": "1.0.13",
+    "jsr:@std/assert@^1.0.13": "1.0.13",
     "jsr:@std/assert@^1.0.6": "1.0.6",
     "jsr:@std/bytes@*": "1.0.4",
     "jsr:@std/bytes@^1.0.4": "1.0.4",
@@ -27,30 +28,27 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
-    "@epdoc/datetime@1.0.3": {
-      "integrity": "b5ea2bcf33fe5cdd864b03c7052749d79c245c77112e164550e59f4526c79261",
+    "@epdoc/datetime@1.0.4": {
+      "integrity": "3c91c5fd3b0193360f35694b2364bb90ee5efb751af31826435f2159b6306473",
       "dependencies": [
-        "jsr:@epdoc/type@1.0.4"
+        "jsr:@epdoc/type@1.1"
       ]
     },
-    "@epdoc/duration@0.1.1": {
-      "integrity": "88d9d581c076ccc635a8d60c731162faab63fbfc6db9445348ee8590e72a2c4d",
+    "@epdoc/duration@0.1.2": {
+      "integrity": "25d212a2aa412e917ce3e061b87c9fa8e6d38747cac84a1cd320d65ebcbaa699",
       "dependencies": [
-        "jsr:@epdoc/type@1.0.4"
+        "jsr:@epdoc/type@1.1"
       ]
     },
-    "@epdoc/string@0.1.0": {
-      "integrity": "316f6ba14149ca05d2460e8e948d2267d459adc267dc2595d9dfabfea7199f92",
+    "@epdoc/string@0.1.1": {
+      "integrity": "66bbabd6fdbe0bca8342f4dbdcd4927e744cf7a393d0ceb853c1566f7b19b4b2",
       "dependencies": [
-        "jsr:@epdoc/type@1.0.2",
-        "jsr:@std/assert@1"
+        "jsr:@epdoc/type@^1.1.0",
+        "jsr:@std/assert@^1.0.13"
       ]
     },
-    "@epdoc/type@1.0.2": {
-      "integrity": "a8aca3181e49a9a195282731f55b15b3db0cda4099fc653dbd95587e4639fa9c"
-    },
-    "@epdoc/type@1.0.4": {
-      "integrity": "40afdddd7b0f10fe83c39beedbf93bcb396689aa8574c0368f67c53f1df3f99c"
+    "@epdoc/type@1.1.0": {
+      "integrity": "e8a3fd678d4b1fd91a2ffb793dc55f6de068f09807ada161ddc5c46df2721e6d"
     },
     "@std/assert@1.0.6": {
       "integrity": "1904c05806a25d94fe791d6d883b685c9e2dcd60e4f9fc30f4fc5cf010c72207",
@@ -165,10 +163,10 @@
   },
   "workspace": {
     "dependencies": [
-      "jsr:@epdoc/datetime@1.0.3",
-      "jsr:@epdoc/duration@0.1.1",
-      "jsr:@epdoc/string@0.1.0",
-      "jsr:@epdoc/type@1.0.4",
+      "jsr:@epdoc/datetime@1.0",
+      "jsr:@epdoc/duration@0.1",
+      "jsr:@epdoc/string@0.1",
+      "jsr:@epdoc/type@1.1",
       "jsr:@std/assert@1.0.13",
       "jsr:@std/fmt@^1.0.8"
     ]
