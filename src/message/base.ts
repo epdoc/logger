@@ -31,7 +31,7 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     level: Level.Name,
     emitter: Logger.IEmitter,
     meetsThreshold: boolean = true,
-    meetsFlushThreshold: boolean = true,
+    meetsFlushThreshold: boolean = true
   ) {
     this._level = level;
     this._emitter = emitter;
@@ -43,7 +43,7 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     level: Level.Name,
     emitter: Logger.IEmitter,
     meetsThreshold: boolean = true,
-    meetsFlushThreshold: boolean = true,
+    meetsFlushThreshold: boolean = true
   ): Base {
     return new Base(level, emitter, meetsThreshold, meetsFlushThreshold);
   }
@@ -54,7 +54,7 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
 
   /**
    * Clears the current line, essentially resetting the output line. This does
-   * not clear the reqId, sid or emitter values.
+   * not clear the reqId, sid or pkg values.
    * @returns {this} The LoggerLine instance.
    */
   clear(): this {
@@ -84,9 +84,11 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   }
 
   /**
-   * Sets the indentation level of this line of log output..
+   * Sets the indentation level of this line of log output. Use indent and
+   * outdent instead.
    * @param {Integer} n - The number of tabs by which to indent.
    * @returns {this} The Logger instance.
+   * @deprecated
    */
   tab(n: Integer = 1): this {
     this._msgIndent = ' '.repeat(n * this._tabSize - 1);
