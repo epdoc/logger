@@ -1,6 +1,6 @@
-import { asError, type Integer, isNonEmptyString, isPosNumber } from '@epdoc/type';
+import { asError, type Integer, isInteger, isNonEmptyString, isPosNumber } from '@epdoc/type';
 import * as colors from '@std/fmt/colors';
-import os from 'node:os';
+import os from 'node:os'; // Used for homedir in `relative`
 import { relative } from 'node:path';
 import type { Level } from '../levels/index.ts';
 import type * as Logger from '../logger/types.ts';
@@ -77,11 +77,12 @@ export type ErrOpts = Partial<{
  */
 export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration {
   static readonly styleFormatters = styleFormatters;
+  protected _nextPartPluralize: boolean | undefined; // true for plural, false for singular, undefined for no effect
 
   static override factoryMethod(
     level: Level.Name,
     emitter: Logger.IEmitter,
-    meetsThreshold: boolean = true,
+    meetsThreshold: boolean = true
   ): Console {
     return new Console(level, emitter, meetsThreshold);
   }
@@ -92,7 +93,8 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
    * @returns {this} The current instance for method chaining.
    */
   public text(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(styleFormatters.text, ...args);
+    const processedArgs = this._applyPluralization(args);
+    return this.stylize(styleFormatters.text, ...processedArgs);
   }
   /**
    * Emits a styled h1 message.
@@ -100,7 +102,8 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
    * @returns {this} The current instance for method chaining.
    */
   public h1(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(styleFormatters.h1, ...args);
+    const processedArgs = this._applyPluralization(args);
+    return this.stylize(styleFormatters.h1, ...processedArgs);
   }
   /**
    * Emits a styled h2 message.
@@ -108,7 +111,8 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
    * @returns {this} The current instance for method chaining.
    */
   public h2(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(styleFormatters.h2, ...args);
+    const processedArgs = this._applyPluralization(args);
+    return this.stylize(styleFormatters.h2, ...processedArgs);
   }
 
   /**
@@ -117,7 +121,8 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
    * @returns {this} The current instance for method chaining.
    */
   public h3(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(styleFormatters.h3, ...args);
+    const processedArgs = this._applyPluralization(args);
+    return this.stylize(styleFormatters.h3, ...processedArgs);
   }
 
   /**
@@ -126,7 +131,24 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
    * @returns {this} The current instance for method chaining.
    */
   public action(...args: MsgBuilder.StyleArg[]): this {
+    // Action is not typically pluralized based on a count, so no _applyPluralization here.
     return this.stylize(styleFormatters.action, ...args);
+  }
+
+  /**
+   * Sets a flag for the next chained method to apply pluralization logic,
+   * and outputs the provided number with 'value' styling.
+   * @param num - The number to display and use for pluralization determination.
+   * @returns The current instance for method chaining.
+   */
+  public count(num: Integer): this {
+    // First, output the number itself using the base stylize method.
+    // This ensures the number itself is not subject to pluralization logic.
+    super.stylize(styleFormatters.value, num);
+
+    // Now, set the flag for the *next* chained method.
+    this._nextPartPluralize = isInteger(num) ? num !== 1 : undefined;
+    return this;
   }
 
   /**
@@ -252,17 +274,28 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Calculates and emits the elapsed time since the last mark.
-   * If no time has elapsed, it returns the current instance.
-   * @returns {this} The current instance for method chaining.
+   * Helper method to apply pluralization logic based on the `_nextPartPluralize` flag.
+   * This method consumes the flag.
+   * @param args - The original arguments passed to a styling method.
+   * @returns The potentially modified arguments after applying pluralization.
+   * @protected
    */
-  // public elapsed(): this {
-  //   const duration = performance.now() - this._t0;
-  //   if (duration) {
-  //     return this.stylize(styleFormatters._elapsed, duration);
-  //   }
-  //   return this;
-  // }
+  protected _applyPluralization(args: MsgBuilder.StyleArg[]): MsgBuilder.StyleArg[] {
+    if (this._nextPartPluralize === undefined) {
+      return args; // No pluralization context
+    }
+
+    const isPlural = this._nextPartPluralize;
+    this._nextPartPluralize = undefined; // Consume and reset the flag for the next call
+
+    if (args.length === 1 && isNonEmptyString(args[0])) {
+      const originalStr = String(args[0]);
+      return [isPlural ? originalStr + 's' : originalStr];
+    } else if (args.length === 2 && isNonEmptyString(args[0]) && isNonEmptyString(args[1])) {
+      return [isPlural ? String(args[1]) : String(args[0])];
+    }
+    return args; // No pluralization applied for other arg patterns or non-string args
+  }
 
   /**
    * @param duration

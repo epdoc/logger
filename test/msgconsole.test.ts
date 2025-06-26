@@ -31,7 +31,7 @@ describe('MsgBuilder.Console', () => {
       const result = builder.format(true, 'text');
       console.log(result);
       expect(result).toMatch(
-        /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*path.*date.*strikethru.*warn.*error.*$/,
+        /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*path.*date.*strikethru.*warn.*error.*$/
       );
       const r2 = builder.format(false);
       console.log(r2);
@@ -140,7 +140,7 @@ describe('MsgBuilder.Console', () => {
         result,
         enable.h1 +
           '----------------------------------- SECTION ------------------------------------' +
-          disable.h1,
+          disable.h1
       );
     });
     test('warn', () => {
@@ -182,7 +182,7 @@ describe('MsgBuilder.Console', () => {
           ' ' +
           enable.path +
           '~/relative/to/home' +
-          disable.path,
+          disable.path
       );
     });
     test('default minus stack, cause', () => {
@@ -190,7 +190,7 @@ describe('MsgBuilder.Console', () => {
       const result = msgBuilder.err(err, { stack: false, cause: false }).format(true);
       assertEquals(
         result,
-        enable.error + 'message' + disable.error + ' ' + enable.path + '~/relative/to/home' + disable.path,
+        enable.error + 'message' + disable.error + ' ' + enable.path + '~/relative/to/home' + disable.path
       );
     });
     test('default minus stack, path plus code', () => {
@@ -216,8 +216,51 @@ describe('MsgBuilder.Console', () => {
           ' ' +
           enable.value +
           errOpts.cause +
-          disable.value,
+          disable.value
       );
+    });
+  });
+  describe('count method for pluralization', () => {
+    test('singular with one argument: appends nothing', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.count(1).h2('message').format(false);
+      assertEquals(result, '1 message');
+    });
+
+    test('plural with one argument: appends "s"', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.count(2).h2('message').format(false);
+      assertEquals(result, '2 messages');
+    });
+
+    test('zero with one argument: appends "s"', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.count(0).h2('message').format(false);
+      assertEquals(result, '0 messages');
+    });
+
+    test('singular with two arguments: uses first string', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.count(1).h2('entry', 'entries').format(false);
+      assertEquals(result, '1 entry');
+    });
+
+    test('plural with two arguments: uses second string', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.count(5).h2('entry', 'entries').format(false);
+      assertEquals(result, '5 entries');
+    });
+
+    test('only applies to the next method call', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.count(10).h2('message').text('inbox').format(false);
+      assertEquals(result, '10 messages inbox');
+    });
+
+    test('does not pluralize for non-integer counts', () => {
+      const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
+      const result = msgBuilder.count(1.5).h2('message').format(false);
+      assertEquals(result, '1.5 message');
     });
   });
 });

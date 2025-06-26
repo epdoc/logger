@@ -90,12 +90,47 @@ The `info` method above must be the first call. It returns an object that has th
 path. These methods are used to add color and other formatting to the output. Again,calling emit will result in the
 output of the message to the console.
 
-The complete list of chainable methods is in [Log.MsgBuilder.Console.styleFormatters](./src/message/console.ts):
+The `Console` message builder has many chainable methods for styling, including:
 
-`text`, `h1`, `h2`, `h3`, `action`, `label`, `highlight`, `value`, `path`, `date`, `warn`, `error`, `strikethru`,
+`count`, `text`, `h1`, `h2`, `h3`, `action`, `label`, `highlight`, `value`, `path`, `date`, `warn`, `error`,
+`strikethru`
 
 We will learn how to customize these styles later in this document. We will also learn how to create our own method
 names with our own styles.
+
+## Pluralization with `count`
+
+The `count` method provides a convenient way to handle singular and plural nouns in your log messages. It takes a number
+and applies pluralization logic to the _next_ chained method call.
+
+### Simple Pluralization (adding 's')
+
+If the next method has a single string, an 's' will be appended if the count is not 1.
+
+```typescript
+// Example: Singular
+log.info.h2('We have').count(1).h2('message').text('in our inbox').emit();
+// Output: We have 1 message in our inbox
+
+// Example: Plural
+log.info.h2('We have').count(5).h2('message').text('in our inbox').emit();
+// Output: We have 5 messages in our inbox
+```
+
+### Custom Pluralization (singular/plural forms)
+
+If the next method has two strings, the first is used for a singular count (1), and the second is used for a plural
+count (any other number).
+
+```typescript
+// Example: Singular
+log.info.h2('We have').count(1).h2('entry', 'entries').text('in our inbox').emit();
+// Output: We have 1 entry in our inbox
+
+// Example: Plural
+log.info.h2('We have').count(0).h2('entry', 'entries').text('in our inbox').emit();
+// Output: We have 0 entries in our inbox
+```
 
 ## Controlling what is written to the console
 
