@@ -34,8 +34,8 @@ export class CliLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> imp
     super(logMgr, params);
   }
 
-  override copy(): CliLogger<M> {
-    const result = new CliLogger<M>(this._logMgr);
+  override copy(): this {
+    const result = new (this.constructor as new (logMgr: LogMgr<M>) => this)(this._logMgr);
     result.assign(this);
     return result;
   }

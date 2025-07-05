@@ -31,7 +31,7 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     level: Level.Name,
     emitter: Logger.IEmitter,
     meetsThreshold: boolean = true,
-    meetsFlushThreshold: boolean = true
+    meetsFlushThreshold: boolean = true,
   ) {
     this._level = level;
     this._emitter = emitter;
@@ -43,7 +43,7 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     level: Level.Name,
     emitter: Logger.IEmitter,
     meetsThreshold: boolean = true,
-    meetsFlushThreshold: boolean = true
+    meetsFlushThreshold: boolean = true,
   ): Base {
     return new Base(level, emitter, meetsThreshold, meetsFlushThreshold);
   }

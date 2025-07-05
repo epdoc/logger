@@ -31,7 +31,7 @@ describe('MsgBuilder.Console', () => {
       const result = builder.format(true, 'text');
       console.log(result);
       expect(result).toMatch(
-        /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*path.*date.*strikethru.*warn.*error.*$/
+        /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*path.*date.*strikethru.*warn.*error.*$/,
       );
       const r2 = builder.format(false);
       console.log(r2);
@@ -140,7 +140,7 @@ describe('MsgBuilder.Console', () => {
         result,
         enable.h1 +
           '----------------------------------- SECTION ------------------------------------' +
-          disable.h1
+          disable.h1,
       );
     });
     test('warn', () => {
@@ -182,7 +182,7 @@ describe('MsgBuilder.Console', () => {
           ' ' +
           enable.path +
           '~/relative/to/home' +
-          disable.path
+          disable.path,
       );
     });
     test('default minus stack, cause', () => {
@@ -190,7 +190,7 @@ describe('MsgBuilder.Console', () => {
       const result = msgBuilder.err(err, { stack: false, cause: false }).format(true);
       assertEquals(
         result,
-        enable.error + 'message' + disable.error + ' ' + enable.path + '~/relative/to/home' + disable.path
+        enable.error + 'message' + disable.error + ' ' + enable.path + '~/relative/to/home' + disable.path,
       );
     });
     test('default minus stack, path plus code', () => {
@@ -216,7 +216,7 @@ describe('MsgBuilder.Console', () => {
           ' ' +
           enable.value +
           errOpts.cause +
-          disable.value
+          disable.value,
       );
     });
   });

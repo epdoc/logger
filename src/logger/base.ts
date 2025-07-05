@@ -46,7 +46,9 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
    */
   constructor(logMgr: LogMgr<M>, params?: Logger.IGetChildParams) {
     this._logMgr = logMgr;
-    this.#appendParams(params as Logger.IGetChildParams);
+    if (params) {
+      this.#appendParams(params);
+    }
   }
 
   /**
@@ -59,7 +61,7 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
    * @param params - Parameters for the child logger
    * @returns A new logger instance with inherited and additional properties
    */
-  getChild(params?: Logger.IGetChildParams): Base<M> {
+  getChild(params?: Logger.IGetChildParams): this {
     const logger = this.copy();
     logger.#appendParams(params);
     return logger;
@@ -73,14 +75,14 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
    */
   #appendParams(params?: Logger.IGetChildParams): this {
     if (params) {
+      if (params.sid) {
+        this._sid = params.sid;
+      }
       // Handle reqId efficiently
       if (isNonEmptyArray(params.reqId)) {
         this._reqIds.push(...params.reqId);
       } else if (isString(params.reqId)) {
         this._reqIds.push(params.reqId);
-      }
-      if (params.sid) {
-        this._sid = params.sid;
       }
       if (isNonEmptyArray(params.pkg)) {
         this._pkgs.push(...params.pkg);
@@ -95,8 +97,8 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
    * Creates a copy of the current logger instance. For internal use.
    * @returns A new logger instance with copied properties
    */
-  copy(): Base<M> {
-    const result = new Base<M>(this._logMgr, this);
+  copy(): this {
+    const result = new (this.constructor as new (logMgr: LogMgr<M>) => this)(this._logMgr);
     result.assign(this);
     return result;
   }
@@ -108,7 +110,9 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   assign(logger: Base<M>): void {
     this._threshold = logger._threshold;
     this._show = logger._show;
-    this.#appendParams(logger);
+    this._sid = logger._sid;
+    this._reqIds = [...logger._reqIds];
+    this._pkgs = [...logger._pkgs];
   }
 
   /**

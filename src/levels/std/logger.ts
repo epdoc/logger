@@ -27,8 +27,8 @@ export const getLogger = <M extends MsgBuilder.IBasic>(
  */
 
 export class StdLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> implements std.ILogger<M> {
-  override copy(): StdLogger<M> {
-    const result = new StdLogger<M>(this._logMgr);
+  override copy(): this {
+    const result = new (this.constructor as new (logMgr: LogMgr<M>) => this)(this._logMgr);
     result.assign(this);
     return result;
   }

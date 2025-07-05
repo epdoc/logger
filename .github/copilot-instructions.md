@@ -1,4 +1,4 @@
-# @epdoc/logger - Logger for logging application messages to various transports
+# AI Assist Instructions
 
 ## Transports
 
@@ -124,7 +124,7 @@ Log
 
 # Code changes
 
-We recommend the following changes to improve this module:
+We recommend the following goals for this module:
 
 - A user must be able to extend `MsgBuilder.Basic` or `MsgBuilder.Console` and use their new class with a Logger without
   having to write their own Logger class.
