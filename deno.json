@@ -22,7 +22,7 @@
     "include": ["src", "test/**/*test.ts", "mod.ts"]
   },
   "fmt": {
-    "include": ["src", "test/**/*test.ts", "mod.ts", "deno.jsonc"],
+    "include": ["src", "test/**/*test.ts", "mod.ts", "deno.json"],
     "singleQuote": true,
     "lineWidth": 120
   },
