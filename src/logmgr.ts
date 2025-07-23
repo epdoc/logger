@@ -76,31 +76,27 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
   set threshold(level: Level.Name | Level.Value) {
     assert(
       this._logLevels,
-      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?'
+      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?',
     );
     this._threshold = this.logLevels.asValue(level);
     if (this._rootLogger) {
       if (this._threshold > this._rootLogger.threshold) {
         this.warn(
-          `LogMgr threshold (${this.logLevels.asName(
-            this._threshold
-          )}) is less restrictive than root logger threshold (${this.logLevels.asName(
-            this._rootLogger.threshold
-          )}). Root logger threshold will apply.`
+          `LogMgr threshold (${
+            this.logLevels.asName(
+              this._threshold,
+            )
+          }) is less restrictive than root logger threshold (${
+            this.logLevels.asName(
+              this._rootLogger.threshold,
+            )
+          }). Root logger threshold will apply.`,
         );
       }
     }
     this.transportMgr.setThreshold(this._threshold);
   }
 
-  warn(msg: string): void {
-    this._rootEmit('warn', 'LogMgr', msg);
-  }
-
-  /**
-   * Gets the current log threshold level.
-   * @returns {Level.Value} The current threshold level as an Integer.
-   */
   get threshold(): Level.Value {
     return this._threshold;
   }
@@ -117,6 +113,10 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
   }
   get show(): Log.EmitterShowOpts {
     return this._show;
+  }
+
+  warn(msg: string): void {
+    this._rootEmit('warn', 'LogMgr', msg);
   }
 
   /**

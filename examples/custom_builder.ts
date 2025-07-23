@@ -1,4 +1,4 @@
-import { Log } from '../mod.ts';
+import type { Log } from '../mod.ts';
 import { log, logMgr } from './log.ts';
 
 const showOpts: Log.EmitterShowOpts = {
@@ -14,7 +14,7 @@ logMgr.threshold = 'verbose';
 const mark = log.mark();
 log.info.text('Hello world').emit();
 
-let line: Log.MsgBuilder.Console = log.info;
+const line: Log.MsgBuilder.Console = log.info;
 const str = line.h3('Hello world').format(true);
 line.emit();
 log.verbose.h1('String returned by previous call is').value(str).emit();

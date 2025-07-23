@@ -4,11 +4,13 @@ This document explains how to configure the `@epdoc/logger` library.
 
 ## Log Manager Configuration
 
-The `LogMgr` is the central component of the logging system. It is responsible for managing loggers, transports, and log levels. You can configure the `LogMgr` when you create it, or you can configure it later using its methods.
+The `LogMgr` is the central component of the logging system. It is responsible for managing loggers, transports, and log
+levels. You can configure the `LogMgr` when you create it, or you can configure it later using its methods.
 
 ### Setting the Log Level Threshold
 
-The `threshold` property of the `LogMgr` determines which log messages are processed. Only messages with a severity level at or above the threshold will be passed to the transports. The default threshold is `info`.
+The `threshold` property of the `LogMgr` determines which log messages are processed. Only messages with a severity
+level at or above the threshold will be passed to the transports. The default threshold is `info`.
 
 ```typescript
 import { Log } from '@epdoc/logger';
@@ -24,7 +26,8 @@ logger.debug('This message will be displayed.');
 
 ### Configuring Log Output
 
-The `show` property of the `LogMgr` controls what information is included in the log output. You can use it to show or hide the timestamp, log level, request ID, and other information.
+The `show` property of the `LogMgr` controls what information is included in the log output. You can use it to show or
+hide the timestamp, log level, request ID, and other information.
 
 ```typescript
 import { Log } from '@epdoc/logger';
@@ -33,10 +36,10 @@ const logMgr = new Log.Mgr();
 
 // Configure the log output
 logMgr.show = {
-  level: true,       // Show the log level (e.g., INFO, WARN)
+  level: true, // Show the log level (e.g., INFO, WARN)
   timestamp: TimestampFormat.ELAPSED, // Show the elapsed time since the application started
-  package: true,     // Show the package name
-  reqId: true,       // Show the request ID
+  package: true, // Show the package name
+  reqId: true, // Show the request ID
 };
 
 const logger = logMgr.getLogger();
@@ -45,11 +48,13 @@ logger.info('This is a test message.');
 
 ## Transport Configuration
 
-Transports are responsible for sending log messages to their destination, such as the console or a file. You can add and configure transports on the `LogMgr`.
+Transports are responsible for sending log messages to their destination, such as the console or a file. You can add and
+configure transports on the `LogMgr`.
 
 ### Console Transport
 
-The `Console` transport is the default transport. It logs messages to the console. You can configure its options when you add it to the `LogMgr`.
+The `Console` transport is the default transport. It logs messages to the console. You can configure its options when
+you add it to the `LogMgr`.
 
 ```typescript
 import { Log } from '@epdoc/logger';

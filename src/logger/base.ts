@@ -269,11 +269,15 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
     if (this._logMgr.threshold) {
       if (this._threshold > this._logMgr.threshold) {
         this._logMgr.warn(
-          `Logger threshold (${this.logLevels.asName(
-            this._threshold
-          )}) is less restrictive than LogMgr threshold (${this.logLevels.asName(
-            this._logMgr.threshold
-          )}). LogMgr threshold will apply.`
+          `Logger threshold (${
+            this.logLevels.asName(
+              this._threshold,
+            )
+          }) is less restrictive than LogMgr threshold (${
+            this.logLevels.asName(
+              this._logMgr.threshold,
+            )
+          }). LogMgr threshold will apply.`,
         );
       }
     }

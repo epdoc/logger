@@ -1,6 +1,7 @@
 # Log Manager
 
-The `LogMgr` is the central component of the `@epdoc/logger` library. It is responsible for managing loggers, transports, and log levels.
+The `LogMgr` is the central component of the `@epdoc/logger` library. It is responsible for managing loggers,
+transports, and log levels.
 
 ## Creating a Log Manager
 
@@ -24,7 +25,8 @@ const rootLogger = logMgr.getLogger();
 
 ### `set threshold(level: Level.Name | Level.Value)`
 
-Sets the log level threshold for the `LogMgr`. Only messages with a severity level at or above the threshold will be processed.
+Sets the log level threshold for the `LogMgr`. Only messages with a severity level at or above the threshold will be
+processed.
 
 ### `set show(opts: EmitterShowOpts)`
 

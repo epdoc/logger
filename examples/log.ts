@@ -2,7 +2,7 @@ import { asError } from '@epdoc/type';
 import os from 'node:os';
 import { Log } from '../mod.ts';
 
-const home = os.userInfo().homedir;
+const _home = os.userInfo().homedir;
 
 const createCustomMsgBuilder: Log.MsgBuilder.FactoryMethod = (
   level: Log.Level.Name,
@@ -25,7 +25,7 @@ export class CustomMsgBuilder extends Log.MsgBuilder.Console {
     return this.value(num + ' ' + (num === 1 ? singular : plural ? plural : singular + 's'));
   }
 
-  err(error: unknown, stack = false): this {
+  err(error: unknown, _stack = false): this {
     const err = asError(error);
     this.error(err.message);
     if (err.cause) {

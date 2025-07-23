@@ -7,7 +7,7 @@ logMgr.setThreshold('verbose');
 
 log.info.text('Hello world').emit();
 
-let line: Log.MsgBuilder.Console = log.info;
+const line: Log.MsgBuilder.Console = log.info;
 line.text('Hello world');
 line.emit();
 

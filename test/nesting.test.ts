@@ -80,4 +80,3 @@ describe('Logger Nesting', () => {
     expect(output).toContain('Test message');
   });
 });
-

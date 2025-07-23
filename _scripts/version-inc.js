@@ -12,15 +12,15 @@ fs.readFile(FILENAME, function (err, content) {
   if (err) {
     throw err;
   }
-  let pkg = JSON.parse(content);
+  const pkg = JSON.parse(content);
   fs.writeFile(FILENAME + '~', JSON.stringify(pkg, null, 2), function (err) {
     if (err) {
       throw err;
     }
-    let version = pkg.version;
-    let p = version.match(/^(.+)([^\d]+)(\d+)$/);
+    const version = pkg.version;
+    const p = version.match(/^(.+)([^\d]+)(\d+)$/);
     if (p && p.length > 3) {
-      let patch = parseInt(p[3], 10) + 1;
+      const patch = parseInt(p[3], 10) + 1;
       pkg.version = [p[1], patch].join(p[2]);
       fs.writeFile(FILENAME, JSON.stringify(pkg, null, 2), function (err) {
         if (err) {
