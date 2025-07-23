@@ -211,7 +211,7 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     return this._msgParts?.map((p) => p.str).join(' ') || '';
   }
 
-  format(color: boolean, _target: Transport.OutputFormat = Transport.Format.text): string {
+  format(color: boolean, _target: Transport.OutputFormat = Transport.OutputFormat.TEXT): string {
     const parts: string[] = [];
     if (isNonEmptyString(this._msgIndent)) {
       parts.push(this._msgIndent);

@@ -31,6 +31,7 @@ let markId = 0;
  */
 export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logger.ILevels, Logger.IInherit {
   protected _logMgr: LogMgr<M>;
+  protected _parent: this | undefined;
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = {};
   protected _pkgs: string[] = [];
@@ -63,6 +64,7 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
    */
   getChild(params?: Logger.IGetChildParams): this {
     const logger = this.copy();
+    logger._parent = this;
     logger.#appendParams(params);
     return logger;
   }
@@ -242,15 +244,65 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
     return this._logMgr;
   }
 
+  get parent(): this | undefined {
+    return this._parent;
+  }
+
   /**
    * Sets the threshold level for this logger instance.
-   * Usually set at the LogMgr or Transport level instead.
-   * @param level - The threshold level to set
-   * @returns The current logger instance
+   *
+   * @param {Level.Name | Level.Value} level - The threshold level to set.
+   *
+   * @returns {this} The current logger instance.
+   *
+   * @remarks
+   * The logger's threshold provides a preliminary filter for log messages.
+   * However, the effective threshold is determined by the most restrictive
+   * setting among the logger, the log manager, and the transport.
+   *
+   * If the logger's threshold is set to a less restrictive level than the
+   * log manager's, a warning will be issued, as the manager's more
+   * restrictive setting will ultimately take precedence.
    */
   setThreshold(level: Level.Name | Level.Value): this {
     this._threshold = this.logLevels.asValue(level);
+    if (this._logMgr.threshold) {
+      if (this._threshold > this._logMgr.threshold) {
+        this._logMgr.warn(
+          `Logger threshold (${this.logLevels.asName(
+            this._threshold
+          )}) is less restrictive than LogMgr threshold (${this.logLevels.asName(
+            this._logMgr.threshold
+          )}). LogMgr threshold will apply.`
+        );
+      }
+    }
     return this;
+  }
+
+  /**
+   * Sets the threshold level for this logger instance.
+   *
+   * @param {Level.Name | Level.Value} level - The threshold level to set.
+   *
+   * @remarks
+   * This setter provides a convenient way to set the logger's threshold.
+   * It is an alternative to the `setThreshold` method.
+   *
+   * The effective threshold is determined by the most restrictive setting
+   * among the logger, the log manager, and the transport.
+   */
+  set threshold(level: Level.Name | Level.Value) {
+    this.setThreshold(level);
+  }
+
+  /**
+   * Gets the threshold level for this logger instance.
+   *
+   * @returns {Level.Value} The threshold level.
+   */
+  get threshold(): Level.Value {
+    return this._threshold || this._logMgr.threshold;
   }
 
   /**

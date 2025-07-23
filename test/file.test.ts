@@ -11,7 +11,7 @@ logMgr.addTransport(console);
 const transport = new Log.Transport.File<M>(logMgr, {
   filepath: LOG_FILE,
   color: false,
-  format: Log.Transport.Format.jsonArray,
+  format: Log.Transport.OutputFormat.JSON_ARRAY,
   mode: 'w',
   show: { data: true, reqId: true, sid: true, package: true, timestamp: 'local' },
 });

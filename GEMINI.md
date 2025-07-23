@@ -14,31 +14,6 @@
 - [Oak](./docs/oak.md)
 - [Transports](./docs/transports.md)
 
-## Code Generation
-
-Do not use the TypeScript type 'any'. Instead use 'unknown'.
-
-Don't use switch statements.
-
-Use the type guards and tests and other utility functions provided in `@epdoc/type` where possible. Examples:
-
-- instead of using `var instanceof Date`, use `isDate(var)`.
-- instead of using `typeof var === 'string'`, use `isString(var)`.
-
-Automatically fix `type` keyword usage in `import` statements in typescript `.ts` files:
-
-- When an import statement only imports types, add a `type` keyword to the item being imported.
-- If all items being imported from a file are only to import types, put the `type` keyword before the list of items. For
-  example, `import type * as c from '../types/conditions.ts'` should include the keyword `type` where appropriate.
-  Otherwise we get the error "All import identifiers are used in types
-
-## Commit Messages
-
-When generating commit messages, only use the word 'refactor' when a significant change has been made to how code is
-organized or a class is implemented. Instead use the word 'modified' when changes are made.
-
-## Code Explanations
-
 ### Logger getChild method
 
 We have a logger getChild method to allow loggers to nest under a root logger. This allows customization of the `sid`,

@@ -70,8 +70,8 @@ export abstract class Base<M extends MsgBuilder.IBasic> {
     return this;
   }
 
-  dateToString(d: Date | undefined, format: Log.TimeOpt | undefined): string | undefined {
-    if (isValidDate(d) && Log.isTimeOpt(format)) {
+  dateToString(d: Date | undefined, format: Log.TimestampFormat | undefined): string | undefined {
+    if (isValidDate(d) && Log.isTimestampFormat(format)) {
       if (format === 'utc') {
         return d.toISOString();
       } else if (format === 'local') {

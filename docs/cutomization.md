@@ -1,4 +1,4 @@
-# Customization
+# Code Customization
 
 This section is a high level overview of how you can customize your use of the @epdoc/logger. It's contents overlap
 somewhat with the content that can be found under the various [other sections](/README.md#documentation) of this
@@ -32,11 +32,11 @@ whether the output is color/no-color, text, JSON or an array of JSON objects.
 
 ```ts
 export type EmitterShowOpts = {
-  level?: boolean;
-  timestamp?: 'utc' | 'local' | 'elapsed';
+  level?: boolean | number;
+  timestamp?: TimestampFormat;
   sid?: boolean;
-  reqId?: boolean;
-  package?: boolean;
+  reqId?: boolean | number;
+  package?: boolean | number;
   data?: boolean;
 };
 ```

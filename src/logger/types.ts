@@ -8,6 +8,7 @@ export interface IInherit {
   copy(): IInherit;
   assign(logger: this): void;
   getChild(opts?: IGetChildParams): IInherit;
+  get parent(): IInherit | undefined;
 }
 
 export interface IEmitter extends IMark {
@@ -21,6 +22,8 @@ export interface IEmitter extends IMark {
   get reqIds(): string[];
   set sid(val: string);
   get sid(): string | undefined;
+  set threshold(level: Level.Name | Level.Value);
+  get threshold(): Level.Value;
   meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean;
 }
 
@@ -45,6 +48,8 @@ export interface IGetChildParams {
 export interface ILevels {
   get logLevels(): Level.IBasic;
   setThreshold(level: Level.Name | Level.Value): ILevels;
+  set threshold(level: Level.Name | Level.Value);
+  get threshold(): Level.Value;
   meetsThreshold(level: Level.Value | Level.Name, threshold: Level.Value | Level.Name): boolean;
   meetsFlushThreshold(level: Level.Value | Level.Name): boolean;
 }

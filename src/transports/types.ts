@@ -3,12 +3,13 @@ import type { LogMgr } from '../logmgr.ts';
 import type * as MsgBuilder from '../message/index.ts';
 import type * as Log from '../types.ts';
 
-export const Format = {
-  text: 'text',
-  json: 'json',
-  jsonArray: 'jsonArray',
+export const OutputFormat = {
+  TEXT: 'text',
+  JSON: 'json',
+  JSON_ARRAY: 'jsonArray',
 } as const;
-export type OutputFormat = keyof typeof Format;
+
+export type OutputFormat = typeof OutputFormat[keyof typeof OutputFormat];
 
 export interface IBasic<M extends MsgBuilder.IBasic> {
   get type(): string;
@@ -44,7 +45,7 @@ export type OpenCallbacks = {
  */
 export type CreateOpts = {
   sid?: boolean;
-  timestamp?: Log.TimeOpt;
+  timestamp?: Log.TimestampFormat;
   static?: boolean;
   level?: string;
 };

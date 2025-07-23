@@ -2,14 +2,18 @@ import { isString } from '@epdoc/type';
 import type * as Level from './levels/types.ts';
 import type * as MsgBuilder from './message/index.ts';
 
-const REG = {
-  timeopt: /^(utc|local|elapsed)$/i,
-};
+export const TimestampFormat = {
+  UTC: 'utc',
+  LOCAL: 'local',
+  ELAPSED: 'elapsed',
+} as const;
 
-export type TimeOpt = 'utc' | 'local' | 'elapsed';
+export type TimestampFormat = typeof TimestampFormat[keyof typeof TimestampFormat];
 
-export function isTimeOpt(val: unknown): val is TimeOpt {
-  return isString(val) && REG.timeopt.test(val) ? true : false;
+const timestampFormatValues = Object.values(TimestampFormat);
+
+export function isTimestampFormat(val: unknown): val is TimestampFormat {
+  return isString(val) && (timestampFormatValues as readonly string[]).includes(val);
 }
 
 export type Entry = {
@@ -25,7 +29,7 @@ export type Entry = {
 
 export type EmitterShowOpts = {
   level?: boolean | number;
-  timestamp?: TimeOpt;
+  timestamp?: TimestampFormat;
   sid?: boolean;
   reqId?: boolean | number;
   package?: boolean | number;

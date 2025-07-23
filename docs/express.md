@@ -1,5 +1,7 @@
 ## Express Middleware
 
+## THIS DOCUMENT IS OUT OF DATE
+
 [Express](http://expressjs.com/) middleware extends express.js [response](http://expressjs.com/en/4x/api.html#res)
 object by adding a `Logger` object via which logging can be done in the context of the request. Also extends
 [response.send](http://expressjs.com/en/4x/api.html#res.send) and
