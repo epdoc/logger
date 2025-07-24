@@ -29,7 +29,10 @@ export const getLogger = <M extends MsgBuilder.IBasic>(
  *  - silly
  */
 
-export class CliLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> implements cli.ILogger<M> {
+export class CliLogger<M extends MsgBuilder.IBasic>
+  extends Logger.Indent<M>
+  implements cli.ILogger<M>, Logger.IEmitter
+{
   constructor(logMgr: LogMgr<M>, params?: Logger.IGetChildParams) {
     super(logMgr, params);
   }

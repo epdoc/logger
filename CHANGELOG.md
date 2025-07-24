@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1002.2.1] - 2025-07-23
+
+Fix regression. The `StdLogger` and `CliLogger` now correctly implement the `IEmitter` interface.
+
 ## [1002.2.0] - 2025-07-23
 
 This release focuses on a major documentation overhaul and significant improvements to the logger's threshold-handling

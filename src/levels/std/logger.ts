@@ -26,7 +26,10 @@ export const getLogger = <M extends MsgBuilder.IBasic>(
  *  - spam (* bonus level not normlly part of STD)
  */
 
-export class StdLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M> implements std.ILogger<M> {
+export class StdLogger<M extends MsgBuilder.IBasic>
+  extends Logger.Indent<M>
+  implements std.ILogger<M>, Logger.IEmitter
+{
   override copy(): this {
     const result = new (this.constructor as new (logMgr: LogMgr<M>) => this)(this._logMgr);
     result.assign(this);
