@@ -8,17 +8,6 @@ many of which can be chained to create richer output with more columns of data.
 
 **Version 1000.0.0 indicates a major rewrite that is incompatible with prior versions of this module**
 
-- Version prior to version 1000.0.0 (versions 2.x.x) were used in production, and were last updated at the end of 2016.
-- Version 1000.0.0 is a TypeScript rewrite using Deno and is not backwards compatible with earlier versions. The main
-  points for this new version are:
-  - Chainable methods to allow for easy color formatting of log output when using the console
-  - Maintains the Log Manager and transports concepts of the earlier version
-  - Only a console and file transport have so far been written
-  - Express and other middleware are not yet written, but should be easy for any user to create
-  - Version 1000.0.0 is reliant on Deno std libraries for console color (I may change this dependency when I package
-    this for general use)
-  - substitutable log levels (e.g 'info','input','data' instead of 'info', 'verbose', 'debug')
-  - customizable through class extension
 
 # Install
 
@@ -43,14 +32,11 @@ rootLogger.info.text('Application has started.').emit();
 
 # Documentation
 
-- [Getting Started](/docs/getting-started.md)
-- [Configuration](/docs/configuration.md)
-- [Log Manager](/docs/logmgr.md)
-- [Loggers](/docs/loggers.md)
-- [Transports](/docs/transports.md)
-- [Log Levels](/docs/log-levels.md)
-- [Middleware](/docs/middleware.md)
-- [Customization Overview](/docs/cutomization.md)
+- [Getting Started](./docs/getting-started.md)
+- [Configuration](./docs/configuration.md)
+- [Classes](./docs/loggers.md)
+- [Middleware](./docs/middleware.md)
+- [Customization Overview](./docs/cutomization.md)
 
 # Why Another Logger?
 
@@ -76,6 +62,8 @@ None of the existing loggers that I could find supported the following requireme
 ## Action Items
 
 - More unit tests
+- Improved unit tests
+- Verify middleware implementations, especially for express
 - Update SOS transport as a general HTTP transport and rename to 'http' transport (beware).
 
 ## Author

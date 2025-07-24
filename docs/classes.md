@@ -1,121 +1,108 @@
-## Getting Started
+# Classes
 
-There are two main objects you will use when logging messages:
+The `@epdoc/logger` library is built around two core concepts: the `LogMgr` (Log Manager) and `Logger` instances.
 
-- [LogManager](#logmanager-class)
-  - Usually a singleton
-  - Contains a Transport Manager (see {@link LogManager#transports}) that
-    - manages the transports (setup and teardown)
-    - buffers log messages until the transports are turned on
-    - writes to emitted messages to all transports
-  - Called to get a new Logger object
-- [Logger](#logger-class) object
-  - Can use just one logger object for all your logging needs
-  - Can create a new logger object for every module, or for every request (e.g. express request), or every major
-    operation (usually just for requests).
-  - Provides chainable methods by which to write log output
+### Hierarchy
+
+![image](./images/epdoc_logger.png)
+
+## Log Manager (`LogMgr`)
+
+The `LogMgr` is the central component responsible for managing the entire logging setup. It's typically a singleton in your application. Its main responsibilities include:
+
+-   **Configuration:** Setting the global log level `threshold` and controlling what metadata is displayed (e.g., timestamps, request IDs) via the `show` property.
+-   **Transports:** Managing where your logs are sent (e.g., console, file).
+-   **Logger Factory:** Creating and providing `Logger` instances.
+
+### Creating a `LogMgr`
+
+You can create a new `LogMgr` instance as follows:
+
+```typescript
+import { Log } from '@epdoc/logger';
+
+const logMgr = new Log.Mgr();
+```
+
+### Selecting the Logger Type
+
+`@epdoc/logger` supports two types of loggers out of the box, each with its own set of log levels:
+
+-   **`std` (Default):** Standard log levels (`error`, `warn`, `info`, `verbose`, `debug`, `trace`, `spam`).
+-   **`cli`:** Log levels suited for command-line applications (`error`, `warn`, `help`, `data`, `info`, `debug`, `prompt`, `verbose`, `input`, `silly`).
+
+You select the logger type when you configure your `LogMgr`. To use the `cli` logger, you must provide the `cli.createLogLevels` function to the `LogMgr` constructor and set the `loggerFactory` to `cli.getLogger`.
+
+```typescript
+import { Log } from '@epdoc/logger';
+import { cli } from '@epdoc/logger/levels';
+
+// Configure LogMgr to use the CLI logger and its log levels
+const logMgr = new Log.Mgr(cli.createLogLevels);
+logMgr.loggerFactory = cli.getLogger;
+
+const logger = logMgr.getLogger(); // This will be a CliLogger instance
+```
+
+If you don't provide these, the `LogMgr` defaults to the `std` logger.
+
+### Important `LogMgr` Methods
+
+-   `set threshold(level: Level.Name | Level.Value)`: Sets the minimum log level to be processed.
+-   `set show(opts: EmitterShowOpts)`: Controls what information (e.g., `level`, `timestamp`) is included in the log output.
+-   `addTransport(transport: Transport.Base<M>)`: Adds a transport (e.g., `FileTransport`).
+-   `start()` / `stop()`: Starts and stops the `LogMgr` and its transports.
+
+## Loggers
+
+A `Logger` is the object you interact with directly to write log messages. You can get a logger from a `LogMgr` instance.
+
+### Root and Child Loggers
+
+-   **Root Logger:** Your primary, application-wide logger, obtained by calling `logMgr.getLogger()`.
+-   **Child Logger:** A logger created from another logger (a root or another child). It inherits its parent's configuration but can have unique properties, which is especially useful for tracing specific operations like handling a web request.
+
+```typescript
+// Get a root logger
+const rootLogger = logMgr.getLogger();
+
+// Create a child logger for a specific request
+const childLogger = rootLogger.getChild({ reqId: 'xyz-123' });
+
+// Use the child logger to log messages related to this request
+childLogger.info('Processing request...');
+```
+
+### Logging a Message
+
+To log a message, you access a property on the logger that corresponds to a log level (e.g., `log.info`, `log.debug`). This returns a `MsgBuilder` object that you can use to construct and then emit your message. The `MsgBuilder` provides a chainable interface.
 
 ```typescript
 // Simplest example of writing a log message to the console
-
 import { Log } from '@epdoc/logger';
 
 let logMgr = new Log.Mgr().setThreshold('debug');
-let log = logMgr.getLogger();
+let log = logMgr.getLogger();         // defaults to returning the std logger
 
 log.info.h1('Hello, world!').emit();
-```
 
-Thresholds are set at the LogManager level, but can also be overridden at the transport level.
-
-Transports allow directing output to the console, to a file, to a database, or to a remote server. If none are specified
-then the default is to log to the console.
-
-```typescript
-// Add a file transport to the previous example
-
-const fileTranport = new Log.FileTransport({ filename: 'my.log' });
-logMgr.addTransport(fileTranport);
-
-log.info.h1('This will be written to the console and to').path('my.log').emit();
-```
-
-Calls to log.info, log.debug, etc. return a [MsgBuilder](./src/msg-builder.ts) object that can be used to build a log
-message. The MsgBuilder object is chainable and can be used to build a message in parts.
-
-```typescript
+// A more complex example
 log.info
   .h1('This is a header')
   .label('label').value('value')
   .emit();
 ```
 
-When writing to the console, the above example will output in color.
+## Transports
 
-You can also control whether the log level and a timestamp are displayed on a log line.
-
-```typescript
-logMgr.show({ level: true, timestamp: 'elapsed' });
-```
-
-What is displayed is set at the LogManager level, but can also be overridden at the transport level.
-
-And, if you are working within express or some other backend framework, you can set the session ID and the request ID
-and have these output as well.
+Transports allow directing output to the console, to a file, to a database, or to a remote server. If none are specified then the default is to log to the console.
 
 ```typescript
-req.log = log.getChild({ sid: req.sessionID, reqId: req.id });
-log.info.text('Request received').emit();
+// Add a file transport
+const fileTranport = new Log.FileTransport({ filename: 'my.log' });
+logMgr.addTransport(fileTranport);
+
+log.info.h1('This will be written to the console and to').path('my.log').emit();
 ```
 
-### Hierarchy
-
-![image](./images/epdoc_logger.png)
-
-### LogMgr Class
-
-A shortcut for getting a [LogMgr](../src/logmgr.ts) singleton is to call the module's `getLogManager` method.
-
-```typescript
-import { LogManager } from '@epdoc/logger';
-
-let logMgr = new LogManager();
-```
-
-An alternative is to manage your own {@link LogManager} object:
-
-```typescript
-let epdocLogger = require('epdoc-logger');
-let LogManager = epdocLogger.LogManager;
-let logMgr = new LogManager();
-```
-
-Because you may need to load config information before configuring your transport you must explicitly start logging by
-calling {@link LogManager#start}. And, because some log tranports are buffered, you should also call {@link
-LogManager#flushing} or {@link LogManager#destroying} before shutting down.
-
-### Logger Class
-
-{@link Logger} objects are created by calling {@link LogManager#getLogger} or `new Logger()`. Typically you would create
-a new Logger object for every javascript file and set a unique _emitter_ name for that Logger. Alternatively, when
-responding to requests, for example when using [Express](http://expressjs.com), it is a better idea to tie the emitter
-to the request. This is described later in this document.
-
-Loggers are created by calling [getLogger](./src/log-manager.ts#L188).
-
-```typescript
-let log = logMgr.getLogger('emitter-name');
-
-// This is equivalent
-let log = new Logger(logMgr, 'emitter-name');
-
-// A shortcut that is also equivalent and that uses a global LogManager object
-let log = require('epdoc-logger').getLogger('emitter-name');
-```
-
-### MsgBuilder Class
-
-### Other Classes
-
-- [LogLevels](./log-levels.md)
-- [LoggerTransport](./transports.md)
+There is more on [transports here](./transports.md).

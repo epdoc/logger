@@ -5,7 +5,7 @@ Oak is a Deno, Nodejs and Bun friendly implementation based on [Koa](https://koa
 This shows how to integrate our logger into the request handler stack, thereby allowing log messages to be tracked by
 request. This sample output shows a request ID of `00001` that is generated from a counter. You can use any information
 from the request to use as the request ID. If you have session information (eg. username) you can also add that via a
-`sid` value in the `getChild` method and by setting `sid` to tru in `showOpts`.
+`sid` value in the `getChild` method and by setting `sid` to true in `showOpts`.
 
 ```log
 21.982s [INFO ] 00001   HTTP GET "http://localhost:8080/alive"  -  200 8ms
