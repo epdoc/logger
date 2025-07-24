@@ -7,29 +7,53 @@ import type * as Log from '../types.ts';
 import { Base, type BaseOptions } from './base.ts';
 import type * as Transport from './types.ts';
 
-// export function factoryMethod<M extends MsgBuilder.IBasic>(
-//   logMgr: LogMgr<M>,
-//   opts: HandlerOptions
-// ): Handler<M> {
-//   return new Handler<M>(logMgr, opts);
-// }
-
+/**
+ * Defines the output format for the console transport.
+ * - `text`: Plain text format.
+ * - `json`: A JSON object on a single line.
+ * - `jsonArray`: A JSON array on a single line.
+ */
 export type ConsoleOutputFormat = 'text' | 'json' | 'jsonArray';
 
+/**
+ * Options for configuring the `Console` transport.
+ */
 export interface ConsoleOptions extends BaseOptions {
+  /**
+   * The output format to use.
+   * @default 'text'
+   */
   format?: ConsoleOutputFormat;
+  /**
+   * Whether to use colors in the output.
+   * @default true
+   */
   color?: boolean;
 }
 
+/**
+ * A transport for logging messages to the console.
+ *
+ * This class provides a flexible way to output log entries to the console,
+ * with support for different formats and color-coded output.
+ *
+ * @example
+ * ```ts
+ * const logMgr = new LogMgr();
+ * const consoleTransport = new Console(logMgr, { format: 'json', color: false });
+ * logMgr.add(consoleTransport);
+ * ```
+ */
 export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
   protected _levelWidth: Integer = 5;
   protected _format: ConsoleOutputFormat = 'text';
   protected _color: boolean = true;
 
-  // static create<M extends MsgBuilder.IBasic>(logMgr: LogMgr<M>): Console<M> {
-  //   return new Console<M>(logMgr);
-  // }
-
+  /**
+   * Creates an instance of the `Console` transport.
+   * @param {LogMgr<M>} logMgr - The log manager instance.
+   * @param {ConsoleOptions} [opts={}] - Configuration options for the transport.
+   */
   constructor(logMgr: LogMgr<M>, opts: ConsoleOptions = {}) {
     super(logMgr, opts);
     if (opts.format) {
@@ -39,19 +63,39 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
     this._bReady = true;
   }
 
+  /**
+   * Indicates whether the transport is configured to use color output.
+   * @returns {boolean} `true` if color is enabled, otherwise `false`.
+   */
   get useColor(): boolean {
     return this._color;
   }
 
+  /**
+   * Returns a string representation of the transport.
+   * @returns {string} A string identifying the transport and its format.
+   */
   override toString(): string {
     return `Console[${this._format}]`;
   }
 
+  /**
+   * Updates the transport's internal state when the log level threshold changes.
+   * @returns {this} The current instance for method chaining.
+   */
   override thresholdUpdated(): this {
     this._levelWidth = this._logMgr.logLevels.maxWidth(this._logMgr.threshold);
     return this;
   }
 
+  /**
+   * Emits a log entry to the console.
+   *
+   * This method formats and outputs the log entry based on the transport's
+   * configuration. It is called by the `LogMgr` when a new log message is received.
+   *
+   * @param {Log.Entry} msg - The log entry to be emitted.
+   */
   override emit(msg: Log.Entry) {
     const levelValue: Level.Value = this._logMgr.logLevels.asValue(msg.level);
     if (!this.meetsThresholdValue(levelValue)) {
@@ -125,11 +169,25 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
     }
   }
 
+  /**
+   * Outputs a string to the console.
+   *
+   * @param {string} str - The string to be output.
+   * @param {Level.Value} _levelValue - The numerical value of the log level.
+   * @returns {Promise<void>} A promise that resolves when the output is complete.
+   */
   output(str: string, _levelValue: Level.Value): Promise<void> {
     console.log(str);
     return Promise.resolve();
   }
 
+  /**
+   * Styles the log level string with padding and color.
+   *
+   * @param {Level.Name} level - The name of the log level.
+   * @param {boolean | Integer | undefined} show - Configuration for displaying the level.
+   * @returns {string} The styled log level string.
+   */
   styledLevel(level: Level.Name, show: boolean | Integer | undefined): string {
     let s = StringEx(level).rightPad(this._levelWidth);
     if (isInteger(show)) {
@@ -146,6 +204,18 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
     return s;
   }
 
+  /**
+   * Applies styling to a string value, including padding and color.
+   *
+   * @param {string} val - The string value to be styled.
+   * @param {boolean | number} show - Determines if and how the string is padded.
+   * @param {string} colorFn - The name of the color function to use for styling.
+   * @param {object} [opts] - Additional options for prefixing and postfixing the string.
+   * @param {string} [opts.pre] - A prefix to add to the string.
+   * @param {string} [opts.post] - A postfix to add to the string.
+   * @returns {string} The styled string.
+   * @protected
+   */
   _styledString(
     val: string,
     show: boolean | number,
@@ -169,7 +239,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
       }
     }
     if (this._color && MsgBuilder.Console.styleFormatters[colorFn]) {
-      return MsgBuilder.Console.styleFormatters[colorFn](s);
+      return (MsgBuilder.Console.styleFormatters as Record<string, (str: string) => string>)[colorFn](s);
     }
     return s;
   }

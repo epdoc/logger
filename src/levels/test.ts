@@ -1,3 +1,13 @@
+/**
+ * Unit tests for the log level management system.
+ *
+ * @remarks
+ * This file contains tests for both the CLI-specific and standard log level
+ * implementations, ensuring that level conversions, threshold checks, flush
+ * behavior, and color application functions as expected.
+ *
+ * @module
+ */
 import { assertEquals } from '@std/assert';
 import { describe, test } from 'jsr:@std/testing/bdd';
 import * as level from './index.ts';

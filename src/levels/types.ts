@@ -3,42 +3,51 @@
  * It provides a structure for custom log levels and their associated methods.
  */
 
+import type { Integer } from '@epdoc/type';
+import type { StyleFormatterFn } from '../message/index.ts';
 import type { IBasic } from './ibasic.ts';
 
 /**
- * Represents the name of a log level.
+ * Defines the name of a log level (e.g., 'info', 'debug').
  */
 export type Name = string;
 
 /**
- * Represents the numeric value of a log level.
+ * Defines the numeric value associated with a log level.
  */
-export type Value = number;
+export type Value = Integer;
 
 /**
- * Function type for formatting log messages.
- * @param {string} msg - The message to format.
- * @returns {string} The formatted message.
- */
-export type FormatFn = (msg: string) => string;
-
-/**
- * Represents the definition of an individual log level that can be used with
- * the {@linkcode LogLevels} class.
+ * Represents the definition of a single log level.
  */
 export type LogLevelDef = {
-  val: number;
-  fmtFn?: FormatFn;
+  /** The numeric value of the log level. */
+  val: Value;
+  /** An optional formatting function for messages at this level. */
+  fmtFn?: StyleFormatterFn;
+  /** Indicates if this is the default log level. */
   default?: boolean;
-  flush?: boolean;
+  /** Indicates if this is the lowest log level. */
   lowest?: boolean;
+  /** Indicates if this is the warning (warn) log level. */
+  warn?: boolean;
+  /** Indicates if messages at this level should trigger an immediate flush. */
+  flush?: boolean;
 };
 
 /**
- * Type representing a dictionary with multiple log level definitions. The
- * dictionary keys are the names of the log levels (eg. info, debug). All log
- * levels are internally resolved to uppercase names.
+ * Defines the structure for a collection of log level definitions.
+ * The keys are log level names (strings), and the values are {@link LogLevelDef} objects.
  */
-export type LogLevelsDef = Record<string, LogLevelDef>;
+export type LogLevelsDef = Record<Name, LogLevelDef>;
 
+/**
+ * Defines the factory function signature for creating log level instances.
+ *
+ * @remarks
+ * This pattern allows for different implementations of log level management
+ * (e.g., standard, CLI-specific) to be easily swapped.
+ *
+ * @returns {IBasic} An instance of a class implementing the {@link IBasic} interface.
+ */
 export type FactoryMethod = () => IBasic;

@@ -86,6 +86,6 @@ const fileTransport = new Log.Transport.File(logMgr, {
 });
 logMgr.addTransport(fileTransport);
 
-const logger = logMgr.getLogger();
+const logger = logMgr.getLogger<Log.std.Logger<Log.MsgBuilder.Console>>();
 logger.info('This message will be written to the file.');
 ```

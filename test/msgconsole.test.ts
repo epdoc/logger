@@ -253,7 +253,7 @@ describe('MsgBuilder.Console', () => {
 
     test('only applies to the next method call', () => {
       const msgBuilder = new Log.MsgBuilder.Console('INFO', log);
-      const result = msgBuilder.count(10).h2('message').text('inbox').format(false);
+      const result = msgBuilder.count(10).h2('message').h2('inbox').format(false);
       assertEquals(result, '10 messages inbox');
     });
 

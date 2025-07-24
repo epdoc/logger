@@ -24,7 +24,7 @@ import { Log } from '@epdoc/logger';
 const logMgr = new Log.Mgr();
 
 // Get a root logger from the manager
-const rootLogger = logMgr.getLogger();
+const rootLogger = logMgr.getLogger<Log.std.Logger<Log.MsgBuilder.Console>>();
 
 // Log a simple message
 rootLogger.info.text('Application has started.').emit();

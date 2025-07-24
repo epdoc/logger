@@ -10,26 +10,32 @@ import type * as Logger from './types.ts';
 let markId = 0;
 
 /**
- * Base Logger class that provides core logging functionality. This class serves
- * as a foundation for specialized loggers that implement their own log level
+ * Provides the core foundation for all logger instances, handling essential
+ * functionalities like hierarchical logging, session and request tracking, and
+ * performance marking.
+ *
+ * @remarks
+ * This class is not typically used directly but is extended by specialized
+ * loggers (e.g., `StdLogger`, `CliLogger`) that implement specific log level
  * methods.
  *
- * The Base logger includes the following properties to enable logging requests,
- * such as received by an HTTP request. For a new request the intent is that the
- * root logger's getChild method be called. Then, with the new child logger, the
- * user would set these properties:
+ * It includes built-in support for contextual logging, which is crucial for
+ * tracing operations within complex applications, such as server requests.
+ * A new logger instance can be created for each request using the
+ * {@link getChild} method, allowing for unique tracking identifiers:
  *
- *   - sid - the session ID, usually corresponding with a user
- *   - reqId - a unique ID for a request
- *   - pkg - can be used, along with further logger getChild nesting, to trace
- *     in what package or method a log message is made.
+ * - `sid`: A session ID, often tied to a user, to group all related logs.
+ * - `reqId`: A unique request ID to trace a single operation from start to finish.
+ * - `pkg`: A namespace (e.g., `ClassName.methodName`) to pinpoint the code
+ *   origin of a log message. This can be nested by creating further child loggers.
  *
- * @template M - Type extending MsgBuilder.IBasic for message building
+ * @template M - The type of message builder to use, which must conform to the
+ * {@link MsgBuilder.IBasic} interface.
  * @implements {Logger.IEmitter}
  * @implements {Logger.ILevels}
  * @implements {Logger.IInherit}
  */
-export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logger.ILevels, Logger.IInherit {
+export abstract class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logger.ILevels, Logger.IInherit {
   protected _logMgr: LogMgr<M>;
   protected _parent: this | undefined;
   protected _threshold: Level.Value | undefined;
@@ -40,10 +46,12 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   protected _mark: Record<string, HrMilliseconds> = {};
 
   /**
-   * Creates a new Base logger instance.
-   * @param logMgr - The log manager instance. This will need to be called to
-   * emit messages to the transports, amongst other things.
-   * @param params - Optional parameters for child logger initialization
+   * Initializes a new logger instance.
+   *
+   * @param {LogMgr<M>} logMgr - The central log manager responsible for message
+   * processing and transport coordination.
+   * @param {Logger.IGetChildParams} [params] - Optional parameters used for
+   * initializing a child logger with specific context (e.g., `sid`, `reqId`).
    */
   constructor(logMgr: LogMgr<M>, params?: Logger.IGetChildParams) {
     this._logMgr = logMgr;
@@ -53,16 +61,24 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   }
 
   /**
-   * Creates a child logger with inherited properties and additional parameters.
-   * This is typically used when you wish to take a root logger and create a new
-   * logger for a request branch. In this case reqId and pkg values will be
-   * concatenated. If you do not care about concatenating reqId and/or pkg
-   * values, and you want a unique reqId to be displayed, you can also ask the
-   * logMgr to create a new logger for you.
-   * @param params - Parameters for the child logger
-   * @returns A new logger instance with inherited and additional properties
+   * Creates a new child logger that inherits the context of its parent.
+   *
+   * @remarks
+   * This is the primary method for creating contextual loggers for specific
+   * operations, such as handling an incoming HTTP request. The child logger
+   * inherits and extends the parent's `sid`, `reqId`, and `pkg`, allowing for
+   * detailed, hierarchical tracing.
+   *
+   * @param {Logger.IGetChildParams} [params] - Additional parameters to apply to
+   * the new child logger.
+   * @returns {this} A new logger instance configured as a child of the current one.
+   *
+   * @example
+   * // Create a logger for a specific user request
+   * const reqLogger = rootLogger.getChild({ sid: 'user123', reqId: 'abc-456' });
+   * reqLogger.info('Processing user request');
    */
-  getChild(params?: Logger.IGetChildParams): this {
+  public getChild(params?: Logger.IGetChildParams): this {
     const logger = this.copy();
     logger._parent = this;
     logger.#appendParams(params);
@@ -70,10 +86,8 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   }
 
   /**
-   * Appends additional parameters to the logger instance.
+   * Appends contextual parameters to the logger instance.
    * @private
-   * @param params - Parameters to append
-   * @returns The current logger instance
    */
   #appendParams(params?: Logger.IGetChildParams): this {
     if (params) {
@@ -96,8 +110,8 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   }
 
   /**
-   * Creates a copy of the current logger instance. For internal use.
-   * @returns A new logger instance with copied properties
+   * Creates a shallow copy of the current logger instance.
+   * @internal
    */
   copy(): this {
     const result = new (this.constructor as new (logMgr: LogMgr<M>) => this)(this._logMgr);
@@ -106,8 +120,8 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   }
 
   /**
-   * Assigns properties from another logger to this instance. For internal use.
-   * @param logger - Source logger to copy properties from
+   * Assigns properties from another logger to this instance.
+   * @internal
    */
   assign(logger: Base<M>): void {
     this._threshold = logger._threshold;
@@ -118,50 +132,53 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   }
 
   /**
-   * Emits a log entry if it meets the loglevel threshold requirements that have
-   * been set for this logger and/or the log manager.
-   * @param msg - The log entry to emit
+   * Forwards a log entry to the {@link LogMgr} for processing, but only if it
+   * meets the configured log level threshold.
+   *
+   * @param {Log.Entry} msg - The log entry to emit.
    */
-  emit(msg: Log.Entry): void {
+  public emit(msg: Log.Entry): void {
     if (this.meetsThreshold(msg.level) && msg.msg) {
       this._logMgr.emit(msg);
     }
   }
 
   /**
-   * Adds a package name to the packages array. This will be displayed in log
-   * output if `package` is true when calling `logMgr.show`. The `pkg`
-   * value is meant to represent the nesting of packages or methods that is
-   * called in order to process a request.
-   * @param val - Package name to add
+   * Appends a package name to the logger's context.
+   *
+   * @remarks
+   * The `pkg` is used to trace the origin of a log message, often representing
+   * a class or module. Nested packages are joined with a dot (`.`).
+   *
+   * @param {string} val - The package name to add.
    */
-  set pkg(val: string) {
+  public set pkg(val: string) {
     this._pkgs.push(val);
   }
 
   /**
-   * Gets the dot-separated package name string. For internal use.
-   * @returns Concatenated package names
+   * Retrieves the fully-qualified, dot-separated package name.
+   * @internal
    */
-  get pkg(): string {
+  public get pkg(): string {
     return this._pkgs.join('.');
   }
 
   /**
-   * Gets the array of package names. For internal use.
-   * @returns Array of package names
+   * Retrieves the array of package names.
+   * @internal
    */
-  get pkgs(): string[] {
+  public get pkgs(): string[] {
     return this._pkgs;
   }
 
   /**
-   * Adds a package name to the packages array and returns the logger instance.
-   * This is the same as the `pkg` setter but allows method chaining.
-   * @param val - Package name to add
-   * @returns The current logger instance
+   * Appends a package name to the logger's context in a chainable manner.
+   *
+   * @param {string} [val] - The package name to add.
+   * @returns {this} The current logger instance.
    */
-  setPackage(val: string | undefined): this {
+  public setPackage(val: string | undefined): this {
     if (val) {
       this._pkgs.push(val);
     }
@@ -169,57 +186,61 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   }
 
   /**
-   * Sets the session ID. This will be displayed in log output if `sid` is true
-   * when calling `logMgr.show`. The `sid` is meant to represent the 'user' that
-   * a request belongs to. This should be set in conjuction with
-   * calling the logger's `getChild` method.
-   * @param val - New session ID
+   * Sets the session ID for the logger's context.
+   *
+   * @remarks
+   * The `sid` is used to group all logs associated with a single user session.
+   * It is typically set on a child logger created for a user's request.
+   *
+   * @param {string} [val] - The session ID.
    */
-  set sid(val: string | undefined) {
+  public set sid(val: string | undefined) {
     this._sid = val;
   }
 
   /**
-   * Gets the session ID. For internal use.
-   * @returns Current session ID or undefined
+   * Retrieves the session ID.
+   * @internal
    */
-  get sid(): string | undefined {
+  public get sid(): string | undefined {
     return this._sid;
   }
 
   /**
-   * Adds a request ID to the request IDs array.  This will be displayed in log
-   * output if `reqId` is true when calling `logMgr.show`. Normally `reqId`
-   * would not need to be nested and will be called once when a new request is
-   * received and `getChild` is called in order to create a logger object to
-   * track that request.
-   * @param val - Request ID to add
+   * Appends a request ID to the logger's context.
+   *
+   * @remarks
+   * The `reqId` is a unique identifier for a single operation or request,
+   * allowing all related logs to be traced together.
+   *
+   * @param {string} val - The request ID to add.
    */
-  set reqId(val: string) {
+  public set reqId(val: string) {
     this._reqIds.push(val);
   }
 
   /**
-   * Gets the dot-separated request ID string. For internal use.
-   * @returns Concatenated request IDs
+   * Retrieves the fully-qualified, dot-separated request ID string.
+   * @internal
    */
-  get reqId(): string {
+  public get reqId(): string {
     return this._reqIds.join('.');
   }
 
   /**
-   * Gets the array of request IDs. For internal use.
-   * @returns Array of request IDs
+   * Retrieves the array of request IDs.
+   * @internal
    */
-  get reqIds(): string[] {
+  public get reqIds(): string[] {
     return this._reqIds;
   }
 
   /**
-   * Adds a request ID to the request IDs array and returns the logger instance.
-   * This is no different from the reqId setter, but allows for method chaining.
-   * @param val - Request ID to add
-   * @returns The current logger instance
+   * Appends a request ID to the logger's context in a chainable manner.
+   *
+   * @param {string} [val] - The request ID to add.
+   * @returns {this} The current logger instance.
+   * @internal
    */
   setReqId(val: string | undefined): this {
     if (val) {
@@ -229,91 +250,83 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   }
 
   /**
-   * Gets the log levels configuration.
-   * @returns Log levels configuration
+   * Gets the active log level configuration from the log manager.
    */
-  get logLevels(): Level.IBasic {
+  public get logLevels(): Level.IBasic {
     return this._logMgr.logLevels;
   }
 
   /**
-   * Gets the log manager instance.
-   * @returns The log manager instance
+   * Gets the associated log manager instance.
    */
-  get logMgr(): LogMgr<M> {
+  public get logMgr(): LogMgr<M> {
     return this._logMgr;
   }
 
-  get parent(): this | undefined {
+  /**
+   * Gets the parent of this logger, if it is a child logger.
+   * @returns {this | undefined} The parent logger or `undefined` if it is a root logger.
+   */
+  public get parent(): this | undefined {
     return this._parent;
   }
 
   /**
-   * Sets the threshold level for this logger instance.
-   *
-   * @param {Level.Name | Level.Value} level - The threshold level to set.
-   *
-   * @returns {this} The current logger instance.
+   * Sets the log level threshold for this specific logger instance.
    *
    * @remarks
-   * The logger's threshold provides a preliminary filter for log messages.
-   * However, the effective threshold is determined by the most restrictive
-   * setting among the logger, the log manager, and the transport.
+   * This threshold acts as a preliminary filter. The final decision to log a
+   * message depends on the *most restrictive* threshold among this logger, the
+   * {@link LogMgr}, and the transport. A warning is issued if this threshold is
+   * less restrictive than the manager's, as the manager's setting will prevail.
    *
-   * If the logger's threshold is set to a less restrictive level than the
-   * log manager's, a warning will be issued, as the manager's more
-   * restrictive setting will ultimately take precedence.
+   * @param {Level.Name | Level.Value} level - The threshold to set.
+   * @returns {this} The current logger instance.
+   * @internal
    */
   setThreshold(level: Level.Name | Level.Value): this {
     this._threshold = this.logLevels.asValue(level);
     if (this._logMgr.threshold) {
       if (this._threshold > this._logMgr.threshold) {
-        this._logMgr.warn(
-          `Logger threshold (${
-            this.logLevels.asName(
-              this._threshold,
-            )
-          }) is less restrictive than LogMgr threshold (${
-            this.logLevels.asName(
-              this._logMgr.threshold,
-            )
-          }). LogMgr threshold will apply.`,
-        );
+        const msg: Log.Entry = {
+          level: this.logLevels.warnLevelName,
+          msg: `Logger threshold ${this.logLevels.asName(this._threshold)} is less restrictive than LogMgr threshold ${
+            this.logLevels.asName(this._logMgr.threshold)
+          }. LogMgr threshold will apply.`,
+        };
+        this._logMgr.emit(msg);
       }
     }
     return this;
   }
 
   /**
-   * Sets the threshold level for this logger instance.
-   *
-   * @param {Level.Name | Level.Value} level - The threshold level to set.
+   * Sets the log level threshold for this logger instance.
    *
    * @remarks
-   * This setter provides a convenient way to set the logger's threshold.
-   * It is an alternative to the `setThreshold` method.
+   * This is a convenient alternative to the {@link setThreshold} method.
+   * The effective threshold is the most restrictive of the logger, log manager,
+   * and transport settings.
    *
-   * The effective threshold is determined by the most restrictive setting
-   * among the logger, the log manager, and the transport.
+   * @param {Level.Name | Level.Value} level - The threshold to set.
    */
-  set threshold(level: Level.Name | Level.Value) {
+  public set threshold(level: Level.Name | Level.Value) {
     this.setThreshold(level);
   }
 
   /**
-   * Gets the threshold level for this logger instance.
+   * Gets the effective threshold for this logger instance.
    *
-   * @returns {Level.Value} The threshold level.
+   * @returns {Level.Value} The logger's own threshold, or the log manager's
+   * threshold if one is not set on the logger.
    */
-  get threshold(): Level.Value {
+  public get threshold(): Level.Value {
     return this._threshold || this._logMgr.threshold;
   }
 
   /**
-   * Checks if a given log level meets the threshold requirements. For internal use.
-   * @param level - The log level to check
-   * @param threshold - Optional specific threshold to check against
-   * @returns Whether the level meets the threshold
+   * Checks if a given log level meets the effective threshold.
+   * @internal
    */
   meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean {
     if (threshold !== undefined) {
@@ -323,34 +336,41 @@ export class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logge
   }
 
   /**
-   * Checks if a given log level meets the flush threshold. For internal use.
-   * @param level - The log level to check
-   * @returns Whether the level meets the flush threshold
+   * Checks if a given log level meets the immediate flush threshold.
+   * @internal
    */
   meetsFlushThreshold(level: Level.Value | Level.Name): boolean {
     return this.logLevels.meetsFlushThreshold(level);
   }
 
   /**
-   * Creates a performance mark with a unique name. The return value can be
-   * passed to a MsgBuilder's ewt method call to record the time between the
-   * mark and the log entry.
-   * @returns The name of the created mark
+   * Creates a high-resolution performance mark.
+   *
+   * @remarks
+   * This method records a timestamp and returns a unique name for the mark.
+   * This name can be passed to a message builder's `ewt` (elapsed wall time)
+   * method to automatically calculate and log the time elapsed since the mark
+   * was created.
+   *
+   * @returns {string} The unique name of the performance mark.
+   * @see {@link demark}
    */
-  mark(): string {
+  public mark(): string {
     const name = 'mark.' + ++markId;
     this._mark[name] = performance.now();
     return name;
   }
 
   /**
-   * Measures the time elapsed since a mark was created.
-   * @param name - The name of the mark to measure. This is the value that was returned by the mark method.
-   * @param keep - Whether to keep the mark after measuring (default false)
-   * @returns The elapsed time in milliseconds
-   * @throws {AssertionError} If the mark doesn't exist
+   * Measures the time elapsed since a performance mark was created and removes it.
+   *
+   * @param {string} name - The name of the mark to measure, as returned by {@link mark}.
+   * @param {boolean} [keep=false] - If `true`, the mark is not removed after
+   * measurement and can be used again.
+   * @returns {HrMilliseconds} The elapsed time in milliseconds.
+   * @throws {AssertionError} If no mark with the given name exists.
    */
-  demark(name: string, keep = false): HrMilliseconds {
+  public demark(name: string, keep = false): HrMilliseconds {
     assert(this._mark[name], `No mark set for ${name}`);
     const result = performance.now() - this._mark[name];
     if (keep !== true) {

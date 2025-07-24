@@ -43,42 +43,171 @@ const styleFormatters: Record<string, MsgBuilder.StyleFormatterFn> = {
   _timePrefix: colors.gray,
 } as const;
 
+/**
+ * Interface for a console message builder that provides methods for styling
+ * log messages.
+ */
 export interface IConsole {
-  text(...args: MsgBuilder.StyleArg[]): this;
-  h1(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends styled text to the message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   h2(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a top-level heading (h1) to the message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
+  h1(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a secondary heading (h2) to the message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
+  h2(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a tertiary heading (h3) to the message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   h3(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends an action-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   action(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a label-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   label(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a highlighted message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   highlight(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a value-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   value(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a path-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   path(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a path relative to the home directory.
+   * @param {string} path - The path to be made relative.
+   * @returns {this} The current instance for method chaining.
+   */
   relative(path: string): this;
+  /**
+   * Appends a date-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   date(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a section divider with an optional title.
+   * @param {string} str - The title of the section.
+   * @returns {this} The current instance for method chaining.
+   */
   section(str: string): this;
+  /**
+   * Appends a formatted error message.
+   * @param {unknown} error - The error to be formatted.
+   * @param {ErrOpts} opts - Options for formatting the error.
+   * @returns {this} The current instance for method chaining.
+   */
   err(error: unknown, opts: ErrOpts): this;
+  /**
+   * Appends a warning-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   warn(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends an error-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   error(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a strikethrough-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
   strikethru(...args: MsgBuilder.StyleArg[]): this;
 }
 
+/**
+ * Options for formatting an error message.
+ */
 export type ErrOpts = Partial<{
+  /**
+   * Whether to include the error code.
+   * @default false
+   */
   code: boolean;
+  /**
+   * Whether to include the error cause.
+   * @default true
+   */
   cause: boolean;
+  /**
+   * Whether to include the error path.
+   * @default true
+   */
   path: boolean;
+  /**
+   * Whether to include the stack trace.
+   * @default false
+   */
   stack: boolean;
 }>;
 
 /**
- * Message Builder class for styling messages. Extends the CoreMsgBuilder to
- * provide custom formatting using chained messages. If you prefer to declare
- * and use a custom set of formatting metchods, declare your own MsgBuilder and
- * pass it to the LogManager.
+ * A message builder for creating styled console messages.
+ *
+ * This class extends `Base` to provide a fluent interface for building
+ * complex, styled log messages. It supports various formatting options,
+ * including headers, labels, values, and error messages.
+ *
+ * @example
+ * ```ts
+ * import { Console } from './console.ts';
+ * import { type IEmitter } from '../logger/types.ts';
+ *
+ * const emitter: IEmitter = {
+ *   emit: (entry) => console.log(entry.message),
+ *   demark: () => 0,
+ * };
+ *
+ * const msg = new Console('info', emitter);
+ * msg.h1('Hello').text('World').emit();
+ * ```
  */
 export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration {
+  /**
+   * A map of style formatters for different message parts.
+   */
   static readonly styleFormatters = styleFormatters;
   protected _nextPartPluralize: boolean | undefined; // true for plural, false for singular, undefined for no effect
 
+  /**
+   * A factory method for creating a new `Console` instance.
+   * @param {Level.Name} level - The log level.
+   * @param {Logger.IEmitter} emitter - The log emitter.
+   * @param {boolean} [meetsThreshold=true] - Whether the log level meets the threshold.
+   * @returns {Console} A new `Console` instance.
+   */
   static override factoryMethod(
     level: Level.Name,
     emitter: Logger.IEmitter,
@@ -88,26 +217,28 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Emits a styled text message.
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * Appends styled text to the message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public text(...args: MsgBuilder.StyleArg[]): this {
+  public h2(...args: MsgBuilder.StyleArg[]): this {
     const processedArgs = this._applyPluralization(args);
     return this.stylize(styleFormatters.text, ...processedArgs);
   }
+
   /**
-   * Emits a styled h1 message.
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * Appends a top-level heading (h1) to the message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   public h1(...args: MsgBuilder.StyleArg[]): this {
     const processedArgs = this._applyPluralization(args);
     return this.stylize(styleFormatters.h1, ...processedArgs);
   }
+
   /**
-   * Emits a styled h2 message.
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * Appends a secondary heading (h2) to the message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   public h2(...args: MsgBuilder.StyleArg[]): this {
@@ -116,8 +247,8 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Emits a styled h3 message.
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * Appends a tertiary heading (h3) to the message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   public h3(...args: MsgBuilder.StyleArg[]): this {
@@ -126,7 +257,7 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Emits a styled action message.
+   * Appends an action-styled message.
    * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
@@ -138,8 +269,8 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   /**
    * Sets a flag for the next chained method to apply pluralization logic,
    * and outputs the provided number with 'value' styling.
-   * @param num - The number to display and use for pluralization determination.
-   * @returns The current instance for method chaining.
+   * @param {Integer} num - The number to display and use for pluralization determination.
+   * @returns {this} The current instance for method chaining.
    */
   public count(num: Integer): this {
     // First, output the number itself using the base stylize method.
@@ -152,8 +283,8 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Emits a styled label message.
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * Appends a label-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   public label(...args: MsgBuilder.StyleArg[]): this {
@@ -161,8 +292,8 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Emits a styled highlight message.
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * Appends a highlighted message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   public highlight(...args: MsgBuilder.StyleArg[]): this {
@@ -170,8 +301,8 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Emits a styled value message.
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * Appends a value-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   public value(...args: MsgBuilder.StyleArg[]): this {
@@ -179,8 +310,8 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Emits a styled path message. Use for displaying file paths or filenames.
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * Appends a path-styled message. Use for displaying file paths or filenames.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   public path(...args: MsgBuilder.StyleArg[]): this {
@@ -188,7 +319,7 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Emits a styled file or folder path, displaying the path relative to the
+   * Appends a styled file or folder path, displaying the path relative to the
    * user's home directory. Use for displaying file paths or filenames.
    * @param {string} path - The path to be stylized.
    * @returns {this} The current instance for method chaining.
@@ -199,8 +330,8 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Emits a styled date message. XXX add more info
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * Appends a date-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   public date(...args: MsgBuilder.StyleArg[]): this {
@@ -208,28 +339,25 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Emits a section delimiter with an optinoal title
-   * @param {string} str - The title.
+   * Appends a section divider with an optional title.
+   * @param {string} [str=''] - The title of the section.
    * @returns {this} The current instance for method chaining.
    */
-  section(str: string = ''): this {
+  public section(str: string = ''): this {
     const len = (80 - str.length - 2) / 2;
     return this.h1('-'.repeat(Math.floor(len)) + ' ' + str + ' ' + '-'.repeat(Math.ceil(len)));
   }
 
   /**
-   * Emits a message for an Error object. If error is not an error object, it is
-   * converted to one.
-   * @param {Error|unknown} error - The error object, or string
-   * @param {boolean} opts.stack - Set opts.stack true to always display the error stack,
-   * false to never display, otherwise it is diplayed if the stack threshold is
-   * met.
-   * @param {boolean} opts.code - Set to true to display err.code (default false)
-   * @param {boolean} opts.cause - Set to false to not display err.cause (default true)
-   * @param {boolean} opts.path - Set to false to not display err.path (default true)
+   * Appends a formatted error message.
+   *
+   * If the provided `error` is not an `Error` object, it will be converted to one.
+   *
+   * @param {unknown} error - The error object or value to be logged.
+   * @param {ErrOpts} [opts={}] - Options for formatting the error message.
    * @returns {this} The current instance for method chaining.
    */
-  err(error: unknown, opts: ErrOpts = {}): this {
+  public err(error: unknown, opts: ErrOpts = {}): this {
     const err = asError(error);
     this.error(err.message);
     if (opts.code === true && 'code' in err) {
@@ -242,22 +370,23 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
       this.relative((err as { path: string }).path);
     }
     if (opts.stack !== false && (this._meetsThreshold || opts.stack === true)) {
-      this.text('\n' + err.stack);
+      this.h2('\n' + err.stack);
     }
     return this;
   }
 
   /**
-   * Emits a styled warning message.
+   * Appends a warning-styled message.
    * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   public warn(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(styleFormatters.warn, ...args);
   }
+
   /**
-   * Emits a styled error message.
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * Appends an error-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   public error(...args: MsgBuilder.StyleArg[]): this {
@@ -265,8 +394,8 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Emits a styled strikethru message.
-   * @param {...StyleArg[]} args - The arguments to be styled.
+   * Appends a strikethrough-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   public strikethru(...args: MsgBuilder.StyleArg[]): this {
@@ -274,10 +403,13 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * Helper method to apply pluralization logic based on the `_nextPartPluralize` flag.
-   * This method consumes the flag.
-   * @param args - The original arguments passed to a styling method.
-   * @returns The potentially modified arguments after applying pluralization.
+   * Applies pluralization to the given arguments based on the `_nextPartPluralize` flag.
+   *
+   * This method modifies the arguments for a styling method to handle plural forms.
+   * It is called internally and consumes the `_nextPartPluralize` flag after use.
+   *
+   * @param {MsgBuilder.StyleArg[]} args - The original arguments passed to a styling method.
+   * @returns {MsgBuilder.StyleArg[]} The potentially modified arguments after applying pluralization.
    * @protected
    */
   protected _applyPluralization(args: MsgBuilder.StyleArg[]): MsgBuilder.StyleArg[] {
@@ -298,25 +430,27 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   }
 
   /**
-   * @param duration
-   * @returns
+   * Emits the log entry with a timestamp indicating the duration.
+   *
+   * @param {number | string} duration - The duration in milliseconds or a string identifier for a marked time.
+   * @returns {Log.Entry | undefined} The emitted log entry, or `undefined` if the threshold is not met.
+   * @internal
    */
   emitWithTime(duration: number | string): Log.Entry | undefined {
     return this.ewt(duration);
   }
 
   /**
-   * Emits a message with the elapsed time since the last mark. If a duration is
-   * provided, it will be used; otherwise, the duration is calculated from the
-   * last mark to the current time.
+   * Emits a message with the elapsed time since the last mark.
    *
-   * @param duration - The time duration in milliseconds. If not provided, it
-   *                  defaults to the time elapsed since the last mark. If a
-   *                  string it looks for the corresponding mark that was set
-   *                  with the mark method.
-   * @returns A formatted string representing the elapsed time.
+   * If a duration is provided, it will be used; otherwise, the duration is
+   * calculated from the last mark to the current time.
+   *
+   * @param {number | string} duration - The time duration in milliseconds or a string identifier for a marked time.
+   * @param {boolean} [keep=false] - Whether to keep the mark after demarking.
+   * @returns {Log.Entry | undefined} The emitted log entry, or `undefined` if the threshold is not met.
    */
-  ewt(duration: number | string, keep = false): Log.Entry | undefined {
+  public ewt(duration: number | string, keep = false): Log.Entry | undefined {
     if (this._meetsThreshold) {
       if (isNonEmptyString(duration)) {
         duration = this._emitter.demark(duration, keep);

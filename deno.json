@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logger",
-  "version": "1002.2.1",
+  "version": "1002.2.2",
   "description": "Logging module with chainable formatting, express middleware mixins and extendable transports",
   "author": {
     "name": "James Pravetz",
@@ -10,7 +10,7 @@
   "tasks": {
     "test": "deno test -A",
     "lint": "deno lint",
-    "check": "deno check src",
+    "check": "deno check src examples",
     "build": "deno run -A scripts/build_npm.ts",
     "publish_npm": "cd npm & npm publish --access public"
   },
@@ -19,10 +19,10 @@
     "include": ["src/**/*test.ts", "test/**/*test.ts"]
   },
   "lint": {
-    "include": ["src", "test/**/*test.ts", "mod.ts"]
+    "include": ["src", "test/**/*test.ts", "mod.ts", "examples"]
   },
   "fmt": {
-    "include": ["src", "test/**/*test.ts", "mod.ts", "deno.json"],
+    "include": ["src", "test/**/*test.ts", "mod.ts", "deno.json", "examples"],
     "singleQuote": true,
     "lineWidth": 120
   },

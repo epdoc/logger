@@ -5,11 +5,15 @@ import { Base } from './base.ts';
 import type * as Logger from './types.ts';
 
 /**
- * A logger class that provides indentation functionality. It extends the `Base`
- * logger and implements the `IIndent` interface, which allows for indented
- * lines of logger output.
+ * Extends the {@link Base} logger to provide indentation capabilities for log output.
  *
- * @template M - Type extending `MsgBuilder.IBasic` for message building.
+ * @remarks
+ * This class allows for structured, hierarchical logging by prepending custom
+ * indentation strings to log messages. It is particularly useful for visualizing
+ * nested operations or code blocks in console output.
+ *
+ * @template M - The type of message builder used by the logger, conforming to
+ * {@link MsgBuilder.IBasic}.
  * @implements {Logger.IIndent}
  */
 export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logger.IIndent {
@@ -19,18 +23,22 @@ export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logg
    */
   protected _t0: Date = new Date();
   /**
-   * An array of strings representing the current indentation levels. We use
-   * strings for more flexibility, but usually an array of spaces is used.
+   * An array of strings representing the current indentation levels.
+   * Each string in the array is prepended to the log message.
    * @protected
    */
   protected _indent: string[] = [];
 
   /**
-   * Sets the start time for the logger. This is only needed if the creation
-   * time of `this` object needs to be overridden. Note that any getChild methods
-   * will inherit the start time of their parent.
-   * @param d - The date to set as the start time.
-   * @returns The current logger instance.
+   * Sets the start time for the logger's internal time tracking.
+   *
+   * @remarks
+   * This method is typically used to override the default creation time of the
+   * logger instance. Child loggers created via `getChild` will inherit their
+   * parent's start time.
+   *
+   * @param {Date} d - The date to set as the start time.
+   * @returns {this} The current logger instance for chaining.
    */
   startTime(d: Date): this {
     this._t0 = d;
@@ -38,9 +46,8 @@ export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logg
   }
 
   /**
-   * Assigns properties from another `Indent` logger to this instance. This is
-   * for internal use.
-   * @param logger - The source `Indent` logger to copy properties from.
+   * Assigns properties from another `Indent` logger to this instance.
+   * @internal
    */
   override assign(logger: Indent<M>): void {
     super.assign(logger);
@@ -49,8 +56,15 @@ export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logg
   }
 
   /**
-   * Emits a log entry, prepending the current indentation to the message.
-   * @param msg - The log entry to emit.
+   * Emits a log entry, applying the current indentation to the message.
+   *
+   * @remarks
+   * This method overrides the base `emit` to prepend the accumulated indentation
+   * strings to the log message before passing it to the `LogMgr`'s transport
+   * manager. This ensures that all messages emitted by this logger (or its
+   * children) are properly indented.
+   *
+   * @param {Log.Entry} msg - The log entry to emit.
    */
   override emit(msg: Log.Entry): void {
     if (isString(msg.msg)) {
@@ -74,14 +88,16 @@ export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logg
   }
 
   /**
-   * Adds indentation to the logger. Note that indents are separated by spaces,
-   * so setting `n` to a single space will indent log messages by 2 spaces. If
-   * `n` is a string, it's added as a custom indent string. If `n` is a number,
-   * that many spaces are added. If `n` is an array of strings, each string is
-   * added as an indent level. If `n` is undefined, a single space is added.
-   * @param n - The indentation value (string, number, array of strings, or
-   * undefined).
-   * @returns The current logger instance.
+   * Adds one or more levels of indentation to the logger's output.
+   *
+   * @remarks
+   * - If `n` is a `string`, it is added directly as an indentation string.
+   * - If `n` is a `number`, that many spaces are added as indentation levels.
+   * - If `n` is an `array` of strings, each string is added as an indentation level.
+   * - If `n` is `undefined`, a single space is added as an indentation level.
+   *
+   * @param {number | string | string[]} [n] - The indentation value(s) to add.
+   * @returns {this} The current logger instance for chaining.
    */
   indent(n?: number | string | string[]): this {
     if (isString(n)) {
@@ -101,17 +117,18 @@ export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logg
   }
 
   /**
-   * Gets the current array of indentation strings. This is for internal use.
-   * @returns An array of strings representing the current indentation.
+   * Retrieves the current array of indentation strings.
+   * @internal
    */
   getdent(): string[] {
     return this._indent;
   }
 
   /**
-   * Removes indentation levels.
-   * @param n - The number of indentation levels to remove (default is 1).
-   * @returns The current logger instance.
+   * Removes one or more levels of indentation.
+   *
+   * @param {number} [n=1] - The number of indentation levels to remove.
+   * @returns {this} The current logger instance for chaining.
    */
   outdent(n: number = 1): this {
     for (let x = 0; x < n; ++x) {
@@ -123,9 +140,13 @@ export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logg
   }
 
   /**
-   * Resets all indentation levels. It is more typical for the `outdent` method
-   * to be paired with a call to an `indent` method.
-   * @returns The current logger instance.
+   * Resets all indentation levels, effectively removing all current indentation.
+   *
+   * @remarks
+   * This method is useful for ensuring that subsequent log messages start at
+   * the very beginning of the line, regardless of previous indentation.
+   *
+   * @returns {this} The current logger instance for chaining.
    */
   nodent(): this {
     this._indent = [];

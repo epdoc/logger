@@ -20,7 +20,7 @@ Once you have a `LogMgr` instance, you can use it to get a "root logger". The ro
 you can use it to log general application-level messages.
 
 ```typescript
-const rootLogger = logMgr.getLogger();
+const rootLogger = logMgr.getLogger<Log.std.Logger>();
 ```
 
 ## 3. Configuring the Logger's Output
@@ -59,7 +59,7 @@ logger inherits the configuration of its parent but can have its own unique prop
 const reqId = 'xyz-123';
 
 // 1. Create a child logger from the root logger
-const childLogger = rootLogger.getChild({ reqId });
+const childLogger = rootLogger.getChild({ reqId }) as Log.std.Logger;
 
 // 2. Use the child logger to log messages related to this request
 childLogger.info.h1('Processing request').emit();

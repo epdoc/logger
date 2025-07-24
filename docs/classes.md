@@ -35,13 +35,12 @@ You select the logger type when you configure your `LogMgr`. To use the `cli` lo
 
 ```typescript
 import { Log } from '@epdoc/logger';
-import { cli } from '@epdoc/logger/levels';
 
 // Configure LogMgr to use the CLI logger and its log levels
-const logMgr = new Log.Mgr(cli.createLogLevels);
-logMgr.loggerFactory = cli.getLogger;
+const logMgr = new Log.Mgr(Log.cli.createLogLevels);
+logMgr.loggerFactory = Log.cli.createLogger;
 
-const logger = logMgr.getLogger(); // This will be a CliLogger instance
+const logger = logMgr.getLogger<Log.cli.Logger<Log.MsgBuilder.Console>>(); // This will be a CliLogger instance
 ```
 
 If you don't provide these, the `LogMgr` defaults to the `std` logger.
@@ -64,7 +63,7 @@ A `Logger` is the object you interact with directly to write log messages. You c
 
 ```typescript
 // Get a root logger
-const rootLogger = logMgr.getLogger();
+const rootLogger = logMgr.getLogger<Log.std.Logger<Log.MsgBuilder.Console>>();
 
 // Create a child logger for a specific request
 const childLogger = rootLogger.getChild({ reqId: 'xyz-123' });

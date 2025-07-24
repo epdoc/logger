@@ -2,7 +2,7 @@
 
 import { foregroundColorNames, modifierNames } from 'chalk';
 
-foregroundColorNames.forEach((name) => {
+foregroundColorNames.forEach((name: string) => {
   console.log(name);
 });
 

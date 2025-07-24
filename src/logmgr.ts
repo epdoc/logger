@@ -1,23 +1,60 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { assert } from '@std/assert';
 // import { cli, ILogLevels, type Level.Name, Level.Value, LogLevelFactoryMethod, std } from './levels/index.ts';
-import type { Dict } from '@epdoc/type';
 import { cli, type Level, std } from './levels/index.ts';
 import type * as Logger from './logger/index.ts';
 import * as MsgBuilder from './message/index.ts';
 import * as Transport from './transports/index.ts';
 import type * as Log from './types.ts';
 
+/**
+ * Defines the settings interface for a {@link LogMgr} instance. This provides a
+ * streamlined way to configure key logging behaviors.
+ */
 export interface ILogMgrSettings {
+  /**
+   * Sets the minimum log level required for messages to be processed.
+   *
+   * @param {Level.Name | Level.Value} level - The threshold level, specified
+   * either by its name (e.g., 'info', 'warn') or its numeric value.
+   */
   set threshold(level: Level.Name | Level.Value);
+  /**
+   * Configures the visibility of various log metadata attributes.
+   *
+   * @param {Log.EmitterShowOpts} opts - An object specifying which log
+   * components (e.g., timestamp, package name) to display.
+   */
   set show(opts: Log.EmitterShowOpts);
+  /**
+   * Retrieves the currently active log level configuration.
+   *
+   * @returns {Level.IBasic} The instance managing the defined log levels.
+   */
   get logLevels(): Level.IBasic;
 }
 
 /**
- * LogMgr is responsible for managing loggers, log levels, and transports.
+ * Manages the entire logging ecosystem, including loggers, levels, and
+ * transports.
+ *
+ * @remarks
+ * `LogMgr` is the central hub for configuring and controlling all logging
+ * operations. It is responsible for:
+ * - Creating and managing logger instances.
+ * - Defining and applying log level thresholds.
+ * - Coordinating transports that direct logs to various outputs (e.g.,
+ *   console, file).
+ *
+ * This class is exported as `Mgr` from the top-level `Log` module, making it
+ * accessible via `Log.Mgr`.
+ *
+ * @template M - The type of message builder to be used, which must conform to
+ * the `MsgBuilder.IBasic` interface. Defaults to `MsgBuilder.Console`.
  */
-export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
+export class LogMgr<
+  M extends MsgBuilder.IBasic = MsgBuilder.Console,
+> {
   protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
   protected _logLevels: Level.IBasic | undefined;
@@ -32,7 +69,7 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
   protected _queue: Log.Entry[] = [];
   readonly transportMgr: Transport.Mgr<M> = new Transport.Mgr<M>(this);
   protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.factoryMethod;
-  protected _loggerFactory: Logger.FactoryMethod<M> = std.getLogger<M>;
+  protected _loggerFactory: Logger.FactoryMethod<M, Logger.IEmitter> = std.getLogger;
 
   protected _registeredLogLevels: Record<string, Level.FactoryMethod> = {
     cli: cli.createLogLevels,
@@ -42,16 +79,14 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
   /**
    * Creates an instance of LogMgr.
    *
-   * @param createLoggerClass - The Logger implementation class.
-   * @param msgBuilderFactory - The MsgBuilder implementation class.
-   * @param type - Optional logger type (for selecting log levels, etc.).
+   * @param {Level.FactoryMethod} [levelsFactory=std.createLogLevels] - A function that returns a log level configuration.
    */
   constructor(levelsFactory: Level.FactoryMethod = std.createLogLevels) {
     this._logLevels = levelsFactory();
     // this._transports = [Transport.factoryMethod<M>(this)];
   }
 
-  set msgBuilderFactory(msgBuilderFactory: MsgBuilder.FactoryMethod) {
+  public set msgBuilderFactory(msgBuilderFactory: MsgBuilder.FactoryMethod) {
     this._msgBuilderFactory = msgBuilderFactory;
   }
 
@@ -59,11 +94,11 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
     return this._msgBuilderFactory;
   }
 
-  set loggerFactory(loggerFactory: Logger.FactoryMethod<M>) {
+  public set loggerFactory(loggerFactory: Logger.FactoryMethod<M, Logger.IEmitter>) {
     this._loggerFactory = loggerFactory;
   }
 
-  get loggerFactory(): Logger.FactoryMethod<M> {
+  public get loggerFactory(): Logger.FactoryMethod<M, Logger.IEmitter> {
     return this._loggerFactory;
   }
 
@@ -73,7 +108,7 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
    * @returns {this} The instance of LogMgr.
    * @throws Will throw an error if log levels are not set.
    */
-  set threshold(level: Level.Name | Level.Value) {
+  public set threshold(level: Level.Name | Level.Value) {
     assert(
       this._logLevels,
       'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?',
@@ -81,23 +116,22 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
     this._threshold = this.logLevels.asValue(level);
     if (this._rootLogger) {
       if (this._threshold > this._rootLogger.threshold) {
-        this.warn(
-          `LogMgr threshold (${
-            this.logLevels.asName(
-              this._threshold,
-            )
+        const msg: Log.Entry = {
+          level: this.logLevels.warnLevelName,
+          msg: `LogMgr threshold (${
+            this.logLevels.asName(this._threshold)
           }) is less restrictive than root logger threshold (${
-            this.logLevels.asName(
-              this._rootLogger.threshold,
-            )
+            this.logLevels.asName(this._rootLogger.threshold)
           }). Root logger threshold will apply.`,
-        );
+          package: 'LogMgr',
+        };
+        this.forceEmit(msg);
       }
     }
     this.transportMgr.setThreshold(this._threshold);
   }
 
-  get threshold(): Level.Value {
+  public get threshold(): Level.Value {
     return this._threshold;
   }
 
@@ -107,22 +141,24 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
    * @param {EmitterShowOpts} opts - The show options.
    * @returns {this} The instance of LogMgr.
    */
-  set show(opts: Log.EmitterShowOpts) {
+  public set show(opts: Log.EmitterShowOpts) {
     this._show = opts;
     this.transportMgr.show(opts);
   }
-  get show(): Log.EmitterShowOpts {
-    return this._show;
-  }
 
-  warn(msg: string): void {
-    this._rootEmit('warn', 'LogMgr', msg);
+  public get show(): Log.EmitterShowOpts {
+    return this._show;
   }
 
   /**
    * Returns a root logger instance by invoking new on the stored logger class.
+   *
+   * @example
+   * const logMgr = new Log.Mgr();
+   * const logger = logMgr.getLogger<Log.std.Logger<Log.MsgBuilder.Console>>();
+   * logger.info.text('Hello').emit();
    */
-  getLogger(): Logger.IEmitter {
+  public getLogger<L extends Logger.IEmitter>(): L {
     if (!this.transportMgr.transports.length) {
       const transport = new Transport.Console(this, { show: this._show });
       this.transportMgr.add(transport);
@@ -133,7 +169,7 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
     if (!this._rootLogger) {
       this._rootLogger = this._loggerFactory(this);
     }
-    return this._rootLogger;
+    return this._rootLogger as L;
   }
 
   /**
@@ -143,7 +179,7 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
    * @param level - The log level.
    * @param logger - The logger instance to associate with this message builder.
    */
-  getMsgBuilder(level: string, emitter: Logger.IEmitter): M {
+  public getMsgBuilder(level: string, emitter: Logger.IEmitter): M {
     const meetsThreshold = this.meetsThreshold(level);
     const meetsFlushThreshold = this.meetsFlushThreshold(level);
     return this._msgBuilderFactory(level, emitter, meetsThreshold, meetsFlushThreshold) as M;
@@ -157,21 +193,27 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
     return this._t0;
   }
 
-  addTransport(transport: Transport.Base<M>): this {
+  public addTransport(transport: Transport.Base<M>): this {
     this.transportMgr.add(transport);
     return this;
   }
 
-  removeTransport(transport: Transport.Base<M>): this {
+  public removeTransport(transport: Transport.Base<M>): this {
     this.transportMgr.remove(transport);
     return this;
   }
 
+  /**
+   * @internal
+   */
   async start(): Promise<void> {
     await this.transportMgr.start();
     this.flushQueue();
   }
 
+  /**
+   * @internal
+   */
   async stop(): Promise<void> {
     await this.transportMgr.stop();
   }
@@ -204,35 +246,29 @@ export class LogMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> {
     return this;
   }
 
-  _rootEmit(level: string, pkg: string, msg: string, data?: Dict): void {
-    const entry: Log.Entry = {
-      timestamp: new Date(),
-      level: level,
-      package: pkg,
-      data: data,
-      msg: msg,
-    };
-    if (this._rootLogger) {
-      entry.reqId = this._rootLogger.reqId;
-      entry.sid = this._rootLogger.sid;
-    }
-    this.emit(entry);
-  }
-
   /**
-   * Emits a log message using the specified logger. This is called by the
+   * Emits a log message. This is called by the
    * Logger implementation which, in turn, is called by the {@link IMsgBuilder}
    * implementation.
    * @param {Entry} msg - The log message to emit.
-   * @param {Logger.Basic} logger - The logger to use for emitting the message.
    */
-  emit(msg: Log.Entry): void {
+  public emit(msg: Log.Entry): void {
     if (this.meetsThreshold(msg.level)) {
       this.transportMgr.emit(msg);
       if (this.meetsFlushThreshold(msg.level)) {
         this.flushQueue();
       }
     }
+  }
+
+  /**
+   * Emits a log message without checking log level thresholds. This is only used internall
+   * @param {Entry} msg - The log message to emit.
+   * @internal
+   */
+  forceEmit(msg: Log.Entry): void {
+    this.transportMgr.emit(msg);
+    this.flushQueue();
   }
 
   /**

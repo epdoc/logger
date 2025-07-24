@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1002.3.0] - 2025-07-24
+
+### ⬆️ Improvements
+
+- **Refactored Logger Factory**: Simplified the process of using custom loggers. You can now set a `loggerFactory` on a `LogMgr` instance to specify a creation function (like `Log.cli.createLogger`), and `logMgr.getLogger<L>()` will return a correctly typed logger instance without complex generic parameters on the `LogMgr` itself.
+- **Simplified Module Exports**: Cleaned up the module export structure to provide a clear and unambiguous path for accessing module components, resolving IDE and type-checking errors.
+- **Improved JSDoc**: Updated JSDoc comments for key components to provide better examples and reflect the latest API changes.
+- **Deleted `.archive` Folder**: Removed the `.archive` directory (previously named `unused`).
+
+## [1002.2.2] - 2025-07-24
+
+### ⬆️ Improvements
+
+- **Generic `getLogger`**: Made the `LogMgr.getLogger` method generic, allowing it to return a specifically typed logger instance (e.g., `logMgr.getLogger<Log.std.Logger>()`). This improves type safety and removes the need for casting.
+- **JSDoc Documentation**: Added comprehensive JSDoc comments to various namespaces to improve clarity and ensure all components are properly documented on JSR.
+- **Explicit Exports**: Modified the export structure in `src/index.ts` to use explicit named exports. This prevents types from cluttering the main documentation page and ensures they are correctly nested under the `Log` namespace on JSR.
+
 ## [1002.2.1] - 2025-07-23
 
 Fix regression. The `StdLogger` and `CliLogger` now correctly implement the `IEmitter` interface.

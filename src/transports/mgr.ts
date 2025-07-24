@@ -6,24 +6,48 @@ import type * as Log from '../types.ts';
 import type { Base } from './base.ts';
 import { Console } from './console.ts';
 
+/**
+ * Manages a collection of log transports, handling the distribution of log
+ * entries to each registered transport.
+ *
+ * @template M - The type of the message builder.
+ */
 export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> implements Log.IEmitter {
   protected _bRunning = false;
   protected _logMgr: LogMgr<M>;
+  /**
+   * An array of registered transport instances.
+   */
   transports: Base<M>[] = [];
 
+  /**
+   * Creates an instance of the `TransportMgr`.
+   * @param {LogMgr<M>} logMgr - The log manager instance.
+   */
   constructor(logMgr: LogMgr<M>) {
     this._logMgr = logMgr;
   }
 
+  /**
+   * Sets the log level threshold for all registered transports.
+   *
+   * @param {Level.Name | Level.Value} level - The log level to set.
+   * @returns {this} The current instance for method chaining.
+   */
   setThreshold(level: Level.Name | Level.Value): this {
     const threshold = this._logMgr.logLevels.asValue(level);
     this.transports.forEach((transport) => {
       transport.setThreshold(threshold);
-      // transport.thresholdUpdated();
     });
     return this;
   }
 
+  /**
+   * Checks if any transport meets the specified log level threshold.
+   *
+   * @param {Level.Value} levelVal - The numerical value of the log level.
+   * @returns {boolean} `true` if any transport meets the threshold, otherwise `false`.
+   */
   meetsAnyThresholdValue(levelVal: Level.Value): boolean {
     assert(this.transports.length, 'No transports');
     return this.transports.some((transport) => {
@@ -31,14 +55,26 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> impl
     });
   }
 
+  /**
+   * Configures the display options for all registered transports.
+   *
+   * @param {Log.EmitterShowOpts} opts - The display options to set.
+   * @returns {this} The current instance for method chaining.
+   */
   show(opts: Log.EmitterShowOpts): this {
     this.transports.forEach((transport) => {
       transport.show(opts);
-      // transport.thresholdUpdated();
     });
     return this;
   }
 
+  /**
+   * Starts all registered transports.
+   *
+   * If no transports are registered, a default `Console` transport is added.
+   *
+   * @returns {Promise<void>} A promise that resolves when all transports have started.
+   */
   start(): Promise<void> {
     if (!this.transports.length) {
       const transport = new Console(this._logMgr);
@@ -54,14 +90,27 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> impl
     });
   }
 
+  /**
+   * Indicates whether the transport manager is running.
+   * @returns {boolean} `true` if running, otherwise `false`.
+   */
   get running(): boolean {
     return this._bRunning;
   }
 
+  /**
+   * Checks if all transports are ready.
+   * @returns {boolean} `true` if all transports are ready, otherwise `false`.
+   */
   allReady(): boolean {
     return this.transports.every((t) => t.ready);
   }
 
+  /**
+   * Adds a new transport to the manager.
+   *
+   * @param {Base<M>} transport - The transport instance to add.
+   */
   add(transport: Base<M>) {
     this._bRunning = false;
     this.transports.unshift(transport);
@@ -70,14 +119,22 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> impl
     this._bRunning = true;
     const lowestLogLevel = this._logMgr.logLevels.lowestLevelName;
     if (this.meetsAnyThresholdValue(this._logMgr.logLevels.asValue(lowestLogLevel))) {
-      this._logMgr._rootEmit(lowestLogLevel, 'logger.transport.add', `Added transport '${name}'`, {
-        transport: name,
-        options: topts,
-      });
+      const msg: Log.Entry = {
+        level: lowestLogLevel,
+        msg: `Added transport '${name}'`,
+        package: 'logger.transport.add',
+        data: { transport: name, options: topts },
+      };
+      this._logMgr.emit(msg);
     }
-    // this.setThreshold(5);
   }
 
+  /**
+   * Removes a transport from the manager.
+   *
+   * @param {Base<M>} transport - The transport instance to remove.
+   * @returns {Promise<void>} A promise that resolves when the transport is removed.
+   */
   async remove(transport: Base<M>): Promise<void> {
     this._bRunning = false;
     const name = transport.toString();
@@ -99,6 +156,11 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> impl
     this.emit(msg);
   }
 
+  /**
+   * Stops all registered transports.
+   *
+   * @returns {Promise<void>} A promise that resolves when all transports have stopped.
+   */
   async stop(): Promise<void> {
     const jobs: Promise<void>[] = [];
     this.transports.forEach((transport) => {
@@ -107,19 +169,14 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> impl
     await Promise.all(jobs);
   }
 
+  /**
+   * Emits a log entry to all registered transports.
+   *
+   * @param {Log.Entry} msg - The log entry to emit.
+   */
   emit(msg: Log.Entry): void {
     for (const transport of this.transports) {
       transport.emit(msg);
     }
   }
-
-  // emit(level: string, pkg: string, msg: string, data?: Dict | unknown[]): void {
-  //   const entry: Log.Entry = {
-  //     level: level,
-  //     package: pkg,
-  //     data: data,
-  //     msg: msg,
-  //   };
-  //   this._logMgr.emit(entry, this._rootLogger as Logger.IEmitter);
-  // }
 }

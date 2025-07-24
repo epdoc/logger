@@ -6,18 +6,48 @@ import { Console, type ConsoleOptions } from './console.ts';
 
 const BUFSIZE = 4096;
 
-// export function factoryMethod<M extends MsgBuilder.IBasic>(logMgr: LogMgr<M>, opts: HandlerOptions) {
-//   return new Handler<M>(logMgr, opts);
-// }
-
+/**
+ * Defines the file logging mode.
+ * - `a`: Append to the file if it exists, otherwise create it.
+ * - `w`: Write to the file, overwriting it if it exists.
+ * - `x`: Create a new file, throwing an error if it already exists.
+ */
 export type FileLogMode = 'a' | 'w' | 'x';
 
+/**
+ * Options for configuring the `File` transport.
+ */
 export interface FileOptions extends ConsoleOptions {
+  /**
+   * The path to the log file.
+   */
   filepath: string;
+  /**
+   * The file logging mode.
+   * @default 'a'
+   */
   mode?: FileLogMode;
+  /**
+   * The size of the buffer in bytes.
+   * @default 4096
+   */
   bufferSize?: Integer;
 }
 
+/**
+ * A transport for logging messages to a file.
+ *
+ * This class extends `Console` to provide file logging capabilities, with
+ * support for buffering and different file modes.
+ *
+ * @example
+ * ```ts
+ * const logMgr = new LogMgr();
+ * const fileTransport = new File(logMgr, { filepath: './app.log', mode: 'a' });
+ * await fileTransport.setup();
+ * logMgr.add(fileTransport);
+ * ```
+ */
 export class File<M extends MsgBuilder.IBasic> extends Console<M> {
   protected _json = false;
   protected filepath: string;
@@ -30,6 +60,11 @@ export class File<M extends MsgBuilder.IBasic> extends Console<M> {
     await this.destroy();
   };
 
+  /**
+   * Creates an instance of the `File` transport.
+   * @param {LogMgr<M>} logMgr - The log manager instance.
+   * @param {FileOptions} opts - Configuration options for the transport.
+   */
   constructor(logMgr: LogMgr<M>, opts: FileOptions) {
     super(logMgr, opts);
     this.filepath = opts.filepath;
@@ -37,15 +72,27 @@ export class File<M extends MsgBuilder.IBasic> extends Console<M> {
     this.buf = new Uint8Array(opts.bufferSize ?? BUFSIZE);
   }
 
+  /**
+   * Updates the transport's internal state when the log level threshold changes.
+   * @returns {this} The current instance for method chaining.
+   */
   override thresholdUpdated(): this {
     this._levelWidth = this._logMgr.logLevels.maxWidth(this._logMgr.threshold);
     return this;
   }
 
+  /**
+   * Returns a string representation of the transport.
+   * @returns {string} A string identifying the transport and its file path.
+   */
   override toString(): string {
     return `File[${this.filepath}]`;
   }
 
+  /**
+   * Sets up the file transport by opening the log file.
+   * @returns {Promise<void>} A promise that resolves when the setup is complete.
+   */
   override async setup(): Promise<void> {
     const openOpts: Deno.OpenOptions = {
       createNew: this.mode === 'x',
@@ -56,8 +103,16 @@ export class File<M extends MsgBuilder.IBasic> extends Console<M> {
     };
     this.file = await Deno.open(this.filepath, openOpts);
     this._resetBuffer();
+    addEventListener('unload', this.unloadCallback);
   }
 
+  /**
+   * Outputs a log message to the file.
+   *
+   * @param {string} msg - The log message to be written.
+   * @param {Level.Value} levelValue - The numerical value of the log level.
+   * @returns {Promise<void>} A promise that resolves when the output is complete.
+   */
   override async output(msg: string, levelValue: Level.Value): Promise<void> {
     const bytes = this.encoder.encode(msg + '\n');
     if (bytes.byteLength > this.buf.byteLength - this.pointer) {
@@ -74,6 +129,10 @@ export class File<M extends MsgBuilder.IBasic> extends Console<M> {
     }
   }
 
+  /**
+   * Flushes the buffer to the file.
+   * @returns {Promise<void>} A promise that resolves when the buffer is flushed.
+   */
   async flush(): Promise<void> {
     if (this.pointer > 0 && this.file) {
       let written = 0;
@@ -84,10 +143,18 @@ export class File<M extends MsgBuilder.IBasic> extends Console<M> {
     }
   }
 
+  /**
+   * Resets the buffer pointer to the beginning.
+   * @protected
+   */
   protected _resetBuffer() {
     this.pointer = 0;
   }
 
+  /**
+   * Stops the file transport and flushes any remaining logs in the buffer.
+   * @returns {Promise<void>} A promise that resolves when the transport is stopped.
+   */
   override async stop(): Promise<void> {
     await this.flush();
     if (this.file) {
@@ -96,20 +163,23 @@ export class File<M extends MsgBuilder.IBasic> extends Console<M> {
     this.file = undefined;
   }
 
-  // async end(): Promise<void> {
-  //   await this.flush();
-  //   this._bReady = false;
-  //   if (this._stream) {
-  //     this._stream.end();
-  //   }
-  // }
-
+  /**
+   * Destroys the file transport, stopping it and removing the unload event listener.
+   * @returns {Promise<void>} A promise that resolves when the transport is destroyed.
+   */
   override async destroy(): Promise<void> {
     await this.stop();
     removeEventListener('unload', this.unloadCallback);
   }
 }
 
+/**
+ * Writes all data from a `Uint8Array` to a `Deno.FsFile`.
+ *
+ * @param {Deno.FsFile} writer - The file writer.
+ * @param {Uint8Array} data - The data to be written.
+ * @returns {Promise<void>} A promise that resolves when the data has been fully written.
+ */
 export async function writeAll(writer: Deno.FsFile, data: Uint8Array) {
   let nwritten = 0;
   while (nwritten < data.length) {

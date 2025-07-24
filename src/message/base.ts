@@ -9,8 +9,17 @@ import type * as MsgBuilder from './index.ts';
 const DEFAULT_TAB_SIZE = 2;
 
 /**
- * A LoggerLine is a line of output from a Logger. It is used to build up a log
- * line, add styling, and emit the log line.
+ * The foundational message builder, responsible for constructing, styling, and
+ * formatting a single log entry before it is emitted.
+ *
+ * @remarks
+ * This class provides a chainable interface to build a log message piece by
+ * piece. It manages message parts, indentation, and associated structured data.
+ * Once fully constructed, the `emit` method forwards the completed log entry to
+ * the associated {@link Logger.IEmitter}.
+ *
+ * It implements both {@link MsgBuilder.IBasic} for the core building logic and
+ * {@link MsgBuilder.IFormat} for converting the message into a string.
  */
 export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   protected _timestamp: Date = new Date();
@@ -24,14 +33,21 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   protected _msgParts: MsgBuilder.MsgPart[] = [];
   protected _data: unknown | undefined;
   protected _suffix: string[] = [];
-  // protected _level: LogLevelValue = logLevel.info;
   protected _showElapsed: boolean = false;
 
+  /**
+   * Initializes a new message builder instance.
+   *
+   * @param {Level.Name} level - The log level of the message.
+   * @param {Logger.IEmitter} emitter - The logger instance that will emit the final message.
+   * @param {boolean} [meetsThreshold=true] - Whether the message meets the configured log level threshold.
+   * @param {boolean} [meetsFlushThreshold=true] - Whether the message requires an immediate flush.
+   */
   constructor(
     level: Level.Name,
     emitter: Logger.IEmitter,
-    meetsThreshold: boolean = true,
-    meetsFlushThreshold: boolean = true,
+    meetsThreshold = true,
+    meetsFlushThreshold = true,
   ) {
     this._level = level;
     this._emitter = emitter;
@@ -39,30 +55,53 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     this._meetsFlushThreshold = meetsFlushThreshold;
   }
 
+  /**
+   * A factory method for creating new `Base` message builder instances.
+   *
+   * @remarks
+   * This pattern is used by the {@link LogMgr} to decouple it from a specific
+   * message builder implementation, allowing for greater flexibility.
+   *
+   * @param {Level.Name} level - The log level.
+   * @param {Logger.IEmitter} emitter - The associated logger emitter.
+   * @param {boolean} [meetsThreshold=true] - Whether the level meets the threshold.
+   * @param {boolean} [meetsFlushThreshold=true] - Whether the level requires a flush.
+   * @returns {Base} A new `Base` instance.
+   */
   static factoryMethod(
     level: Level.Name,
     emitter: Logger.IEmitter,
-    meetsThreshold: boolean = true,
-    meetsFlushThreshold: boolean = true,
+    meetsThreshold = true,
+    meetsFlushThreshold = true,
   ): Base {
     return new Base(level, emitter, meetsThreshold, meetsFlushThreshold);
   }
 
-  set level(level: Level.Name) {
+  /**
+   * Sets the log level for the message.
+   * @param {Level.Name} level - The log level name.
+   */
+  public set level(level: Level.Name) {
     this._level = level;
   }
 
   /**
-   * Clears the current line, essentially resetting the output line. This does
-   * not clear the reqId, sid or pkg values.
-   * @returns {this} The LoggerLine instance.
+   * Resets the message builder to its initial state, clearing all message parts and data.
+   *
+   * @returns {this} The current instance for chaining.
    */
-  clear(): this {
+  public clear(): this {
     this._msgParts = [];
     this._data = undefined;
     return this;
   }
 
+  /**
+   * Initializes the message with a string, automatically handling leading tabs for indentation.
+   *
+   * @param {MsgBuilder.StyleArg[]} args - The content to set as the initial message.
+   * @returns {this} The current instance for chaining.
+   */
   setInitialString(...args: MsgBuilder.StyleArg[]): this {
     if (args.length) {
       const count = new StringUtil(args[0]).countTabsAtBeginningOfString();
@@ -74,6 +113,12 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     return this.stylize(null, ...args);
   }
 
+  /**
+   * Appends a specified number of spaces or a custom string for indentation.
+   *
+   * @param {Integer | string} [n=2] - The number of spaces or the string to use for indentation.
+   * @returns {this} The current instance for chaining.
+   */
   indent(n: Integer | string = DEFAULT_TAB_SIZE): this {
     if (isInteger(n)) {
       this.appendMsgPart(' '.repeat(n - 1));
@@ -84,11 +129,8 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   }
 
   /**
-   * Sets the indentation level of this line of log output. Use indent and
-   * outdent instead.
-   * @param {Integer} n - The number of tabs by which to indent.
-   * @returns {this} The Logger instance.
-   * @deprecated
+   * Sets the indentation level based on tab counts.
+   * @deprecated Use {@link indent} instead for more flexible indentation.
    */
   tab(n: Integer = 1): this {
     this._msgIndent = ' '.repeat(n * this._tabSize - 1);
@@ -96,17 +138,25 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   }
 
   /**
-   * Adds a comment to the end of the log line.
-   * @param { unknown} args - The arguments to add.
-   * @returns {this} The Logger instance.
+   * Appends a comment to the end of the log line.
+   *
+   * @param {string[]} args - The comment text to append.
+   * @returns {this} The current instance for chaining.
    */
-  comment(...args: string[]): this {
+  public comment(...args: string[]): this {
     this.appendSuffix(...args);
     return this;
   }
 
+  /**
+   * Appends a styled or unstyled part to the message.
+   *
+   * @param {string} str - The text content of the message part.
+   * @param {MsgBuilder.StyleFormatterFn | null} [style] - An optional styling function.
+   * @returns {this} The current instance for chaining.
+   */
   appendMsgPart(str: string, style?: MsgBuilder.StyleFormatterFn | null): this {
-    const part: MsgBuilder.MsgPart = { str: str }; // Updated to use MsgBuilder.MsgPart
+    const part: MsgBuilder.MsgPart = { str: str };
     if (style) {
       part.style = style;
     }
@@ -114,8 +164,15 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     return this;
   }
 
+  /**
+   * Prepends a styled or unstyled part to the message.
+   *
+   * @param {string} str - The text content of the message part.
+   * @param {MsgBuilder.StyleFormatterFn | null} [style] - An optional styling function.
+   * @returns {this} The current instance for chaining.
+   */
   prependMsgPart(str: string, style?: MsgBuilder.StyleFormatterFn | null): this {
-    const part: MsgBuilder.MsgPart = { str: str }; // Updated to use MsgBuilder.MsgPart
+    const part: MsgBuilder.MsgPart = { str: str };
     if (style) {
       part.style = style;
     }
@@ -123,6 +180,10 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     return this;
   }
 
+  /**
+   * Appends multiple arguments as a single, space-separated string.
+   * @protected
+   */
   protected appendMsg(...args: unknown[]): this {
     if (isNonEmptyArray(args)) {
       this.appendMsgPart(args.join(' '));
@@ -130,12 +191,23 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
     return this;
   }
 
+  /**
+   * Appends a suffix to the log message, typically used for comments.
+   * @protected
+   */
   protected appendSuffix(...args: string[]): this {
     this._suffix.push(args.join(' '));
     return this;
   }
 
-  stylize(style: MsgBuilder.StyleFormatterFn | null, ...args: MsgBuilder.StyleArg[]): this {
+  /**
+   * Appends arguments to the message with an optional style.
+   *
+   * @param {MsgBuilder.StyleFormatterFn | null} style - The styling function to apply.
+   * @param {MsgBuilder.StyleArg[]} args - The content to stylize and append.
+   * @returns {this} The current instance for chaining.
+   */
+  public stylize(style: MsgBuilder.StyleFormatterFn | null, ...args: MsgBuilder.StyleArg[]): this {
     if (isNonEmptyArray(args)) {
       const str = args
         .map((arg) => {
@@ -153,15 +225,26 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   }
 
   /**
-   * Adds plain text to the log line.
-   * @param { unknown} args - The arguments to add.
-   * @returns {this} The Logger instance.
+   * Appends unstyled (plain) text to the message.
+   *
+   * @param {unknown[]} args - The content to append.
+   * @returns {this} The current instance for chaining.
    */
-  plain(...args: unknown[]): this {
+  public plain(...args: unknown[]): this {
     return this.appendMsg(...args);
   }
 
-  data(data: unknown): this {
+  /**
+   * Attaches structured data to the log entry.
+   *
+   * @remarks
+   * If the message meets the log level threshold, the provided data will be
+   * merged with any existing data on the log entry.
+   *
+   * @param {unknown} data - The structured data (typically an object) to attach.
+   * @returns {this} The current instance for chaining.
+   */
+  public data(data: unknown): this {
     if (isDict(data) && this._meetsThreshold) {
       if (isDict(this._data)) {
         this._data = Object.assign(this._data, data);
@@ -173,14 +256,18 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   }
 
   /**
-   * Emits the log line, and also returns the object that will have been
-   * emitted.
-   * @param { unknown[]} args - Optional additional arguments to emit as unformatted text.
-   * @returns {void}
-   * @see ewt()
-   * @see emitWithTime()
+   * Finalizes the log message and forwards it to the emitter for processing.
+   *
+   * @remarks
+   * This method should be called only once when the message is complete. It
+   * assembles the final {@link Log.Entry} object, including all contextual
+   * information from the emitter (e.g., `sid`, `reqId`), and passes it to the
+   * emitter's `emit` method. The builder is then cleared for potential reuse.
+   *
+   * @param {unknown[]} args - Any final, unstyled text to append before emitting.
+   * @returns {Log.Entry | undefined} The generated log entry if the threshold was met, otherwise `undefined`.
    */
-  emit(...args: unknown[]): Log.Entry | undefined {
+  public emit(...args: unknown[]): Log.Entry | undefined {
     if (this._meetsThreshold) {
       this.appendMsg(...args);
       const entry: Log.Entry = {
@@ -205,12 +292,25 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
       this.clear();
       return entry;
     }
+    return undefined;
   }
 
+  /**
+   * Converts the message parts into a single, unformatted string.
+   * @internal
+   */
   partsAsString(): string {
     return this._msgParts?.map((p) => p.str).join(' ') || '';
   }
 
+  /**
+   * Formats the log message into a final string representation, applying colors
+   * and styles as needed.
+   *
+   * @param {boolean} color - Whether to apply color and styling functions.
+   * @param {Transport.OutputFormat} [_target=text] - The target output format (reserved for future use).
+   * @returns {string} The formatted log message string.
+   */
   format(color: boolean, _target: Transport.OutputFormat = Transport.OutputFormat.TEXT): string {
     const parts: string[] = [];
     if (isNonEmptyString(this._msgIndent)) {

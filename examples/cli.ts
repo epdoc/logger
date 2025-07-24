@@ -3,10 +3,13 @@ import { Log } from '../mod.ts';
 // Define the type for the message builder we want to use.
 // In this case, we are using the built-in Console message builder.
 type M = Log.MsgBuilder.Console;
-type L = Log.std.Logger<M>;
+type L = Log.cli.Logger<M>;
 
 // Create a new Log Manager instance.
-const logMgr = new Log.Mgr<M>();
+const logMgr = new Log.Mgr<M>(Log.cli.createLogLevels);
+
+// Set the logger factory
+logMgr.loggerFactory = Log.cli.createLogger;
 
 // Get a logger instance from the manager.
 const log = logMgr.getLogger<L>();
