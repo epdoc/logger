@@ -53,7 +53,7 @@ export interface IConsole {
    * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  h2(...args: MsgBuilder.StyleArg[]): this;
+  text(...args: MsgBuilder.StyleArg[]): this;
   /**
    * Appends a top-level heading (h1) to the message.
    * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
@@ -221,7 +221,7 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
    * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  public h2(...args: MsgBuilder.StyleArg[]): this {
+  public text(...args: MsgBuilder.StyleArg[]): this {
     const processedArgs = this._applyPluralization(args);
     return this.stylize(styleFormatters.text, ...processedArgs);
   }
@@ -370,7 +370,7 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
       this.relative((err as { path: string }).path);
     }
     if (opts.stack !== false && (this._meetsThreshold || opts.stack === true)) {
-      this.h2('\n' + err.stack);
+      this.text('\n' + err.stack);
     }
     return this;
   }
