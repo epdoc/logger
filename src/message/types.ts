@@ -1,8 +1,9 @@
 import type { Integer } from '@epdoc/type';
-import type { Level } from '../levels/index.ts';
+import type { Name as LevelName } from '../levels/types.ts';
 import type * as Logger from '../logger/types.ts';
 import type * as Transport from '../transports/types.ts';
 import type { Entry } from '../types.ts';
+import { AbstractMsgBuilder } from './abstract.ts';
 
 /**
  * A function that applies styling to a string.
@@ -112,7 +113,7 @@ export interface IEmitDuration {
    * @param {number | string} duration - The duration in milliseconds or a string identifier for a marked time.
    * @returns {Entry | undefined} The emitted log entry, or `undefined` if not emitted.
    */
-  emitWithTime(duration: number | string): Entry | undefined;
+  // emitWithTime(duration: number | string): Entry | undefined;
   /**
    * Emits a message with the elapsed time since the last mark.
    * @param {number | string} duration - The time duration in milliseconds or a string identifier for a marked time.
@@ -124,18 +125,18 @@ export interface IEmitDuration {
 
 /**
  * A factory method for creating a message builder instance.
- * @param {Level.Name} level - The log level.
+ * @param {LevelName} level - The log level.
  * @param {Logger.IEmitter} emitter - The log emitter.
  * @param {boolean} meetsThreshold - Whether the log level meets the threshold.
  * @param {boolean} meetsFlushThreshold - Whether the log level meets the flush threshold.
  * @returns {IBasic} A new message builder instance.
  */
-export type FactoryMethod = (
-  level: Level.Name,
+export type MsgBuidlerFactoryMethod = (
+  level: LevelName,
   emitter: Logger.IEmitter,
   meetsThreshold: boolean,
   meetsFlushThreshold: boolean,
-) => IBasic;
+) => AbstractMsgBuilder;
 
 /**
  * A constructor for a message builder class.

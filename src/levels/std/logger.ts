@@ -1,6 +1,7 @@
-import * as Logger from '../../logger/index.ts';
+import { Indent as LoggerIndent } from '../../logger/indent.ts';
+import type * as Logger from '../../logger/types.ts';
 import { LogMgr } from '../../logmgr.ts';
-import type * as MsgBuilder from '../../message/index.ts';
+import type { IBasic as MsgBuilderIBasic } from '../../message/types.ts';
 import type * as std from './types.ts';
 
 /**
@@ -17,7 +18,7 @@ import type * as std from './types.ts';
  * @returns {StdLogger<M>} A new or child `StdLogger` instance.
  * @throws {Error} If an invalid logger type is provided.
  */
-export const getLogger = <M extends MsgBuilder.IBasic>(
+export const createStdLogger = <M extends MsgBuilderIBasic>(
   log: LogMgr<M> | Logger.IEmitter,
   params?: Logger.IGetChildParams,
 ): StdLogger<M> => {
@@ -43,13 +44,13 @@ export const getLogger = <M extends MsgBuilder.IBasic>(
  * - `spam`: An additional level for very verbose, often temporary, debugging output.
  *
  * This class extends {@link Logger.Indent} to provide indentation capabilities
- * and implements {@link std.ILogger} and {@link Logger.IEmitter} for its core
+ * and implements {@link std.IStdLogger} and {@link Logger.IEmitter} for its core
  * logging functionality.
  *
  * @template M - The type of message builder used by the logger.
  */
-export class StdLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M>
-  implements std.ILogger<M>, Logger.IEmitter {
+export class StdLogger<M extends MsgBuilderIBasic> extends LoggerIndent<M>
+  implements std.IStdLogger<M>, Logger.IEmitter {
   /**
    * Creates a shallow copy of the current `StdLogger` instance.
    * @returns {this} A new `StdLogger` instance with copied properties.

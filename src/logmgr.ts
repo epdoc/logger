@@ -1,10 +1,16 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { assert } from '@std/assert';
 // import { cli, ILogLevels, type Level.Name, Level.Value, LogLevelFactoryMethod, std } from './levels/index.ts';
-import { cli, type Level, std } from './levels/index.ts';
-import type * as Logger from './logger/index.ts';
-import * as MsgBuilder from './message/index.ts';
-import * as Transport from './transports/index.ts';
+import type { IBasic as IBasicLevel } from './levels/ibasic.ts';
+import type { IBasic as LevelIBasic } from './levels/ibasic.ts/';
+import { cli, std } from './levels/mod.ts';
+import type * as Level from './levels/types.ts';
+import type * as Logger from './logger/types.ts';
+import { ConsoleFactoryMethod, ConsoleMsgBuilder } from './message/console.ts';
+import type * as MsgBuilder from './message/types.ts/';
+import type { AbstractTransport } from './transports/abstract.ts';
+import { ConsoleTransport } from './transports/console.ts/';
+import { TransportMgr } from './transports/mgr.ts/';
 import type * as Log from './types.ts';
 
 /**
@@ -31,7 +37,7 @@ export interface ILogMgrSettings {
    *
    * @returns {Level.IBasic} The instance managing the defined log levels.
    */
-  get logLevels(): Level.IBasic;
+  get logLevels(): LevelIBasic;
 }
 
 /**
@@ -53,11 +59,11 @@ export interface ILogMgrSettings {
  * the `MsgBuilder.IBasic` interface. Defaults to `MsgBuilder.Console`.
  */
 export class LogMgr<
-  M extends MsgBuilder.IBasic = MsgBuilder.Console,
+  M extends MsgBuilder.IBasic = ConsoleMsgBuilder,
 > {
   protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
-  protected _logLevels: Level.IBasic | undefined;
+  protected _logLevels: LevelIBasic | undefined;
   protected _rootLogger: Logger.IEmitter | undefined;
   protected _msgBuilder: MsgBuilder.IBasic | undefined;
   protected _threshold: Level.Value = 5;
@@ -67,9 +73,9 @@ export class LogMgr<
   protected _mark: Record<string, HrMilliseconds> = {};
   protected _bRunning = true;
   protected _queue: Log.Entry[] = [];
-  readonly transportMgr: Transport.Mgr<M> = new Transport.Mgr<M>(this);
-  protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.factoryMethod;
-  protected _loggerFactory: Logger.FactoryMethod<M, Logger.IEmitter> = std.getLogger;
+  readonly transportMgr: TransportMgr<M> = new TransportMgr<M>(this);
+  protected _msgBuilderFactory: MsgBuilder.MsgBuidlerFactoryMethod = ConsoleFactoryMethod;
+  protected _loggerFactory: Logger.FactoryMethod<M, Logger.IEmitter> = std.createLogger;
 
   protected _registeredLogLevels: Record<string, Level.FactoryMethod> = {
     cli: cli.createLogLevels,
@@ -86,11 +92,11 @@ export class LogMgr<
     // this._transports = [Transport.factoryMethod<M>(this)];
   }
 
-  public set msgBuilderFactory(msgBuilderFactory: MsgBuilder.FactoryMethod) {
+  public set msgBuilderFactory(msgBuilderFactory: MsgBuilder.MsgBuidlerFactoryMethod) {
     this._msgBuilderFactory = msgBuilderFactory;
   }
 
-  get msgBuilderFactory(): MsgBuilder.FactoryMethod {
+  get msgBuilderFactory(): MsgBuilder.MsgBuidlerFactoryMethod {
     return this._msgBuilderFactory;
   }
 
@@ -160,7 +166,7 @@ export class LogMgr<
    */
   public getLogger<L extends Logger.IEmitter>(): L {
     if (!this.transportMgr.transports.length) {
-      const transport = new Transport.Console(this, { show: this._show });
+      const transport = new ConsoleTransport(this, { show: this._show });
       this.transportMgr.add(transport);
     }
     if (!this.transportMgr.running) {
@@ -193,12 +199,12 @@ export class LogMgr<
     return this._t0;
   }
 
-  public addTransport(transport: Transport.Base<M>): this {
+  public addTransport(transport: AbstractTransport<M>): this {
     this.transportMgr.add(transport);
     return this;
   }
 
-  public removeTransport(transport: Transport.Base<M>): this {
+  public removeTransport(transport: AbstractTransport<M>): this {
     this.transportMgr.remove(transport);
     return this;
   }
@@ -277,9 +283,9 @@ export class LogMgr<
    * @returns {ILogLevels} The log levels.
    * @throws Will throw an error if log levels are not set.
    */
-  get logLevels(): Level.IBasic {
+  get logLevels(): IBasicLevel {
     assert(this._logLevels, 'LogLevels not set for Logger');
-    return this._logLevels as Level.IBasic;
+    return this._logLevels as IBasicLevel;
   }
 
   /**

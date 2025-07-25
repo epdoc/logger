@@ -1,19 +1,13 @@
 import { StringEx } from '@epdoc/string';
-import { type Integer, isInteger, isNonEmptyString, isNullOrUndefined, isString, pick } from '@epdoc/type';
-import type { Level } from '../levels/index.ts';
+import { _, type Integer } from '@epdoc/type';
+import type * as Level from '../levels/types.ts';
 import type { LogMgr } from '../logmgr.ts';
-import * as MsgBuilder from '../message/index.ts';
+import { AbstractMsgBuilder } from '../message/abstract.ts';
+import { styleFormatters as MsgBuilderConsoleStyleFormatters } from '../message/console.ts';
+import type { IBasic as MsgBuilderIBasic } from '../message/types.ts';
 import type * as Log from '../types.ts';
-import { Base, type BaseOptions } from './base.ts';
-import type * as Transport from './types.ts';
-
-/**
- * Defines the output format for the console transport.
- * - `text`: Plain text format.
- * - `json`: A JSON object on a single line.
- * - `jsonArray`: A JSON array on a single line.
- */
-export type ConsoleOutputFormat = 'text' | 'json' | 'jsonArray';
+import { AbstractTransport, type BaseOptions } from './abstract.ts';
+import * as Transport from './types.ts';
 
 /**
  * Options for configuring the `Console` transport.
@@ -23,7 +17,7 @@ export interface ConsoleOptions extends BaseOptions {
    * The output format to use.
    * @default 'text'
    */
-  format?: ConsoleOutputFormat;
+  format?: Transport.OutputFormat;
   /**
    * Whether to use colors in the output.
    * @default true
@@ -44,9 +38,9 @@ export interface ConsoleOptions extends BaseOptions {
  * logMgr.add(consoleTransport);
  * ```
  */
-export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
+export class ConsoleTransport<M extends MsgBuilderIBasic> extends AbstractTransport<M> {
   protected _levelWidth: Integer = 5;
-  protected _format: ConsoleOutputFormat = 'text';
+  protected _format: Transport.OutputFormat = Transport.OutputFormat.TEXT;
   protected _color: boolean = true;
 
   /**
@@ -110,12 +104,12 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
       {
         timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
       },
-      pick(msg, 'level', 'package', 'sid', 'reqId'),
+      _.pick(msg, 'level', 'package', 'sid', 'reqId'),
     );
 
-    if (msg.msg instanceof MsgBuilder.Base) {
+    if (msg.msg instanceof AbstractMsgBuilder) {
       entry.msg = msg.msg.format(this._color, this._format);
-    } else if (isString(msg.msg)) {
+    } else if (_.isString(msg.msg)) {
       entry.msg = msg.msg;
     }
     entry.data = msg.data;
@@ -138,7 +132,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
       this.output(JSON.stringify(parts), levelValue);
     } else {
       const parts: string[] = [];
-      if (isString(entry.timestamp) && show.timestamp) {
+      if (_.isString(entry.timestamp) && show.timestamp) {
         parts.push(color ? logLevels.applyColors(entry.timestamp, msg.level) : entry.timestamp);
       }
 
@@ -146,15 +140,15 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
         parts.push(this.styledLevel(entry.level, show.level));
       }
 
-      if (show.package && isNonEmptyString(entry.package)) {
+      if (show.package && _.isNonEmptyString(entry.package)) {
         parts.push(this._styledString(entry.package, false, '_package'));
       }
 
-      if (show.sid && isNonEmptyString(entry.sid)) {
+      if (show.sid && _.isNonEmptyString(entry.sid)) {
         parts.push(this._styledString(entry.sid, false, '_sid'));
       }
 
-      if (show.reqId && isNonEmptyString(entry.reqId)) {
+      if (show.reqId && _.isNonEmptyString(entry.reqId)) {
         parts.push(this._styledString(entry.reqId, false, '_reqId'));
       }
 
@@ -162,7 +156,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
         parts.push(entry.msg);
       }
 
-      if (!isNullOrUndefined(msg.data) && show.data) {
+      if (!_.isNullOrUndefined(msg.data) && show.data) {
         parts.push(JSON.stringify(msg.data));
       }
       this.output(parts.join(' '), levelValue);
@@ -190,7 +184,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
    */
   styledLevel(level: Level.Name, show: boolean | Integer | undefined): string {
     let s = StringEx(level).rightPad(this._levelWidth);
-    if (isInteger(show)) {
+    if (_.isInteger(show)) {
       if (show > 0) {
         s = StringEx(level).rightPad(show, ' ', true);
       } else if (show < 0) {
@@ -223,7 +217,7 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
     opts?: { pre: string; post: string },
   ): string {
     let s = val;
-    if (isInteger(show)) {
+    if (_.isInteger(show)) {
       if (show > 0) {
         s = StringEx(val).rightPad(show, ' ', true);
       } else if (show < 0) {
@@ -238,8 +232,8 @@ export class Console<M extends MsgBuilder.IBasic> extends Base<M> {
         s += opts.post;
       }
     }
-    if (this._color && MsgBuilder.Console.styleFormatters[colorFn]) {
-      return (MsgBuilder.Console.styleFormatters as Record<string, (str: string) => string>)[colorFn](s);
+    if (this._color && MsgBuilderConsoleStyleFormatters[colorFn]) {
+      return (MsgBuilderConsoleStyleFormatters as Record<string, (str: string) => string>)[colorFn](s);
     }
     return s;
   }

@@ -1,10 +1,10 @@
-import { type Integer, isDict, isInteger, isNonEmptyArray, isNonEmptyString } from '@epdoc/type';
-import type { Level } from '../levels/index.ts';
+import { _, type Integer } from '@epdoc/type';
+import type { Name as LevelName } from '../levels/types.ts';
 import type * as Logger from '../logger/types.ts';
 import * as Transport from '../transports/types.ts';
 import type * as Log from '../types.ts';
 import { StringUtil } from '../util.ts';
-import type * as MsgBuilder from './index.ts';
+import type { IBasic, IFormat, MsgPart, StyleArg, StyleFormatterFn } from './types.ts';
 
 const DEFAULT_TAB_SIZE = 2;
 
@@ -18,19 +18,19 @@ const DEFAULT_TAB_SIZE = 2;
  * Once fully constructed, the `emit` method forwards the completed log entry to
  * the associated {@link Logger.IEmitter}.
  *
- * It implements both {@link MsgBuilder.IBasic} for the core building logic and
- * {@link MsgBuilder.IFormat} for converting the message into a string.
+ * It implements both {@link IBasic} for the core building logic and
+ * {@link IFormat} for converting the message into a string.
  */
-export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
+export abstract class AbstractMsgBuilder implements IBasic, IFormat {
   protected _timestamp: Date = new Date();
-  protected _level: Level.Name;
+  protected _level: LevelName;
   protected _emitter: Logger.IEmitter;
   protected _meetsThreshold: boolean = true;
   protected _meetsFlushThreshold: boolean = true;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
 
   protected _msgIndent: string = '';
-  protected _msgParts: MsgBuilder.MsgPart[] = [];
+  protected _msgParts: MsgPart[] = [];
   protected _data: unknown | undefined;
   protected _suffix: string[] = [];
   protected _showElapsed: boolean = false;
@@ -38,13 +38,13 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   /**
    * Initializes a new message builder instance.
    *
-   * @param {Level.Name} level - The log level of the message.
+   * @param {  LevelName} level - The log level of the message.
    * @param {Logger.IEmitter} emitter - The logger instance that will emit the final message.
    * @param {boolean} [meetsThreshold=true] - Whether the message meets the configured log level threshold.
    * @param {boolean} [meetsFlushThreshold=true] - Whether the message requires an immediate flush.
    */
   constructor(
-    level: Level.Name,
+    level: LevelName,
     emitter: Logger.IEmitter,
     meetsThreshold = true,
     meetsFlushThreshold = true,
@@ -56,32 +56,10 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   }
 
   /**
-   * A factory method for creating new `Base` message builder instances.
-   *
-   * @remarks
-   * This pattern is used by the {@link LogMgr} to decouple it from a specific
-   * message builder implementation, allowing for greater flexibility.
-   *
-   * @param {Level.Name} level - The log level.
-   * @param {Logger.IEmitter} emitter - The associated logger emitter.
-   * @param {boolean} [meetsThreshold=true] - Whether the level meets the threshold.
-   * @param {boolean} [meetsFlushThreshold=true] - Whether the level requires a flush.
-   * @returns {Base} A new `Base` instance.
-   */
-  static factoryMethod(
-    level: Level.Name,
-    emitter: Logger.IEmitter,
-    meetsThreshold = true,
-    meetsFlushThreshold = true,
-  ): Base {
-    return new Base(level, emitter, meetsThreshold, meetsFlushThreshold);
-  }
-
-  /**
    * Sets the log level for the message.
-   * @param {Level.Name} level - The log level name.
+   * @param {  LevelName} level - The log level name.
    */
-  public set level(level: Level.Name) {
+  public set level(level: LevelName) {
     this._level = level;
   }
 
@@ -99,10 +77,10 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   /**
    * Initializes the message with a string, automatically handling leading tabs for indentation.
    *
-   * @param {MsgBuilder.StyleArg[]} args - The content to set as the initial message.
+   * @param {StyleArg[]} args - The content to set as the initial message.
    * @returns {this} The current instance for chaining.
    */
-  setInitialString(...args: MsgBuilder.StyleArg[]): this {
+  setInitialString(...args: StyleArg[]): this {
     if (args.length) {
       const count = new StringUtil(args[0]).countTabsAtBeginningOfString();
       if (count) {
@@ -120,9 +98,9 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
    * @returns {this} The current instance for chaining.
    */
   indent(n: Integer | string = DEFAULT_TAB_SIZE): this {
-    if (isInteger(n)) {
+    if (_.isInteger(n)) {
       this.appendMsgPart(' '.repeat(n - 1));
-    } else if (isNonEmptyString(n)) {
+    } else if (_.isNonEmptyString(n)) {
       this.appendMsgPart(n);
     }
     return this;
@@ -152,11 +130,11 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
    * Appends a styled or unstyled part to the message.
    *
    * @param {string} str - The text content of the message part.
-   * @param {MsgBuilder.StyleFormatterFn | null} [style] - An optional styling function.
+   * @param {StyleFormatterFn | null} [style] - An optional styling function.
    * @returns {this} The current instance for chaining.
    */
-  appendMsgPart(str: string, style?: MsgBuilder.StyleFormatterFn | null): this {
-    const part: MsgBuilder.MsgPart = { str: str };
+  appendMsgPart(str: string, style?: StyleFormatterFn | null): this {
+    const part: MsgPart = { str: str };
     if (style) {
       part.style = style;
     }
@@ -168,11 +146,11 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
    * Prepends a styled or unstyled part to the message.
    *
    * @param {string} str - The text content of the message part.
-   * @param {MsgBuilder.StyleFormatterFn | null} [style] - An optional styling function.
+   * @param {StyleFormatterFn | null} [style] - An optional styling function.
    * @returns {this} The current instance for chaining.
    */
-  prependMsgPart(str: string, style?: MsgBuilder.StyleFormatterFn | null): this {
-    const part: MsgBuilder.MsgPart = { str: str };
+  prependMsgPart(str: string, style?: StyleFormatterFn | null): this {
+    const part: MsgPart = { str: str };
     if (style) {
       part.style = style;
     }
@@ -185,7 +163,7 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
    * @protected
    */
   protected appendMsg(...args: unknown[]): this {
-    if (isNonEmptyArray(args)) {
+    if (_.isNonEmptyArray(args)) {
       this.appendMsgPart(args.join(' '));
     }
     return this;
@@ -203,17 +181,17 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
   /**
    * Appends arguments to the message with an optional style.
    *
-   * @param {MsgBuilder.StyleFormatterFn | null} style - The styling function to apply.
-   * @param {MsgBuilder.StyleArg[]} args - The content to stylize and append.
+   * @param {StyleFormatterFn | null} style - The styling function to apply.
+   * @param {StyleArg[]} args - The content to stylize and append.
    * @returns {this} The current instance for chaining.
    */
-  public stylize(style: MsgBuilder.StyleFormatterFn | null, ...args: MsgBuilder.StyleArg[]): this {
-    if (isNonEmptyArray(args)) {
+  public stylize(style: StyleFormatterFn | null, ...args: StyleArg[]): this {
+    if (_.isNonEmptyArray(args)) {
       const str = args
         .map((arg) => {
-          if (isNonEmptyString(arg)) {
+          if (_.isNonEmptyString(arg)) {
             return arg;
-          } else if (isDict(arg) || isNonEmptyArray(arg)) {
+          } else if (_.isDict(arg) || _.isNonEmptyArray(arg)) {
             return JSON.stringify(arg);
           }
           return String(arg);
@@ -245,8 +223,8 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
    * @returns {this} The current instance for chaining.
    */
   public data(data: unknown): this {
-    if (isDict(data) && this._meetsThreshold) {
-      if (isDict(this._data)) {
+    if (_.isDict(data) && this._meetsThreshold) {
+      if (_.isDict(this._data)) {
         this._data = Object.assign(this._data, data);
       } else {
         this._data = data;
@@ -280,10 +258,10 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
       if (this._emitter.sid) {
         entry.sid = this._emitter.sid;
       }
-      if (isNonEmptyArray(this._emitter.reqIds)) {
+      if (_.isNonEmptyArray(this._emitter.reqIds)) {
         entry.reqId = this._emitter.reqIds.join('.');
       }
-      if (isNonEmptyArray(this._emitter.pkgs)) {
+      if (_.isNonEmptyArray(this._emitter.pkgs)) {
         entry.package = this._emitter.pkgs.join('.');
       }
       if (this._emitter) {
@@ -313,10 +291,10 @@ export class Base implements MsgBuilder.IBasic, MsgBuilder.IFormat {
    */
   format(color: boolean, _target: Transport.OutputFormat = Transport.OutputFormat.TEXT): string {
     const parts: string[] = [];
-    if (isNonEmptyString(this._msgIndent)) {
+    if (_.isNonEmptyString(this._msgIndent)) {
       parts.push(this._msgIndent);
     }
-    this._msgParts.forEach((part: MsgBuilder.MsgPart) => {
+    this._msgParts.forEach((part: MsgPart) => {
       if (part.style && color) {
         parts.push(part.style(part.str));
       } else {

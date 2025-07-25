@@ -1,9 +1,9 @@
 import { dateEx } from '@epdoc/datetime';
 import { duration } from '@epdoc/duration';
 import { isNonEmptyString, isValidDate } from '@epdoc/type';
-import type { Level } from '../levels/index.ts';
+import type * as Level from '../levels/types.ts';
 import type { LogMgr } from '../logmgr.ts';
-import type * as MsgBuilder from '../message/index.ts';
+import type { IBasic as MsgBuilderIBasic } from '../message/types.ts';
 import * as Log from '../types.ts';
 
 /**
@@ -32,9 +32,9 @@ export interface BaseOptions {
  * - Formatting and outputting log entries.
  *
  * @template M - The type of message builder used, which must conform to
- * {@link MsgBuilder.IBasic}.
+ * {@link MsgBuilderIBasic}.
  */
-export abstract class Base<M extends MsgBuilder.IBasic> {
+export abstract class AbstractTransport<M extends MsgBuilderIBasic> {
   /** A string identifier for the transport type (e.g., 'console', 'file'). */
   public readonly type: string = 'basic';
   protected _logMgr: LogMgr<M>;
@@ -135,7 +135,7 @@ export abstract class Base<M extends MsgBuilder.IBasic> {
    * A hook that is called when the threshold is updated.
    * @internal
    */
-  thresholdUpdated(): Base<M> {
+  thresholdUpdated(): AbstractTransport<M> {
     return this;
   }
 
@@ -205,10 +205,10 @@ export abstract class Base<M extends MsgBuilder.IBasic> {
   /**
    * Checks if this transport is of the same type as another.
    *
-   * @param {Base<M>} transport - The transport to compare against.
+   * @param {AbstractTransport<M>} transport - The transport to compare against.
    * @returns {boolean} `true` if the types match.
    */
-  match(transport: Base<M>): boolean {
+  match(transport: AbstractTransport<M>): boolean {
     if (this.type === transport.type) {
       return true;
     }

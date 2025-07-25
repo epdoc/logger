@@ -1,5 +1,5 @@
 import { isArray, isNumber, isString } from '@epdoc/type';
-import * as MsgBuilder from '../message/index.ts';
+import * as MsgBuilder from '../message/mod.ts';
 import type * as Log from '../types.ts';
 import { Base } from './base.ts';
 import type * as Logger from './types.ts';

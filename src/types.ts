@@ -1,6 +1,6 @@
 import { isString } from '@epdoc/type';
 import type * as Level from './levels/types.ts';
-import type * as MsgBuilder from './message/index.ts';
+import type * as MsgBuilder from './message/types.ts';
 
 /**
  * Defines the available formats for displaying timestamps in log output.
@@ -95,15 +95,3 @@ export type EmitterShowOpts = {
  * A type representing the valid keys for {@link EmitterShowOpts}.
  */
 export type EmitterShowKey = keyof EmitterShowOpts;
-
-/**
- * A minimal interface for any object capable of emitting a log entry.
- * @deprecated This is a legacy interface. Use {@link Logger.IEmitter} instead.
- */
-export interface IEmitter {
-  /**
-   * Emits a log entry for processing.
-   * @param {Entry} msg - The log entry to emit.
-   */
-  emit(msg: Entry): void;
-}

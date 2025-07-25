@@ -1,6 +1,7 @@
-import * as Logger from '../../logger/index.ts';
+import { Indent as LoggerIndent } from '../../logger/indent.ts';
+import type * as Logger from '../../logger/types.ts';
 import { LogMgr } from '../../logmgr.ts';
-import type * as MsgBuilder from '../../message/index.ts';
+import type { IBasic as MsgBuilderIBasic } from '../../message/types.ts';
 import type * as cli from './types.ts';
 
 /**
@@ -23,7 +24,7 @@ import type * as cli from './types.ts';
  * @returns {CliLogger<M>} A new or child `CliLogger` instance.
  * @throws {Error} If an invalid logger type is provided.
  */
-export const createLogger = <M extends MsgBuilder.IBasic>(
+export const createCliLogger = <M extends MsgBuilderIBasic>(
   log: LogMgr<M> | Logger.IEmitter,
   params?: Logger.IGetChildParams,
 ): CliLogger<M> => {
@@ -54,13 +55,13 @@ export const createLogger = <M extends MsgBuilder.IBasic>(
  * - `silly`: Extremely verbose, often temporary, debugging output.
  *
  * This class extends {@link Logger.Indent} to provide indentation capabilities
- * and implements {@link cli.ILogger} and {@link Logger.IEmitter} for its core
+ * and implements {@link cli.ICliLogger} and {@link Logger.IEmitter} for its core
  * logging functionality.
  *
  * @template M - The type of message builder used by the logger.
  */
-export class CliLogger<M extends MsgBuilder.IBasic> extends Logger.Indent<M>
-  implements cli.ILogger<M>, Logger.IEmitter {
+export class CliLogger<M extends MsgBuilderIBasic> extends LoggerIndent<M>
+  implements cli.ICliLogger<M>, Logger.IEmitter {
   constructor(logMgr: LogMgr<M>, params?: Logger.IGetChildParams) {
     super(logMgr, params);
   }

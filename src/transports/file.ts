@@ -1,8 +1,8 @@
 import type { Integer } from '@epdoc/type';
-import type { Level } from '../index.ts';
+import type * as Level from '../levels/types.ts';
 import type { LogMgr } from '../logmgr.ts';
-import type * as MsgBuilder from '../message/index.ts';
-import { Console, type ConsoleOptions } from './console.ts';
+import type { IBasic as MsgBuilderIBasic } from '../message/types.ts';
+import { type ConsoleOptions, ConsoleTransport } from './console.ts';
 
 const BUFSIZE = 4096;
 
@@ -48,7 +48,7 @@ export interface FileOptions extends ConsoleOptions {
  * logMgr.add(fileTransport);
  * ```
  */
-export class File<M extends MsgBuilder.IBasic> extends Console<M> {
+export class File<M extends MsgBuilderIBasic> extends ConsoleTransport<M> {
   protected _json = false;
   protected filepath: string;
   protected file: Deno.FsFile | undefined;

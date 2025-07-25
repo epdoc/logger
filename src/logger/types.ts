@@ -1,7 +1,8 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import type { Level } from '../levels/index.ts';
+import type { IBasic as LevelIBasic } from '../levels/ibasic.ts';
+import type * as Level from '../levels/types.ts';
 import type { LogMgr } from '../logmgr.ts';
-import type * as MsgBuilder from '../message/index.ts';
+import type { IBasic as MsgBuilderIBasic } from '../message/types.ts';
 import type * as Log from '../types.ts';
 
 /**
@@ -167,7 +168,7 @@ export interface ILevels {
   /**
    * Retrieves the active log level configuration.
    */
-  get logLevels(): Level.IBasic;
+  get logLevels(): LevelIBasic;
   /**
    * Sets the log level threshold.
    * @param {Level.Name | Level.Value} level - The threshold to set.
@@ -215,7 +216,7 @@ export function isIMark(val: object): val is IMark {
  * @param {IGetChildParams} [opts] - Optional parameters for child logger creation.
  * @returns {IEmitter} A new logger instance.
  */
-export type FactoryMethod<M extends MsgBuilder.IBasic, L extends IEmitter> = (
+export type FactoryMethod<M extends MsgBuilderIBasic, L extends IEmitter> = (
   logMgr: LogMgr<M> | IEmitter,
   opts?: IGetChildParams,
 ) => L;

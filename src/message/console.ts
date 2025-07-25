@@ -2,15 +2,15 @@ import { asError, type Integer, isInteger, isNonEmptyString, isPosNumber } from 
 import * as colors from '@std/fmt/colors';
 import os from 'node:os'; // Used for homedir in `relative`
 import { relative } from 'node:path';
-import type { Level } from '../levels/index.ts';
+import type * as Level from '../levels/types.ts';
 import type * as Logger from '../logger/types.ts';
 import type * as Log from '../types.ts';
-import { Base } from './base.ts';
+import { AbstractMsgBuilder } from './abstract.ts';
 import type * as MsgBuilder from './types.ts';
 
 const home = os.userInfo().homedir;
 
-const styleFormatters: Record<string, MsgBuilder.StyleFormatterFn> = {
+export const styleFormatters: Record<string, MsgBuilder.StyleFormatterFn> = {
   text: colors.brightWhite,
   h1: (str: string) => colors.bold(colors.magenta(str)),
   h2: colors.magenta,
@@ -174,6 +174,21 @@ export type ErrOpts = Partial<{
 }>;
 
 /**
+ * A factory method for creating a new `Console` instance.
+ * @param {Level.Name} level - The log level.
+ * @param {Logger.IEmitter} emitter - The log emitter.
+ * @param {boolean} [meetsThreshold=true] - Whether the log level meets the threshold.
+ * @returns {ConsoleMsgBuilder} A new `Console` instance.
+ */
+export function ConsoleFactoryMethod(
+  level: Level.Name,
+  emitter: Logger.IEmitter,
+  meetsThreshold: boolean = true,
+): ConsoleMsgBuilder {
+  return new ConsoleMsgBuilder(level, emitter, meetsThreshold);
+}
+
+/**
  * A message builder for creating styled console messages.
  *
  * This class extends `Base` to provide a fluent interface for building
@@ -194,7 +209,7 @@ export type ErrOpts = Partial<{
  * msg.h1('Hello').text('World').emit();
  * ```
  */
-export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration {
+export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, MsgBuilder.IEmitDuration {
   /**
    * A map of style formatters for different message parts.
    */
@@ -202,18 +217,18 @@ export class Console extends Base implements IConsole, MsgBuilder.IEmitDuration 
   protected _nextPartPluralize: boolean | undefined; // true for plural, false for singular, undefined for no effect
 
   /**
-   * A factory method for creating a new `Console` instance.
+   * A factory method for creating a new `ConsoleMsgBuilder` instance.
    * @param {Level.Name} level - The log level.
    * @param {Logger.IEmitter} emitter - The log emitter.
    * @param {boolean} [meetsThreshold=true] - Whether the log level meets the threshold.
-   * @returns {Console} A new `Console` instance.
+   * @returns {ConsoleMsgBuilder} A new `Console` instance.
    */
-  static override factoryMethod(
+  static create(
     level: Level.Name,
     emitter: Logger.IEmitter,
     meetsThreshold: boolean = true,
-  ): Console {
-    return new Console(level, emitter, meetsThreshold);
+  ): ConsoleMsgBuilder {
+    return new ConsoleMsgBuilder(level, emitter, meetsThreshold);
   }
 
   /**

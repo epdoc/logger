@@ -1,10 +1,12 @@
 import { assert } from '@std/assert';
-import type { Level } from '../levels/index.ts';
+import type * as Level from '../levels/types.ts';
+import type { IEmitter as LoggerIEmitter } from '../logger/types.ts';
 import type { LogMgr } from '../logmgr.ts';
-import type * as MsgBuilder from '../message/index.ts';
+import type { ConsoleMsgBuilder as MsgBuilderConsole } from '../message/console.ts';
+import type { IBasic as MsgBuilderIBasic } from '../message/types.ts';
 import type * as Log from '../types.ts';
-import type { Base } from './base.ts';
-import { Console } from './console.ts';
+import type { AbstractTransport } from './abstract.ts';
+import { ConsoleTransport } from './console.ts';
 
 /**
  * Manages a collection of log transports, handling the distribution of log
@@ -12,13 +14,13 @@ import { Console } from './console.ts';
  *
  * @template M - The type of the message builder.
  */
-export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> implements Log.IEmitter {
+export class TransportMgr<M extends MsgBuilderIBasic = MsgBuilderConsole> implements LoggerIEmitter {
   protected _bRunning = false;
   protected _logMgr: LogMgr<M>;
   /**
    * An array of registered transport instances.
    */
-  transports: Base<M>[] = [];
+  transports: AbstractTransport<M>[] = [];
 
   /**
    * Creates an instance of the `TransportMgr`.
@@ -77,7 +79,7 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> impl
    */
   start(): Promise<void> {
     if (!this.transports.length) {
-      const transport = new Console(this._logMgr);
+      const transport = new ConsoleTransport(this._logMgr);
       this.transports.push(transport);
     }
     const jobs: Promise<void>[] = [];
@@ -109,9 +111,9 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> impl
   /**
    * Adds a new transport to the manager.
    *
-   * @param {Base<M>} transport - The transport instance to add.
+   * @param {AbstractTransport<M>} transport - The transport instance to add.
    */
-  add(transport: Base<M>) {
+  add(transport: AbstractTransport<M>) {
     this._bRunning = false;
     this.transports.unshift(transport);
     const name = transport.toString();
@@ -132,10 +134,10 @@ export class TransportMgr<M extends MsgBuilder.IBasic = MsgBuilder.Console> impl
   /**
    * Removes a transport from the manager.
    *
-   * @param {Base<M>} transport - The transport instance to remove.
+   * @param {AbstractTransport<M>} transport - The transport instance to remove.
    * @returns {Promise<void>} A promise that resolves when the transport is removed.
    */
-  async remove(transport: Base<M>): Promise<void> {
+  async remove(transport: AbstractTransport<M>): Promise<void> {
     this._bRunning = false;
     const name = transport.toString();
     const found = this.transports.find((t) => {

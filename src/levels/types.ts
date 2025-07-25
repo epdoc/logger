@@ -4,7 +4,7 @@
  */
 
 import type { Integer } from '@epdoc/type';
-import type { StyleFormatterFn } from '../message/index.ts';
+import type { StyleFormatterFn } from '../message/types.ts';
 import type { IBasic } from './ibasic.ts';
 
 /**

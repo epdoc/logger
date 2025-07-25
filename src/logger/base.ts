@@ -1,9 +1,8 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isNonEmptyArray, isString } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
-import type { Level } from '../levels/index.ts';
 import type { LogMgr } from '../logmgr.ts';
-import type * as MsgBuilder from '../message/index.ts';
+import type * as MsgBuilder from '../message/mod.ts';
 import type * as Log from '../types.ts';
 import type * as Logger from './types.ts';
 

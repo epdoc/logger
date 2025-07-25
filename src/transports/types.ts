@@ -1,6 +1,7 @@
-import type * as Logger from '../logger/index.ts';
-import type { LogMgr } from '../logmgr.ts';
-import type * as MsgBuilder from '../message/index.ts';
+import type * as Level from '../levels/types.ts';
+import type * as Logger from '../logger/types.ts';
+import type { AbstractMsgBuilder } from '../message/abstract.ts';
+import type { IBasic as MsgBuilderIBasic } from '../message/types.ts';
 import type * as Log from '../types.ts';
 
 /**
@@ -25,15 +26,15 @@ export type OutputFormat = typeof OutputFormat[keyof typeof OutputFormat];
  * Defines the basic contract for any log transport.
  * @deprecated This interface is legacy. New transports should extend the {@link Base} class.
  */
-export interface IBasic<M extends MsgBuilder.IBasic> {
+export interface IBasicTransport<M extends MsgBuilderIBasic> {
   /** The unique type identifier for the transport (e.g., 'console', 'file'). */
   get type(): string;
   /** Processes and outputs a log entry. */
   emit(msg: Log.Entry, logger: Logger.IEmitter): void;
   /** A hook that is called when the transport's threshold is updated. */
-  thresholdUpdated(): IBasic<M>;
+  thresholdUpdated(): IBasicTransport<M>;
   /** Checks if this transport is of the same type as another. */
-  match(transport: IBasic<M>): boolean;
+  match(transport: IBasicTransport<M>): boolean;
   /** Initializes the transport. */
   open(callbacks: OpenCallbacks): Promise<void>;
   /** Indicates if the transport is ready to process messages. */
@@ -98,9 +99,11 @@ export type CreateOpts = {
  *
  * @template M - The type of message builder used by the logger.
  * @param {LogMgr<M>} logMgr - The log manager instance.
- * @returns {IBasic<M>} A new transport instance.
+ * @returns {AbstractMsgBuilder<M>} A new transport instance.
  */
-export type FactoryMethod<M extends MsgBuilder.IBasic> = (logMgr: LogMgr<M>) => IBasic<M>;
+export interface IStaticMsgBuilder {
+  create(level: Level.Name, emitter: Logger.IEmitter): AbstractMsgBuilder;
+}
 
 /**
  * Represents a log entry after it has been partially formatted for transport output.

@@ -1,5 +1,5 @@
 import * as colors from '@std/fmt/colors';
-import type * as MsgBuilder from '../../message/index.ts';
+import type { IBasic as MsgBuilderIBasic } from '../../message/types.ts';
 import { LogLevels } from '../base.ts';
 import type * as Level from '../types.ts';
 
@@ -31,7 +31,7 @@ const cliLogLevelDefs: Level.LogLevelsDef = {
  *
  * @returns {Level.IBasic} A new `LogLevels` instance for CLI logging.
  */
-export const createLogLevels: Level.FactoryMethod = () => {
+export const createCliLogLevels: Level.FactoryMethod = () => {
   return new LogLevels(cliLogLevelDefs);
 };
 
@@ -41,7 +41,7 @@ export const createLogLevels: Level.FactoryMethod = () => {
  *
  * @template M - The type of message builder used by the logger.
  */
-export interface ILogger<M extends MsgBuilder.IBasic> {
+export interface ICliLogger<M extends MsgBuilderIBasic> {
   /** Message builder for the `ERROR` log level. */
   error: M;
   /** Message builder for the `WARN` log level. */
@@ -67,4 +67,4 @@ export interface ILogger<M extends MsgBuilder.IBasic> {
 /**
  * An array containing the names of all CLI log levels.
  */
-export const LogLevelNames: string[] = Object.keys(cliLogLevelDefs);
+export const cliLogLevelNames: string[] = Object.keys(cliLogLevelDefs);
