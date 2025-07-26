@@ -1,11 +1,11 @@
 import { isArray, isNumber, isString } from '@epdoc/type';
-import * as MsgBuilder from '../message/mod.ts';
-import type * as Log from '../types.ts';
-import { Base } from './base.ts';
-import type * as Logger from './types.ts';
+import * as MsgBuilder from '../../message/mod.ts';
+import type * as Log from '../../types.ts';
+import { AbstractLogger } from '../base/logger.ts';
+import type * as Logger from '../types.ts';
 
 /**
- * Extends the {@link Base} logger to provide indentation capabilities for log output.
+ * Extends the {@link AbstractLogger} logger to provide indentation capabilities for log output.
  *
  * @remarks
  * This class allows for structured, hierarchical logging by prepending custom
@@ -16,7 +16,7 @@ import type * as Logger from './types.ts';
  * {@link MsgBuilder.IBasic}.
  * @implements {Logger.IIndent}
  */
-export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logger.IIndent {
+export class IndentLogger<M extends MsgBuilder.IBasic> extends AbstractLogger<M> implements Logger.IIndent {
   /**
    * The start time for time-based logging operations.
    * @protected
@@ -49,7 +49,7 @@ export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logg
    * Assigns properties from another `Indent` logger to this instance.
    * @internal
    */
-  override assign(logger: Indent<M>): void {
+  override assign(logger: IndentLogger<M>): void {
     super.assign(logger);
     this._t0 = logger._t0;
     this._indent = [...logger._indent];
@@ -69,11 +69,11 @@ export class Indent<M extends MsgBuilder.IBasic> extends Base<M> implements Logg
   override emit(msg: Log.Entry): void {
     if (isString(msg.msg)) {
       msg.msg = [...this._indent, msg.msg].join(' ');
-    } else if (msg.msg instanceof MsgBuilder.Base) {
+    } else if (msg.msg instanceof MsgBuilder.Base.Builder) {
       // Iterate in reverse to prepend indents in the correct order
       for (let i = this._indent.length - 1; i >= 0; i--) {
         const indent = this._indent[i];
-        if (msg.msg instanceof MsgBuilder.Base) {
+        if (msg.msg instanceof MsgBuilder.Base.Builder) {
           msg.msg.prependMsgPart(indent);
         }
       }

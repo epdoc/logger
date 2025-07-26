@@ -1,20 +1,17 @@
 import { assert } from '@std/assert';
 import type * as Level from '../levels/types.ts';
-import type { IEmitter as LoggerIEmitter } from '../logger/types.ts';
 import type { LogMgr } from '../logmgr.ts';
-import type { ConsoleMsgBuilder as MsgBuilderConsole } from '../message/console.ts';
-import type { IBasic as MsgBuilderIBasic } from '../message/types.ts';
+import type * as MsgBuilder from '../message/mod.ts';
 import type * as Log from '../types.ts';
-import type { AbstractTransport } from './abstract.ts';
-import { ConsoleTransport } from './console.ts';
-
+import type { AbstractTransport } from './base/transport.ts';
+import { ConsoleTransport } from './console/transport.ts';
 /**
  * Manages a collection of log transports, handling the distribution of log
  * entries to each registered transport.
  *
  * @template M - The type of the message builder.
  */
-export class TransportMgr<M extends MsgBuilderIBasic = MsgBuilderConsole> implements LoggerIEmitter {
+export class TransportMgr<M extends MsgBuilder.Base.IBuilder = MsgBuilder.Console.Builder> { // implements Base.IEmitter {
   protected _bRunning = false;
   protected _logMgr: LogMgr<M>;
   /**

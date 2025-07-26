@@ -1,34 +1,8 @@
-import { Indent as LoggerIndent } from '../../logger/indent.ts';
-import type * as Logger from '../../logger/types.ts';
-import { LogMgr } from '../../logmgr.ts';
-import type { IBasic as MsgBuilderIBasic } from '../../message/types.ts';
-import type * as std from './types.ts';
-
-/**
- * Factory method to obtain a standard logger instance.
- *
- * @remarks
- * This function serves as the primary way to get a `StdLogger`. It can either
- * create a new root logger if a `LogMgr` is provided, or return a child logger
- * if an existing `StdLogger` instance is passed.
- *
- * @template M - The type of message builder used by the logger.
- * @param {LogMgr<M> | Logger.IEmitter} log - The log manager or an existing logger instance.
- * @param {Logger.IGetChildParams} [params] - Optional parameters for creating a child logger.
- * @returns {StdLogger<M>} A new or child `StdLogger` instance.
- * @throws {Error} If an invalid logger type is provided.
- */
-export const createStdLogger = <M extends MsgBuilderIBasic>(
-  log: LogMgr<M> | Logger.IEmitter,
-  params?: Logger.IGetChildParams,
-): StdLogger<M> => {
-  if (log instanceof LogMgr) {
-    return new StdLogger<M>(log, params);
-  } else if (log instanceof StdLogger) {
-    return log.getChild(params) as StdLogger<M>;
-  }
-  throw new Error('Invalid logger type');
-};
+import type { LogMgr } from '../../logmgr.ts';
+import type * as MsgBuilder from '../../message/mod.ts';
+import type * as Base from '../base/mod.ts';
+import * as Indent from '../indent/mod.ts';
+import type { IStdLogger } from './types.ts';
 
 /**
  * Implements a logger with a standard set of log levels.
@@ -49,8 +23,8 @@ export const createStdLogger = <M extends MsgBuilderIBasic>(
  *
  * @template M - The type of message builder used by the logger.
  */
-export class StdLogger<M extends MsgBuilderIBasic> extends LoggerIndent<M>
-  implements std.IStdLogger<M>, Logger.IEmitter {
+export class StdLogger<M extends MsgBuilder.Base.IBuilder> extends Indent.Logger<M>
+  implements IStdLogger<M>, Base.IEmitter {
   /**
    * Creates a shallow copy of the current `StdLogger` instance.
    * @returns {this} A new `StdLogger` instance with copied properties.

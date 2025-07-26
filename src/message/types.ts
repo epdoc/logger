@@ -1,9 +1,8 @@
-import type { Integer } from '@epdoc/type';
 import type { Name as LevelName } from '../levels/types.ts';
-import type * as Logger from '../logger/types.ts';
+import type * as Logger from '../logger/mod.ts';
 import type * as Transport from '../transports/types.ts';
 import type { Entry } from '../types.ts';
-import { AbstractMsgBuilder } from './abstract.ts';
+import type * as Base from './base/mod.ts';
 
 /**
  * A function that applies styling to a string.
@@ -38,10 +37,10 @@ export interface IFormat {
   /**
    * Formats the message based on the specified color and target format.
    * @param {boolean} color - Whether to apply color styling.
-   * @param {Transport.OutputFormat} target - The output format.
+   * @param {Transport.OutputFormatType} target - The output format.
    * @returns {string} The formatted message string.
    */
-  format(color: boolean, target: Transport.OutputFormat): string;
+  format(color: boolean, target: Transport.OutputFormatType): string;
   /**
    * Appends a message part to the end of the message.
    * @param {string} str - The string content to append.
@@ -56,52 +55,6 @@ export interface IFormat {
    * @returns {IFormat} The current instance for method chaining.
    */
   prependMsgPart(str: string, style?: StyleFormatterFn | null): IFormat;
-}
-
-/**
- * Interface for a basic message builder.
- */
-export interface IBasic {
-  /**
-   * Clears the message content.
-   * @returns {this} The current instance for method chaining.
-   */
-  clear(): this;
-  /**
-   * Sets the initial string content of the message.
-   * @param {...StyleArg[]} args - The arguments to set as the initial string.
-   * @returns {this} The current instance for method chaining.
-   */
-  setInitialString(...args: StyleArg[]): this;
-  /**
-   * Indents the message by a specified number of spaces or with a custom string.
-   * @param {Integer | string} n - The number of spaces or the string to use for indentation.
-   * @returns {this} The current instance for method chaining.
-   */
-  indent(n: Integer | string): this;
-  /**
-   * Adds a tab to the message.
-   * @param {Integer} n - The number of tabs to add.
-   * @returns {this} The current instance for method chaining.
-   */
-  tab(n: Integer): this;
-  /**
-   * Appends a comment to the message.
-   * @param {...string[]} args - The comment strings to append.
-   * @returns {this} The current instance for method chaining.
-   */
-  comment(...args: string[]): this;
-  /**
-   * Appends structured data to the message.
-   * @param {Record<string, unknown>} data - The data to append.
-   * @returns {this} The current instance for method chaining.
-   */
-  data(data: Record<string, unknown>): this;
-  /**
-   * Emits the log entry.
-   * @returns {Entry | undefined} The emitted log entry, or `undefined` if not emitted.
-   */
-  emit(): Entry | undefined;
 }
 
 /**
@@ -133,13 +86,13 @@ export interface IEmitDuration {
  */
 export type MsgBuidlerFactoryMethod = (
   level: LevelName,
-  emitter: Logger.IEmitter,
+  emitter: Logger.Base.IEmitter,
   meetsThreshold: boolean,
   meetsFlushThreshold: boolean,
-) => AbstractMsgBuilder;
+) => Base.Builder;
 
 /**
  * A constructor for a message builder class.
  * @template M - The type of the message builder.
  */
-export type ClassConstructor<M> = new (level: string, logger: Logger.IEmitter) => M;
+export type ClassConstructor<M> = new (level: string, logger: Logger.Base.IEmitter) => M;

@@ -1,5 +1,5 @@
 import type { Integer } from '@epdoc/type';
-import type { IBasic } from './ibasic.ts';
+import { isLogLevelDef } from './helpers.ts';
 import type * as Level from './types.ts';
 
 /**
@@ -15,14 +15,6 @@ import type * as Level from './types.ts';
  */
 
 /**
- * Type guard to check if an unknown value is a valid {@link Level.LogLevelDef}.
- * @internal
- */
-export function isLogLevelDef(levelDef: unknown): levelDef is Level.LogLevelDef {
-  return typeof levelDef === 'object' && levelDef !== null;
-}
-
-/**
  * Manages a custom set of log levels, providing utilities for conversion,
  * comparison, and formatting.
  *
@@ -35,7 +27,7 @@ export function isLogLevelDef(levelDef: unknown): levelDef is Level.LogLevelDef 
  * It determines whether the numeric values of the levels are ascending or
  * descending and adjusts its comparison logic accordingly.
  */
-export class LogLevels implements IBasic {
+export class LogLevels implements Level.IBasic {
   protected _levelDef: Level.LogLevelsDef;
   protected _increasing = false;
   protected _levelValues: Level.Value[];

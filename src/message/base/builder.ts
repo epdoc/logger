@@ -1,10 +1,11 @@
 import { _, type Integer } from '@epdoc/type';
-import type { Name as LevelName } from '../levels/types.ts';
-import type * as Logger from '../logger/types.ts';
-import * as Transport from '../transports/types.ts';
-import type * as Log from '../types.ts';
-import { StringUtil } from '../util.ts';
-import type { IBasic, IFormat, MsgPart, StyleArg, StyleFormatterFn } from './types.ts';
+import type * as Level from '../../levels/mod.ts';
+import type * as Logger from '../../logger/mod.ts';
+import * as Transport from '../../transports/mod.ts';
+import type * as Log from '../../types.ts';
+import { StringUtil } from '../../util.ts';
+import type { IFormat, MsgPart, StyleArg, StyleFormatterFn } from '../types.ts';
+import type { IBuilder } from './types.ts';
 
 const DEFAULT_TAB_SIZE = 2;
 
@@ -18,13 +19,13 @@ const DEFAULT_TAB_SIZE = 2;
  * Once fully constructed, the `emit` method forwards the completed log entry to
  * the associated {@link Logger.IEmitter}.
  *
- * It implements both {@link IBasic} for the core building logic and
+ * It implements both {@link IBuilder} for the core building logic and
  * {@link IFormat} for converting the message into a string.
  */
-export abstract class AbstractMsgBuilder implements IBasic, IFormat {
+export abstract class AbstractMsgBuilder implements IBuilder, IFormat {
   protected _timestamp: Date = new Date();
-  protected _level: LevelName;
-  protected _emitter: Logger.IEmitter;
+  protected _level: Level.Name;
+  protected _emitter: Logger.Base.IEmitter;
   protected _meetsThreshold: boolean = true;
   protected _meetsFlushThreshold: boolean = true;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
@@ -38,14 +39,14 @@ export abstract class AbstractMsgBuilder implements IBasic, IFormat {
   /**
    * Initializes a new message builder instance.
    *
-   * @param {  LevelName} level - The log level of the message.
+   * @param {  Level.Name} level - The log level of the message.
    * @param {Logger.IEmitter} emitter - The logger instance that will emit the final message.
    * @param {boolean} [meetsThreshold=true] - Whether the message meets the configured log level threshold.
    * @param {boolean} [meetsFlushThreshold=true] - Whether the message requires an immediate flush.
    */
   constructor(
-    level: LevelName,
-    emitter: Logger.IEmitter,
+    level: Level.Name,
+    emitter: Logger.Base.IEmitter,
     meetsThreshold = true,
     meetsFlushThreshold = true,
   ) {
@@ -57,9 +58,9 @@ export abstract class AbstractMsgBuilder implements IBasic, IFormat {
 
   /**
    * Sets the log level for the message.
-   * @param {  LevelName} level - The log level name.
+   * @param {  Level.Name} level - The log level name.
    */
-  public set level(level: LevelName) {
+  public set level(level: Level.Name) {
     this._level = level;
   }
 
@@ -286,10 +287,10 @@ export abstract class AbstractMsgBuilder implements IBasic, IFormat {
    * and styles as needed.
    *
    * @param {boolean} color - Whether to apply color and styling functions.
-   * @param {Transport.OutputFormat} [_target=text] - The target output format (reserved for future use).
+   * @param {Transport.OutputFormatType} [_target=text] - The target output format (reserved for future use).
    * @returns {string} The formatted log message string.
    */
-  format(color: boolean, _target: Transport.OutputFormat = Transport.OutputFormat.TEXT): string {
+  format(color: boolean, _target: Transport.OutputFormatType = Transport.OutputFormat.TEXT): string {
     const parts: string[] = [];
     if (_.isNonEmptyString(this._msgIndent)) {
       parts.push(this._msgIndent);

@@ -1,21 +1,12 @@
 import { dateEx } from '@epdoc/datetime';
 import { duration } from '@epdoc/duration';
 import { isNonEmptyString, isValidDate } from '@epdoc/type';
-import type * as Level from '../levels/types.ts';
-import type { LogMgr } from '../logmgr.ts';
-import type { IBasic as MsgBuilderIBasic } from '../message/types.ts';
-import * as Log from '../types.ts';
-
-/**
- * Defines the common configuration options for any transport.
- */
-export interface BaseOptions {
-  /**
-   * Overrides the default visibility settings for log metadata.
-   * @see {@link Log.EmitterShowOpts}
-   */
-  show?: Log.EmitterShowOpts;
-}
+import { isTimestampFormat } from '../../consts.ts';
+import type * as Level from '../../levels/types.ts';
+import type { LogMgr } from '../../logmgr.ts';
+import type * as MsgBuilder from '../../message/mod.ts';
+import type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from '../../types.ts';
+import type { BaseOptions } from './types.ts';
 
 /**
  * The abstract base class for all log transports.
@@ -34,7 +25,7 @@ export interface BaseOptions {
  * @template M - The type of message builder used, which must conform to
  * {@link MsgBuilderIBasic}.
  */
-export abstract class AbstractTransport<M extends MsgBuilderIBasic> {
+export abstract class AbstractTransport<M extends MsgBuilder.Base.IBuilder> {
   /** A string identifier for the transport type (e.g., 'console', 'file'). */
   public readonly type: string = 'basic';
   protected _logMgr: LogMgr<M>;
@@ -43,7 +34,7 @@ export abstract class AbstractTransport<M extends MsgBuilderIBasic> {
   protected _level: Level.Value;
   protected _threshold: Level.Value;
   protected _flushThreshold: Level.Value;
-  protected _show: Log.EmitterShowOpts = {};
+  protected _show: EmitterShowOpts = {};
 
   /**
    * Initializes a new transport instance.
@@ -83,12 +74,12 @@ export abstract class AbstractTransport<M extends MsgBuilderIBasic> {
   /**
    * Configures the visibility of log metadata fields for this transport.
    *
-   * @param {Log.EmitterShowOpts} opts - The visibility settings to apply.
+   * @param {EmitterShowOpts} opts - The visibility settings to apply.
    * @returns {this} The instance for chaining.
    */
-  show(opts: Log.EmitterShowOpts): this {
+  show(opts: EmitterShowOpts): this {
     Object.keys(opts).forEach((key) => {
-      const k: Log.EmitterShowKey = key as Log.EmitterShowKey;
+      const k: EmitterShowKey = key as EmitterShowKey;
       if (opts[k] === true || opts[k] === false || isNonEmptyString(opts[k])) {
         // @ts-ignore Allow dynamic assignment
         this._show[k] = opts[k];
@@ -116,7 +107,7 @@ export abstract class AbstractTransport<M extends MsgBuilderIBasic> {
    * @param {Log.Entry} msg - The log entry to check.
    * @returns {boolean} `true` if the entry's level meets the threshold.
    */
-  msgMeetsThreshold(msg: Log.Entry): boolean {
+  msgMeetsThreshold(msg: Entry): boolean {
     const levelValue = this._logMgr.logLevels.asValue(msg.level);
     return this._logMgr.logLevels.meetsThresholdValue(levelValue, this._threshold);
   }
@@ -146,8 +137,8 @@ export abstract class AbstractTransport<M extends MsgBuilderIBasic> {
    * @param {Log.TimestampFormat} [format] - The desired output format.
    * @returns {string | undefined} The formatted date string or `undefined`.
    */
-  dateToString(d: Date | undefined, format: Log.TimestampFormat | undefined): string | undefined {
-    if (isValidDate(d) && Log.isTimestampFormat(format)) {
+  dateToString(d: Date | undefined, format: TimestampFormatType | undefined): string | undefined {
+    if (isValidDate(d) && isTimestampFormat(format)) {
       if (format === 'utc') {
         return d.toISOString();
       } else if (format === 'local') {
@@ -194,9 +185,9 @@ export abstract class AbstractTransport<M extends MsgBuilderIBasic> {
    * The core method where the transport processes and outputs a log entry.
    * Concrete classes must implement this method.
    *
-   * @param {Log.Entry} msg - The log entry to process.
+   * @param {Entry} msg - The log entry to process.
    */
-  emit(msg: Log.Entry): void {
+  emit(msg: Entry): void {
     if (this.msgMeetsThreshold(msg)) {
       // Implementation-specific logic goes in subclasses.
     }

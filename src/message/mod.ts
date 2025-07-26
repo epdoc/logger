@@ -1,27 +1,5 @@
-import { AbstractMsgBuilder } from './abstract.ts';
-import { ConsoleMsgBuilder, type ErrOpts, type IConsole } from './console.ts';
-import type {
-  ClassConstructor,
-  IBasic,
-  IEmitDuration,
-  MsgBuidlerFactoryMethod,
-  MsgPart,
-  StyleArg,
-  StyleFormatterFn,
-} from './types.ts';
+import * as Base from './base/mod.ts';
+import * as Console from './console/mod.ts';
 
-export const MsgBuilder = {
-  Base: AbstractMsgBuilder,
-  Console: ConsoleMsgBuilder,
-};
-export interface MsgBuilder<M extends IBasic> {
-  ErrOpts: ErrOpts;
-  IConsole: IConsole;
-  StyleFormatterFn: StyleFormatterFn;
-  IBasic: IBasic;
-  MsgPart: MsgPart;
-  StyleArg: StyleArg;
-  IEmitDuration: IEmitDuration;
-  FactoryMethod: MsgBuidlerFactoryMethod;
-  ClassConstructor: ClassConstructor<M>;
-}
+export * from './types.ts';
+export { Base, Console };

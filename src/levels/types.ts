@@ -51,3 +51,5 @@ export type LogLevelsDef = Record<Name, LogLevelDef>;
  * @returns {IBasic} An instance of a class implementing the {@link IBasic} interface.
  */
 export type FactoryMethod = () => IBasic;
+
+export type { IBasic };

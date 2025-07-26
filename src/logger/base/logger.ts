@@ -1,10 +1,11 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isNonEmptyArray, isString } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
-import type { LogMgr } from '../logmgr.ts';
-import type * as MsgBuilder from '../message/mod.ts';
-import type * as Log from '../types.ts';
-import type * as Logger from './types.ts';
+import type * as Level from '../../levels/types.ts';
+import type { LogMgr } from '../../logmgr.ts';
+import type * as MsgBuilder from '../../message/mod.ts';
+import type { EmitterShowOpts, Entry } from '../../types.ts';
+import type { IEmitter, IGetChildParams, IInherit, ILevels } from './types.ts';
 
 let markId = 0;
 
@@ -34,11 +35,11 @@ let markId = 0;
  * @implements {Logger.ILevels}
  * @implements {Logger.IInherit}
  */
-export abstract class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitter, Logger.ILevels, Logger.IInherit {
+export abstract class AbstractLogger<M extends MsgBuilder.Base.IBuilder> implements IEmitter, ILevels, IInherit {
   protected _logMgr: LogMgr<M>;
   protected _parent: this | undefined;
   protected _threshold: Level.Value | undefined;
-  protected _show: Log.EmitterShowOpts = {};
+  protected _show: EmitterShowOpts = {};
   protected _pkgs: string[] = [];
   protected _reqIds: string[] = [];
   protected _sid: string | undefined;
@@ -52,7 +53,7 @@ export abstract class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitt
    * @param {Logger.IGetChildParams} [params] - Optional parameters used for
    * initializing a child logger with specific context (e.g., `sid`, `reqId`).
    */
-  constructor(logMgr: LogMgr<M>, params?: Logger.IGetChildParams) {
+  constructor(logMgr: LogMgr<M>, params?: IGetChildParams) {
     this._logMgr = logMgr;
     if (params) {
       this.#appendParams(params);
@@ -68,7 +69,7 @@ export abstract class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitt
    * inherits and extends the parent's `sid`, `reqId`, and `pkg`, allowing for
    * detailed, hierarchical tracing.
    *
-   * @param {Logger.IGetChildParams} [params] - Additional parameters to apply to
+   * @param {IGetChildParams} [params] - Additional parameters to apply to
    * the new child logger.
    * @returns {this} A new logger instance configured as a child of the current one.
    *
@@ -77,7 +78,7 @@ export abstract class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitt
    * const reqLogger = rootLogger.getChild({ sid: 'user123', reqId: 'abc-456' });
    * reqLogger.info('Processing user request');
    */
-  public getChild(params?: Logger.IGetChildParams): this {
+  public getChild(params?: IGetChildParams): this {
     const logger = this.copy();
     logger._parent = this;
     logger.#appendParams(params);
@@ -88,7 +89,7 @@ export abstract class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitt
    * Appends contextual parameters to the logger instance.
    * @private
    */
-  #appendParams(params?: Logger.IGetChildParams): this {
+  #appendParams(params?: IGetChildParams): this {
     if (params) {
       if (params.sid) {
         this._sid = params.sid;
@@ -122,7 +123,7 @@ export abstract class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitt
    * Assigns properties from another logger to this instance.
    * @internal
    */
-  assign(logger: Base<M>): void {
+  assign(logger: AbstractLogger<M>): void {
     this._threshold = logger._threshold;
     this._show = logger._show;
     this._sid = logger._sid;
@@ -136,7 +137,7 @@ export abstract class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitt
    *
    * @param {Log.Entry} msg - The log entry to emit.
    */
-  public emit(msg: Log.Entry): void {
+  public emit(msg: Entry): void {
     if (this.meetsThreshold(msg.level) && msg.msg) {
       this._logMgr.emit(msg);
     }
@@ -287,7 +288,7 @@ export abstract class Base<M extends MsgBuilder.IBasic> implements Logger.IEmitt
     this._threshold = this.logLevels.asValue(level);
     if (this._logMgr.threshold) {
       if (this._threshold > this._logMgr.threshold) {
-        const msg: Log.Entry = {
+        const msg: Entry = {
           level: this.logLevels.warnLevelName,
           msg: `Logger threshold ${this.logLevels.asName(this._threshold)} is less restrictive than LogMgr threshold ${
             this.logLevels.asName(this._logMgr.threshold)

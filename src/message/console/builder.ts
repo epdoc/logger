@@ -1,192 +1,15 @@
 import { asError, type Integer, isInteger, isNonEmptyString, isPosNumber } from '@epdoc/type';
-import * as colors from '@std/fmt/colors';
 import os from 'node:os'; // Used for homedir in `relative`
 import { relative } from 'node:path';
-import type * as Level from '../levels/types.ts';
-import type * as Logger from '../logger/types.ts';
-import type * as Log from '../types.ts';
-import { AbstractMsgBuilder } from './abstract.ts';
-import type * as MsgBuilder from './types.ts';
+import type * as Level from '../../levels/types.ts';
+import type * as Logger from '../../logger/types.ts';
+import type * as Log from '../../types.ts';
+import * as Base from '../base/mod.ts';
+import type * as MsgBuilder from '../types.ts';
+import { consoleStyleFormatters } from './const.ts';
+import type { IConsoleMsgBuilder } from './types.ts';
 
 const home = os.userInfo().homedir;
-
-export const styleFormatters: Record<string, MsgBuilder.StyleFormatterFn> = {
-  text: colors.brightWhite,
-  h1: (str: string) => colors.bold(colors.magenta(str)),
-  h2: colors.magenta,
-  h3: colors.yellow,
-  action: (str: string) => colors.black(colors.bgYellow(str)),
-  label: colors.blue,
-  highlight: colors.brightMagenta,
-  value: colors.green,
-  path: (str: string) => colors.underline(colors.gray(str)),
-  date: colors.brightCyan,
-  warn: colors.brightYellow,
-  error: (str: string) => colors.bold(colors.brightRed(str)),
-  strikethru: colors.inverse,
-  _reqId: colors.brightYellow,
-  _sid: (str: string) => colors.underline(colors.yellow(str)),
-  _package: colors.green,
-  _action: colors.blue,
-  _plain: colors.white,
-  _suffix: colors.white,
-  _elapsed: colors.white,
-  _level: colors.gray,
-  _source: colors.gray,
-  _errorPrefix: colors.red,
-  _warnPrefix: colors.cyan,
-  _infoPrefix: colors.gray,
-  _verbosePrefix: colors.gray,
-  _debugPrefix: colors.gray,
-  _sillyPrefix: colors.gray,
-  _httpPrefix: colors.gray,
-  _timePrefix: colors.gray,
-} as const;
-
-/**
- * Interface for a console message builder that provides methods for styling
- * log messages.
- */
-export interface IConsole {
-  /**
-   * Appends styled text to the message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  text(...args: MsgBuilder.StyleArg[]): this;
-  /**
-   * Appends a top-level heading (h1) to the message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  h1(...args: MsgBuilder.StyleArg[]): this;
-  /**
-   * Appends a secondary heading (h2) to the message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  h2(...args: MsgBuilder.StyleArg[]): this;
-  /**
-   * Appends a tertiary heading (h3) to the message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  h3(...args: MsgBuilder.StyleArg[]): this;
-  /**
-   * Appends an action-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  action(...args: MsgBuilder.StyleArg[]): this;
-  /**
-   * Appends a label-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  label(...args: MsgBuilder.StyleArg[]): this;
-  /**
-   * Appends a highlighted message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  highlight(...args: MsgBuilder.StyleArg[]): this;
-  /**
-   * Appends a value-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  value(...args: MsgBuilder.StyleArg[]): this;
-  /**
-   * Appends a path-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  path(...args: MsgBuilder.StyleArg[]): this;
-  /**
-   * Appends a path relative to the home directory.
-   * @param {string} path - The path to be made relative.
-   * @returns {this} The current instance for method chaining.
-   */
-  relative(path: string): this;
-  /**
-   * Appends a date-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  date(...args: MsgBuilder.StyleArg[]): this;
-  /**
-   * Appends a section divider with an optional title.
-   * @param {string} str - The title of the section.
-   * @returns {this} The current instance for method chaining.
-   */
-  section(str: string): this;
-  /**
-   * Appends a formatted error message.
-   * @param {unknown} error - The error to be formatted.
-   * @param {ErrOpts} opts - Options for formatting the error.
-   * @returns {this} The current instance for method chaining.
-   */
-  err(error: unknown, opts: ErrOpts): this;
-  /**
-   * Appends a warning-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  warn(...args: MsgBuilder.StyleArg[]): this;
-  /**
-   * Appends an error-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  error(...args: MsgBuilder.StyleArg[]): this;
-  /**
-   * Appends a strikethrough-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  strikethru(...args: MsgBuilder.StyleArg[]): this;
-}
-
-/**
- * Options for formatting an error message.
- */
-export type ErrOpts = Partial<{
-  /**
-   * Whether to include the error code.
-   * @default false
-   */
-  code: boolean;
-  /**
-   * Whether to include the error cause.
-   * @default true
-   */
-  cause: boolean;
-  /**
-   * Whether to include the error path.
-   * @default true
-   */
-  path: boolean;
-  /**
-   * Whether to include the stack trace.
-   * @default false
-   */
-  stack: boolean;
-}>;
-
-/**
- * A factory method for creating a new `Console` instance.
- * @param {Level.Name} level - The log level.
- * @param {Logger.IEmitter} emitter - The log emitter.
- * @param {boolean} [meetsThreshold=true] - Whether the log level meets the threshold.
- * @returns {ConsoleMsgBuilder} A new `Console` instance.
- */
-export function ConsoleFactoryMethod(
-  level: Level.Name,
-  emitter: Logger.IEmitter,
-  meetsThreshold: boolean = true,
-): ConsoleMsgBuilder {
-  return new ConsoleMsgBuilder(level, emitter, meetsThreshold);
-}
 
 /**
  * A message builder for creating styled console messages.
@@ -209,11 +32,11 @@ export function ConsoleFactoryMethod(
  * msg.h1('Hello').text('World').emit();
  * ```
  */
-export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, MsgBuilder.IEmitDuration {
+export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilder, MsgBuilder.IEmitDuration {
   /**
    * A map of style formatters for different message parts.
    */
-  static readonly styleFormatters = styleFormatters;
+  static readonly styleFormatters = consoleStyleFormatters;
   protected _nextPartPluralize: boolean | undefined; // true for plural, false for singular, undefined for no effect
 
   /**
@@ -225,7 +48,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    */
   static create(
     level: Level.Name,
-    emitter: Logger.IEmitter,
+    emitter: Logger.Base.IEmitter,
     meetsThreshold: boolean = true,
   ): ConsoleMsgBuilder {
     return new ConsoleMsgBuilder(level, emitter, meetsThreshold);
@@ -238,7 +61,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    */
   public text(...args: MsgBuilder.StyleArg[]): this {
     const processedArgs = this._applyPluralization(args);
-    return this.stylize(styleFormatters.text, ...processedArgs);
+    return this.stylize(consoleStyleFormatters.text, ...processedArgs);
   }
 
   /**
@@ -248,7 +71,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    */
   public h1(...args: MsgBuilder.StyleArg[]): this {
     const processedArgs = this._applyPluralization(args);
-    return this.stylize(styleFormatters.h1, ...processedArgs);
+    return this.stylize(consoleStyleFormatters.h1, ...processedArgs);
   }
 
   /**
@@ -258,7 +81,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    */
   public h2(...args: MsgBuilder.StyleArg[]): this {
     const processedArgs = this._applyPluralization(args);
-    return this.stylize(styleFormatters.h2, ...processedArgs);
+    return this.stylize(consoleStyleFormatters.h2, ...processedArgs);
   }
 
   /**
@@ -268,7 +91,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    */
   public h3(...args: MsgBuilder.StyleArg[]): this {
     const processedArgs = this._applyPluralization(args);
-    return this.stylize(styleFormatters.h3, ...processedArgs);
+    return this.stylize(consoleStyleFormatters.h3, ...processedArgs);
   }
 
   /**
@@ -278,7 +101,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    */
   public action(...args: MsgBuilder.StyleArg[]): this {
     // Action is not typically pluralized based on a count, so no _applyPluralization here.
-    return this.stylize(styleFormatters.action, ...args);
+    return this.stylize(consoleStyleFormatters.action, ...args);
   }
 
   /**
@@ -290,7 +113,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
   public count(num: Integer): this {
     // First, output the number itself using the base stylize method.
     // This ensures the number itself is not subject to pluralization logic.
-    super.stylize(styleFormatters.value, num);
+    super.stylize(consoleStyleFormatters.value, num);
 
     // Now, set the flag for the *next* chained method.
     this._nextPartPluralize = isInteger(num) ? num !== 1 : undefined;
@@ -303,7 +126,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    * @returns {this} The current instance for method chaining.
    */
   public label(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(styleFormatters.label, ...args);
+    return this.stylize(consoleStyleFormatters.label, ...args);
   }
 
   /**
@@ -312,7 +135,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    * @returns {this} The current instance for method chaining.
    */
   public highlight(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(styleFormatters.highlight, ...args);
+    return this.stylize(consoleStyleFormatters.highlight, ...args);
   }
 
   /**
@@ -321,7 +144,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    * @returns {this} The current instance for method chaining.
    */
   public value(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(styleFormatters.value, ...args);
+    return this.stylize(consoleStyleFormatters.value, ...args);
   }
 
   /**
@@ -330,7 +153,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    * @returns {this} The current instance for method chaining.
    */
   public path(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(styleFormatters.path, ...args);
+    return this.stylize(consoleStyleFormatters.path, ...args);
   }
 
   /**
@@ -350,7 +173,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    * @returns {this} The current instance for method chaining.
    */
   public date(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(styleFormatters.date, ...args);
+    return this.stylize(consoleStyleFormatters.date, ...args);
   }
 
   /**
@@ -396,7 +219,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    * @returns {this} The current instance for method chaining.
    */
   public warn(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(styleFormatters.warn, ...args);
+    return this.stylize(consoleStyleFormatters.warn, ...args);
   }
 
   /**
@@ -405,7 +228,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    * @returns {this} The current instance for method chaining.
    */
   public error(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(styleFormatters.error, ...args);
+    return this.stylize(consoleStyleFormatters.error, ...args);
   }
 
   /**
@@ -414,7 +237,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
    * @returns {this} The current instance for method chaining.
    */
   public strikethru(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(styleFormatters.strikethru, ...args);
+    return this.stylize(consoleStyleFormatters.strikethru, ...args);
   }
 
   /**
@@ -479,7 +302,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsole, M
         } else if (duration > 1) {
           digits = 2;
         }
-        return this.stylize(styleFormatters._elapsed, `(${duration.toFixed(digits)} ms response)`).emit();
+        return this.stylize(consoleStyleFormatters._elapsed, `(${duration.toFixed(digits)} ms response)`).emit();
       }
       return this.emit();
     }

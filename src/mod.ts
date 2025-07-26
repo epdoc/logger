@@ -10,10 +10,10 @@
  *
  * @module
  */
-export { cli, Level, std } from './levels/mod.ts';
-export * as Logger from './logger/mod.ts';
+export { isTimestampFormat } from './consts.ts';
+export * as Level from './levels/mod.ts';
+export * from './logger/mod.ts';
 export { type ILogMgrSettings as IMgrSettings, LogMgr as Mgr } from './logmgr.ts';
 export * as MsgBuilder from './message/mod.ts';
 export * as Transport from './transports/mod.ts';
-export { isTimestampFormat, TimestampFormat } from './types.ts';
-export type { EmitterShowKey, EmitterShowOpts, Entry, IEmitter } from './types.ts';
+export type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from './types.ts';

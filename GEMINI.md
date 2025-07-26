@@ -14,6 +14,10 @@
 - [Oak](./docs/oak.md)
 - [Transports](./docs/transports.md)
 
+## Additional Coding Instructions
+
+- Do not use namespaces.
+
 ### Logger getChild method
 
 We have a logger getChild method to allow loggers to nest under a root logger. This allows customization of the `sid`,

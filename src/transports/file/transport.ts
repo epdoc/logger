@@ -1,38 +1,11 @@
 import type { Integer } from '@epdoc/type';
-import type * as Level from '../levels/types.ts';
-import type { LogMgr } from '../logmgr.ts';
-import type { IBasic as MsgBuilderIBasic } from '../message/types.ts';
-import { type ConsoleOptions, ConsoleTransport } from './console.ts';
+import type * as Level from '../../levels/mod.ts';
+import type { LogMgr } from '../../logmgr.ts';
+import type * as MsgBuilder from '../../message/mod.ts';
+import * as Console from '../console/mod.ts';
+import type { FileLogMode, FileOptions } from './types.ts';
 
 const BUFSIZE = 4096;
-
-/**
- * Defines the file logging mode.
- * - `a`: Append to the file if it exists, otherwise create it.
- * - `w`: Write to the file, overwriting it if it exists.
- * - `x`: Create a new file, throwing an error if it already exists.
- */
-export type FileLogMode = 'a' | 'w' | 'x';
-
-/**
- * Options for configuring the `File` transport.
- */
-export interface FileOptions extends ConsoleOptions {
-  /**
-   * The path to the log file.
-   */
-  filepath: string;
-  /**
-   * The file logging mode.
-   * @default 'a'
-   */
-  mode?: FileLogMode;
-  /**
-   * The size of the buffer in bytes.
-   * @default 4096
-   */
-  bufferSize?: Integer;
-}
 
 /**
  * A transport for logging messages to a file.
@@ -48,7 +21,7 @@ export interface FileOptions extends ConsoleOptions {
  * logMgr.add(fileTransport);
  * ```
  */
-export class File<M extends MsgBuilderIBasic> extends ConsoleTransport<M> {
+export class FileTransport<M extends MsgBuilder.Base.IBuilder> extends Console.Transport<M> {
   protected _json = false;
   protected filepath: string;
   protected file: Deno.FsFile | undefined;

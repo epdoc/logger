@@ -1,37 +1,12 @@
-import { isString } from '@epdoc/type';
+import type { TimestampFormat } from './consts.ts';
 import type * as Level from './levels/types.ts';
 import type * as MsgBuilder from './message/types.ts';
-
-/**
- * Defines the available formats for displaying timestamps in log output.
- */
-export const TimestampFormat = {
-  /** Coordinated Universal Time (UTC) format. */
-  UTC: 'utc',
-  /** Local time zone format. */
-  LOCAL: 'local',
-  /** Time elapsed since the logger was initialized. */
-  ELAPSED: 'elapsed',
-} as const;
 
 /**
  * A type representing the allowed values for timestamp formatting.
  * @see {@link TimestampFormat}
  */
-export type TimestampFormat = typeof TimestampFormat[keyof typeof TimestampFormat];
-
-const timestampFormatValues = Object.values(TimestampFormat);
-
-/**
- * Type guard to check if a value is a valid {@link TimestampFormat}.
- *
- * @param {unknown} val - The value to check.
- * @returns {boolean} `true` if the value is a valid timestamp format.
- * @internal
- */
-export function isTimestampFormat(val: unknown): val is TimestampFormat {
-  return isString(val) && (timestampFormatValues as readonly string[]).includes(val);
-}
+export type TimestampFormatType = typeof TimestampFormat[keyof typeof TimestampFormat];
 
 /**
  * Represents a single, complete log entry.
@@ -70,7 +45,7 @@ export type EmitterShowOpts = {
    */
   level?: boolean | number;
   /** Controls the display format of the timestamp. */
-  timestamp?: TimestampFormat;
+  timestamp?: TimestampFormatType;
   /** Controls the display of the session ID. */
   sid?: boolean;
   /**

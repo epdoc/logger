@@ -1,29 +1,13 @@
 import { StringEx } from '@epdoc/string';
 import { _, type Integer } from '@epdoc/type';
-import type * as Level from '../levels/types.ts';
-import type { LogMgr } from '../logmgr.ts';
-import { AbstractMsgBuilder } from '../message/abstract.ts';
-import { styleFormatters as MsgBuilderConsoleStyleFormatters } from '../message/console.ts';
-import type { IBasic as MsgBuilderIBasic } from '../message/types.ts';
-import type * as Log from '../types.ts';
-import { AbstractTransport, type BaseOptions } from './abstract.ts';
-import * as Transport from './types.ts';
-
-/**
- * Options for configuring the `Console` transport.
- */
-export interface ConsoleOptions extends BaseOptions {
-  /**
-   * The output format to use.
-   * @default 'text'
-   */
-  format?: Transport.OutputFormat;
-  /**
-   * Whether to use colors in the output.
-   * @default true
-   */
-  color?: boolean;
-}
+import type * as Level from '../../levels/mod.ts';
+import type { LogMgr } from '../../logmgr.ts';
+import * as MsgBuilder from '../../message/mod.ts';
+import type { Entry } from '../../types.ts';
+import * as Base from '../base/mod.ts';
+import { OutputFormat } from '../consts.ts';
+import type { OutputFormatType, TransportEntry } from '../types.ts';
+import type { ConsoleOptions } from './types.ts';
 
 /**
  * A transport for logging messages to the console.
@@ -38,9 +22,9 @@ export interface ConsoleOptions extends BaseOptions {
  * logMgr.add(consoleTransport);
  * ```
  */
-export class ConsoleTransport<M extends MsgBuilderIBasic> extends AbstractTransport<M> {
+export class ConsoleTransport<M extends MsgBuilder.Base.IBuilder> extends Base.Transport<M> {
   protected _levelWidth: Integer = 5;
-  protected _format: Transport.OutputFormat = Transport.OutputFormat.TEXT;
+  protected _format: OutputFormatType = OutputFormat.TEXT;
   protected _color: boolean = true;
 
   /**
@@ -88,9 +72,9 @@ export class ConsoleTransport<M extends MsgBuilderIBasic> extends AbstractTransp
    * This method formats and outputs the log entry based on the transport's
    * configuration. It is called by the `LogMgr` when a new log message is received.
    *
-   * @param {Log.Entry} msg - The log entry to be emitted.
+   * @param {Entry} msg - The log entry to be emitted.
    */
-  override emit(msg: Log.Entry) {
+  override emit(msg: Entry) {
     const levelValue: Level.Value = this._logMgr.logLevels.asValue(msg.level);
     if (!this.meetsThresholdValue(levelValue)) {
       return;
@@ -100,14 +84,14 @@ export class ConsoleTransport<M extends MsgBuilderIBasic> extends AbstractTransp
     const logLevels = this._logMgr.logLevels;
     const color = this._color;
 
-    const entry: Transport.Entry = Object.assign(
+    const entry: TransportEntry = Object.assign(
       {
         timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
       },
       _.pick(msg, 'level', 'package', 'sid', 'reqId'),
     );
 
-    if (msg.msg instanceof AbstractMsgBuilder) {
+    if (msg.msg instanceof MsgBuilder.Base.Builder) {
       entry.msg = msg.msg.format(this._color, this._format);
     } else if (_.isString(msg.msg)) {
       entry.msg = msg.msg;
@@ -232,8 +216,8 @@ export class ConsoleTransport<M extends MsgBuilderIBasic> extends AbstractTransp
         s += opts.post;
       }
     }
-    if (this._color && MsgBuilderConsoleStyleFormatters[colorFn]) {
-      return (MsgBuilderConsoleStyleFormatters as Record<string, (str: string) => string>)[colorFn](s);
+    if (this._color && MsgBuilder.Console.styleFormatters[colorFn]) {
+      return (MsgBuilder.Console.styleFormatters as Record<string, (str: string) => string>)[colorFn](s);
     }
     return s;
   }

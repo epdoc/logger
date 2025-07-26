@@ -3,14 +3,10 @@ import { assert } from '@std/assert';
 // import { cli, ILogLevels, type Level.Name, Level.Value, LogLevelFactoryMethod, std } from './levels/index.ts';
 import type { IBasic as IBasicLevel } from './levels/ibasic.ts';
 import type { IBasic as LevelIBasic } from './levels/ibasic.ts/';
-import { cli, std } from './levels/mod.ts';
-import type * as Level from './levels/types.ts';
-import type * as Logger from './logger/types.ts';
-import { ConsoleFactoryMethod, ConsoleMsgBuilder } from './message/console.ts';
-import type * as MsgBuilder from './message/types.ts/';
-import type { AbstractTransport } from './transports/abstract.ts';
-import { ConsoleTransport } from './transports/console.ts/';
-import { TransportMgr } from './transports/mgr.ts/';
+import type * as Level from './levels/mod.ts';
+import * as Logger from './logger/mod.ts';
+import type * as MsgBuilder from './message/mod.ts/';
+import * as Transport from './transports/mod.ts';
 import type * as Log from './types.ts';
 
 /**
@@ -59,13 +55,13 @@ export interface ILogMgrSettings {
  * the `MsgBuilder.IBasic` interface. Defaults to `MsgBuilder.Console`.
  */
 export class LogMgr<
-  M extends MsgBuilder.IBasic = ConsoleMsgBuilder,
+  M extends MsgBuilder.Base.IBuilder = MsgBuilder.Console.Builder,
 > {
   protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
   protected _logLevels: LevelIBasic | undefined;
-  protected _rootLogger: Logger.IEmitter | undefined;
-  protected _msgBuilder: MsgBuilder.IBasic | undefined;
+  protected _rootLogger: Logger.Base.IEmitter | undefined;
+  protected _msgBuilder: MsgBuilder.Base.IBuilder | undefined;
   protected _threshold: Level.Value = 5;
   protected _show: Log.EmitterShowOpts = {};
   protected _pkg: string = '';
@@ -73,13 +69,13 @@ export class LogMgr<
   protected _mark: Record<string, HrMilliseconds> = {};
   protected _bRunning = true;
   protected _queue: Log.Entry[] = [];
-  readonly transportMgr: TransportMgr<M> = new TransportMgr<M>(this);
+  readonly transportMgr: Transport.Mgr<M> = new Transport.Mgr<M>(this);
   protected _msgBuilderFactory: MsgBuilder.MsgBuidlerFactoryMethod = ConsoleFactoryMethod;
-  protected _loggerFactory: Logger.FactoryMethod<M, Logger.IEmitter> = std.createLogger;
+  protected _loggerFactory: Logger.FactoryMethod<M, Logger.Base.IEmitter> = Logger.Std.createLogger;
 
   protected _registeredLogLevels: Record<string, Level.FactoryMethod> = {
-    cli: cli.createLogLevels,
-    std: std.createLogLevels,
+    cli: Logger.Cli.createLogLevels,
+    std: Logger.Std.createLogLevels,
   };
 
   /**
@@ -87,7 +83,7 @@ export class LogMgr<
    *
    * @param {Level.FactoryMethod} [levelsFactory=std.createLogLevels] - A function that returns a log level configuration.
    */
-  constructor(levelsFactory: Level.FactoryMethod = std.createLogLevels) {
+  constructor(levelsFactory: Level.FactoryMethod = Logger.Std.createLogLevels) {
     this._logLevels = levelsFactory();
     // this._transports = [Transport.factoryMethod<M>(this)];
   }
@@ -100,11 +96,11 @@ export class LogMgr<
     return this._msgBuilderFactory;
   }
 
-  public set loggerFactory(loggerFactory: Logger.FactoryMethod<M, Logger.IEmitter>) {
+  public set loggerFactory(loggerFactory: Logger.FactoryMethod<M, Logger.Base.IEmitter>) {
     this._loggerFactory = loggerFactory;
   }
 
-  public get loggerFactory(): Logger.FactoryMethod<M, Logger.IEmitter> {
+  public get loggerFactory(): Logger.FactoryMethod<M, Logger.Base.IEmitter> {
     return this._loggerFactory;
   }
 
@@ -164,9 +160,9 @@ export class LogMgr<
    * const logger = logMgr.getLogger<Log.std.Logger<Log.MsgBuilder.Console>>();
    * logger.info.text('Hello').emit();
    */
-  public getLogger<L extends Logger.IEmitter>(): L {
+  public getLogger<L extends Logger.Base.IEmitter>(): L {
     if (!this.transportMgr.transports.length) {
-      const transport = new ConsoleTransport(this, { show: this._show });
+      const transport = new Transport.Console.Transport(this, { show: this._show });
       this.transportMgr.add(transport);
     }
     if (!this.transportMgr.running) {
@@ -185,7 +181,7 @@ export class LogMgr<
    * @param level - The log level.
    * @param logger - The logger instance to associate with this message builder.
    */
-  public getMsgBuilder(level: string, emitter: Logger.IEmitter): M {
+  public getMsgBuilder(level: string, emitter: Logger.Base.IEmitter): M {
     const meetsThreshold = this.meetsThreshold(level);
     const meetsFlushThreshold = this.meetsFlushThreshold(level);
     return this._msgBuilderFactory(level, emitter, meetsThreshold, meetsFlushThreshold) as M;
@@ -199,12 +195,12 @@ export class LogMgr<
     return this._t0;
   }
 
-  public addTransport(transport: AbstractTransport<M>): this {
+  public addTransport(transport: Transport.Base.Transport<M>): this {
     this.transportMgr.add(transport);
     return this;
   }
 
-  public removeTransport(transport: AbstractTransport<M>): this {
+  public removeTransport(transport: Transport.Base.Transport<M>): this {
     this.transportMgr.remove(transport);
     return this;
   }
