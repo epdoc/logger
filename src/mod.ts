@@ -10,7 +10,7 @@
  *
  * @module
  */
-export { isTimestampFormat } from './consts.ts';
+export { isTimestampFormat, TimestampFormat } from './consts.ts';
 export * as Level from './levels/mod.ts';
 export * from './logger/mod.ts';
 export { type ILogMgrSettings as IMgrSettings, LogMgr as Mgr } from './logmgr.ts';

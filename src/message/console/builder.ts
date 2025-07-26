@@ -1,13 +1,13 @@
 import { asError, type Integer, isInteger, isNonEmptyString, isPosNumber } from '@epdoc/type';
 import os from 'node:os'; // Used for homedir in `relative`
 import { relative } from 'node:path';
-import type * as Level from '../../levels/types.ts';
-import type * as Logger from '../../logger/types.ts';
+import type * as Level from '../../levels/mod.ts';
+import type * as Logger from '../../logger/mod.ts';
 import type * as Log from '../../types.ts';
 import * as Base from '../base/mod.ts';
 import type * as MsgBuilder from '../types.ts';
 import { consoleStyleFormatters } from './const.ts';
-import type { IConsoleMsgBuilder } from './types.ts';
+import type { IConsoleErrOpts, IConsoleMsgBuilder } from './types.ts';
 
 const home = os.userInfo().homedir;
 
@@ -195,7 +195,7 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
    * @param {ErrOpts} [opts={}] - Options for formatting the error message.
    * @returns {this} The current instance for method chaining.
    */
-  public err(error: unknown, opts: ErrOpts = {}): this {
+  public err(error: unknown, opts: IConsoleErrOpts = {}): this {
     const err = asError(error);
     this.error(err.message);
     if (opts.code === true && 'code' in err) {

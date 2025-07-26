@@ -1,7 +1,3 @@
-import type * as Logger from '../logger/mod.ts';
-import type * as MsgBuilder from '../message/mod.ts';
-import type { Entry, TimestampFormatType } from '../types.ts';
-import type * as Base from './base/mod.ts';
 import type { OutputFormat } from './consts.ts';
 
 /**

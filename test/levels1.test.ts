@@ -10,7 +10,7 @@
  */
 import { assertEquals } from '@std/assert';
 import { describe, test } from 'jsr:@std/testing/bdd';
-import * as level from './mod.ts';
+import * as level from '../src/levels/mod.ts';
 
 describe('levels', () => {
   describe('cli', () => {

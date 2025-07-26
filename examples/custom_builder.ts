@@ -14,7 +14,7 @@ logMgr.threshold = 'verbose';
 const mark = log.mark();
 log.info.h2('Hello world').emit();
 
-const line: Log.MsgBuilder.Console = log.info;
+const line: Log.MsgBuilder.Console.Builder = log.info;
 const str = line.h3('Hello world').format(true);
 line.emit();
 log.verbose.h1('String returned by previous call is').value(str).emit();

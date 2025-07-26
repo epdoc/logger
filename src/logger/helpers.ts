@@ -1,4 +1,4 @@
-import type { IMark } from './types.ts';
+import type * as Base from './base/mod.ts';
 
 /**
  * Type guard to check if an object implements the {@link IMark} interface.
@@ -6,6 +6,6 @@ import type { IMark } from './types.ts';
  * @returns {boolean} `true` if the object has a `mark` method.
  * @internal
  */
-export function isIMark(val: object): val is IMark {
-  return (<IMark> val).mark !== undefined;
+export function isIMark(val: object): val is Base.IMark {
+  return (<Base.IMark> val).mark !== undefined;
 }

@@ -14,7 +14,7 @@ const _home = os.userInfo().homedir;
  */
 const createCustomMsgBuilder: Log.MsgBuilder.FactoryMethod = (
   level: Log.Level.Name,
-  emitter: Log.Logger.IEmitter,
+  emitter: Log.Base.IEmitter,
   meetsThreshold: boolean,
 ) => {
   return new CustomMsgBuilder(level, emitter, meetsThreshold);
@@ -24,10 +24,10 @@ const createCustomMsgBuilder: Log.MsgBuilder.FactoryMethod = (
  * A custom message builder that extends the built-in `Console` message builder
  * with new methods.
  */
-export class CustomMsgBuilder extends Log.MsgBuilder.Console {
+export class CustomMsgBuilder extends Log.MsgBuilder.Console.Builder {
   constructor(
     level: Log.Level.Name,
-    emitter: Log.Logger.IEmitter,
+    emitter: Log.Base.IEmitter,
     meetsThreshold: boolean,
   ) {
     super(level, emitter, meetsThreshold);
@@ -83,7 +83,7 @@ logMgr.show = { level: true, timestamp: 'elapsed', reqId: true, sid: true, packa
 // Set the logging threshold.
 logMgr.threshold = 'info';
 // Get a logger instance from the manager, casting it to use the custom builder type.
-export const log = logMgr.getLogger<Log.std.Logger<CustomMsgBuilder>>();
+export const log = logMgr.getLogger<Log.Std.Logger<CustomMsgBuilder>>();
 
 // --- Example Usage ---
 

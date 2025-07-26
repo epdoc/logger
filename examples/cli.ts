@@ -2,14 +2,14 @@ import { Log } from '../mod.ts';
 
 // Define the type for the message builder we want to use.
 // In this case, we are using the built-in Console message builder.
-type M = Log.MsgBuilder.Console;
-type L = Log.cli.Logger<M>;
+type M = Log.MsgBuilder.Console.Builder;
+type L = Log.Cli.Logger<M>;
 
 // Create a new Log Manager instance.
-const logMgr = new Log.Mgr<M>(Log.cli.createLogLevels);
+const logMgr = new Log.Mgr<M>(Log.Cli.createLogLevels);
 
 // Set the logger factory
-logMgr.loggerFactory = Log.cli.createLogger;
+logMgr.loggerFactory = Log.Cli.createLogger;
 
 // Get a logger instance from the manager.
 const log = logMgr.getLogger<L>();
@@ -26,7 +26,7 @@ logMgr.show = { level: true };
 log.info.h2('Hello world').emit();
 
 // You can also create a message builder instance and use it multiple times.
-const line: Log.MsgBuilder.Console = log.info;
+const line: Log.MsgBuilder.Console.Builder = log.info;
 line.h2('Hello again');
 line.emit();
 

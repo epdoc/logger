@@ -7,7 +7,7 @@ import { Log } from '../mod.ts';
 // 1. SETUP
 // Get a standard logger instance.
 const logMgr = new Log.Mgr();
-const log = logMgr.getLogger<Log.std.Logger<Log.MsgBuilder.Console>>();
+const log = logMgr.getLogger<Log.Std.Logger<Log.MsgBuilder.Console.Builder>>();
 
 console.log('--- Timestamp Examples ---');
 

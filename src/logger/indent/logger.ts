@@ -1,8 +1,8 @@
 import { isArray, isNumber, isString } from '@epdoc/type';
 import * as MsgBuilder from '../../message/mod.ts';
 import type * as Log from '../../types.ts';
-import { AbstractLogger } from '../base/logger.ts';
-import type * as Logger from '../types.ts';
+import * as Base from '../base/mod.ts';
+import type { IIndentLogger } from './types.ts';
 
 /**
  * Extends the {@link AbstractLogger} logger to provide indentation capabilities for log output.
@@ -16,7 +16,7 @@ import type * as Logger from '../types.ts';
  * {@link MsgBuilder.IBasic}.
  * @implements {Logger.IIndent}
  */
-export class IndentLogger<M extends MsgBuilder.IBasic> extends AbstractLogger<M> implements Logger.IIndent {
+export class IndentLogger<M extends MsgBuilder.Base.IBuilder> extends Base.Logger<M> implements IIndentLogger {
   /**
    * The start time for time-based logging operations.
    * @protected

@@ -1,11 +1,9 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { assert } from '@std/assert';
 // import { cli, ILogLevels, type Level.Name, Level.Value, LogLevelFactoryMethod, std } from './levels/index.ts';
-import type { IBasic as IBasicLevel } from './levels/ibasic.ts';
-import type { IBasic as LevelIBasic } from './levels/ibasic.ts/';
 import type * as Level from './levels/mod.ts';
 import * as Logger from './logger/mod.ts';
-import type * as MsgBuilder from './message/mod.ts/';
+import type * as MsgBuilder from './message/mod.ts';
 import * as Transport from './transports/mod.ts';
 import type * as Log from './types.ts';
 
@@ -33,7 +31,7 @@ export interface ILogMgrSettings {
    *
    * @returns {Level.IBasic} The instance managing the defined log levels.
    */
-  get logLevels(): LevelIBasic;
+  get logLevels(): Level.IBasic;
 }
 
 /**
@@ -59,7 +57,7 @@ export class LogMgr<
 > {
   protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
-  protected _logLevels: LevelIBasic | undefined;
+  protected _logLevels: Level.IBasic | undefined;
   protected _rootLogger: Logger.Base.IEmitter | undefined;
   protected _msgBuilder: MsgBuilder.Base.IBuilder | undefined;
   protected _threshold: Level.Value = 5;
@@ -279,9 +277,9 @@ export class LogMgr<
    * @returns {ILogLevels} The log levels.
    * @throws Will throw an error if log levels are not set.
    */
-  get logLevels(): IBasicLevel {
+  get logLevels(): Level.IBasic {
     assert(this._logLevels, 'LogLevels not set for Logger');
-    return this._logLevels as IBasicLevel;
+    return this._logLevels as Level.IBasic;
   }
 
   /**
