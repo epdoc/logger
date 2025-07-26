@@ -84,7 +84,7 @@ export interface IEmitDuration {
  * @param {boolean} meetsFlushThreshold - Whether the log level meets the flush threshold.
  * @returns {IBasic} A new message builder instance.
  */
-export type MsgBuidlerFactoryMethod = (
+export type FactoryMethod = (
   level: LevelName,
   emitter: Logger.Base.IEmitter,
   meetsThreshold: boolean,

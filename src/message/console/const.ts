@@ -44,7 +44,7 @@ export const consoleStyleFormatters: Record<string, StyleFormatterFn> = {
  * @param {boolean} [meetsThreshold=true] - Whether the log level meets the threshold.
  * @returns {ConsoleMsgBuilder} A new `Console` instance.
  */
-export function ConsoleFactoryMethod(
+export function createConsoleMsgBuilder(
   level: Level.Name,
   emitter: Logger.Base.IEmitter,
   meetsThreshold: boolean = true,

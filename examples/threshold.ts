@@ -11,6 +11,8 @@ const log = logMgr.getLogger<Log.Std.Logger<Log.MsgBuilder.Console.Builder>>();
 
 console.log('--- Timestamp Examples ---');
 
+log.info.section('Start threshold.ts').emit();
+
 // 2. DEFAULT TIMESTAMP
 // By default, no timestamp is shown.
 log.info.h2('This is a log message with the default (no) timestamp.').emit();
@@ -60,3 +62,4 @@ log.threshold = 'debug';
 console.log(`LogMgr threshold: ${logMgr.threshold}, Logger threshold: ${log.threshold}`);
 log.debug.h2('This debug message will NOT be seen.').emit();
 log.info.h2('This info message WILL be seen, and the debug message above this line will NOT be seen.').emit();
+log.info.section('Finish').emit();

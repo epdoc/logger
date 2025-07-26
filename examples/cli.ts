@@ -21,6 +21,7 @@ logMgr.threshold = 'verbose';
 logMgr.show = { level: true };
 
 // --- Example Usage ---
+log.info.section('Start').emit();
 
 // A simple log message.
 log.info.h2('Hello world').emit();
@@ -35,3 +36,6 @@ log.info.h1('Output').value('my value').h2('to').path('/Users/me/myfiles').emit(
 
 // An example of logging an error.
 log.error.err(new Error('Something went wrong')).emit();
+
+log.info.error('^^ You should have seen a stack trace above this line ^^').emit();
+log.info.section('Finish').emit();

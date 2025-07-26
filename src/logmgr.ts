@@ -3,7 +3,7 @@ import { assert } from '@std/assert';
 // import { cli, ILogLevels, type Level.Name, Level.Value, LogLevelFactoryMethod, std } from './levels/index.ts';
 import type * as Level from './levels/mod.ts';
 import * as Logger from './logger/mod.ts';
-import type * as MsgBuilder from './message/mod.ts';
+import * as MsgBuilder from './message/mod.ts';
 import * as Transport from './transports/mod.ts';
 import type * as Log from './types.ts';
 
@@ -68,7 +68,7 @@ export class LogMgr<
   protected _bRunning = true;
   protected _queue: Log.Entry[] = [];
   readonly transportMgr: Transport.Mgr<M> = new Transport.Mgr<M>(this);
-  protected _msgBuilderFactory: MsgBuilder.MsgBuidlerFactoryMethod = ConsoleFactoryMethod;
+  protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.createMsgBuilder;
   protected _loggerFactory: Logger.FactoryMethod<M, Logger.Base.IEmitter> = Logger.Std.createLogger;
 
   protected _registeredLogLevels: Record<string, Level.FactoryMethod> = {
@@ -86,11 +86,11 @@ export class LogMgr<
     // this._transports = [Transport.factoryMethod<M>(this)];
   }
 
-  public set msgBuilderFactory(msgBuilderFactory: MsgBuilder.MsgBuidlerFactoryMethod) {
+  public set msgBuilderFactory(msgBuilderFactory: MsgBuilder.FactoryMethod) {
     this._msgBuilderFactory = msgBuilderFactory;
   }
 
-  get msgBuilderFactory(): MsgBuilder.MsgBuidlerFactoryMethod {
+  get msgBuilderFactory(): MsgBuilder.FactoryMethod {
     return this._msgBuilderFactory;
   }
 
@@ -182,7 +182,7 @@ export class LogMgr<
   public getMsgBuilder(level: string, emitter: Logger.Base.IEmitter): M {
     const meetsThreshold = this.meetsThreshold(level);
     const meetsFlushThreshold = this.meetsFlushThreshold(level);
-    return this._msgBuilderFactory(level, emitter, meetsThreshold, meetsFlushThreshold) as M;
+    return this._msgBuilderFactory(level, emitter, meetsThreshold, meetsFlushThreshold) as unknown as M;
   }
 
   /**

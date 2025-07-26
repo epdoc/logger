@@ -86,6 +86,7 @@ logMgr.threshold = 'info';
 export const log = logMgr.getLogger<Log.Std.Logger<CustomMsgBuilder>>();
 
 // --- Example Usage ---
+log.info.section('Start log.ts').emit();
 
 // A standard log message using the built-in methods.
 log.info.h1('h1(header)').label('label(text)').emit();
@@ -93,3 +94,4 @@ log.info.h1('h1(header)').label('label(text)').emit();
 log.info.customSection('heading').emit();
 // A log message using our custom `errCustom` method.
 log.info.errCustom(new Error('my error')).emit();
+log.info.section('Finish').emit();
