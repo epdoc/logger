@@ -1,11 +1,11 @@
 import { Log } from '../mod.ts';
-type M = Log.MsgBuilder.Console;
+type M = Log.MsgBuilder.Console.Builder;
 
 const logMgr = new Log.Mgr<M>();
 logMgr.threshold = 'spam';
 
 Deno.test('std logger', () => {
-  const log = logMgr.getLogger() as Log.std.Logger<M>;
+  const log = logMgr.getLogger() as Log.Std.Logger<M>;
   log.info.h1('test:').value('std logger').emit();
   log.info.h1('Level').value('info').emit('test');
   log.error.h1('Level').value('error').error('error').emit('test');
@@ -17,7 +17,7 @@ Deno.test('std logger', () => {
 });
 Deno.test('std logger with level', () => {
   logMgr.show = { level: true };
-  const log = logMgr.getLogger() as Log.std.Logger<M>;
+  const log = logMgr.getLogger() as Log.Std.Logger<M>;
   log.info.h1('test:').value('std logger').emit();
   log.info.h1('Level').value('info').emit('test');
   log.error.h1('Level').value('error').error('error').emit('test');
@@ -28,7 +28,7 @@ Deno.test('std logger with level', () => {
 });
 Deno.test('std logger with utc', () => {
   logMgr.show = { timestamp: 'utc' };
-  const log = logMgr.getLogger() as Log.std.Logger<M>;
+  const log = logMgr.getLogger() as Log.Std.Logger<M>;
   log.info.h1('test:').value('std logger').emit();
   log.info.h1('Level').value('info').emit('test');
   log.error.h1('Level').value('error').error('error').emit('test');
@@ -39,7 +39,7 @@ Deno.test('std logger with utc', () => {
 });
 Deno.test('std logger with local', () => {
   logMgr.show = { timestamp: 'local' };
-  const log = logMgr.getLogger() as Log.std.Logger<M>;
+  const log = logMgr.getLogger() as Log.Std.Logger<M>;
   log.info.h1('test:').value('std logger with local').emit();
   log.info.h1('Level').value('info').emit('test');
   log.error.h1('Level').value('error').error('error').emit('test');
@@ -50,7 +50,7 @@ Deno.test('std logger with local', () => {
 });
 Deno.test('std logger with elapsed', () => {
   logMgr.show = { timestamp: 'elapsed' };
-  const log = logMgr.getLogger() as Log.std.Logger<M>;
+  const log = logMgr.getLogger() as Log.Std.Logger<M>;
   log.info.h1('test:').value('std logger with elapsed').emit();
   log.info.h1('Level').value('info').emit('test');
   log.error.h1('Level').value('error').error('error').emit('test');
@@ -61,7 +61,7 @@ Deno.test('std logger with elapsed', () => {
 });
 Deno.test('std logger with elapsed and level', () => {
   logMgr.show = { timestamp: 'utc', level: true };
-  const log = logMgr.getLogger() as Log.std.Logger<M>;
+  const log = logMgr.getLogger() as Log.Std.Logger<M>;
   log.info.h1('std logger with elapsed and level').emit();
   log.error.h2('Level').value('error').error('error').emit('test');
   log.warn.h2('Level').value('warn').emit('emit');
@@ -73,7 +73,7 @@ Deno.test('std logger with elapsed and level', () => {
 });
 Deno.test('std logger with elapsed and level and threshold', () => {
   logMgr.show = { timestamp: 'utc', level: true };
-  const log = logMgr.getLogger() as Log.std.Logger<M>;
+  const log = logMgr.getLogger() as Log.Std.Logger<M>;
   log.info.h1('test:').value('std logger with elapsed and level and threshold').emit();
   logMgr.threshold = 'info';
   log.info.h1('Level').value('info').emit('test');
@@ -85,7 +85,7 @@ Deno.test('std logger with elapsed and level and threshold', () => {
 });
 Deno.test('std logger with elapsed and level and pkg', () => {
   logMgr.show = { timestamp: 'utc', level: true, package: true };
-  const log = logMgr.getLogger() as Log.std.Logger<M>;
+  const log = logMgr.getLogger() as Log.Std.Logger<M>;
   log.info.h1('test:').value('std logger with elapsed and level and pkg').emit();
   log.setPackage('mypkg');
   log.info.h1('Level').value('info').emit('test');
@@ -97,7 +97,7 @@ Deno.test('std logger with elapsed and level and pkg', () => {
 });
 Deno.test('std logger with elapsed and level and pkg and mark', () => {
   logMgr.show = { timestamp: 'utc', level: true, package: true };
-  const log = logMgr.getLogger() as Log.std.Logger<M>;
+  const log = logMgr.getLogger() as Log.Std.Logger<M>;
   log.setPackage('mypkg');
   const m1 = log.mark();
   const m2 = log.mark();

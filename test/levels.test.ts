@@ -1,11 +1,11 @@
 import { assertEquals } from '@std/assert';
 import { Log } from '../mod.ts';
 
-type M = Log.MsgBuilder.Console;
+type M = Log.MsgBuilder.Console.Builder;
 
-const logMgr = new Log.Mgr<M>(Log.cli.createLogLevels);
-logMgr.loggerFactory = Log.cli.createLogger;
-const _log = logMgr.getLogger<Log.cli.Logger<M>>();
+const logMgr = new Log.Mgr<M>(Log.Cli.createLogLevels);
+logMgr.loggerFactory = Log.Cli.createLogger;
+const _log = logMgr.getLogger<Log.Cli.Logger<M>>();
 
 Deno.test('cli', () => {
   const logLevels = logMgr.logLevels;

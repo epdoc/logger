@@ -2,15 +2,15 @@ import { expect } from 'jsr:@std/expect';
 import { describe, test } from 'jsr:@std/testing/bdd';
 import { Log } from '../mod.ts';
 
-type M = Log.MsgBuilder.Console;
+type M = Log.MsgBuilder.Console.Builder;
 
 describe('Logger Nesting', () => {
   test('should correctly handle a single level of nesting', () => {
     const logMgr = new Log.Mgr<M>();
     logMgr.threshold = 'spam';
-    const rootLogger = logMgr.getLogger() as Log.std.Logger<M>;
+    const rootLogger = logMgr.getLogger() as Log.Std.Logger<M>;
     rootLogger.pkg = 'root';
-    const childLogger = rootLogger.getChild({ sid: 'session1', reqId: 'req1', pkg: 'child1' }) as Log.std.Logger<M>;
+    const childLogger = rootLogger.getChild({ sid: 'session1', reqId: 'req1', pkg: 'child1' }) as Log.Std.Logger<M>;
 
     const entry = childLogger.info.h1('Test message').emit();
     expect(entry).toBeDefined();
@@ -24,10 +24,10 @@ describe('Logger Nesting', () => {
   test('should correctly handle multiple levels of nesting', () => {
     const logMgr = new Log.Mgr<M>();
     logMgr.threshold = 'spam';
-    const rootLogger = logMgr.getLogger() as Log.std.Logger<M>;
+    const rootLogger = logMgr.getLogger() as Log.Std.Logger<M>;
     rootLogger.pkg = 'root';
-    const childLogger = rootLogger.getChild({ sid: 'session1', reqId: 'req1', pkg: 'child1' }) as Log.std.Logger<M>;
-    const grandChildLogger = childLogger.getChild({ reqId: 'req2', pkg: 'child2' }) as Log.std.Logger<M>;
+    const childLogger = rootLogger.getChild({ sid: 'session1', reqId: 'req1', pkg: 'child1' }) as Log.Std.Logger<M>;
+    const grandChildLogger = childLogger.getChild({ reqId: 'req2', pkg: 'child2' }) as Log.Std.Logger<M>;
 
     const entry = grandChildLogger.info.h1('Test message').emit();
     expect(entry).toBeDefined();
@@ -41,9 +41,9 @@ describe('Logger Nesting', () => {
   test('should overwrite sid in child logger', () => {
     const logMgr = new Log.Mgr<M>();
     logMgr.threshold = 'spam';
-    const rootLogger = logMgr.getLogger() as Log.std.Logger<M>;
+    const rootLogger = logMgr.getLogger() as Log.Std.Logger<M>;
     rootLogger.sid = 'session1';
-    const childLogger = rootLogger.getChild({ sid: 'session2' }) as Log.std.Logger<M>;
+    const childLogger = rootLogger.getChild({ sid: 'session2' }) as Log.Std.Logger<M>;
 
     const entry = childLogger.info.h1('Test message').emit();
     expect(entry).toBeDefined();
@@ -56,9 +56,9 @@ describe('Logger Nesting', () => {
     const logMgr = new Log.Mgr<M>();
     logMgr.threshold = 'spam';
     logMgr.show = { level: true, package: true, sid: true, reqId: true };
-    const rootLogger = logMgr.getLogger() as Log.std.Logger<M>;
+    const rootLogger = logMgr.getLogger() as Log.Std.Logger<M>;
     rootLogger.pkg = 'root';
-    const childLogger = rootLogger.getChild({ sid: 'session1', reqId: 'req1', pkg: 'child1' }) as Log.std.Logger<M>;
+    const childLogger = rootLogger.getChild({ sid: 'session1', reqId: 'req1', pkg: 'child1' }) as Log.Std.Logger<M>;
 
     let output = '';
     const originalLog = console.log;
@@ -66,7 +66,7 @@ describe('Logger Nesting', () => {
       output = msg;
     };
 
-    const transport = new Log.Transport.Console(logMgr);
+    const transport = new Log.Transport.Console.Transport(logMgr);
     logMgr.transportMgr.add(transport);
 
     childLogger.info.h1('Test message').emit();
