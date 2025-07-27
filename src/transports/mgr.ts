@@ -121,7 +121,7 @@ export class TransportMgr<M extends MsgBuilder.Base.IBuilder = MsgBuilder.Consol
       const msg: Log.Entry = {
         level: lowestLogLevel,
         msg: `Added transport '${name}'`,
-        pkgs: 'logger.transport.add',
+        pkgs: ['logger', 'transport', 'add'],
         data: { transport: name, options: topts },
       };
       this._logMgr.emit(msg);
@@ -148,7 +148,7 @@ export class TransportMgr<M extends MsgBuilder.Base.IBuilder = MsgBuilder.Consol
     });
     const msg: Log.Entry = {
       level: 'info',
-      pkgs: 'logger.transport.remove',
+      pkgs: ['logger', 'transport', 'remove'],
       msg: `Removed transport '${name}'`,
     };
 

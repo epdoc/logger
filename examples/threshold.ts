@@ -4,6 +4,8 @@
  */
 import { Log } from '../mod.ts';
 
+const filename = new URL(import.meta.url).pathname.split('/').pop();
+
 // 1. SETUP
 // Get a standard logger instance.
 const logMgr = new Log.Mgr();
@@ -11,7 +13,7 @@ const log = logMgr.getLogger<Log.Std.Logger<Log.MsgBuilder.Console.Builder>>();
 
 console.log('--- Timestamp Examples ---');
 
-log.info.section('Start threshold.ts').emit();
+log.info.section(`Begin ${filename}`).emit();
 
 // 2. DEFAULT TIMESTAMP
 // By default, no timestamp is shown.
@@ -62,4 +64,4 @@ log.threshold = 'debug';
 console.log(`LogMgr threshold: ${logMgr.threshold}, Logger threshold: ${log.threshold}`);
 log.debug.h2('This debug message will NOT be seen.').emit();
 log.info.h2('This info message WILL be seen, and the debug message above this line will NOT be seen.').emit();
-log.info.section('Finish').emit();
+log.info.section(`End ${filename}`).emit();

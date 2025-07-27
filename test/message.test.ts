@@ -10,7 +10,8 @@ const logMgr = new Log.Mgr<M>();
 describe('Log.Entity', () => {
   test('test', () => {
     const log: Log.Std.Logger<M> = logMgr.getLogger() as Log.Std.Logger<M>;
-    log.setPackage('testpkg').setThreshold('info');
+    log.pkgs.push('testpkg');
+    log.threshold = 'info';
     const msgBuilder = new Log.MsgBuilder.Console.Builder('INFO', log);
     msgBuilder.h1('message heading');
     const str = msgBuilder.format(false);
@@ -19,7 +20,8 @@ describe('Log.Entity', () => {
     if (record) {
       expect(record.level).toBe('INFO');
       expect(record.msg).toBeInstanceOf(Log.MsgBuilder.Console.Builder);
-      expect(record.pkgs).toBe('testpkg');
+      expect(record.pkgs).toEqual(['testpkg']);
+      expect(record.reqIds).toBeUndefined();
       expect(record.timestamp).toBeInstanceOf(Date);
       if (isDate(record.timestamp)) {
         const diff = Math.abs(record.timestamp.getTime() - new Date().getTime());

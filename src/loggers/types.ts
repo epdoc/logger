@@ -19,11 +19,11 @@ export interface IEmitter extends IMark {
    * Appends a package name to the logger's context.
    * @param {string} val - The package name (e.g., `ClassName.methodName`).
    */
-  set pkg(val: string);
+  // set pkg(val: string);
   /**
    * Retrieves the fully-qualified, dot-separated package name.
    */
-  get pkg(): string;
+  // get pkg(): string;
   /**
    * Retrieves the array of package names.
    * @internal
@@ -33,11 +33,11 @@ export interface IEmitter extends IMark {
    * Appends a request ID to the logger's context.
    * @param {string} val - The unique request identifier.
    */
-  set reqId(val: string);
+  // set reqId(val: string);
   /**
    * Retrieves the fully-qualified, dot-separated request ID.
    */
-  get reqId(): string;
+  // get reqId(): string;
   /**
    * Retrieves the array of request IDs.
    * @internal

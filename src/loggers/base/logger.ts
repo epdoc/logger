@@ -1,5 +1,5 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import { isNonEmptyArray, isString } from '@epdoc/type';
+import { isString } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import type * as Level from '../../levels/mod.ts';
 import type { LogMgr } from '../../logmgr.ts';
@@ -99,14 +99,10 @@ export abstract class AbstractLogger<M extends MsgBuilder.Base.IBuilder> impleme
         this._sid = params.sid;
       }
       // Handle reqId efficiently
-      if (isNonEmptyArray(params.reqId)) {
-        this._reqIds.push(...params.reqId);
-      } else if (isString(params.reqId)) {
+      if (isString(params.reqId)) {
         this._reqIds.push(params.reqId);
       }
-      if (isNonEmptyArray(params.pkg)) {
-        this._pkgs.push(...params.pkg);
-      } else if (isString(params.pkg)) {
+      if (isString(params.pkg)) {
         this._pkgs.push(params.pkg);
       }
     }
@@ -154,48 +150,6 @@ export abstract class AbstractLogger<M extends MsgBuilder.Base.IBuilder> impleme
   }
 
   /**
-   * Appends a package name to the logger's context.
-   *
-   * @remarks
-   * The `pkg` is used to trace the origin of a log message, often representing
-   * a class or module. Nested packages are joined with a dot (`.`).
-   *
-   * @param {string} val - The package name to add.
-   */
-  public set pkg(val: string) {
-    this._pkgs.push(val);
-  }
-
-  /**
-   * Retrieves the fully-qualified, dot-separated package name.
-   * @internal
-   */
-  public get pkg(): string {
-    return this._pkgs.join('.');
-  }
-
-  /**
-   * Retrieves the array of package names.
-   * @internal
-   */
-  public get pkgs(): string[] {
-    return this._pkgs;
-  }
-
-  /**
-   * Appends a package name to the logger's context in a chainable manner.
-   *
-   * @param {string} [val] - The package name to add.
-   * @returns {this} The current logger instance.
-   */
-  public setPackage(val: string | undefined): this {
-    if (val) {
-      this._pkgs.push(val);
-    }
-    return this;
-  }
-
-  /**
    * Sets the session ID for the logger's context.
    *
    * @remarks
@@ -217,29 +171,14 @@ export abstract class AbstractLogger<M extends MsgBuilder.Base.IBuilder> impleme
   }
 
   /**
-   * Appends a request ID to the logger's context.
-   *
-   * @remarks
-   * The `reqId` is a unique identifier for a single operation or request,
-   * allowing all related logs to be traced together.
-   *
-   * @param {string} val - The request ID to add.
+   * Retrieves the pkg array. Callers can use push and pull to populate the array.
    */
-  public set reqId(val: string) {
-    this._reqIds.push(val);
+  public get pkgs(): string[] {
+    return this._pkgs;
   }
 
   /**
-   * Retrieves the fully-qualified, dot-separated request ID string.
-   * @internal
-   */
-  public get reqId(): string {
-    return this._reqIds.join('.');
-  }
-
-  /**
-   * Retrieves the array of request IDs.
-   * @internal
+   * Retrieves the array of request IDs. Callers can use push and pull to populate the array.
    */
   public get reqIds(): string[] {
     return this._reqIds;
@@ -252,12 +191,12 @@ export abstract class AbstractLogger<M extends MsgBuilder.Base.IBuilder> impleme
    * @returns {this} The current logger instance.
    * @internal
    */
-  setReqId(val: string | undefined): this {
-    if (val) {
-      this._reqIds.push(val);
-    }
-    return this;
-  }
+  // setReqId(val: string | undefined): this {
+  //   if (val) {
+  //     this._reqIds.push(val);
+  //   }
+  //   return this;
+  // }
 
   /**
    * Gets the active log level configuration from the log manager.

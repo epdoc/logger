@@ -16,4 +16,4 @@ export * from './loggers/mod.ts';
 export { type ILogMgrSettings as IMgrSettings, LogMgr as Mgr } from './logmgr.ts';
 export * as MsgBuilder from './message/mod.ts';
 export * as Transport from './transports/mod.ts';
-export type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from './types.ts';
+export type { EmitterShowKey, EmitterShowOpts, Entry, MgrOpts, TimestampFormatType } from './types.ts';

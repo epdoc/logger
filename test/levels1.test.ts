@@ -15,7 +15,7 @@ import { Log } from '../mod.ts';
 describe('levels', () => {
   describe('cli', () => {
     test('values', () => {
-      const logLevels = Log.Cli.createLogLevels();
+      const logLevels = Log.Cli.factoryMethods.createLevels();
       assertEquals(logLevels.names, [
         'ERROR',
         'WARN',
@@ -42,7 +42,7 @@ describe('levels', () => {
     });
 
     test('cli threshold', () => {
-      const logLevels = Log.Cli.createLogLevels();
+      const logLevels = Log.Cli.factoryMethods.createLevels();
       assertEquals(logLevels.meetsThreshold(4, 4), true);
       assertEquals(logLevels.meetsThreshold(4, 5), true);
       assertEquals(logLevels.meetsThreshold(5, 4), false);
@@ -50,7 +50,7 @@ describe('levels', () => {
     });
 
     test('cli flush threshold', () => {
-      const logLevels = Log.Cli.createLogLevels();
+      const logLevels = Log.Cli.factoryMethods.createLevels();
       assertEquals(logLevels.meetsFlushThreshold('INFO'), false);
       assertEquals(logLevels.meetsFlushThreshold('DEBUG'), false);
       assertEquals(logLevels.meetsFlushThreshold('PROMPT'), false);
@@ -66,13 +66,13 @@ describe('levels', () => {
     });
 
     test('cli applyColors', () => {
-      const logLevels = Log.Cli.createLogLevels();
+      const logLevels = Log.Cli.factoryMethods.createLevels();
       assertEquals(logLevels.applyColors('hello', 'INFO'), '\u001b[32mhello\u001b[39m');
     });
   });
   describe('std', () => {
     test('values', () => {
-      const logLevels = Log.Std.createLogLevels();
+      const logLevels = Log.Std.factoryMethods.createLevels();
       assertEquals(logLevels.names, ['ERROR', 'WARN', 'INFO', 'VERBOSE', 'DEBUG', 'TRACE', 'SPAM']);
       assertEquals(logLevels.asValue('info'), 2);
       assertEquals(logLevels.asName(2), 'INFO');
@@ -85,7 +85,7 @@ describe('levels', () => {
     });
 
     test('std threshold', () => {
-      const logLevels = Log.Std.createLogLevels();
+      const logLevels = Log.Std.factoryMethods.createLevels();
       assertEquals(logLevels.meetsThreshold(4, 4), true);
       assertEquals(logLevels.meetsThreshold(4, 5), true);
       assertEquals(logLevels.meetsThreshold(5, 4), false);
@@ -93,7 +93,7 @@ describe('levels', () => {
     });
 
     test('std flush threshold', () => {
-      const logLevels = Log.Std.createLogLevels();
+      const logLevels = Log.Std.factoryMethods.createLevels();
       assertEquals(logLevels.meetsFlushThreshold('INFO'), false);
       assertEquals(logLevels.meetsFlushThreshold('DEBUG'), false);
       assertEquals(logLevels.meetsFlushThreshold('TRACE'), false);
@@ -106,7 +106,7 @@ describe('levels', () => {
     });
 
     test('std applyColors', () => {
-      const logLevels = Log.Cli.createLogLevels();
+      const logLevels = Log.Cli.factoryMethods.createLevels();
       assertEquals(logLevels.applyColors('hello', 'INFO'), '\u001b[32mhello\u001b[39m');
     });
   });

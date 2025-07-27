@@ -1,6 +1,6 @@
 import * as colors from '@std/fmt/colors';
 import type * as Level from '../../levels/mod.ts';
-import type * as Logger from '../../logger/mod.ts';
+import type * as Logger from '../../loggers/mod.ts';
 import type { StyleFormatterFn } from '../types.ts';
 import { ConsoleMsgBuilder } from './builder.ts';
 

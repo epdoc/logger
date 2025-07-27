@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logger",
-  "version": "1002.3.0-alpha.2",
+  "version": "1002.3.0-beta.1",
   "description": "Logging module with chainable formatting, express middleware mixins and extendable transports",
   "author": {
     "name": "James Pravetz",
@@ -10,7 +10,7 @@
   "tasks": {
     "test": "deno test -A",
     "lint": "deno lint",
-    "check": "deno check src examples",
+    "check": "deno check src examples test",
     "build": "deno run -A scripts/build_npm.ts",
     "publish_npm": "cd npm & npm publish --access public"
   },

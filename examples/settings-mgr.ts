@@ -1,6 +1,5 @@
 /**
- * This example demonstrates how to create and use a custom message builder
- * to extend the functionality of the logger.
+ * This example demonstrates how to setup Log.Mgr to use a custom message builder.
  */
 import os from 'node:os';
 import { Log } from '../mod.ts';

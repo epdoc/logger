@@ -36,8 +36,8 @@ const stdLogLevelDefs: Level.LogLevelsDef = {
   },
 } as const;
 
-export const stdFactoryMethods: IFactoryMethods<MsgBuilder.Base.Builder, StdLogger<MsgBuilder.Base.Builder>> = {
-  createLogger: <M extends MsgBuilder.Base.Builder>(
+export const stdFactoryMethods: IFactoryMethods<MsgBuilder.Base.IBuilder, StdLogger<MsgBuilder.Base.IBuilder>> = {
+  createLogger: <M extends MsgBuilder.Base.IBuilder>(
     log: LogMgr<M> | Base.IEmitter,
     params?: Base.IGetChildParams,
   ): StdLogger<M> => {

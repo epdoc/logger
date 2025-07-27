@@ -28,8 +28,8 @@ const cliLogLevelDefs: Level.LogLevelsDef = {
   silly: { val: 9, fmtFn: colors.magenta, lowest: true },
 } as const;
 
-export const cliFactoryMethods: IFactoryMethods<MsgBuilder.Base.Builder, CliLogger<MsgBuilder.Base.Builder>> = {
-  createLogger: <M extends MsgBuilder.Base.Builder>(
+export const cliFactoryMethods: IFactoryMethods<MsgBuilder.Base.IBuilder, CliLogger<MsgBuilder.Base.IBuilder>> = {
+  createLogger: <M extends MsgBuilder.Base.IBuilder>(
     log: LogMgr<M> | Base.IEmitter,
     params?: Base.IGetChildParams,
   ): CliLogger<M> => {

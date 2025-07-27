@@ -6,7 +6,7 @@ type M = Log.MsgBuilder.Console.Builder;
 type L = Log.Cli.Logger<M>;
 
 // Create a new Log Manager instance.
-const logMgr = new Log.Mgr<M>({ show: { level: true } }).factories(Log.Cli.factoryMethods);
+const logMgr = new Log.Mgr<M>({ show: { level: true } }).init(Log.Cli.factoryMethods);
 
 // Set the logger factory (also works)
 // logMgr.loggerFactory = Log.Cli.factoryMethods;

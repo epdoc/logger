@@ -54,17 +54,16 @@ export interface ILogMgrSettings {
  */
 export class LogMgr<
   M extends MsgBuilder.Base.IBuilder = MsgBuilder.Console.Builder,
-  L extends Logger.IEmitter = Logger.Std.Logger<M>,
 > {
   protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
   protected _logLevels: Level.IBasic | undefined;
-  protected _rootLogger: Logger.Base.IEmitter | undefined;
+  protected _rootLogger: Logger.IEmitter | undefined;
   protected _msgBuilder: MsgBuilder.Base.IBuilder | undefined;
   protected _threshold: Level.Value = 5;
   protected _show: Log.EmitterShowOpts = { reqIdSep: '.', pkgSep: '.' };
-  protected _pkg: string = '';
-  protected _reqId: string = '';
+  // protected _pkg: string = '';
+  // protected _reqId: string = '';
   protected _mark: Record<string, HrMilliseconds> = {};
   protected _bRunning = true;
   protected _queue: Log.Entry[] = [];
@@ -74,7 +73,7 @@ export class LogMgr<
 
   // protected registeredLogLevels: Record<
   //   string,
-  //   { levels: Level.FactoryMethod; logger: Logger.FactoryMethod<M, Logger.Base.IEmitter> }
+  //   { levels: Level.FactoryMethod; logger: Logger.FactoryMethod<M, Logger.IEmitter> }
   // > = {
   //   cli: { levels: Logger.Cli.createLogLevels, logger: Logger.Cli.createLogger },
   //   std: { levels: Logger.Std.createLogLevels, logger: Logger.Std.createLogger },
@@ -105,16 +104,25 @@ export class LogMgr<
     return this._msgBuilderFactory;
   }
 
-  public set loggerFactory(factories: Logger.IFactoryMethods<M, Logger.Base.IEmitter>) {
-    this.factories(factories);
+  public set loggerFactory(factories: Logger.IFactoryMethods<M, Logger.IEmitter>) {
+    this.init(factories);
   }
 
-  public get loggerFactory(): Logger.IFactoryMethods<M, Logger.Base.IEmitter> {
+  public get loggerFactory(): Logger.IFactoryMethods<M, Logger.IEmitter> {
     return this._loggerFactories;
   }
 
-  public factories(factories: Logger.IFactoryMethods<M, Logger.Base.IEmitter>): this {
-    this._loggerFactories = factories;
+  /**
+   * Initialize the log levels and logger configuration, specifying the Logger that we are going to use. If using the default logger, you
+   * can skip this step and allow getLogger to initialize the log levels. However in
+   * this situation you cannot set threshold values until the log levels are initialized.
+   * @param factories
+   * @returns
+   */
+  public init(factories?: Logger.IFactoryMethods<M, Logger.IEmitter>): this {
+    if (factories) {
+      this._loggerFactories = factories;
+    }
     this._logLevels = this._loggerFactories.createLevels();
     this._rootLogger = this._loggerFactories.createLogger(this);
     return this;
@@ -129,7 +137,7 @@ export class LogMgr<
   public set threshold(level: Level.Name | Level.Value) {
     assert(
       this._logLevels,
-      'LogLevels must be set before setting threshold. Have you called getLogger?',
+      'Methods init() or getLogger() must be called before setting log level threshold.',
     );
     this._threshold = this.logLevels.asValue(level);
     if (this._rootLogger) {
@@ -141,7 +149,7 @@ export class LogMgr<
           }) is less restrictive than root logger threshold (${
             this.logLevels.asName(this._rootLogger.threshold)
           }). Root logger threshold will apply.`,
-          pkgs: 'LogMgr',
+          pkgs: ['LogMgr'],
         };
         this.forceEmit(msg);
       }
@@ -176,7 +184,7 @@ export class LogMgr<
    * const logger = logMgr.getLogger<Log.std.Logger<Log.MsgBuilder.Console>>();
    * logger.info.text('Hello').emit();
    */
-  public getLogger<L extends Logger.Base.IEmitter>(): L {
+  public getLogger<L extends Logger.IEmitter>(): L {
     if (!this._rootLogger) {
       this._logLevels = this._loggerFactories.createLevels();
       this._rootLogger = this._loggerFactories.createLogger(this);
@@ -198,7 +206,7 @@ export class LogMgr<
    * @param level - The log level.
    * @param logger - The logger instance to associate with this message builder.
    */
-  public getMsgBuilder(level: string, emitter: Logger.Base.IEmitter): M {
+  public getMsgBuilder(level: string, emitter: Logger.IEmitter): M {
     const meetsThreshold = this.meetsThreshold(level);
     const meetsFlushThreshold = this.meetsFlushThreshold(level);
     return this._msgBuilderFactory(level, emitter, meetsThreshold, meetsFlushThreshold) as unknown as M;

@@ -1,5 +1,5 @@
 import type * as Level from '../levels/mod.ts';
-import type * as Logger from '../logger/mod.ts';
+import type * as Logger from '../loggers/mod.ts';
 import type * as MsgBuilder from '../message/mod.ts';
 
 /**
@@ -22,5 +22,5 @@ export const OutputFormat = {
  * @returns {AbstractMsgBuilder<M>} A new transport instance.
  */
 export interface IStaticMsgBuilder {
-  create(level: Level.Name, emitter: Logger.Base.IEmitter): MsgBuilder.Base.Builder;
+  create(level: Level.Name, emitter: Logger.Base.IEmitter): MsgBuilder.Base.IBuilder;
 }

@@ -11,12 +11,12 @@ import type * as Logger from './types.ts';
  * @param {Logger.IGetChildParams} [opts] - Optional parameters for child logger creation.
  * @returns {Logger.IEmitter} A new logger instance.
  */
-export type FactoryMethod<M extends MsgBuilder.Base.Builder, L extends Logger.IEmitter> = (
+export type FactoryMethod<M extends MsgBuilder.Base.IBuilder, L extends Logger.IEmitter> = (
   logMgr: LogMgr<M> | Logger.IEmitter,
   opts?: Logger.IGetChildParams,
 ) => L;
 
-export interface IFactoryMethods<M extends MsgBuilder.Base.Builder, L extends Logger.IEmitter> {
+export interface IFactoryMethods<M extends MsgBuilder.Base.IBuilder, L extends Logger.IEmitter> {
   createLogger: FactoryMethod<M, L>;
   createLevels: Levels.FactoryMethod;
   logLevelNames: () => string[];
