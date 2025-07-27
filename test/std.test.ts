@@ -84,7 +84,7 @@ Deno.test('std logger with elapsed and level and threshold', () => {
   log.spam.h1('Level').value('spam').emit('emit');
 });
 Deno.test('std logger with elapsed and level and pkg', () => {
-  logMgr.show = { timestamp: 'utc', level: true, package: true };
+  logMgr.show = { timestamp: 'utc', level: true, pkg: true };
   const log = logMgr.getLogger() as Log.Std.Logger<M>;
   log.info.h1('test:').value('std logger with elapsed and level and pkg').emit();
   log.setPackage('mypkg');
@@ -96,7 +96,7 @@ Deno.test('std logger with elapsed and level and pkg', () => {
   log.spam.h1('Level').value('spam').emit('emit');
 });
 Deno.test('std logger with elapsed and level and pkg and mark', () => {
-  logMgr.show = { timestamp: 'utc', level: true, package: true };
+  logMgr.show = { timestamp: 'utc', level: true, pkg: true };
   const log = logMgr.getLogger() as Log.Std.Logger<M>;
   log.setPackage('mypkg');
   const m1 = log.mark();

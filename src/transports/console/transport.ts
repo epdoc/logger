@@ -124,7 +124,7 @@ export class ConsoleTransport<M extends MsgBuilder.Base.IBuilder> extends Base.T
         parts.push(this.styledLevel(entry.level, show.level));
       }
 
-      if (show.package && _.isNonEmptyString(entry.package)) {
+      if (show.pkg && _.isNonEmptyString(entry.package)) {
         parts.push(this._styledString(entry.package, false, '_package'));
       }
 

@@ -5,7 +5,7 @@ import { Log } from '../mod.ts';
 type M = Log.MsgBuilder.Console.Builder;
 const logMgr = new Log.Mgr<M>();
 logMgr.threshold = 'spam';
-logMgr.show = { level: true, timestamp: 'elapsed', package: true, sid: true, reqId: true, data: true };
+logMgr.show = { level: true, timestamp: 'elapsed', pkg: true, sid: true, reqId: true, data: true };
 
 // function testOutput(log:Log.Std.Logger,{}) {
 //   log.info.h1()

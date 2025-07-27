@@ -79,7 +79,7 @@ export const logMgr = new Log.Mgr<CustomMsgBuilder>();
 // Register the factory method for the custom message builder.
 logMgr.msgBuilderFactory = createCustomMsgBuilder;
 // Configure the log output format.
-logMgr.show = { level: true, timestamp: 'elapsed', reqId: true, sid: true, package: true };
+logMgr.show = { level: true, timestamp: 'elapsed', reqId: true, sid: true, pkg: true };
 // Set the logging threshold.
 logMgr.threshold = 'info';
 // Get a logger instance from the manager, casting it to use the custom builder type.

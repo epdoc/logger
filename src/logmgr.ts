@@ -61,7 +61,7 @@ export class LogMgr<
   protected _rootLogger: Logger.Base.IEmitter | undefined;
   protected _msgBuilder: MsgBuilder.Base.IBuilder | undefined;
   protected _threshold: Level.Value = 5;
-  protected _show: Log.EmitterShowOpts = {};
+  protected _show: Log.EmitterShowOpts = { reqIdSep: '.', pkgSep: '.' };
   protected _pkg: string = '';
   protected _reqId: string = '';
   protected _mark: Record<string, HrMilliseconds> = {};
@@ -81,7 +81,26 @@ export class LogMgr<
    *
    * @param {Level.FactoryMethod} [levelsFactory=std.createLogLevels] - A function that returns a log level configuration.
    */
-  constructor(levelsFactory: Level.FactoryMethod = Logger.Std.createLogLevels) {
+  constructor(opts: Log.MgrOpts<L, M> = {}) {
+    this._logLevels = opts.levels ? opts.levels() : Logger.Std.createLogLevels();
+    if (opts.show) {
+      this._show = Object.assign(this._show, opts.show);
+    }
+    if (opts.threshold) {
+      this.threshold = opts.threshold;
+    }
+    if (opts.levels) {
+      this._logLevels = opts.levels();
+    }
+    if (opts.msgBuilderFactory) {
+      this._msgBuilderFactory = opts.msgBuilderFactory;
+    }
+    if (opts.loggerFactory) {
+      this._loggerFactory = opts.loggerFactory;
+    }
+  }
+
+  constructor2(levelsFactory: Level.FactoryMethod = Logger.Std.createLogLevels) {
     this._logLevels = levelsFactory();
     // this._transports = [Transport.factoryMethod<M>(this)];
   }
