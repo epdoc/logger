@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logger",
-  "version": "1002.3.0-alpha.1",
+  "version": "1002.3.0-alpha.2",
   "description": "Logging module with chainable formatting, express middleware mixins and extendable transports",
   "author": {
     "name": "James Pravetz",

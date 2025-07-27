@@ -1,11 +1,11 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isNonEmptyArray, isString } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
-import type * as Level from '../../levels/types.ts';
+import type * as Level from '../../levels/mod.ts';
 import type { LogMgr } from '../../logmgr.ts';
 import type * as MsgBuilder from '../../message/mod.ts';
-import type { EmitterShowOpts, Entry } from '../../types.ts';
-import type { IEmitter, IGetChildParams, IInherit, ILevels } from './types.ts';
+import type * as Log from '../../types.ts';
+import type { IEmitter, IGetChildParams, IInherit, ILevels } from '../types.ts';
 
 let markId = 0;
 
@@ -39,7 +39,7 @@ export abstract class AbstractLogger<M extends MsgBuilder.Base.IBuilder> impleme
   protected _logMgr: LogMgr<M>;
   protected _parent: this | undefined;
   protected _threshold: Level.Value | undefined;
-  protected _show: EmitterShowOpts = { reqIdSep: '.', pkgSep: '.' };
+  protected _show: Log.EmitterShowOpts = { reqIdSep: '.', pkgSep: '.' };
   protected _pkgs: string[] = [];
   protected _reqIds: string[] = [];
   protected _sid: string | undefined;
@@ -58,6 +58,10 @@ export abstract class AbstractLogger<M extends MsgBuilder.Base.IBuilder> impleme
     if (params) {
       this.#appendParams(params);
     }
+  }
+
+  public getLogLevels(): ILevels {
+    return this;
   }
 
   /**
@@ -131,13 +135,19 @@ export abstract class AbstractLogger<M extends MsgBuilder.Base.IBuilder> impleme
     this._pkgs = [...logger._pkgs];
   }
 
+  get levels(): ILevels {
+    return this;
+  }
+
+  /**
+
   /**
    * Forwards a log entry to the {@link LogMgr} for processing, but only if it
    * meets the configured log level threshold.
    *
    * @param {Log.Entry} msg - The log entry to emit.
    */
-  public emit(msg: Entry): void {
+  public emit(msg: Log.Entry): void {
     if (this.meetsThreshold(msg.level) && msg.msg) {
       this._logMgr.emit(msg);
     }
@@ -288,7 +298,7 @@ export abstract class AbstractLogger<M extends MsgBuilder.Base.IBuilder> impleme
     this._threshold = this.logLevels.asValue(level);
     if (this._logMgr.threshold) {
       if (this._threshold > this._logMgr.threshold) {
-        const msg: Entry = {
+        const msg: Log.Entry = {
           level: this.logLevels.warnLevelName,
           msg: `Logger threshold ${this.logLevels.asName(this._threshold)} is less restrictive than LogMgr threshold ${
             this.logLevels.asName(this._logMgr.threshold)

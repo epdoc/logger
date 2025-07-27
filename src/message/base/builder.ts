@@ -1,6 +1,6 @@
 import { _, type Integer } from '@epdoc/type';
 import type * as Level from '../../levels/mod.ts';
-import type * as Logger from '../../logger/mod.ts';
+import type * as Logger from '../../loggers/mod.ts';
 import * as Transport from '../../transports/mod.ts';
 import type * as Log from '../../types.ts';
 import { StringUtil } from '../../util.ts';

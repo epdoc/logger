@@ -1,5 +1,5 @@
 import type { Name as LevelName } from '../levels/types.ts';
-import type * as Logger from '../logger/mod.ts';
+import type * as Logger from '../loggers/mod.ts';
 import type * as Transport from '../transports/types.ts';
 import type { Entry } from '../types.ts';
 import type * as Base from './base/mod.ts';

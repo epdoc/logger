@@ -1,11 +1,11 @@
 import type { Log } from '../mod.ts';
-import { log, logMgr } from './log.ts';
+import { log, logMgr } from './settings-mgr.ts';
 
 const showOpts: Log.EmitterShowOpts = {
   level: true,
   timestamp: 'elapsed',
   reqId: true,
-  package: true,
+  pkg: true,
 };
 
 logMgr.show = showOpts;

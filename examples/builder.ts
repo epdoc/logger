@@ -12,7 +12,7 @@ const _home = os.userInfo().homedir;
  * A factory method that the Log.Mgr will use to create new instances of our
  * custom message builder.
  */
-const createCustomMsgBuilder: Log.MsgBuilder.FactoryMethod = (
+export const createCustomMsgBuilder: Log.MsgBuilder.FactoryMethod = (
   level: Log.Level.Name,
   emitter: Log.Base.IEmitter,
   meetsThreshold: boolean,
@@ -73,25 +73,3 @@ export class CustomMsgBuilder extends Log.MsgBuilder.Console.Builder {
     return this;
   }
 }
-
-// Create a new Log Manager instance that will use our custom message builder.
-export const logMgr = new Log.Mgr<CustomMsgBuilder>();
-// Register the factory method for the custom message builder.
-logMgr.msgBuilderFactory = createCustomMsgBuilder;
-// Configure the log output format.
-logMgr.show = { level: true, timestamp: 'elapsed', reqId: true, sid: true, pkg: true };
-// Set the logging threshold.
-logMgr.threshold = 'info';
-// Get a logger instance from the manager, casting it to use the custom builder type.
-export const log = logMgr.getLogger<Log.Std.Logger<CustomMsgBuilder>>();
-
-// --- Example Usage ---
-log.info.section('Start log.ts').emit();
-
-// A standard log message using the built-in methods.
-log.info.h1('h1(header)').label('label(text)').emit();
-// A log message using our custom `customSection` method.
-log.info.customSection('heading').emit();
-// A log message using our custom `errCustom` method.
-log.info.errCustom(new Error('my error')).emit();
-log.info.section('Finish').emit();

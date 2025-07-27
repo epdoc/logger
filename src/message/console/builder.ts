@@ -2,7 +2,7 @@ import { asError, type Integer, isInteger, isNonEmptyString, isPosNumber } from 
 import os from 'node:os'; // Used for homedir in `relative`
 import { relative } from 'node:path';
 import type * as Level from '../../levels/mod.ts';
-import type * as Logger from '../../logger/mod.ts';
+import type * as Logger from '../../loggers/mod.ts';
 import type * as Log from '../../types.ts';
 import * as Base from '../base/mod.ts';
 import type * as MsgBuilder from '../types.ts';

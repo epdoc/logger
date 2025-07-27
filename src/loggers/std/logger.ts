@@ -1,7 +1,7 @@
 import type { LogMgr } from '../../logmgr.ts';
 import type * as MsgBuilder from '../../message/mod.ts';
-import type * as Base from '../base/mod.ts';
 import * as Indent from '../indent/mod.ts';
+import type * as Logger from '../types.ts';
 import type { IStdLogger } from './types.ts';
 
 /**
@@ -24,7 +24,7 @@ import type { IStdLogger } from './types.ts';
  * @template M - The type of message builder used by the logger.
  */
 export class StdLogger<M extends MsgBuilder.Base.IBuilder> extends Indent.Logger<M>
-  implements IStdLogger<M>, Base.IEmitter {
+  implements IStdLogger<M>, Logger.IEmitter {
   /**
    * Creates a shallow copy of the current `StdLogger` instance.
    * @returns {this} A new `StdLogger` instance with copied properties.

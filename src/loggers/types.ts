@@ -1,7 +1,9 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import type { IBasic as LevelIBasic } from '../../levels/ibasic.ts';
-import type * as Level from '../../levels/types.ts';
-import type { Entry } from '../../types.ts';
+import type { IBasic as LevelIBasic } from '../levels/ibasic.ts';
+import type * as Level from '../levels/types.ts';
+import type { Entry } from '../types.ts';
+
+export * from './factory.ts';
 
 /**
  * Defines the core contract for a logger, responsible for emitting log entries

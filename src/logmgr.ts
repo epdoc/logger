@@ -2,7 +2,7 @@ import type { HrMilliseconds } from '@epdoc/duration';
 import { assert } from '@std/assert';
 // import { cli, ILogLevels, type Level.Name, Level.Value, LogLevelFactoryMethod, std } from './levels/index.ts';
 import type * as Level from './levels/mod.ts';
-import * as Logger from './logger/mod.ts';
+import * as Logger from './loggers/mod.ts';
 import * as MsgBuilder from './message/mod.ts';
 import * as Transport from './transports/mod.ts';
 import type * as Log from './types.ts';
@@ -54,6 +54,7 @@ export interface ILogMgrSettings {
  */
 export class LogMgr<
   M extends MsgBuilder.Base.IBuilder = MsgBuilder.Console.Builder,
+  L extends Logger.IEmitter = Logger.Std.Logger<M>,
 > {
   protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
@@ -69,41 +70,32 @@ export class LogMgr<
   protected _queue: Log.Entry[] = [];
   readonly transportMgr: Transport.Mgr<M> = new Transport.Mgr<M>(this);
   protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.createMsgBuilder;
-  protected _loggerFactory: Logger.FactoryMethod<M, Logger.Base.IEmitter> = Logger.Std.createLogger;
+  protected _loggerFactories: Logger.IFactoryMethods<M, Logger.IEmitter> = Logger.Std.factoryMethods;
 
-  protected _registeredLogLevels: Record<string, Level.FactoryMethod> = {
-    cli: Logger.Cli.createLogLevels,
-    std: Logger.Std.createLogLevels,
-  };
+  // protected registeredLogLevels: Record<
+  //   string,
+  //   { levels: Level.FactoryMethod; logger: Logger.FactoryMethod<M, Logger.Base.IEmitter> }
+  // > = {
+  //   cli: { levels: Logger.Cli.createLogLevels, logger: Logger.Cli.createLogger },
+  //   std: { levels: Logger.Std.createLogLevels, logger: Logger.Std.createLogger },
+  // };
 
   /**
    * Creates an instance of LogMgr.
    *
    * @param {Level.FactoryMethod} [levelsFactory=std.createLogLevels] - A function that returns a log level configuration.
    */
-  constructor(opts: Log.MgrOpts<L, M> = {}) {
-    this._logLevels = opts.levels ? opts.levels() : Logger.Std.createLogLevels();
+  constructor(opts: Log.MgrOpts = {}) {
     if (opts.show) {
       this._show = Object.assign(this._show, opts.show);
     }
-    if (opts.threshold) {
-      this.threshold = opts.threshold;
-    }
-    if (opts.levels) {
-      this._logLevels = opts.levels();
-    }
-    if (opts.msgBuilderFactory) {
-      this._msgBuilderFactory = opts.msgBuilderFactory;
-    }
-    if (opts.loggerFactory) {
-      this._loggerFactory = opts.loggerFactory;
-    }
+    // this._logLevels = this._loggerFactories.createLevels();
   }
 
-  constructor2(levelsFactory: Level.FactoryMethod = Logger.Std.createLogLevels) {
-    this._logLevels = levelsFactory();
-    // this._transports = [Transport.factoryMethod<M>(this)];
-  }
+  // constructor2(levelsFactory: Level.FactoryMethod = Logger.Std.createLogLevels) {
+  //   this._logLevels = levelsFactory();
+  //   // this._transports = [Transport.factoryMethod<M>(this)];
+  // }
 
   public set msgBuilderFactory(msgBuilderFactory: MsgBuilder.FactoryMethod) {
     this._msgBuilderFactory = msgBuilderFactory;
@@ -113,12 +105,19 @@ export class LogMgr<
     return this._msgBuilderFactory;
   }
 
-  public set loggerFactory(loggerFactory: Logger.FactoryMethod<M, Logger.Base.IEmitter>) {
-    this._loggerFactory = loggerFactory;
+  public set loggerFactory(factories: Logger.IFactoryMethods<M, Logger.Base.IEmitter>) {
+    this.factories(factories);
   }
 
-  public get loggerFactory(): Logger.FactoryMethod<M, Logger.Base.IEmitter> {
-    return this._loggerFactory;
+  public get loggerFactory(): Logger.IFactoryMethods<M, Logger.Base.IEmitter> {
+    return this._loggerFactories;
+  }
+
+  public factories(factories: Logger.IFactoryMethods<M, Logger.Base.IEmitter>): this {
+    this._loggerFactories = factories;
+    this._logLevels = this._loggerFactories.createLevels();
+    this._rootLogger = this._loggerFactories.createLogger(this);
+    return this;
   }
 
   /**
@@ -130,7 +129,7 @@ export class LogMgr<
   public set threshold(level: Level.Name | Level.Value) {
     assert(
       this._logLevels,
-      'LogLevels must be set before calling setThreshold. Have you registered and configured your logger?',
+      'LogLevels must be set before setting threshold. Have you called getLogger?',
     );
     this._threshold = this.logLevels.asValue(level);
     if (this._rootLogger) {
@@ -178,15 +177,16 @@ export class LogMgr<
    * logger.info.text('Hello').emit();
    */
   public getLogger<L extends Logger.Base.IEmitter>(): L {
+    if (!this._rootLogger) {
+      this._logLevels = this._loggerFactories.createLevels();
+      this._rootLogger = this._loggerFactories.createLogger(this);
+    }
     if (!this.transportMgr.transports.length) {
       const transport = new Transport.Console.Transport(this, { show: this._show });
       this.transportMgr.add(transport);
     }
     if (!this.transportMgr.running) {
       this.start();
-    }
-    if (!this._rootLogger) {
-      this._rootLogger = this._loggerFactory(this);
     }
     return this._rootLogger as L;
   }

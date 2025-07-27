@@ -1,8 +1,6 @@
 import type { TimestampFormat } from './consts.ts';
 import type * as Level from './levels/mod.ts';
-import type * as Logger from './logger/mod.ts';
 import type * as MsgBuilder from './message/mod.ts';
-import type * as Transport from './transports/mod.ts';
 
 /**
  * A type representing the allowed values for timestamp formatting.
@@ -76,33 +74,11 @@ export type EmitterShowOpts = {
 export type EmitterShowKey = keyof EmitterShowOpts;
 
 /**
- * Defines the options for configuring a {@link LogMgr} instance.
- *
- * @template L - The type of the logger that this manager will produce.
+ * Defines the constructor options for configuring a {@link LogMgr} instance.
  */
-export type MgrOpts<L extends Logger.Base.IEmitter, M extends MsgBuilder.Base.IBuilder> = Partial<{
+export type MgrOpts = Partial<{
   /**
    * Options for controlling the visibility of different metadata fields in the final log output.
    */
   show: EmitterShowOpts;
-  /**
-   * The minimum log level required for messages to be processed.
-   */
-  threshold: Level.Name;
-  /**
-   * A factory method for creating log level configurations.
-   */
-  levels: Level.FactoryMethod;
-  /**
-   * A factory method for creating message builders.
-   */
-  msgBuilderFactory: MsgBuilder.FactoryMethod;
-  /**
-   * A factory method for creating logger instances.
-   */
-  loggerFactory: Logger.FactoryMethod<L>;
-  /**
-   * An array of transport instances to which log messages will be sent.
-   */
-  transports: Transport.Base.Transport<M>[];
 }>;
