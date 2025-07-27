@@ -39,7 +39,7 @@ export abstract class AbstractLogger<M extends MsgBuilder.Base.IBuilder> impleme
   protected _logMgr: LogMgr<M>;
   protected _parent: this | undefined;
   protected _threshold: Level.Value | undefined;
-  protected _show: EmitterShowOpts = {};
+  protected _show: EmitterShowOpts = { reqIdSep: '.', pkgSep: '.' };
   protected _pkgs: string[] = [];
   protected _reqIds: string[] = [];
   protected _sid: string | undefined;

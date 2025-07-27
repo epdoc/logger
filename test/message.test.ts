@@ -19,7 +19,7 @@ describe('Log.Entity', () => {
     if (record) {
       expect(record.level).toBe('INFO');
       expect(record.msg).toBeInstanceOf(Log.MsgBuilder.Console.Builder);
-      expect(record.package).toBe('testpkg');
+      expect(record.pkgs).toBe('testpkg');
       expect(record.timestamp).toBeInstanceOf(Date);
       if (isDate(record.timestamp)) {
         const diff = Math.abs(record.timestamp.getTime() - new Date().getTime());

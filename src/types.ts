@@ -25,9 +25,9 @@ export type Entry = {
   /** A session identifier, often tied to a user. */
   sid?: string;
   /** A unique identifier for a specific request or operation. */
-  reqId?: string;
+  reqIds?: string;
   /** A namespace, such as a class or module name, for context. */
-  package?: string;
+  pkgs?: string;
   /** The log message, which can be a simple string or a formatable object. */
   msg: string | MsgBuilder.IFormat | undefined;
   /** Any structured data associated with the log entry. */
@@ -66,8 +66,8 @@ export type EmitterShowOpts = {
   pkg?: boolean | number;
   /** Controls the display of structured data. */
   data?: boolean;
-  reqIdSep: string;
-  pkgSep: string;
+  reqIdSep?: string;
+  pkgSep?: string;
 };
 
 /**

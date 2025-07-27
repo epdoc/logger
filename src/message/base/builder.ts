@@ -260,10 +260,10 @@ export abstract class AbstractMsgBuilder implements IBuilder, IFormat {
         entry.sid = this._emitter.sid;
       }
       if (_.isNonEmptyArray(this._emitter.reqIds)) {
-        entry.reqId = this._emitter.reqIds.join('.');
+        entry.reqIds = this._emitter.reqIds.join('.');
       }
       if (_.isNonEmptyArray(this._emitter.pkgs)) {
-        entry.package = this._emitter.pkgs.join('.');
+        entry.pkgs = this._emitter.pkgs.join('.');
       }
       if (this._emitter) {
         this._emitter.emit(entry);

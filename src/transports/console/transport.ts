@@ -88,8 +88,14 @@ export class ConsoleTransport<M extends MsgBuilder.Base.IBuilder> extends Base.T
       {
         timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
       },
-      _.pick(msg, 'level', 'package', 'sid', 'reqId'),
+      _.pick(msg, 'level', 'sid'),
     );
+    if (_.isNonEmptyArray(msg.pkgs)) {
+      entry.pkg = msg.pkgs.join(this._show.pkgSep);
+    }
+    if (_.isNonEmptyArray(msg.reqIds)) {
+      entry.reqId = msg.reqIds.join(this._show.reqIdSep);
+    }
 
     if (msg.msg instanceof MsgBuilder.Base.Builder) {
       entry.msg = msg.msg.format(this._color, this._format);
@@ -108,7 +114,7 @@ export class ConsoleTransport<M extends MsgBuilder.Base.IBuilder> extends Base.T
         parts.push(null);
       }
       parts.push(entry.level ? this.styledLevel(entry.level, show.level) : null);
-      parts.push(entry.package ?? null);
+      parts.push(entry.pkg ?? null);
       parts.push(entry.sid ?? null);
       parts.push(entry.reqId ?? null);
       parts.push(entry.msg ?? null);
@@ -124,8 +130,8 @@ export class ConsoleTransport<M extends MsgBuilder.Base.IBuilder> extends Base.T
         parts.push(this.styledLevel(entry.level, show.level));
       }
 
-      if (show.pkg && _.isNonEmptyString(entry.package)) {
-        parts.push(this._styledString(entry.package, false, '_package'));
+      if (show.pkg && _.isNonEmptyString(entry.pkg)) {
+        parts.push(this._styledString(entry.pkg, false, '_package'));
       }
 
       if (show.sid && _.isNonEmptyString(entry.sid)) {

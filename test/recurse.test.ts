@@ -27,8 +27,8 @@ describe('recurse', () => {
     if (obj) {
       expect(obj.level).toBe('INFO');
       expect(obj.sid).toBe('sid1');
-      expect(obj.reqId).toBe('req1');
-      expect(obj.package).toBe('pkg1');
+      expect(obj.reqIds).toBe('req1');
+      expect(obj.pkgs).toBe('pkg1');
       expect(obj.msg).toBeInstanceOf(Log.MsgBuilder.Console.Builder);
     }
     const log2a = log1.getChild({ reqId: ['req2a'], pkg: ['pkg2a'], sid: 'sid2a' }) as Log.Std.Logger<M>;
@@ -46,8 +46,8 @@ describe('recurse', () => {
     if (obj3) {
       expect(obj3.level).toBe('INFO');
       expect(obj3.sid).toBe('sid3');
-      expect(obj3.reqId).toBe('req1.req2a.req3');
-      expect(obj3.package).toBe('pkg1.pkg2a.pkg3');
+      expect(obj3.reqIds).toBe('req1.req2a.req3');
+      expect(obj3.pkgs).toBe('pkg1.pkg2a.pkg3');
       expect(obj3.msg).toBeInstanceOf(Log.MsgBuilder.Console.Builder);
     }
     log2b.info.h1('log2b').label('label').value('info').emit();

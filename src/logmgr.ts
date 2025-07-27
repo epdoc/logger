@@ -142,7 +142,7 @@ export class LogMgr<
           }) is less restrictive than root logger threshold (${
             this.logLevels.asName(this._rootLogger.threshold)
           }). Root logger threshold will apply.`,
-          package: 'LogMgr',
+          pkgs: 'LogMgr',
         };
         this.forceEmit(msg);
       }

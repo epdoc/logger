@@ -16,8 +16,8 @@ describe('Logger Nesting', () => {
     expect(entry).toBeDefined();
     if (entry) {
       expect(entry.sid).toBe('session1');
-      expect(entry.reqId).toBe('req1');
-      expect(entry.package).toBe('root.child1');
+      expect(entry.reqIds).toBe('req1');
+      expect(entry.pkgs).toBe('root.child1');
     }
   });
 
@@ -33,8 +33,8 @@ describe('Logger Nesting', () => {
     expect(entry).toBeDefined();
     if (entry) {
       expect(entry.sid).toBe('session1');
-      expect(entry.reqId).toBe('req1.req2');
-      expect(entry.package).toBe('root.child1.child2');
+      expect(entry.reqIds).toBe('req1.req2');
+      expect(entry.pkgs).toBe('root.child1.child2');
     }
   });
 

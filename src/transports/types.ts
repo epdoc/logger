@@ -20,7 +20,7 @@ export type TransportEntry = Partial<{
   /** The formatted timestamp string. */
   timestamp: string;
   /** The package name. */
-  package: string;
+  pkg: string;
   /** The session ID. */
   sid: string;
   /** The request ID. */
