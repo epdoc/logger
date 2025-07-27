@@ -11,6 +11,12 @@
     "test": "deno test -A",
     "lint": "deno lint",
     "check": "deno check src examples test",
+    "docgen": "deno doc --html --name='@epdoc/logger' ./mod.ts",
+    "doclint": "deno doc --lint",
+    "doctest": "deno test --doc",
+    "docclean": "",
+    "publishtest": "deno publish --dry-run",
+    "publish": "deno publish",
     "build": "deno run -A scripts/build_npm.ts",
     "publish_npm": "cd npm & npm publish --access public"
   },

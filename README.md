@@ -32,11 +32,11 @@ rootLogger.info.text('Application has started.').emit();
 
 # Documentation
 
-- [Getting Started](./docs/getting-started.md)
-- [Configuration](./docs/configuration.md)
-- [Classes](./docs/loggers.md)
-- [Middleware](./docs/middleware.md)
-- [Customization Overview](./docs/cutomization.md)
+- [Getting Started](./chapters/getting-started.md)
+- [Configuration](./chapters/configuration.md)
+- [Classes](./chapters/loggers.md)
+- [Middleware](./chapters/middleware.md)
+- [Customization Overview](./chapters/cutomization.md)
 
 # Why Another Logger?
 
