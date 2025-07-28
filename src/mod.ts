@@ -4,7 +4,7 @@
  *
  * @remarks
  * It exports all the core components required for logging, including the
- * {@link Log.Mgr} for management, various logger implementations, and transport
+ * {@link LogMgr} for management, various {@link Logger} implementations, and transport
  * mechanisms. This centralized export structure simplifies imports and provides a
  * single entry point to access the library's functionalities.
  *
