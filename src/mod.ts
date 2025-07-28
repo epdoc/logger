@@ -1,6 +1,6 @@
 /**
- * The `Log` module serves as the top-level namespace for the entire logging
- * system.
+ * The `Log` module serves as the top-level namespace for the entire @epdoc/logger
+ * module. Deno doc is not capable of generating the documentation for this project.
  *
  * @remarks
  * It exports all the core components required for logging, including the
