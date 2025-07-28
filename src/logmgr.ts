@@ -11,28 +11,28 @@ import type * as Log from './types.ts';
  * Defines the settings interface for a {@link LogMgr} instance. This provides a
  * streamlined way to configure key logging behaviors.
  */
-export interface ILogMgrSettings {
-  /**
-   * Sets the minimum log level required for messages to be processed.
-   *
-   * @param {Level.Name | Level.Value} level - The threshold level, specified
-   * either by its name (e.g., 'info', 'warn') or its numeric value.
-   */
-  set threshold(level: Level.Name | Level.Value);
-  /**
-   * Configures the visibility of various log metadata attributes.
-   *
-   * @param {Log.EmitterShowOpts} opts - An object specifying which log
-   * components (e.g., timestamp, package name) to display.
-   */
-  set show(opts: Log.EmitterShowOpts);
-  /**
-   * Retrieves the currently active log level configuration.
-   *
-   * @returns {Level.IBasic} The instance managing the defined log levels.
-   */
-  get logLevels(): Level.IBasic;
-}
+// export interface ILogMgrSettings {
+//   /**
+//    * Sets the minimum log level required for messages to be processed.
+//    *
+//    * @param {Level.Name | Level.Value} level - The threshold level, specified
+//    * either by its name (e.g., 'info', 'warn') or its numeric value.
+//    */
+//   set threshold(level: Level.Name | Level.Value);
+//   /**
+//    * Configures the visibility of various log metadata attributes.
+//    *
+//    * @param {Log.EmitterShowOpts} opts - An object specifying which log
+//    * components (e.g., timestamp, package name) to display.
+//    */
+//   set show(opts: Log.EmitterShowOpts);
+//   /**
+//    * Retrieves the currently active log level configuration.
+//    *
+//    * @returns {Level.IBasic} The instance managing the defined log levels.
+//    */
+//   get logLevels(): Level.IBasic;
+// }
 
 /**
  * Manages the entire logging ecosystem, including loggers, levels, and
@@ -41,7 +41,7 @@ export interface ILogMgrSettings {
  * @remarks
  * `LogMgr` is the central hub for configuring and controlling all logging
  * operations. It is responsible for:
- * - Creating and managing logger instances.
+ * - Creating and managing logger instances via specified factories.
  * - Defining and applying log level thresholds.
  * - Coordinating transports that direct logs to various outputs (e.g.,
  *   console, file).
@@ -49,8 +49,25 @@ export interface ILogMgrSettings {
  * This class is exported as `Mgr` from the top-level `Log` module, making it
  * accessible via `Log.Mgr`.
  *
+ * @example
+ * ```ts
+ * // Define the type of logger and message builder
+ * type M = Log.MsgBuilder.Console.Builder;
+ * type L = Log.Std.Logger<M>;
+ *
+ * // Create a new Log Manager instance.
+ * const logMgr = new Log.Mgr<M>();
+ *
+ * // Get a logger, which also initializes the manager on first call.
+ * const log = logMgr.getLogger<L>();
+ *
+ * // Configure and use the logger.
+ * logMgr.threshold = 'verbose';
+ * log.info.h2('Hello world').emit();
+ * ```
+ *
  * @template M - The type of message builder to be used, which must conform to
- * the `MsgBuilder.IBasic` interface. Defaults to `MsgBuilder.Console`.
+ * the `MsgBuilder.Base.IBuilder` interface.
  */
 export class LogMgr<
   M extends MsgBuilder.Base.IBuilder = MsgBuilder.Console.Builder,
@@ -81,10 +98,9 @@ export class LogMgr<
 
   /**
    * Creates an instance of LogMgr.
-   *
-   * @param {Level.FactoryMethod} [levelsFactory=std.createLogLevels] - A function that returns a log level configuration.
+   * @param {Log.ILogMgrSettings} [opts] - Optional configuration settings.
    */
-  constructor(opts: Log.MgrOpts = {}) {
+  constructor(opts: Log.ILogMgrSettings = {}) {
     if (opts.show) {
       this._show = Object.assign(this._show, opts.show);
     }
@@ -96,28 +112,53 @@ export class LogMgr<
   //   // this._transports = [Transport.factoryMethod<M>(this)];
   // }
 
+  /**
+   * Sets the factory used to create message builder instances.
+   * @param {MsgBuilder.FactoryMethod} msgBuilderFactory - The factory function.
+   */
   public set msgBuilderFactory(msgBuilderFactory: MsgBuilder.FactoryMethod) {
     this._msgBuilderFactory = msgBuilderFactory;
   }
 
+  /**
+   * Gets the factory used to create message builder instances.
+   * @returns {MsgBuilder.FactoryMethod} The factory function.
+   */
   get msgBuilderFactory(): MsgBuilder.FactoryMethod {
     return this._msgBuilderFactory;
   }
 
+  /**
+   * Sets the factories used to create the logger and its dependencies.
+   * This will also re-initialize the logger system.
+   * @param {Logger.IFactoryMethods<M, Logger.IEmitter>} factories - The set of factory methods.
+   */
   public set loggerFactory(factories: Logger.IFactoryMethods<M, Logger.IEmitter>) {
     this.init(factories);
   }
 
+  /**
+   * Gets the factories used to create the logger and its dependencies.
+   * @returns {Logger.IFactoryMethods<M, Logger.IEmitter>} The set of factory methods.
+   */
   public get loggerFactory(): Logger.IFactoryMethods<M, Logger.IEmitter> {
     return this._loggerFactories;
   }
 
   /**
-   * Initialize the log levels and logger configuration, specifying the Logger that we are going to use. If using the default logger, you
-   * can skip this step and allow getLogger to initialize the log levels. However in
-   * this situation you cannot set threshold values until the log levels are initialized.
-   * @param factories
-   * @returns
+   * Initializes or re-initializes the logging system with a specific set of
+   * logger factories.
+   *
+   * @remarks
+   * This method allows for explicit configuration of the logger type. It is
+   * useful if you need to configure the manager *before* the first logger is
+   * requested, for instance to set a threshold on a custom logger type. If not
+   * called explicitly, the manager will be initialized with default factories
+   * upon the first call to `getLogger()`.
+   *
+   * @param {Logger.IFactoryMethods<M, Logger.IEmitter>} [factories] - The logger
+   * factories to use. If not provided, the existing factories will be used.
+   * @returns {this} The `LogMgr` instance for chaining.
    */
   public init(factories?: Logger.IFactoryMethods<M, Logger.IEmitter>): this {
     if (factories) {
@@ -177,12 +218,24 @@ export class LogMgr<
   }
 
   /**
-   * Returns a root logger instance by invoking new on the stored logger class.
+   * Retrieves the root logger instance.
+   *
+   * @remarks
+   * On the first call, this method initializes the `LogMgr` with default
+   * factories (if `init()` has not been called), sets up a default console
+   * transport, and starts the logging queue. Subsequent calls return the
+   * existing root logger.
    *
    * @example
+   * ```ts
    * const logMgr = new Log.Mgr();
-   * const logger = logMgr.getLogger<Log.std.Logger<Log.MsgBuilder.Console>>();
+   * // Specify the expected logger type for type safety.
+   * const logger = logMgr.getLogger<Log.Std.Logger>();
    * logger.info.text('Hello').emit();
+   * ```
+   *
+   * @template L - The expected type of the logger, which must extend `Logger.IEmitter`.
+   * @returns {L} The root logger instance.
    */
   public getLogger<L extends Logger.IEmitter>(): L {
     if (!this._rootLogger) {
@@ -200,11 +253,15 @@ export class LogMgr<
   }
 
   /**
-   * Returns a new MsgBuilder instance for the given level using new on the stored class.
-   * Note: Typically a logger would call this method passing itself.
+   * Creates a new message builder instance for a given log level.
    *
-   * @param level - The log level.
-   * @param logger - The logger instance to associate with this message builder.
+   * @remarks
+   * This method is typically called internally by a logger instance, which
+   * passes itself as the emitter.
+   *
+   * @param {string} level - The log level for the message.
+   * @param {Logger.IEmitter} emitter - The logger instance that will emit the message.
+   * @returns {M} A new message builder instance.
    */
   public getMsgBuilder(level: string, emitter: Logger.IEmitter): M {
     const meetsThreshold = this.meetsThreshold(level);

@@ -11,7 +11,12 @@ levels. To get started, create a new `LogMgr` instance:
 ```typescript
 import { Log } from '@epdoc/logger';
 
-const logMgr = new Log.Mgr();
+// Define the type for the message builder we want to use.
+// In this case, we are using the built-in Console message builder.
+type M = Log.MsgBuilder.Console.Builder;
+
+// Create a new Log Manager instance.
+const logMgr = new Log.Mgr<M>();
 ```
 
 ## 2. Getting a Root Logger
@@ -20,7 +25,10 @@ Once you have a `LogMgr` instance, you can use it to get a "root logger". The ro
 you can use it to log general application-level messages.
 
 ```typescript
-const rootLogger = logMgr.getLogger<Log.std.Logger>();
+// Define the type of logger you want to use. This is the default logger type.
+type L = Log.Std.Logger<M>;
+
+const rootLogger = logMgr.getLogger<L>();
 ```
 
 ## 3. Configuring the Logger's Output
@@ -28,12 +36,10 @@ const rootLogger = logMgr.getLogger<Log.std.Logger>();
 You can configure what information is included in the log output by setting the `show` property on the `LogMgr`.
 
 ```typescript
-import { TimestampFormat } from '@epdoc/logger';
-
 logMgr.show = {
   level: true, // Show the log level (e.g., INFO, WARN)
-  timestamp: TimestampFormat.ELAPSED, // Show the elapsed time since the application started
-  package: true, // Show the package name
+  timestamp: 'iso', // Show the timestamp in ISO format
+  pkg: true, // Show the package name
   reqId: true, // Show the request ID
 };
 ```
@@ -46,7 +52,7 @@ Now you can use the `rootLogger` to log messages.
 rootLogger.info.text('Application has started.').emit();
 
 // Console output:
-// 0.002s [INFO   ] Application has started.
+// 2025-07-28T12:00:00.000Z [INFO] Application has started.
 ```
 
 ## 5. Creating a Child Logger for a Specific Task
@@ -59,15 +65,15 @@ logger inherits the configuration of its parent but can have its own unique prop
 const reqId = 'xyz-123';
 
 // 1. Create a child logger from the root logger
-const childLogger = rootLogger.getChild({ reqId }) as Log.std.Logger;
+const childLogger = rootLogger.getChild({ reqId });
 
 // 2. Use the child logger to log messages related to this request
 childLogger.info.h1('Processing request').emit();
 childLogger.debug.value('User authenticated successfully.').emit();
 
 // Console output:
-// 0.015s [INFO   ] [reqId:xyz-123] Processing request
-// 0.020s [DEBUG  ] [reqId:xyz-123] User authenticated successfully.
+// 2025-07-28T12:00:00.015Z [INFO] [reqId:xyz-123] Processing request
+// 2025-07-28T12:00:00.020Z [DEBUG] [reqId:xyz-123] User authenticated successfully.
 ```
 
 As you can see, the `reqId` is now included in the log output for all messages logged with the `childLogger`. This makes

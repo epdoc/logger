@@ -13,7 +13,7 @@ const log = logMgr.getLogger<L>();
 
 // Set the logging threshold.
 logMgr.threshold = 'verbose';
-
+11;
 // Show the log level in the output
 logMgr.show = { level: true };
 
@@ -32,5 +32,5 @@ line.emit();
 log.info.h1('Output').value('my value').h2('to').path('/Users/me/myfiles').emit();
 
 // An example of logging an error.
-log.error.err(new Error('Something went wrong')).emit();
+log.error.err(new Error('Something went wrong (but it was supposed to go wrong)')).emit();
 log.info.section('Finish').emit();

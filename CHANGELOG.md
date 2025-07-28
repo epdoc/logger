@@ -2,10 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1002.3.0] - 2025-07-26
+## [1002.3.0] - 2025-07-28
 
 - Major code reorganization to establish a more robust namespace-like API.
-- Changes to access of some APIs will most certainly break most projects.
+- Changes to access of some APIs will most certainly break the logger setup code for most projects,.
 
 
 ## [1002.2.3] - 2025-07-24

@@ -76,7 +76,7 @@ export type EmitterShowKey = keyof EmitterShowOpts;
 /**
  * Defines the constructor options for configuring a {@link LogMgr} instance.
  */
-export type MgrOpts = Partial<{
+export type ILogMgrSettings = Partial<{
   /**
    * Options for controlling the visibility of different metadata fields in the final log output.
    */

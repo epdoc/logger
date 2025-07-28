@@ -1,8 +1,7 @@
 # @epdoc/logger
 
-A logging module supporting built-in and custom transports, webserver response middleware, rich message and data syntax
-with color console output, chainable methods for recording log events, with the addition of a number of new methods,
-many of which can be chained to create richer output with more columns of data.
+A logging module supporting built-in and custom transports, webserver response middleware, message and data syntax
+with color console output, chainable methods for recording log events, many of which can be chained to create richer output with more columns of data.
 
 ## Versions
 
@@ -20,23 +19,40 @@ deno add @epdoc/logger
 ```typescript
 import { Log } from '@epdoc/logger';
 
-// Create a new Log Manager instance
-const logMgr = new Log.Mgr();
+// Define the type for the message builder we want to use.
+// In this case, we are using the built-in Console message builder.
+type M = Log.MsgBuilder.Console.Builder;
+type L = Log.Std.Logger<M>;
 
-// Get a root logger from the manager
-const rootLogger = logMgr.getLogger<Log.std.Logger<Log.MsgBuilder.Console>>();
+// Create a new Log Manager instance.
+const logMgr = new Log.Mgr<M>();
 
-// Log a simple message
-rootLogger.info.text('Application has started.').emit();
+// Get a logger instance from the manager.
+const log = logMgr.getLogger<L>();
+
+// Set the logging threshold.
+logMgr.threshold = 'verbose';
+
+// Show the log level in the output
+logMgr.show = { level: true };
+
+// --- Example Usage ---
+log.info.section('Start simple.ts std logger').emit();
+
+// A simple log message.
+log.info.h2('Hello world').emit();
 ```
 
 # Documentation
 
-- [Getting Started](./chapters/getting-started.md)
-- [Configuration](./chapters/configuration.md)
-- [Classes](./chapters/loggers.md)
-- [Middleware](./chapters/middleware.md)
-- [Customization Overview](./chapters/cutomization.md)
+- [Getting Started](./chapters/GETTING-STARTED.md)
+- [Configuration](./chapters/CONFIGURATION.md)
+- [Classes](./chapters/CLASSES.md)
+- [Middleware](./chapters/MIDDLEWARE.md)
+- [Oak Middleware](./chapters/OAK.md)
+- [Customization Overview](./chapters/CUSTOMIZATION.md)
+
+Check out our [example implementations](./examples).
 
 # Why Another Logger?
 
@@ -61,10 +77,8 @@ None of the existing loggers that I could find supported the following requireme
 
 ## Action Items
 
-- More unit tests
-- Improved unit tests
 - Verify middleware implementations, especially for express
-- Update SOS transport as a general HTTP transport and rename to 'http' transport (beware).
+- Revive old SOS transport as a general HTTP transport and rename to 'http' transport (beware).
 
 ## Author
 

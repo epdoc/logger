@@ -16,7 +16,10 @@ from the request to use as the request ID. If you have session information (eg. 
 Enable display of the reqId in log output, along with elapsed time since the server was launched and log level.
 
 ```typescript
-import { Log } from '../../mod.ts';
+import { Log } from '@epdoc/logger';
+
+type M = Log.MsgBuilder.Console.Builder;
+type L = Log.Std.Logger<M>;
 
 const showOpts: Log.EmitterShowOpts = {
   level: true,
@@ -24,8 +27,11 @@ const showOpts: Log.EmitterShowOpts = {
   reqId: true,
 };
 
-const logMgr = new Log.Mgr().setShow(showOpts);
-const log = logMgr.getLogger('std') as Log.std.Logger;
+// Create a new Log Manager instance.
+const logMgr = new Log.Mgr<M>();
+
+// Get a logger instance from the manager.
+const rootLogger = logMgr.getLogger<L>();
 logMgr.threshold = 'verbose';
 ```
 
@@ -33,7 +39,7 @@ logMgr.threshold = 'verbose';
 
 ```typescript
 const addLogger = async (context: Context, next: Next) => {
-  context.state.log = log.getChild({ reqIds: [newReqId()] });
+  context.state.log = rootLogger.getChild({ reqId: newReqId() });
 
   context.state.log.verbose.text('Received request').emit();
   await next();

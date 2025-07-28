@@ -1,5 +1,5 @@
 import { Log } from '../mod.ts';
-import { createCustomMsgBuilder, type CustomMsgBuilder } from './builder.ts';
+import { createCustomMsgBuilder, type CustomMsgBuilder } from './lib/builder.ts';
 
 /**
  * This example demonstrates how to subclass Log.Mgr to configure it with a
@@ -12,7 +12,7 @@ type M = CustomMsgBuilder;
 type L = Log.Cli.Logger<M>;
 
 export class LogMgr extends Log.Mgr<M> {
-  constructor(opts: Log.MgrOpts = {}) {
+  constructor(opts: Log.IMgrSettings = {}) {
     super();
     this._show = Object.assign({
       level: true,

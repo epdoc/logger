@@ -39,5 +39,6 @@ build/Release
 node_modules
 
 test/datacopy
+cov_profile
 _test
 docs/
