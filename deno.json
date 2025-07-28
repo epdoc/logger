@@ -11,7 +11,7 @@
     "test": "deno test -A",
     "lint": "deno lint",
     "check": "deno check src examples test",
-    "docgen": "deno doc --html --name='@epdoc/logger' ./mod.ts",
+    "docgen": "deno doc --html --name='@epdoc/logger' ./src/mod.ts",
     "doclint": "deno doc --lint",
     "doctest": "deno test --doc",
     "docclean": "",

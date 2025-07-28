@@ -1,3 +1,1 @@
-import * as Log from './src/mod.ts';
-
-export { Log };
+export * as Log from './src/mod.ts';
