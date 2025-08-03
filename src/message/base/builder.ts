@@ -5,7 +5,6 @@ import * as Transport from '../../transports/mod.ts';
 import type * as Log from '../../types.ts';
 import { StringUtil } from '../../util.ts';
 import type { IFormat, MsgPart, StyleArg, StyleFormatterFn } from '../types.ts';
-import type { IBuilder } from './types.ts';
 
 const DEFAULT_TAB_SIZE = 2;
 
@@ -19,10 +18,10 @@ const DEFAULT_TAB_SIZE = 2;
  * Once fully constructed, the `emit` method forwards the completed log entry to
  * the associated {@link Logger.IEmitter}.
  *
- * It implements both {@link IBuilder} for the core building logic and
+ * It implements core building logic and
  * {@link IFormat} for converting the message into a string.
  */
-export abstract class AbstractMsgBuilder implements IBuilder, IFormat {
+export abstract class AbstractMsgBuilder implements IFormat {
   protected _timestamp: Date = new Date();
   protected _level: Level.Name;
   protected _emitter: Logger.Base.IEmitter;
@@ -78,8 +77,8 @@ export abstract class AbstractMsgBuilder implements IBuilder, IFormat {
   /**
    * Initializes the message with a string, automatically handling leading tabs for indentation.
    *
-   * @param {StyleArg[]} args - The content to set as the initial message.
-   * @returns {this} The current instance for chaining.
+   * @param {...StyleArg[]} args - The arguments to set as the initial string.
+   * @returns {this} The current instance for method chaining.
    */
   setInitialString(...args: StyleArg[]): this {
     if (args.length) {

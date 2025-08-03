@@ -16,7 +16,7 @@ import type { IIndentLogger } from './types.ts';
  * {@link MsgBuilder.IBasic}.
  * @implements {Logger.IIndent}
  */
-export class IndentLogger<M extends MsgBuilder.Base.IBuilder> extends Base.Logger<M> implements IIndentLogger {
+export class IndentLogger<M extends MsgBuilder.Base.Builder> extends Base.Logger<M> implements IIndentLogger {
   /**
    * The start time for time-based logging operations.
    * @protected

@@ -21,7 +21,7 @@ const BUFSIZE = 4096;
  * logMgr.add(fileTransport);
  * ```
  */
-export class FileTransport<M extends MsgBuilder.Base.IBuilder> extends Console.Transport<M> {
+export class FileTransport<M extends MsgBuilder.Base.Builder> extends Console.Transport<M> {
   protected _json = false;
   protected filepath: string;
   protected file: Deno.FsFile | undefined;

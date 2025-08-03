@@ -6,7 +6,7 @@ import type * as MsgBuilder from '../../message/mod.ts';
  *
  * @template M - The type of message builder used by the logger.
  */
-export interface IStdLogger<M extends MsgBuilder.Base.IBuilder> {
+export interface IStdLogger<M extends MsgBuilder.Base.Builder> {
   /** Message builder for the `ERROR` log level. */
   error: M;
   /** Message builder for the `WARN` log level. */

@@ -28,7 +28,7 @@ import type { ICliLogger } from './types.ts';
  *
  * @template M - The type of message builder used by the logger.
  */
-export class CliLogger<M extends MsgBuilder.Base.IBuilder> extends Indent.Logger<M>
+export class CliLogger<M extends MsgBuilder.Base.Builder> extends Indent.Logger<M>
   implements ICliLogger<M>, Base.IEmitter {
   constructor(logMgr: LogMgr<M>, params?: Base.IGetChildParams) {
     super(logMgr, params);

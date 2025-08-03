@@ -67,16 +67,16 @@ import type * as Log from './types.ts';
  * ```
  *
  * @template M - The type of message builder to be used, which must conform to
- * the `MsgBuilder.Base.IBuilder` interface.
+ * the `MsgBuilder.Base.Builder` class.
  */
 export class LogMgr<
-  M extends MsgBuilder.Base.IBuilder = MsgBuilder.Console.Builder,
+  M extends MsgBuilder.Base.Builder = MsgBuilder.Console.Builder,
 > {
   protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
   protected _logLevels: Level.IBasic | undefined;
   protected _rootLogger: Logger.IEmitter | undefined;
-  protected _msgBuilder: MsgBuilder.Base.IBuilder | undefined;
+  protected _msgBuilder: MsgBuilder.Base.Builder | undefined;
   protected _threshold: Level.Value = 5;
   protected _show: Log.EmitterShowOpts = { reqIdSep: '.', pkgSep: '.' };
   // protected _pkg: string = '';

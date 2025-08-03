@@ -11,7 +11,7 @@ import { ConsoleTransport } from './console/transport.ts';
  *
  * @template M - The type of the message builder.
  */
-export class TransportMgr<M extends MsgBuilder.Base.IBuilder = MsgBuilder.Console.Builder> { // implements Base.IEmitter {
+export class TransportMgr<M extends MsgBuilder.Base.Builder = MsgBuilder.Console.Builder> { // implements Base.IEmitter {
   protected _bRunning = false;
   protected _logMgr: LogMgr<M>;
   /**

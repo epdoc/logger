@@ -35,7 +35,7 @@ let markId = 0;
  * @implements {Logger.ILevels}
  * @implements {Logger.IInherit}
  */
-export abstract class AbstractLogger<M extends MsgBuilder.Base.IBuilder> implements IEmitter, ILevels, IInherit {
+export abstract class AbstractLogger<M extends MsgBuilder.Base.Builder> implements IEmitter, ILevels, IInherit {
   protected _logMgr: LogMgr<M>;
   protected _parent: this | undefined;
   protected _threshold: Level.Value | undefined;

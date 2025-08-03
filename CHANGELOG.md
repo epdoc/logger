@@ -2,9 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1002.3.1] - 2025-08-03
+## [1002.3.2] - 2025-08-03
 
 - Added `Log.IGetChildParams` to `Log.Mgr.getLogger()` parameter list
+- Removed MsgBuilder's `IBuilder` interface definition
 
 ## [1002.3.0] - 2025-07-28
 

@@ -22,7 +22,7 @@ import type { ConsoleOptions } from './types.ts';
  * logMgr.add(consoleTransport);
  * ```
  */
-export class ConsoleTransport<M extends MsgBuilder.Base.IBuilder> extends Base.Transport<M> {
+export class ConsoleTransport<M extends MsgBuilder.Base.Builder> extends Base.Transport<M> {
   protected _levelWidth: Integer = 5;
   protected _format: OutputFormatType = OutputFormat.TEXT;
   protected _color: boolean = true;

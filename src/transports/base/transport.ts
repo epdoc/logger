@@ -25,7 +25,7 @@ import type { BaseOptions } from './types.ts';
  * @template M - The type of message builder used, which must conform to
  * {@link MsgBuilderIBasic}.
  */
-export abstract class AbstractTransport<M extends MsgBuilder.Base.IBuilder> {
+export abstract class AbstractTransport<M extends MsgBuilder.Base.Builder> {
   /** A string identifier for the transport type (e.g., 'console', 'file'). */
   public readonly type: string = 'basic';
   protected _logMgr: LogMgr<M>;

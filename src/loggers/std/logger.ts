@@ -23,7 +23,7 @@ import type { IStdLogger } from './types.ts';
  *
  * @template M - The type of message builder used by the logger.
  */
-export class StdLogger<M extends MsgBuilder.Base.IBuilder> extends Indent.Logger<M>
+export class StdLogger<M extends MsgBuilder.Base.Builder> extends Indent.Logger<M>
   implements IStdLogger<M>, Logger.IEmitter {
   /**
    * Creates a shallow copy of the current `StdLogger` instance.
