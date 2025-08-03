@@ -8,33 +8,6 @@ import * as Transport from './transports/mod.ts';
 import type * as Log from './types.ts';
 
 /**
- * Defines the settings interface for a {@link LogMgr} instance. This provides a
- * streamlined way to configure key logging behaviors.
- */
-// export interface ILogMgrSettings {
-//   /**
-//    * Sets the minimum log level required for messages to be processed.
-//    *
-//    * @param {Level.Name | Level.Value} level - The threshold level, specified
-//    * either by its name (e.g., 'info', 'warn') or its numeric value.
-//    */
-//   set threshold(level: Level.Name | Level.Value);
-//   /**
-//    * Configures the visibility of various log metadata attributes.
-//    *
-//    * @param {Log.EmitterShowOpts} opts - An object specifying which log
-//    * components (e.g., timestamp, package name) to display.
-//    */
-//   set show(opts: Log.EmitterShowOpts);
-//   /**
-//    * Retrieves the currently active log level configuration.
-//    *
-//    * @returns {Level.IBasic} The instance managing the defined log levels.
-//    */
-//   get logLevels(): Level.IBasic;
-// }
-
-/**
  * Manages the entire logging ecosystem, including loggers, levels, and
  * transports.
  *
@@ -101,6 +74,7 @@ export class LogMgr<
    * @param {Log.ILogMgrSettings} [opts] - Optional configuration settings.
    */
   constructor(opts: Log.ILogMgrSettings = {}) {
+    // this.transportMgr = new Transport.Mgr<M>(this);
     if (opts.show) {
       this._show = Object.assign(this._show, opts.show);
     }
@@ -243,7 +217,7 @@ export class LogMgr<
       this._rootLogger = this._loggerFactories.createLogger(this, params);
     }
     if (!this.transportMgr.transports.length) {
-      const transport = new Transport.Console.Transport(this, { show: this._show });
+      const transport = new Transport.Console.Transport<M>(this, { show: this._show });
       this.transportMgr.add(transport);
     }
     if (!this.transportMgr.running) {

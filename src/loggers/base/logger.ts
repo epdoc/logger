@@ -30,7 +30,7 @@ let markId = 0;
  *   origin of a log message. This can be nested by creating further child loggers.
  *
  * @template M - The type of message builder to use, which must conform to the
- * {@link MsgBuilder.IBasic} interface.
+ * {@link MsgBuilder.Base.Builder} interface.
  * @implements {Logger.IEmitter}
  * @implements {Logger.ILevels}
  * @implements {Logger.IInherit}

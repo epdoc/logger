@@ -13,7 +13,7 @@ import type { IIndentLogger } from './types.ts';
  * nested operations or code blocks in console output.
  *
  * @template M - The type of message builder used by the logger, conforming to
- * {@link MsgBuilder.IBasic}.
+ * {@link MsgBuilder.Base.Builder}.
  * @implements {Logger.IIndent}
  */
 export class IndentLogger<M extends MsgBuilder.Base.Builder> extends Base.Logger<M> implements IIndentLogger {

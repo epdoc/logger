@@ -23,7 +23,7 @@ import type { BaseOptions } from './types.ts';
  * - Formatting and outputting log entries.
  *
  * @template M - The type of message builder used, which must conform to
- * {@link MsgBuilderIBasic}.
+ * {@link MsgBuilder.Base.Builder}.
  */
 export abstract class AbstractTransport<M extends MsgBuilder.Base.Builder> {
   /** A string identifier for the transport type (e.g., 'console', 'file'). */
