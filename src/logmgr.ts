@@ -237,10 +237,10 @@ export class LogMgr<
    * @template L - The expected type of the logger, which must extend `Logger.IEmitter`.
    * @returns {L} The root logger instance.
    */
-  public getLogger<L extends Logger.IEmitter>(): L {
+  public getLogger<L extends Logger.IEmitter>(params: Logger.IGetChildParams = {}): L {
     if (!this._rootLogger) {
       this._logLevels = this._loggerFactories.createLevels();
-      this._rootLogger = this._loggerFactories.createLogger(this);
+      this._rootLogger = this._loggerFactories.createLogger(this, params);
     }
     if (!this.transportMgr.transports.length) {
       const transport = new Transport.Console.Transport(this, { show: this._show });

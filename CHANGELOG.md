@@ -2,10 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1002.3.1] - 2025-08-03
+
+- Added `Log.IGetChildParams` to `Log.Mgr.getLogger()` parameter list
+
 ## [1002.3.0] - 2025-07-28
 
 - Major code reorganization to establish a more robust namespace-like API.
-- Changes to access of some APIs will most certainly break the logger setup code for most projects,.
+- Changes to access of some APIs will most certainly break the logger setup code for most projects.
+  - `Log.MsgBuilder.ErrOpts` is now `Log.MsgBuilder.Console.IErrOpts`
+  - `Log.MsgBuilder.Base` is now `Log.MsgBuilder.Base.Builder`
+  - `Log.MsgBuilder.Console` is now `Log.MsgBuilder.Console.Builder`
+  - `Log.Logger.IGetChildParams` is now `Log.IGetChildParams`
+  - `Log.Logger.IEmitter` is now `Log.IEmitter`
 
 
 ## [1002.2.3] - 2025-07-24
