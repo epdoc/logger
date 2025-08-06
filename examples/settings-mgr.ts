@@ -2,7 +2,7 @@
  * This example demonstrates how to setup Log.Mgr to use a custom message builder.
  */
 import os from 'node:os';
-import { Log } from '../mod.ts';
+import * as Log from '../mod.ts';
 import { createCustomMsgBuilder, type CustomMsgBuilder as M } from './lib/builder.ts';
 
 type L = Log.Std.Logger<M>;

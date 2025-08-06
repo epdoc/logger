@@ -10,7 +10,7 @@
  */
 import { assertEquals } from '@std/assert';
 import { describe, test } from 'jsr:@std/testing/bdd';
-import { Log } from '../mod.ts';
+import * as Log from '../mod.ts';
 
 describe('levels', () => {
   describe('cli', () => {
@@ -73,15 +73,27 @@ describe('levels', () => {
   describe('std', () => {
     test('values', () => {
       const logLevels = Log.Std.factoryMethods.createLevels();
-      assertEquals(logLevels.names, ['ERROR', 'WARN', 'INFO', 'VERBOSE', 'DEBUG', 'TRACE', 'SPAM']);
-      assertEquals(logLevels.asValue('info'), 2);
-      assertEquals(logLevels.asName(2), 'INFO');
-      assertEquals(logLevels.asName(4), 'DEBUG');
-      assertEquals(logLevels.asName(3), 'VERBOSE');
-      assertEquals(logLevels.asName(6), 'SPAM');
-      assertEquals(logLevels.asName(5), 'TRACE');
-      assertEquals(logLevels.asName(1), 'WARN');
-      assertEquals(logLevels.asName(0), 'ERROR');
+      assertEquals(logLevels.names, [
+        'FATAL',
+        'CRITICAL',
+        'ERROR',
+        'WARN',
+        'INFO',
+        'VERBOSE',
+        'DEBUG',
+        'TRACE',
+        'SPAM',
+        'SILLY',
+      ]);
+      assertEquals(logLevels.asValue('info'), 3);
+      assertEquals(logLevels.asName(3), 'INFO');
+      assertEquals(logLevels.asName(5), 'DEBUG');
+      assertEquals(logLevels.asName(4), 'VERBOSE');
+      assertEquals(logLevels.asName(7), 'SPAM');
+      assertEquals(logLevels.asName(6), 'TRACE');
+      assertEquals(logLevels.asName(2), 'WARN');
+      assertEquals(logLevels.asName(1), 'ERROR');
+      assertEquals(logLevels.asName(0), 'FATAL');
     });
 
     test('std threshold', () => {
@@ -103,6 +115,45 @@ describe('levels', () => {
       assertEquals(logLevels.meetsFlushThreshold('SPAM'), false);
       assertEquals(logLevels.meetsFlushThreshold(3), false);
       assertEquals(logLevels.meetsFlushThreshold(0), true);
+    });
+
+    test('std applyColors', () => {
+      const logLevels = Log.Cli.factoryMethods.createLevels();
+      assertEquals(logLevels.applyColors('hello', 'INFO'), '\u001b[32mhello\u001b[39m');
+    });
+  });
+  describe('min', () => {
+    test('values', () => {
+      const logLevels = Log.Min.factoryMethods.createLevels();
+      assertEquals(logLevels.names, [
+        'ERROR',
+        'WARN',
+        'INFO',
+        'DEBUG',
+      ]);
+      assertEquals(logLevels.asValue('info'), 3);
+      assertEquals(logLevels.asName(3), 'INFO');
+      assertEquals(logLevels.asName(5), 'DEBUG');
+      assertEquals(logLevels.asName(2), 'WARN');
+      assertEquals(logLevels.asName(1), 'ERROR');
+    });
+
+    test('std threshold', () => {
+      const logLevels = Log.Min.factoryMethods.createLevels();
+      assertEquals(logLevels.meetsThreshold(3, 3), true);
+      assertEquals(logLevels.meetsThreshold(3, 5), true);
+      assertEquals(logLevels.meetsThreshold(5, 3), false);
+      assertEquals(logLevels.meetsThreshold(3, 2), false);
+    });
+
+    test('std flush threshold', () => {
+      const logLevels = Log.Min.factoryMethods.createLevels();
+      assertEquals(logLevels.meetsFlushThreshold('INFO'), false);
+      assertEquals(logLevels.meetsFlushThreshold('DEBUG'), false);
+      assertEquals(logLevels.meetsFlushThreshold('ERROR'), true);
+      assertEquals(logLevels.meetsFlushThreshold('WARN'), false);
+      assertEquals(logLevels.meetsFlushThreshold(3), false);
+      assertEquals(logLevels.meetsFlushThreshold(1), true);
     });
 
     test('std applyColors', () => {

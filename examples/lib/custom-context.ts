@@ -1,4 +1,4 @@
-import * as Log from '../../src/mod.ts';
+import * as Log from '../../mod.ts';
 import { type CustomMsgBuilder, customMsgBuilderFactory } from './custom-msg-builder.ts';
 
 export interface IBuilder extends Log.MsgBuilder.Base.Builder {
@@ -15,7 +15,7 @@ export interface IBuilder extends Log.MsgBuilder.Base.Builder {
  * It extends standard logger capabilities with indentation and event emitting.
  * @template M - The message builder type, which must extend `Log.MsgBuilder.IBasic`.
  */
-export interface ILogger<M extends IBuilder> extends Log.IEmitter, Log.Indent.ILogger {
+export interface ILogger<M extends IBuilder> extends Log.Indent.Logger<M> {
   readonly info: M;
   readonly error: M;
 }

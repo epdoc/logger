@@ -4,7 +4,7 @@
  */
 import { asError } from '@epdoc/type';
 import os from 'node:os';
-import { Log } from '../../mod.ts';
+import * as Log from '../../mod.ts';
 
 const _home = os.userInfo().homedir;
 

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1002.4.0] - 2025-08-06
+
+- Must now use `import * as Log from '@epdoc/logger'` instead of `import { Log } from '@epdoc/logger'`
+
 ## [1002.3.2] - 2025-08-03
 
 - Added `Log.IGetChildParams` to `Log.Mgr.getLogger()` parameter list

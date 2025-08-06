@@ -1,4 +1,4 @@
-import { Log } from '../mod.ts';
+import * as Log from '../mod.ts';
 
 type M = Log.MsgBuilder.Console.Builder;
 

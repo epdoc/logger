@@ -2,7 +2,6 @@ import type { LogMgr } from '../../logmgr.ts';
 import type * as MsgBuilder from '../../message/mod.ts';
 import type * as Base from '../base/mod.ts';
 import * as Indent from '../indent/mod.ts';
-import type { ICliLogger } from './types.ts';
 
 /**
  * Implements a logger with a comprehensive set of log levels tailored for CLI applications.
@@ -28,8 +27,7 @@ import type { ICliLogger } from './types.ts';
  *
  * @template M - The type of message builder used by the logger.
  */
-export class CliLogger<M extends MsgBuilder.Base.Builder> extends Indent.Logger<M>
-  implements ICliLogger<M>, Base.IEmitter {
+export class CliLogger<M extends MsgBuilder.Base.Builder> extends Indent.Logger<M> {
   constructor(logMgr: LogMgr<M>, params?: Base.IGetChildParams) {
     super(logMgr, params);
   }

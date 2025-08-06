@@ -1,4 +1,4 @@
-import { Log } from '../mod.ts';
+import * as Log from '../mod.ts';
 
 // Define the type for the message builder we want to use.
 // In this case, we are using the built-in Console message builder.
@@ -32,5 +32,5 @@ line.emit();
 log.info.h1('Output').value('my value').h2('to').path('/Users/me/myfiles').emit();
 
 // An example of logging an error.
-log.error.err(new Error('Something went wrong (but it was supposed to go wrong)')).emit();
+log.error.err(new Error('Nothing actually went wrong')).emit();
 log.info.section('Finish').emit();

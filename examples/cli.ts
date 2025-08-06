@@ -1,4 +1,4 @@
-import { Log } from '../mod.ts';
+import * as Log from '../mod.ts';
 
 // Define the type for the message builder we want to use.
 // In this case, we are using the built-in Console message builder.

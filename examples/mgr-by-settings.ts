@@ -3,7 +3,7 @@
  * to extend the functionality of the logger.
  */
 import os from 'node:os';
-import { Log } from '../mod.ts';
+import * as Log from '../mod.ts';
 import { createCustomMsgBuilder, type CustomMsgBuilder } from './lib/builder.ts';
 
 type M = CustomMsgBuilder;

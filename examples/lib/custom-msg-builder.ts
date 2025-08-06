@@ -1,4 +1,4 @@
-import * as Log from '../../src/mod.ts';
+import * as Log from '../../mod.ts';
 
 export class CustomMsgBuilder extends Log.MsgBuilder.Console.Builder {
   myCustomMethod(text: string): this {

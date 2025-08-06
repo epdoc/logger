@@ -1,7 +1,6 @@
 import type { LogMgr } from '../../logmgr.ts';
 import type * as MsgBuilder from '../../message/mod.ts';
-import * as Min from '../min/mod.ts';
-import type * as Logger from '../types.ts';
+import * as Bare from '../bare/mod.ts';
 
 /**
  * Implements a logger with a standard set of log levels.
@@ -22,7 +21,7 @@ import type * as Logger from '../types.ts';
  *
  * @template M - The type of message builder used by the logger.
  */
-export class StdLogger<M extends MsgBuilder.Base.Builder> extends Min.Logger<M> implements Logger.IEmitter {
+export class MinLogger<M extends MsgBuilder.Base.Builder> extends Bare.Logger<M> {
   /**
    * Creates a shallow copy of the current `StdLogger` instance.
    * @returns {this} A new `StdLogger` instance with copied properties.
@@ -35,7 +34,7 @@ export class StdLogger<M extends MsgBuilder.Base.Builder> extends Min.Logger<M> 
   }
 
   /**
-   * Provides a message builder for the `FATAL` log level.
+   * Provides a message builder for the `ERROR` log level.
    *
    * @remarks
    * Use this level for severe errors that indicate a critical failure and may
@@ -43,21 +42,8 @@ export class StdLogger<M extends MsgBuilder.Base.Builder> extends Min.Logger<M> 
    *
    * @returns {M} A message builder configured for the `ERROR` level.
    */
-  public get fatal(): M {
-    return this._logMgr.getMsgBuilder('FATAL', this);
-  }
-
-  /**
-   * Provides a message builder for the `FATAL` log level.
-   *
-   * @remarks
-   * Use this level for severe errors that indicate a critical failure and may
-   * require immediate attention or manual intervention.
-   *
-   * @returns {M} A message builder configured for the `ERROR` level.
-   */
-  public get critical(): M {
-    return this._logMgr.getMsgBuilder('CRITICAL', this);
+  public get error(): M {
+    return this._logMgr.getMsgBuilder('ERROR', this);
   }
 
   /**
@@ -69,8 +55,21 @@ export class StdLogger<M extends MsgBuilder.Base.Builder> extends Min.Logger<M> 
    *
    * @returns {M} A message builder configured for the `VERBOSE` level.
    */
-  public get verbose(): M {
-    return this._logMgr.getMsgBuilder('VERBOSE', this);
+  // public get verbose(): M {
+  //   return this._logMgr.getMsgBuilder('VERBOSE', this);
+  // }
+
+  /**
+   * Provides a message builder for the `DEBUG` log level.
+   *
+   * @remarks
+   * Use this level for detailed diagnostic information, typically intended
+   * for developers during debugging. May include variable values or internal states.
+   *
+   * @returns {M} A message builder configured for the `DEBUG` level.
+   */
+  public get debug(): M {
+    return this._logMgr.getMsgBuilder('DEBUG', this);
   }
 
   /**
@@ -82,9 +81,9 @@ export class StdLogger<M extends MsgBuilder.Base.Builder> extends Min.Logger<M> 
    *
    * @returns {M} A message builder configured for the `TRACE` level.
    */
-  public get trace(): M {
-    return this._logMgr.getMsgBuilder('TRACE', this);
-  }
+  // public get trace(): M {
+  //   return this._logMgr.getMsgBuilder('TRACE', this);
+  // }
 
   /**
    * Provides a message builder for the `SPAM` log level.
@@ -95,10 +94,7 @@ export class StdLogger<M extends MsgBuilder.Base.Builder> extends Min.Logger<M> 
    *
    * @returns {M} A message builder configured for the `SPAM` level.
    */
-  public get spam(): M {
-    return this._logMgr.getMsgBuilder('SPAM', this);
-  }
-  public get silly(): M {
-    return this._logMgr.getMsgBuilder('SILLY', this);
-  }
+  // public get spam(): M {
+  //   return this._logMgr.getMsgBuilder('SPAM', this);
+  // }
 }

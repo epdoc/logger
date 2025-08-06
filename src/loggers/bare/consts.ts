@@ -4,7 +4,7 @@ import { LogMgr } from '../../logmgr.ts';
 import type * as MsgBuilder from '../../message/mod.ts';
 import type * as Base from '../base/mod.ts';
 import type { IFactoryMethods } from '../factory.ts';
-import { StdLogger } from './logger.ts';
+import { BareLogger } from './logger.ts';
 
 /**
  * Defines the standard log levels and their properties.
@@ -15,45 +15,20 @@ import { StdLogger } from './logger.ts';
  * special flags like `flush` (for immediate output) and `lowest` (the lowest
  * priority level).
  */
-const stdLogLevelDefs: Level.LogLevelsDef = {
-  fatal: { val: 0, fmtFn: colors.red, flush: true },
-  critical: { val: 0, fmtFn: colors.red, flush: true },
-  error: { val: 1, fmtFn: colors.red, flush: true },
+const bareLogLevelDefs: Level.LogLevelsDef = {
   warn: { val: 2, fmtFn: colors.yellow, warn: true },
   info: { val: 3, fmtFn: colors.green, default: true },
-  verbose: { val: 4, fmtFn: colors.cyan },
-  debug: {
-    val: 5,
-    fmtFn: (str: string) => {
-      return colors.dim(colors.blue(str));
-    },
-  },
-  trace: { val: 6, fmtFn: colors.gray },
-  spam: {
-    val: 7,
-    fmtFn: (str: string) => {
-      return colors.dim(colors.gray(str));
-    },
-    lowest: true,
-  },
-  silly: {
-    val: 7,
-    fmtFn: (str: string) => {
-      return colors.dim(colors.gray(str));
-    },
-    lowest: true,
-  },
 } as const;
 
-export const stdFactoryMethods: IFactoryMethods<MsgBuilder.Base.Builder, StdLogger<MsgBuilder.Base.Builder>> = {
+export const bareFactoryMethods: IFactoryMethods<MsgBuilder.Base.Builder, BareLogger<MsgBuilder.Base.Builder>> = {
   createLogger: <M extends MsgBuilder.Base.Builder>(
     log: LogMgr<M> | Base.IEmitter,
     params?: Base.IGetChildParams,
-  ): StdLogger<M> => {
+  ): BareLogger<M> => {
     if (log instanceof LogMgr) {
-      return new StdLogger<M>(log, params);
-    } else if (log instanceof StdLogger) {
-      return log.getChild(params) as StdLogger<M>;
+      return new BareLogger<M>(log, params);
+    } else if (log instanceof BareLogger) {
+      return log.getChild(params) as BareLogger<M>;
     }
     throw new Error('Invalid logger type');
   },
@@ -64,12 +39,12 @@ export const stdFactoryMethods: IFactoryMethods<MsgBuilder.Base.Builder, StdLogg
    * @returns {Level.IBasic} A new `LogLevels` instance for CLI logging.
    */
   createLevels: () => {
-    return new Level.LogLevels(stdLogLevelDefs);
+    return new Level.LogLevels(bareLogLevelDefs);
   },
   /**
    * An array containing the names of all CLI log levels.
    */
   logLevelNames: () => {
-    return Object.keys(stdLogLevelDefs);
+    return Object.keys(bareLogLevelDefs);
   },
 };

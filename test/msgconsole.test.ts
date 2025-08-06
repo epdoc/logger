@@ -2,7 +2,7 @@ import { assertEquals } from '@std/assert';
 import { expect } from 'jsr:@std/expect';
 import { describe, test } from 'jsr:@std/testing/bdd';
 import os from 'node:os';
-import { Log } from '../mod.ts';
+import * as Log from '../mod.ts';
 import { disable, enable } from './color-map.ts';
 
 type M = Log.MsgBuilder.Console.Builder;

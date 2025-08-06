@@ -1,4 +1,4 @@
-import { Log } from '../mod.ts';
+import * as Log from '../mod.ts';
 import { createCustomMsgBuilder, type CustomMsgBuilder } from './lib/builder.ts';
 
 /**
