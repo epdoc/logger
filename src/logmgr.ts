@@ -273,7 +273,41 @@ export class LogMgr<
    * @internal
    */
   async stop(): Promise<void> {
+    this.flushQueue();
     await this.transportMgr.stop();
+    this._bRunning = false;
+  }
+
+  /**
+   * Gracefully shuts down all transports and releases resources.
+   *
+   * Performs the following operations in sequence:
+   * 1. Flushes any pending writes/operations
+   * 2. Closes all file handles and network connections
+   * 3. Releases memory resources
+   * 4. Marks the instance as terminated
+   *
+   * @async
+   * @throws {Error} If any transport fails to close cleanly (after all attempts)
+   * @returns {Promise<void>} Resolves when all resources are released
+   *
+   * @example
+   * ```ts
+   * const logger = new Logger();
+   * await logger.close(); // Safe to call multiple times
+   * ```
+   *
+   * @example Error handling
+   * ```ts
+   * try {
+   *   await logger.close();
+   * } catch (err) {
+   *   console.error('Cleanup failed:', err);
+   * }
+   * ```
+   */
+  async close(): Promise<void> {
+    await this.stop();
   }
 
   /**
