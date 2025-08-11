@@ -181,9 +181,13 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
    * @param {string} [str=''] - The title of the section.
    * @returns {this} The current instance for method chaining.
    */
-  public section(str: string = ''): this {
-    const len = (80 - str.length - 2) / 2;
-    return this.h1('-'.repeat(Math.floor(len)) + ' ' + str + ' ' + '-'.repeat(Math.ceil(len)));
+  public section(str?: string): this {
+    if (isNonEmptyString(str)) {
+      const len = (80 - str.length - 2) / 2;
+      return this.h1('-'.repeat(Math.floor(len)) + ' ' + str + ' ' + '-'.repeat(Math.ceil(len)));
+    } else {
+      return this.h1('-'.repeat(80));
+    }
   }
 
   /**
