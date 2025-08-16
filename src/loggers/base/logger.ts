@@ -1,6 +1,5 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isString } from '@epdoc/type';
-import { assert } from '@std/assert/assert';
 import type * as Level from '../../levels/mod.ts';
 import type { LogMgr } from '../../logmgr.ts';
 import type * as MsgBuilder from '../../message/mod.ts';
@@ -320,11 +319,13 @@ export abstract class AbstractLogger<M extends MsgBuilder.Base.Builder> implemen
    * @throws {AssertionError} If no mark with the given name exists.
    */
   public demark(name: string, keep = false): HrMilliseconds {
-    assert(this._mark[name], `No mark set for ${name}`);
-    const result = performance.now() - this._mark[name];
-    if (keep !== true) {
-      delete this._mark[name];
+    if (this._mark[name]) {
+      const result = performance.now() - this._mark[name];
+      if (keep !== true) {
+        delete this._mark[name];
+      }
+      return result;
     }
-    return result;
+    return 0;
   }
 }

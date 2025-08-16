@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1002.4.3] - 2025-08-16
+
+- Modified `logger.demark` method to not throw if mark has not previously been set.
+
 ## [1002.4.1] - 2025-08-08
 
 - Added `LogMgr.close()` method.
