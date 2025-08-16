@@ -76,9 +76,9 @@ export interface IEmitter extends IMark {
 export interface IInherit {
   /**
    * Creates a shallow copy of the logger instance.
-   * @returns {IInherit} A new logger instance.
+   * @returns {this} A new logger instance.
    */
-  copy(): IInherit;
+  copy(): this;
   /**
    * Assigns properties from another logger to this one.
    * @param {this} logger - The source logger.
@@ -87,14 +87,14 @@ export interface IInherit {
   /**
    * Creates a new child logger.
    * @param {IGetChildParams} [opts] - Contextual parameters for the child.
-   * @returns {IInherit} A new child logger instance.
+   * @returns {this} A new child logger instance.
    */
-  getChild(opts?: IGetChildParams): IInherit;
+  getChild(opts?: IGetChildParams): this;
   /**
    * Retrieves the parent logger, if one exists.
-   * @returns {IInherit | undefined} The parent logger or `undefined`.
+   * @returns {this | undefined} The parent logger or `undefined`.
    */
-  get parent(): IInherit | undefined;
+  get parent(): this | undefined;
 }
 
 /**
