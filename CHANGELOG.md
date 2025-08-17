@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1002.4.5] - 2025-08-17
+
+- Updated dependencies
+
 ## [1002.4.4] - 2025-08-16
 
 - Modified `interface IInherit` to return this, with the goal of reducing type errors for users of this module.
