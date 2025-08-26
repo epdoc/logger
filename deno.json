@@ -46,7 +46,7 @@
   "imports": {
     "@std/fmt": "jsr:@std/fmt@^1.0.8",
     "@std/fmt/colors": "jsr:@std/fmt@^1.0.8/colors",
-    "@epdoc/type": "jsr:@epdoc/type@^1.1.9",
+    "@epdoc/type": "jsr:@epdoc/type@^1.1.13",
     "@epdoc/string": "jsr:@epdoc/string@^0.1.1",
     "@epdoc/duration": "jsr:@epdoc/duration@^0.2.0",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^1.0.7",

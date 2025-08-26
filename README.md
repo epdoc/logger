@@ -1,7 +1,8 @@
 # @epdoc/logger
 
-A logging module supporting built-in and custom transports, webserver response middleware, message and data syntax
-with color console output, chainable methods for recording log events, many of which can be chained to create richer output with more columns of data.
+A logging module supporting built-in and custom transports, webserver response middleware, message
+and data syntax with color console output, chainable methods for recording log events, many of which
+can be chained to create richer output with more columns of data.
 
 ## Versions
 

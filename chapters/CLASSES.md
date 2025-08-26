@@ -1,6 +1,6 @@
 # Classes
 
-The `@epdoc/logger` library is built around two core concepts: the `LogMgr` (Log Manager) and `Logger` instances.
+The `@epdoc/logger` library is built around two core concepts: the [LogMgr](#log-manager-logmgr) (Log Manager) and [Logger](#loggers) instances.
 
 ### Hierarchy
 
@@ -24,7 +24,7 @@ import { Log } from '@epdoc/logger';
 const logMgr = new Log.Mgr();
 ```
 
-### Selecting the Logger Type
+### Selecting the [Logger](#loggers) Type
 
 `@epdoc/logger` supports two types of loggers out of the box, each with its own set of log levels:
 
@@ -54,7 +54,7 @@ If you don't provide these, the `LogMgr` defaults to the `std` logger.
 
 ## Loggers
 
-A `Logger` is the object you interact with directly to write log messages. You can get a logger from a `LogMgr` instance.
+A `Logger` is the object you interact with directly to write log messages. You can get a logger from a [LogMgr](#log-manager-logmgr) instance.
 
 ### Root and Child Loggers
 
@@ -89,6 +89,34 @@ log.info.h1('Hello, world!').emit();
 log.info
   .h1('This is a header')
   .label('label').value('value')
+  .emit();
+```
+
+### Conditional Logging
+
+The `MsgBuilder` also supports conditional logging, which allows you to build and emit log messages only when certain conditions are met. This is useful for reducing logging verbosity and focusing on specific scenarios.
+
+The conditional logging methods are:
+
+-   `if(condition: boolean)`: Starts a conditional block. The following methods will only be executed if the `condition` is `true`.
+-   `elif(condition: boolean)`: Starts an "else if" block. The following methods will only be executed if the previous `if` or `elif` conditions were `false` and this `condition` is `true`.
+-   `else()`: Starts an "else" block. The following methods will only be executed if all previous `if` and `elif` conditions were `false`.
+-   `endif()`: Ends a conditional block.
+
+Here's an example of how to use conditional logging:
+
+```typescript
+const someCondition = true;
+const anotherCondition = false;
+
+log.info
+  .if(someCondition)
+    .text('This will be logged because someCondition is true.')
+  .elif(anotherCondition)
+    .text('This will NOT be logged.')
+  .else()
+    .text('This will NOT be logged either.')
+  .endif()
   .emit();
 ```
 
