@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1002.4.6] - 2025-08-26
+
+- Added new conditional `if`,`elif`,`else`,`endif` logic to base MsgBuilder.
+- Added conditional.test.ts to test new conditional logic
+
 ## [1002.4.5] - 2025-08-17
 
 - Updated dependencies

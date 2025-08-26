@@ -34,6 +34,8 @@ export abstract class AbstractMsgBuilder implements IFormat {
   protected _data: unknown | undefined;
   protected _suffix: string[] = [];
   protected _showElapsed: boolean = false;
+  protected _allow: boolean = true;
+  protected _conditionalMet = false;
 
   /**
    * Initializes a new message builder instance.
@@ -108,10 +110,44 @@ export abstract class AbstractMsgBuilder implements IFormat {
 
   /**
    * Sets the indentation level based on tab counts.
-   * @deprecated Use {@link indent} instead for more flexible indentation.
+   * @deprecated Use {@link indent} and {@link outdent} instead
    */
   tab(n: Integer = 1): this {
     this._msgIndent = ' '.repeat(n * this._tabSize - 1);
+    return this;
+  }
+
+  public if(val: boolean): this {
+    this._conditionalMet = val;
+    this._allow = val;
+    return this;
+  }
+
+  public elif(val: boolean): this {
+    if (this._conditionalMet) {
+      this._allow = false;
+    } else {
+      this._allow = val;
+      if (val) {
+        this._conditionalMet = true;
+      }
+    }
+    return this;
+  }
+
+  public else(): this {
+    if (this._conditionalMet) {
+      this._allow = false;
+    } else {
+      this._allow = true;
+      this._conditionalMet = true;
+    }
+    return this;
+  }
+
+  public endif(): this {
+    this._allow = true;
+    this._conditionalMet = false;
     return this;
   }
 
@@ -122,6 +158,7 @@ export abstract class AbstractMsgBuilder implements IFormat {
    * @returns {this} The current instance for chaining.
    */
   public comment(...args: string[]): this {
+    if (!this._allow) return this;
     this.appendSuffix(...args);
     return this;
   }
@@ -186,6 +223,7 @@ export abstract class AbstractMsgBuilder implements IFormat {
    * @returns {this} The current instance for chaining.
    */
   public stylize(style: StyleFormatterFn | null, ...args: StyleArg[]): this {
+    if (!this._allow) return this;
     if (_.isNonEmptyArray(args)) {
       const str = args
         .map((arg) => {
@@ -209,6 +247,7 @@ export abstract class AbstractMsgBuilder implements IFormat {
    * @returns {this} The current instance for chaining.
    */
   public plain(...args: unknown[]): this {
+    if (!this._allow) return this;
     return this.appendMsg(...args);
   }
 
@@ -223,6 +262,7 @@ export abstract class AbstractMsgBuilder implements IFormat {
    * @returns {this} The current instance for chaining.
    */
   public data(data: unknown): this {
+    if (!this._allow) return this;
     if (_.isDict(data) && this._meetsThreshold) {
       if (_.isDict(this._data)) {
         this._data = Object.assign(this._data, data);

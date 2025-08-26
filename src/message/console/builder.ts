@@ -182,6 +182,7 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
    * @returns {this} The current instance for method chaining.
    */
   public section(str?: string): this {
+    if (!this._allow) return this;
     if (isNonEmptyString(str)) {
       const len = (80 - str.length - 2) / 2;
       return this.h1('-'.repeat(Math.floor(len)) + ' ' + str + ' ' + '-'.repeat(Math.ceil(len)));
@@ -200,6 +201,7 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
    * @returns {this} The current instance for method chaining.
    */
   public err(error: unknown, opts: IConsoleErrOpts = {}): this {
+    if (!this._allow) return this;
     const err = asError(error);
     this.error(err.message);
     if (opts.code === true && 'code' in err) {
@@ -223,7 +225,7 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
    * @returns {this} The current instance for method chaining.
    */
   public warn(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(consoleStyleFormatters.warn, ...args);
+    return this._allow ? this.stylize(consoleStyleFormatters.warn, ...args) : this;
   }
 
   /**
@@ -232,7 +234,7 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
    * @returns {this} The current instance for method chaining.
    */
   public error(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(consoleStyleFormatters.error, ...args);
+    return this._allow ? this.stylize(consoleStyleFormatters.error, ...args) : this;
   }
 
   /**
@@ -241,7 +243,7 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
    * @returns {this} The current instance for method chaining.
    */
   public strikethru(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(consoleStyleFormatters.strikethru, ...args);
+    return this._allow ? this.stylize(consoleStyleFormatters.strikethru, ...args) : this;
   }
 
   /**
