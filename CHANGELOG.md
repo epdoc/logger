@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1002.4.7-alpha.0] - 2025-09-19
+
+- Modified `MsgBuilder` to allow it be used outside of logger context.
+- Updated to latest Deno import requirements.
+
 ## [1002.4.6] - 2025-08-26
 
 - Added new conditional `if`,`elif`,`else`,`endif` logic to base MsgBuilder.

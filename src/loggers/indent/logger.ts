@@ -1,6 +1,6 @@
+import type * as Log from '$log';
 import { isArray, isNumber, isString } from '@epdoc/type';
 import * as MsgBuilder from '../../message/mod.ts';
-import type * as Log from '../../types.ts';
 import * as Base from '../base/mod.ts';
 
 /**

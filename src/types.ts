@@ -1,6 +1,6 @@
+import type * as Level from '$level';
+import type * as MsgBuilder from '$msgbuilder';
 import type { TimestampFormat } from './consts.ts';
-import type * as Level from './levels/mod.ts';
-import type * as MsgBuilder from './message/mod.ts';
 
 /**
  * A type representing the allowed values for timestamp formatting.

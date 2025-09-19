@@ -1,6 +1,6 @@
 import { isDate } from '@epdoc/type';
-import { expect } from 'jsr:@std/expect';
-import { describe, test } from 'jsr:@std/testing/bdd';
+import { expect } from '@std/expect';
+import { describe, test } from '@std/testing/bdd';
 import * as Log from '../mod.ts';
 
 type M = Log.MsgBuilder.Console.Builder;

@@ -1,9 +1,9 @@
+import type * as Log from '$log';
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isString } from '@epdoc/type';
 import type * as Level from '../../levels/mod.ts';
 import type { LogMgr } from '../../logmgr.ts';
 import type * as MsgBuilder from '../../message/mod.ts';
-import type * as Log from '../../types.ts';
 import type { IEmitter, IGetChildParams, IInherit, ILevels } from '../types.ts';
 
 let markId = 0;

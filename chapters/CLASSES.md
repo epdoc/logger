@@ -100,7 +100,7 @@ The conditional logging methods are:
 
 -   `if(condition: boolean)`: Starts a conditional block. The following methods will only be executed if the `condition` is `true`.
 -   `elif(condition: boolean)`: Starts an "else if" block. The following methods will only be executed if the previous `if` or `elif` conditions were `false` and this `condition` is `true`.
--   `else()`: Starts an "else" block. The following methods will only be executed if all previous `if` and `elif` conditions were `false`.
+-   `else()`: Starts an "else" block. The following methods will only beexecuted if all previous `if` and `elif` conditions were `false`.
 -   `endif()`: Ends a conditional block.
 
 Here's an example of how to use conditional logging:
@@ -118,6 +118,27 @@ log.info
     .text('This will NOT be logged either.')
   .endif()
   .emit();
+```
+
+### Using the Message Builder Standalone
+
+You can also use a `MsgBuilder` (like `ConsoleMsgBuilder`) on its own, without a `Logger` or `LogMgr`, for general-purpose string formatting with styling.
+
+When you instantiate a builder without any arguments, the `emit()` method is disabled, but you can still use all the formatting and styling methods. To get the final string, call the `format()` method.
+
+Here is an example:
+
+```typescript
+import { Log } from '@epdoc/logger';
+
+const builder = new Log.MsgBuilder.Console.Builder();
+
+// Build a string with styling
+const myString = builder.h1('Chapter 1').h3('The beginning').format(false);
+// myString is "Chapter 1 The beginning"
+
+// You can also get a colored string
+const coloredString = builder.clear().h1('Chapter 1').h3('The beginning').format(true);
 ```
 
 ## Transports

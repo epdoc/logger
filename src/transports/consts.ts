@@ -1,6 +1,6 @@
-import type * as Level from '../levels/mod.ts';
-import type * as Logger from '../loggers/mod.ts';
-import type * as MsgBuilder from '../message/mod.ts';
+import type * as Level from '$level';
+import type * as Logger from '$logger';
+import type * as MsgBuilder from '$msgbuilder';
 
 /**
  * Defines the available output formats for transports.

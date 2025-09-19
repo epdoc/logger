@@ -1,11 +1,11 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { assert } from '@std/assert';
 // import { cli, ILogLevels, type Level.Name, Level.Value, LogLevelFactoryMethod, std } from './levels/index.ts';
-import type * as Level from './levels/mod.ts';
-import * as Logger from './loggers/mod.ts';
-import * as MsgBuilder from './message/mod.ts';
-import * as Transport from './transports/mod.ts';
-import type * as Log from './types.ts';
+import type * as Level from '$level';
+import type * as Log from '$log';
+import * as Logger from '$logger';
+import * as MsgBuilder from '$msgbuilder';
+import * as Transport from '$transport';
 
 /**
  * Manages the entire logging ecosystem, including loggers, levels, and

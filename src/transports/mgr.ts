@@ -1,8 +1,8 @@
+import type * as Log from '$log';
+import type * as MsgBuilder from '$msgbuilder';
 import { assert } from '@std/assert';
 import type * as Level from '../levels/types.ts';
 import type { LogMgr } from '../logmgr.ts';
-import type * as MsgBuilder from '../message/mod.ts';
-import type * as Log from '../types.ts';
 import type { AbstractTransport } from './base/transport.ts';
 import { ConsoleTransport } from './console/transport.ts';
 /**

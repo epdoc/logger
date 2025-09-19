@@ -1,5 +1,5 @@
+import type * as MsgBuilder from '$msgbuilder';
 import type { LogMgr } from '../../logmgr.ts';
-import type * as MsgBuilder from '../../message/mod.ts';
 import * as Min from '../min/mod.ts';
 import type * as Logger from '../types.ts';
 

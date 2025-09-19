@@ -1,9 +1,9 @@
-import { asError, type Integer, isInteger, isNonEmptyString, isPosNumber } from '@epdoc/type';
+import type * as Level from '$level';
+import type * as Log from '$log';
+import type * as Logger from '$logger';
+import { _, type Integer } from '@epdoc/type';
 import os from 'node:os'; // Used for homedir in `relative`
 import { relative } from 'node:path';
-import type * as Level from '../../levels/mod.ts';
-import type * as Logger from '../../loggers/mod.ts';
-import type * as Log from '../../types.ts';
 import * as Base from '../base/mod.ts';
 import type * as MsgBuilder from '../types.ts';
 import { consoleStyleFormatters } from './const.ts';
@@ -14,22 +14,26 @@ const home = os.userInfo().homedir;
 /**
  * A message builder for creating styled console messages.
  *
- * This class extends `Base` to provide a fluent interface for building
- * complex, styled log messages. It supports various formatting options,
- * including headers, labels, values, and error messages.
+ * @remarks
+ * This class extends {@link Base.Builder} to provide a fluent interface for
+ * building complex, styled log messages. It supports various formatting
+ * options, including headers, labels, values, and error messages.
  *
- * @example
+ * @example <caption>Basic Logging</caption>
  * ```ts
- * import { Console } from './console.ts';
- * import { type IEmitter } from '../logger/types.ts';
+ * import { Log } from '@epdoc/logger';
  *
- * const emitter: IEmitter = {
- *   emit: (entry) => console.log(entry.message),
- *   demark: () => 0,
- * };
+ * const log = new Log.Mgr().getLogger();
+ * log.info.h1('Hello').text('World').emit();
+ * ```
  *
- * const msg = new Console('info', emitter);
- * msg.h1('Hello').text('World').emit();
+ * @example <caption>Standalone Usage</caption>
+ * ```ts
+ * import { ConsoleMsgBuilder } from '@epdoc/logger/message/console';
+ *
+ * const builder = new ConsoleMsgBuilder();
+ * const formattedString = builder.h1('Standalone').value(123).format(false);
+ * // formattedString is "Standalone 123"
  * ```
  */
 export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilder, MsgBuilder.IEmitDuration {
@@ -40,15 +44,16 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
   protected _nextPartPluralize: boolean | undefined; // true for plural, false for singular, undefined for no effect
 
   /**
-   * A factory method for creating a new `ConsoleMsgBuilder` instance.
-   * @param {Level.Name} level - The log level.
-   * @param {Logger.IEmitter} emitter - The log emitter.
+   * Factory method for creating a new `ConsoleMsgBuilder` instance.
+   *
+   * @param {Level.Name} [level] - The log level.
+   * @param {Logger.Base.IEmitter} [emitter] - The log emitter. If not provided, the builder runs in standalone mode.
    * @param {boolean} [meetsThreshold=true] - Whether the log level meets the threshold.
-   * @returns {ConsoleMsgBuilder} A new `Console` instance.
+   * @returns {ConsoleMsgBuilder} A new `ConsoleMsgBuilder` instance.
    */
   static create(
-    level: Level.Name,
-    emitter: Logger.Base.IEmitter,
+    level?: Level.Name,
+    emitter?: Logger.Base.IEmitter,
     meetsThreshold: boolean = true,
   ): ConsoleMsgBuilder {
     return new ConsoleMsgBuilder(level, emitter, meetsThreshold);
@@ -116,7 +121,7 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
     super.stylize(consoleStyleFormatters.value, num);
 
     // Now, set the flag for the *next* chained method.
-    this._nextPartPluralize = isInteger(num) ? num !== 1 : undefined;
+    this._nextPartPluralize = _.isInteger(num) ? num !== 1 : undefined;
     return this;
   }
 
@@ -183,7 +188,7 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
    */
   public section(str?: string): this {
     if (!this._allow) return this;
-    if (isNonEmptyString(str)) {
+    if (_.isNonEmptyString(str)) {
       const len = (80 - str.length - 2) / 2;
       return this.h1('-'.repeat(Math.floor(len)) + ' ' + str + ' ' + '-'.repeat(Math.ceil(len)));
     } else {
@@ -197,12 +202,12 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
    * If the provided `error` is not an `Error` object, it will be converted to one.
    *
    * @param {unknown} error - The error object or value to be logged.
-   * @param {ErrOpts} [opts={}] - Options for formatting the error message.
+   * @param {IConsoleErrOpts} [opts={}] - Options for formatting the error message.
    * @returns {this} The current instance for method chaining.
    */
   public err(error: unknown, opts: IConsoleErrOpts = {}): this {
     if (!this._allow) return this;
-    const err = asError(error);
+    const err = _.asError(error);
     this.error(err.message);
     if (opts.code === true && 'code' in err) {
       this.label('code:').value((err as { code: string | number }).code);
@@ -264,10 +269,10 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
     const isPlural = this._nextPartPluralize;
     this._nextPartPluralize = undefined; // Consume and reset the flag for the next call
 
-    if (args.length === 1 && isNonEmptyString(args[0])) {
+    if (args.length === 1 && _.isNonEmptyString(args[0])) {
       const originalStr = String(args[0]);
       return [isPlural ? originalStr + 's' : originalStr];
-    } else if (args.length === 2 && isNonEmptyString(args[0]) && isNonEmptyString(args[1])) {
+    } else if (args.length === 2 && _.isNonEmptyString(args[0]) && _.isNonEmptyString(args[1])) {
       return [isPlural ? String(args[1]) : String(args[0])];
     }
     return args; // No pluralization applied for other arg patterns or non-string args
@@ -285,21 +290,25 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
   }
 
   /**
-   * Emits a message with the elapsed time since the last mark.
+   * Emits a message with the elapsed time.
    *
-   * If a duration is provided, it will be used; otherwise, the duration is
-   * calculated from the last mark to the current time.
+   * @remarks
+   * This is a convenience method that appends a formatted duration to the
+   * message before emitting it.
    *
-   * @param {number | string} duration - The time duration in milliseconds or a string identifier for a marked time.
-   * @param {boolean} [keep=false] - Whether to keep the mark after demarking.
-   * @returns {Log.Entry | undefined} The emitted log entry, or `undefined` if the threshold is not met.
+   * If `duration` is a string, it's treated as an identifier to calculate
+   * the elapsed time since a corresponding `log.mark(id)` call was made.
+   *
+   * @param {number | string} duration - The duration in milliseconds or a string identifier for a marked time.
+   * @param {boolean} [keep=false] - If `duration` is a string ID, whether to keep the mark for future calculations.
+   * @returns {Log.Entry | undefined} The emitted log entry, or `undefined` if the threshold is not met or if used in standalone mode.
    */
   public ewt(duration: number | string, keep = false): Log.Entry | undefined {
     if (this._meetsThreshold) {
-      if (isNonEmptyString(duration)) {
+      if (_.isNonEmptyString(duration) && this._emitter) {
         duration = this._emitter.demark(duration, keep);
       }
-      if (isPosNumber(duration)) {
+      if (_.isPosNumber(duration)) {
         let digits: Integer = 3;
         if (duration > 100) {
           digits = 0;

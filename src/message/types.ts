@@ -1,6 +1,6 @@
-import type { Name as LevelName } from '../levels/types.ts';
-import type * as Logger from '../loggers/mod.ts';
-import type * as Transport from '../transports/types.ts';
+import type { Name as LevelName } from '$level';
+import type * as Logger from '$logger';
+import type * as Transport from '$transport';
 import type { Entry } from '../types.ts';
 import type * as Base from './base/mod.ts';
 

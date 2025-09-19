@@ -1,30 +1,32 @@
+import type * as Log from '$log';
 import { _, type Integer } from '@epdoc/type';
 import type * as Level from '../../levels/mod.ts';
 import type * as Logger from '../../loggers/mod.ts';
 import * as Transport from '../../transports/mod.ts';
-import type * as Log from '../../types.ts';
 import { StringUtil } from '../../util.ts';
 import type { IFormat, MsgPart, StyleArg, StyleFormatterFn } from '../types.ts';
 
 const DEFAULT_TAB_SIZE = 2;
 
 /**
- * The foundational message builder, responsible for constructing, styling, and
- * formatting a single log entry before it is emitted.
+ * The foundational message builder for creating structured, stylable log messages.
  *
  * @remarks
- * This class provides a chainable interface to build a log message piece by
- * piece. It manages message parts, indentation, and associated structured data.
- * Once fully constructed, the `emit` method forwards the completed log entry to
- * the associated {@link Logger.IEmitter}.
+ * This abstract class provides a fluent, chainable interface for constructing
+ * log messages piece by piece. It serves two primary purposes:
  *
- * It implements core building logic and
- * {@link IFormat} for converting the message into a string.
+ * 1.  **Logging:** When associated with a logger `IEmitter`, it builds a log
+ *     entry that can be emitted to a transport.
+ * 2.  **Standalone Formatting:** When used without an `IEmitter`, it functions
+ *     as a general-purpose string builder with styling capabilities.
+ *
+ * It manages message parts, indentation, conditional logic, and structured
+ * data, and implements the {@link IFormat} interface for final string conversion.
  */
 export abstract class AbstractMsgBuilder implements IFormat {
   protected _timestamp: Date = new Date();
-  protected _level: Level.Name;
-  protected _emitter: Logger.Base.IEmitter;
+  protected _level: Level.Name = 'info';
+  protected _emitter?: Logger.Base.IEmitter;
   protected _meetsThreshold: boolean = true;
   protected _meetsFlushThreshold: boolean = true;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
@@ -40,18 +42,24 @@ export abstract class AbstractMsgBuilder implements IFormat {
   /**
    * Initializes a new message builder instance.
    *
-   * @param {  Level.Name} level - The log level of the message.
-   * @param {Logger.IEmitter} emitter - The logger instance that will emit the final message.
+   * When `emitter` is not provided, the builder operates in a "standalone"
+   * mode. In this mode, the `emit()` method is disabled, but the builder can
+   * still be used for formatting and styling strings.
+   *
+   * @param {Level.Name} [level='info'] - The log level of the message.
+   * @param {Logger.Base.IEmitter} [emitter] - The logger instance that will emit the final message.
    * @param {boolean} [meetsThreshold=true] - Whether the message meets the configured log level threshold.
    * @param {boolean} [meetsFlushThreshold=true] - Whether the message requires an immediate flush.
    */
   constructor(
-    level: Level.Name,
-    emitter: Logger.Base.IEmitter,
+    level?: Level.Name,
+    emitter?: Logger.Base.IEmitter,
     meetsThreshold = true,
     meetsFlushThreshold = true,
   ) {
-    this._level = level;
+    if (level) {
+      this._level = level;
+    }
     this._emitter = emitter;
     this._meetsThreshold = meetsThreshold;
     this._meetsFlushThreshold = meetsFlushThreshold;
@@ -282,17 +290,19 @@ export abstract class AbstractMsgBuilder implements IFormat {
    * information from the emitter (e.g., `sid`, `reqId`), and passes it to the
    * emitter's `emit` method. The builder is then cleared for potential reuse.
    *
+   * If the builder was created without an `emitter`, this method does nothing
+   * and returns `undefined`.
+   *
    * @param {unknown[]} args - Any final, unstyled text to append before emitting.
-   * @returns {Log.Entry | undefined} The generated log entry if the threshold was met, otherwise `undefined`.
+   * @returns {Log.Entry | undefined} The generated log entry if the threshold was met and an emitter is configured, otherwise `undefined`.
    */
   public emit(...args: unknown[]): Log.Entry | undefined {
-    if (this._meetsThreshold) {
+    if (this._meetsThreshold && this._emitter) {
       this.appendMsg(...args);
       const entry: Log.Entry = {
         timestamp: this._timestamp,
         level: this._level,
         data: this._data,
-        sid: this._emitter.sid,
         msg: this,
       };
       if (this._emitter.sid) {
@@ -304,9 +314,7 @@ export abstract class AbstractMsgBuilder implements IFormat {
       if (_.isNonEmptyArray(this._emitter.pkgs)) {
         entry.pkgs = this._emitter.pkgs;
       }
-      if (this._emitter) {
-        this._emitter.emit(entry);
-      }
+      this._emitter.emit(entry);
       this.clear();
       return entry;
     }

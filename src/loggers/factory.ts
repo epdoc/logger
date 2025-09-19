@@ -1,6 +1,6 @@
-import type * as Levels from '../levels/mod.ts';
+import type * as Levels from '$level';
+import type * as MsgBuilder from '$msgbuilder';
 import type { LogMgr } from '../logmgr.ts';
-import type * as MsgBuilder from '../message/mod.ts';
 import type * as Logger from './types.ts';
 
 /**

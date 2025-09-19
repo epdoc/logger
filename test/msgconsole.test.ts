@@ -1,6 +1,6 @@
 import { assertEquals } from '@std/assert';
-import { expect } from 'jsr:@std/expect';
-import { describe, test } from 'jsr:@std/testing/bdd';
+import { expect } from '@std/expect';
+import { describe, test } from '@std/testing/bdd';
 import os from 'node:os';
 import * as Log from '../mod.ts';
 import { disable, enable } from './color-map.ts';
@@ -261,6 +261,20 @@ describe('MsgBuilder.Console', () => {
       const msgBuilder = new Log.MsgBuilder.Console.Builder('INFO', log);
       const result = msgBuilder.count(1.5).h2('message').format(false);
       assertEquals(result, '1.5 message');
+    });
+  });
+
+  describe('standalone usage', () => {
+    test('can be instantiated without arguments', () => {
+      const builder = new Log.MsgBuilder.Console.Builder();
+      const result = builder.h1('Hello').text('World').format(false);
+      assertEquals(result, 'Hello World');
+    });
+
+    test('emit() returns undefined and does not throw', () => {
+      const builder = new Log.MsgBuilder.Console.Builder();
+      const result = builder.text('test').emit();
+      expect(result).toBeUndefined();
     });
   });
 });
