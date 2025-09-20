@@ -3,8 +3,8 @@
  * It provides a structure for custom log levels and their associated methods.
  */
 
+import type { StyleFormatterFn } from '$msgbuilder';
 import type { Integer } from '@epdoc/type';
-import type { StyleFormatterFn } from '../message/types.ts';
 import type { IBasic } from './ibasic.ts';
 
 /**
