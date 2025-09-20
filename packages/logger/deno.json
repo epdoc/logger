@@ -44,7 +44,7 @@
   },
   "imports": {
     "$log": "./src/types.ts",
-    "$level": "./src/levels/mod.ts",
+    "$level": "../loglevels/src/mod.ts",
     "$logger": "./src/loggers/mod.ts",
     "$msgbuilder": "../msgbuilder/src/mod.ts",
     "$transport": "./src/transports/mod.ts",

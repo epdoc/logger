@@ -2,7 +2,7 @@
  * This example demonstrates the effects of configuring timestamps and how
  * log level thresholds on the LogMgr and individual loggers interact.
  */
-import * as Log from '../mod.ts';
+import * as Log from '../packages/logger/src/mod.ts';
 
 const filename = new URL(import.meta.url).pathname.split('/').pop();
 

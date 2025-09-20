@@ -1,3 +1,8 @@
+/**
+ * @module
+ * Defines the core `IBasic` interface for a log level management system.
+ */
+
 import type { Integer } from '@epdoc/type';
 import type { LogLevelsDef, Name, Value } from './types.ts';
 
@@ -44,6 +49,7 @@ export interface IBasic {
    *
    * @param {Name | Value} level - The log level to convert.
    * @returns {Value} The numeric value of the log level.
+   * @throws {Error} If the level name or value is not defined.
    */
   asValue(level: Name | Value): Value;
 
@@ -52,6 +58,7 @@ export interface IBasic {
    *
    * @param {Name | Value} level - The log level to convert.
    * @returns {Name} The name of the log level.
+   * @throws {Error} If the level value or name is not defined.
    */
   asName(level: Name | Value): Name;
 

@@ -1,4 +1,4 @@
-import type * as Log from '../mod.ts';
+import type * as Log from '../packages/logger/src/mod.ts';
 import { log, logMgr } from './settings-mgr.ts';
 
 const showOpts: Log.EmitterShowOpts = {

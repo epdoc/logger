@@ -1,7 +1,15 @@
+/**
+ * @module
+ * Provides internal helper functions for the loglevels module.
+ */
+
 import type { LogLevelDef } from './types.ts';
 
 /**
- * Type guard to check if an unknown value is a valid {@link LogLevelDef}.
+ * A type guard to check if an unknown value is a valid {@link LogLevelDef}.
+ *
+ * @param {unknown} levelDef - The value to check.
+ * @returns {boolean} `true` if the value is a `LogLevelDef` object.
  * @internal
  */
 export function isLogLevelDef(levelDef: unknown): levelDef is LogLevelDef {

@@ -1,0 +1,58 @@
+# @epdoc/loglevels
+
+This module provides a flexible and extensible system for defining and managing custom log levels in a logging framework. It allows you to create your own log level hierarchy, including names, numeric values, and even custom formatting functions. The module is primarily intended to be used with @epdoc/logger.
+
+## Installation
+
+```sh
+deno add @epdoc/loglevels
+```
+
+## Usage
+
+The core of this module is the `LogLevels` class, which takes a log level definition object and provides an interface for working with your custom levels.
+
+```ts
+import { LogLevels, type LogLevelsDef } from '@epdoc/loglevels';
+import { bold, red, yellow } from '@std/fmt/colors';
+
+// 1. Define your custom log levels
+const myLevels: LogLevelsDef = {
+  CRITICAL: { val: 0, fmtFn: (str) => bold(red(str)), flush: true },
+  ERROR: { val: 1, fmtFn: red },
+  WARN: { val: 2, fmtFn: yellow, warn: true },
+  INFO: { val: 3, default: true },
+  DEBUG: { val: 4, lowest: true },
+};
+
+// 2. Create a level manager instance
+const levels = new LogLevels(myLevels);
+
+// 3. Use the manager to work with your levels
+console.log('All level names:', levels.names);
+// Output: All level names: [ 'CRITICAL', 'ERROR', 'WARN', 'INFO', 'DEBUG' ]
+
+console.log('Default level:', levels.defaultLevelName);
+// Output: Default level: INFO
+
+const currentThreshold = 'INFO';
+
+console.log(`Should we log a DEBUG message?`, levels.meetsThreshold('DEBUG', currentThreshold));
+// Output: Should we log a DEBUG message? false
+
+console.log(`Should we log a WARN message?`, levels.meetsThreshold('WARN', currentThreshold));
+// Output: Should we log a WARN message? true
+
+// Apply custom formatting
+const errorMessage = 'This is an error!';
+console.log(levels.applyColors(errorMessage, 'ERROR'));
+// Output: (red text) This is an error!
+```
+
+## API Overview
+
+-   **`LogLevelsDef`**: A type definition for an object that defines your custom log levels. The keys are the level names (e.g., `'ERROR'`), and the values are `LogLevelDef` objects specifying the `val` (numeric value) and other properties.
+
+-   **`LogLevels`**: A class that takes a `LogLevelsDef` and implements the `IBasic` interface. It provides methods for converting between level names and values, checking logging thresholds (`meetsThreshold`), and applying custom formatting.
+
+-   **`IBasic`**: The core interface that defines the contract for a log level management system. This allows for different implementations to be used interchangeably within a logger.

@@ -1,0 +1,85 @@
+# Architecture and Organization Proposal
+
+This document outlines a proposal for refactoring the `@epdoc/logger` ecosystem to improve modularity, decoupling, and maintainability, based on our recent discussions.
+
+## 1. Goal
+
+The primary goal is to decompose the monolithic `@epdoc/logger` package into a collection of smaller, more focused packages. This will allow consumers to install only the components they need, clarify dependencies, and create a more flexible and extensible logging framework.
+
+## 2. Proposed Package Decomposition
+
+I propose splitting the existing `logger` package into a core package and several optional packages for specific logger implementations and transports.
+
+### Core Packages
+
+*   **`@epdoc/loglevels`** (Already exists)
+*   **`@epdoc/msgbuilder`** (Already exists)
+*   **`@epdoc/logger`** (Refactored Core)
+    *   **Responsibilities:** Would contain the central `LogMgr`, the `AbstractLogger`, and all core interfaces (`ILogger`, `ILevels`, etc.). It would define the framework but contain no concrete logger or transport implementations.
+    *   **Dependencies:** `@epdoc/loglevels`, `@epdoc/msgbuilder`.
+
+### Logger Implementation Packages
+
+*   **`@epdoc/logger-std`** (New Package)
+    *   **Responsibilities:** Provides the standard logger implementation (`StdLogger`) and its associated log level definitions.
+    *   **Dependencies:** `@epdoc/logger`.
+*   **`@epdoc/logger-cli`** (New Package)
+    *   **Responsibilities:** Provides the command-line focused logger (`CliLogger`) and its specific log levels.
+    *   **Dependencies:** `@epdoc/logger`.
+
+### Transport Packages
+
+*   **`@epdoc/transport`** (New Package)
+    *   **Responsibilities:** Contains the `TransportMgr` and the `AbstractTransport` base class. Defines the transport contract.
+    *   **Dependencies:** `@epdoc/logger` (for interfaces), `@epdoc/loglevels`.
+*   **`@epdoc/transport-console`** (New Package)
+    *   **Responsibilities:** Provides the concrete `ConsoleTransport`.
+    *   **Dependencies:** `@epdoc/transport`.
+*   **`@epdoc/transport-file`** (New Package)
+    *   **Responsibilities:** Provides the concrete `FileTransport`.
+    *   **Dependencies:** `@epdoc/transport`.
+
+This structure would allow a user to, for example, install only `@epdoc/logger`, `@epdoc/logger-std`, and `@epdoc/transport-console` for a basic setup.
+
+## 3. Architectural Improvement: Decoupling `MsgBuilder` via `IEmitter`
+
+Your suggestion to improve the `emit` process is a key architectural improvement. The current process is overly complex and tightly coupled.
+
+### Current Emit Flow:
+
+`MsgBuilder.emit()` -> `Logger.emit()` -> `LogMgr.emit()` -> `TransportMgr.emit()` -> `Transport.emit()`
+
+This long chain means the `MsgBuilder` has a dependency on the `Logger`, which depends on the `LogMgr`.
+
+### Proposed Emit Flow:
+
+I propose creating a new, lightweight `Emitter` object inside the `LogMgr`. This object would be passed to the `MsgBuilder` during its construction.
+
+1.  When a logger requests a message builder (e.g., `log.info`), the `LogMgr` creates a specialized `Emitter` instance.
+2.  This `Emitter` captures the logger's context (`sid`, `reqId`, `level`) and holds a **direct reference to the `TransportMgr`**.
+3.  The `MsgBuilder` is constructed with this new `Emitter`.
+4.  When `MsgBuilder.emit()` is called, it calls `this._emitter.emit()`.
+5.  The `Emitter` then directly calls `transportMgr.emit()`, completely bypassing the `Logger` and `LogMgr` in the emit path.
+
+**New, Simplified Flow:**
+
+`MsgBuilder.emit()` -> `Emitter.emit()` -> `TransportMgr.emit()` -> `Transport.emit()`
+
+This change would successfully decouple the `MsgBuilder` from the `Logger` and `LogMgr`, simplifying the architecture significantly.
+
+## 4. Benefits of Proposed Changes
+
+*   **Modularity:** Consumers only install what they need, reducing bloat.
+*   **Clearer Dependencies:** The responsibility of each package is well-defined.
+*   **Improved Decoupling:** The `MsgBuilder` becomes independent of the logger implementation, as you suggested.
+*   **Extensibility:** Adding new loggers or transports becomes as simple as creating a new package that adheres to the core contracts.
+
+## 5. Proposed Next Steps
+
+I recommend a phased approach to this refactor:
+
+1.  **Implement the `IEmitter` refactor first.** This is a purely architectural change within the existing `@epdoc/logger` package but provides the biggest decoupling benefit.
+2.  **Split out `@epdoc/transport-console`.** Create the new `@epdoc/transport` and `@epdoc/transport-console` packages and adjust the `LogMgr` to use them. This will serve as a proof-of-concept for the package decomposition.
+3.  **Continue splitting** the remaining packages (`logger-std`, `logger-cli`, `transport-file`) one by one.
+
+I will keep this document updated as we make progress on these items.

@@ -1,4 +1,4 @@
-import * as Log from '../../mod.ts';
+import * as Log from '../../packages/logger/src/mod.ts';
 import { type CustomMsgBuilder, customMsgBuilderFactory } from './custom-msg-builder.ts';
 
 export interface IBuilder extends Log.MsgBuilder.Base.Builder {
