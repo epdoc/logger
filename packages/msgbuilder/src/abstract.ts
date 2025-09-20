@@ -1,10 +1,7 @@
-import type * as Log from '$log';
-import { _, type Integer } from '@epdoc/type';
-import type * as Level from '../../levels/mod.ts';
-import type * as Logger from '../../loggers/mod.ts';
-import * as Transport from '../../transports/mod.ts';
-import { StringUtil } from '../../util.ts';
-import type { IFormat, MsgPart, StyleArg, StyleFormatterFn } from '../types.ts';
+import { _, type Dict, type Integer } from '@epdoc/type';
+import { ConsoleEmitter } from './emitter.ts';
+import type { EmitterData, FormatOpts, IEmitter, IFormatter, MsgPart, StyleArg, StyleFormatterFn } from './types.ts';
+import { StringUtil } from './util.ts';
 
 const DEFAULT_TAB_SIZE = 2;
 
@@ -21,19 +18,16 @@ const DEFAULT_TAB_SIZE = 2;
  *     as a general-purpose string builder with styling capabilities.
  *
  * It manages message parts, indentation, conditional logic, and structured
- * data, and implements the {@link IFormat} interface for final string conversion.
+ * data, and implements the {@link IFormatter} interface for final string conversion.
  */
-export abstract class AbstractMsgBuilder implements IFormat {
+export abstract class AbstractMsgBuilder implements IFormatter {
   protected _timestamp: Date = new Date();
-  protected _level: Level.Name = 'info';
-  protected _emitter?: Logger.Base.IEmitter;
-  protected _meetsThreshold: boolean = true;
-  protected _meetsFlushThreshold: boolean = true;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
+  protected _emitter: IEmitter;
 
   protected _msgIndent: string = '';
   protected _msgParts: MsgPart[] = [];
-  protected _data: unknown | undefined;
+  protected _data: Dict | undefined;
   protected _suffix: string[] = [];
   protected _showElapsed: boolean = false;
   protected _allow: boolean = true;
@@ -45,32 +39,9 @@ export abstract class AbstractMsgBuilder implements IFormat {
    * When `emitter` is not provided, the builder operates in a "standalone"
    * mode. In this mode, the `emit()` method is disabled, but the builder can
    * still be used for formatting and styling strings.
-   *
-   * @param {Level.Name} [level='info'] - The log level of the message.
-   * @param {Logger.Base.IEmitter} [emitter] - The logger instance that will emit the final message.
-   * @param {boolean} [meetsThreshold=true] - Whether the message meets the configured log level threshold.
-   * @param {boolean} [meetsFlushThreshold=true] - Whether the message requires an immediate flush.
    */
-  constructor(
-    level?: Level.Name,
-    emitter?: Logger.Base.IEmitter,
-    meetsThreshold = true,
-    meetsFlushThreshold = true,
-  ) {
-    if (level) {
-      this._level = level;
-    }
-    this._emitter = emitter;
-    this._meetsThreshold = meetsThreshold;
-    this._meetsFlushThreshold = meetsFlushThreshold;
-  }
-
-  /**
-   * Sets the log level for the message.
-   * @param {  Level.Name} level - The log level name.
-   */
-  public set level(level: Level.Name) {
-    this._level = level;
+  constructor(emitter?: IEmitter) {
+    this._emitter = emitter ?? new ConsoleEmitter();
   }
 
   /**
@@ -89,6 +60,7 @@ export abstract class AbstractMsgBuilder implements IFormat {
    *
    * @param {...StyleArg[]} args - The arguments to set as the initial string.
    * @returns {this} The current instance for method chaining.
+   * @deprecated
    */
   setInitialString(...args: StyleArg[]): this {
     if (args.length) {
@@ -156,18 +128,6 @@ export abstract class AbstractMsgBuilder implements IFormat {
   public endif(): this {
     this._allow = true;
     this._conditionalMet = false;
-    return this;
-  }
-
-  /**
-   * Appends a comment to the end of the log line.
-   *
-   * @param {string[]} args - The comment text to append.
-   * @returns {this} The current instance for chaining.
-   */
-  public comment(...args: string[]): this {
-    if (!this._allow) return this;
-    this.appendSuffix(...args);
     return this;
   }
 
@@ -260,6 +220,18 @@ export abstract class AbstractMsgBuilder implements IFormat {
   }
 
   /**
+   * Appends a comment to the end of the log line.
+   *
+   * @param {string[]} args - The comment text to append.
+   * @returns {this} The current instance for chaining.
+   */
+  public comment(...args: string[]): this {
+    if (!this._allow) return this;
+    this.appendSuffix(...args);
+    return this;
+  }
+
+  /**
    * Attaches structured data to the log entry.
    *
    * @remarks
@@ -271,7 +243,7 @@ export abstract class AbstractMsgBuilder implements IFormat {
    */
   public data(data: unknown): this {
     if (!this._allow) return this;
-    if (_.isDict(data) && this._meetsThreshold) {
+    if (_.isDict(data) && this._emitter.dataEnabled) {
       if (_.isDict(this._data)) {
         this._data = Object.assign(this._data, data);
       } else {
@@ -296,24 +268,14 @@ export abstract class AbstractMsgBuilder implements IFormat {
    * @param {unknown[]} args - Any final, unstyled text to append before emitting.
    * @returns {Log.Entry | undefined} The generated log entry if the threshold was met and an emitter is configured, otherwise `undefined`.
    */
-  public emit(...args: unknown[]): Log.Entry | undefined {
-    if (this._meetsThreshold && this._emitter) {
+  public emit(...args: unknown[]): EmitterData | undefined {
+    if (this._emitter && this._emitter.emitEnabled) {
       this.appendMsg(...args);
-      const entry: Log.Entry = {
+      const entry: EmitterData = {
         timestamp: this._timestamp,
-        level: this._level,
         data: this._data,
-        msg: this,
+        formatter: this,
       };
-      if (this._emitter.sid) {
-        entry.sid = this._emitter.sid;
-      }
-      if (_.isNonEmptyArray(this._emitter.reqIds)) {
-        entry.reqIds = this._emitter.reqIds;
-      }
-      if (_.isNonEmptyArray(this._emitter.pkgs)) {
-        entry.pkgs = this._emitter.pkgs;
-      }
       this._emitter.emit(entry);
       this.clear();
       return entry;
@@ -331,24 +293,36 @@ export abstract class AbstractMsgBuilder implements IFormat {
 
   /**
    * Formats the log message into a final string representation, applying colors
-   * and styles as needed.
+   * and styles if the color parameter is true and NO_COLOR is false.
    *
-   * @param {boolean} color - Whether to apply color and styling functions.
+   * @param {boolean} color - Whether to enable color and styling functions.
    * @param {Transport.OutputFormatType} [_target=text] - The target output format (reserved for future use).
    * @returns {string} The formatted log message string.
    */
-  format(color: boolean, _target: Transport.OutputFormatType = Transport.OutputFormat.TEXT): string {
+  format(opts?: FormatOpts): string {
+    let noColor = Deno.noColor;
+    if (opts) {
+      if (opts.color === true) noColor = false;
+      if (opts.color === false) noColor = true;
+    }
     const parts: string[] = [];
     if (_.isNonEmptyString(this._msgIndent)) {
       parts.push(this._msgIndent);
     }
     this._msgParts.forEach((part: MsgPart) => {
-      if (part.style && color) {
+      if (part.style && !noColor) {
         parts.push(part.style(part.str));
       } else {
         parts.push(part.str);
       }
     });
     return parts.join(' ');
+  }
+
+  /**
+   * If you just want to output the message, and aren't using any of the logging support capabilities
+   */
+  log(): void {
+    console.log(this.format());
   }
 }

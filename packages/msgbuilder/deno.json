@@ -1,0 +1,47 @@
+{
+  "name": "@epdoc/msgbuilder",
+  "version": "1002.5.0-alpha.1",
+  "description": "Message builder module with chainable formatting",
+  "author": {
+    "name": "James Pravetz",
+    "email": "jpravetz@epdoc.com"
+  },
+  "license": "MIT",
+  "tasks": {
+    "test": "deno test -A",
+    "lint": "deno lint",
+    "check": "deno check src test",
+    "prepublish": "deno publish --dry-run",
+    "publish": "deno publish"
+  },
+  "exports": "./src/mod.ts",
+  "test": {
+    "include": [
+      "./src/**/*test.ts",
+      "./test/**/*test.ts"
+    ]
+  },
+  "lint": {
+    "include": [
+      "./src",
+      "./test/**/*test.ts"
+    ]
+  },
+  "fmt": {
+    "include": [
+      "./src",
+      "./test/**/*test.ts",
+      "deno.json"
+    ],
+    "singleQuote": true,
+    "lineWidth": 120
+  },
+  "imports": {
+    "@std/expect": "jsr:@std/expect@^1.0.17",
+    "@std/fmt/colors": "jsr:@std/fmt@^1.0.8/colors",
+    "@epdoc/type": "jsr:@epdoc/type@^1.1.13",
+    "@epdoc/string": "jsr:@epdoc/string@^0.1.1",
+    "@std/assert": "jsr:@std/assert@^1.0.14",
+    "@std/testing": "jsr:@std/testing@^1.0.15"
+  }
+}

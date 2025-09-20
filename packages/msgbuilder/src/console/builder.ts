@@ -1,10 +1,7 @@
-import type * as Level from '$level';
-import type * as Log from '$log';
-import type * as Logger from '$logger';
 import { _, type Integer } from '@epdoc/type';
 import os from 'node:os'; // Used for homedir in `relative`
 import { relative } from 'node:path';
-import * as Base from '../base/mod.ts';
+import { AbstractMsgBuilder } from '../abstract.ts';
 import type * as MsgBuilder from '../types.ts';
 import { consoleStyleFormatters } from './const.ts';
 import type { IConsoleErrOpts, IConsoleMsgBuilder } from './types.ts';
@@ -36,7 +33,7 @@ const home = os.userInfo().homedir;
  * // formattedString is "Standalone 123"
  * ```
  */
-export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilder, MsgBuilder.IEmitDuration {
+export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsgBuilder {
   /**
    * A map of style formatters for different message parts.
    */
@@ -51,12 +48,8 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
    * @param {boolean} [meetsThreshold=true] - Whether the log level meets the threshold.
    * @returns {ConsoleMsgBuilder} A new `ConsoleMsgBuilder` instance.
    */
-  static create(
-    level?: Level.Name,
-    emitter?: Logger.Base.IEmitter,
-    meetsThreshold: boolean = true,
-  ): ConsoleMsgBuilder {
-    return new ConsoleMsgBuilder(level, emitter, meetsThreshold);
+  static create(emitter: MsgBuilder.IEmitter): ConsoleMsgBuilder {
+    return new ConsoleMsgBuilder(emitter);
   }
 
   /**
@@ -218,7 +211,7 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
     if (opts.path !== false && 'path' in err) {
       this.relative((err as { path: string }).path);
     }
-    if (opts.stack !== false && (this._meetsThreshold || opts.stack === true)) {
+    if (opts.stack !== false && (this._emitter.stackEnabled || opts.stack === true)) {
       this.text('\n' + err.stack);
     }
     return this;
@@ -276,50 +269,5 @@ export class ConsoleMsgBuilder extends Base.Builder implements IConsoleMsgBuilde
       return [isPlural ? String(args[1]) : String(args[0])];
     }
     return args; // No pluralization applied for other arg patterns or non-string args
-  }
-
-  /**
-   * Emits the log entry with a timestamp indicating the duration.
-   *
-   * @param {number | string} duration - The duration in milliseconds or a string identifier for a marked time.
-   * @returns {Log.Entry | undefined} The emitted log entry, or `undefined` if the threshold is not met.
-   * @internal
-   */
-  emitWithTime(duration: number | string): Log.Entry | undefined {
-    return this.ewt(duration);
-  }
-
-  /**
-   * Emits a message with the elapsed time.
-   *
-   * @remarks
-   * This is a convenience method that appends a formatted duration to the
-   * message before emitting it.
-   *
-   * If `duration` is a string, it's treated as an identifier to calculate
-   * the elapsed time since a corresponding `log.mark(id)` call was made.
-   *
-   * @param {number | string} duration - The duration in milliseconds or a string identifier for a marked time.
-   * @param {boolean} [keep=false] - If `duration` is a string ID, whether to keep the mark for future calculations.
-   * @returns {Log.Entry | undefined} The emitted log entry, or `undefined` if the threshold is not met or if used in standalone mode.
-   */
-  public ewt(duration: number | string, keep = false): Log.Entry | undefined {
-    if (this._meetsThreshold) {
-      if (_.isNonEmptyString(duration) && this._emitter) {
-        duration = this._emitter.demark(duration, keep);
-      }
-      if (_.isPosNumber(duration)) {
-        let digits: Integer = 3;
-        if (duration > 100) {
-          digits = 0;
-        } else if (duration > 10) {
-          digits = 1;
-        } else if (duration > 1) {
-          digits = 2;
-        }
-        return this.stylize(consoleStyleFormatters._elapsed, `(${duration.toFixed(digits)} ms response)`).emit();
-      }
-      return this.emit();
-    }
   }
 }

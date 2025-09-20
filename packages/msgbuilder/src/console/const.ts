@@ -1,7 +1,5 @@
-import type * as Level from '$level';
-import type * as Logger from '$logger';
 import * as colors from '@std/fmt/colors';
-import type { StyleFormatterFn } from '../types.ts';
+import type { IEmitter, StyleFormatterFn } from '../types.ts';
 import { ConsoleMsgBuilder } from './builder.ts';
 
 export const consoleStyleFormatters: Record<string, StyleFormatterFn> = {
@@ -39,15 +37,8 @@ export const consoleStyleFormatters: Record<string, StyleFormatterFn> = {
 
 /**
  * A factory method for creating a new `Console` instance.
- * @param {Level.Name} level - The log level.
- * @param {Logger.IEmitter} emitter - The log emitter.
- * @param {boolean} [meetsThreshold=true] - Whether the log level meets the threshold.
  * @returns {ConsoleMsgBuilder} A new `Console` instance.
  */
-export function createConsoleMsgBuilder(
-  level: Level.Name,
-  emitter: Logger.Base.IEmitter,
-  meetsThreshold: boolean = true,
-): ConsoleMsgBuilder {
-  return new ConsoleMsgBuilder(level, emitter, meetsThreshold);
+export function createConsoleMsgBuilder(emitter: IEmitter): ConsoleMsgBuilder {
+  return new ConsoleMsgBuilder(emitter);
 }
