@@ -1,8 +1,8 @@
 import { StringEx } from '@epdoc/string';
 import { _, type Integer } from '@epdoc/type';
-import type * as Level from '../../levels/mod.ts';
+import type * as Level from '$level';
 import type { LogMgr } from '../../logmgr.ts';
-import * as MsgBuilder from '../../message/mod.ts';
+import * as MsgBuilder from '$msgbuilder';
 import type { Entry } from '../../types.ts';
 import * as Base from '../base/mod.ts';
 import { OutputFormat } from '../consts.ts';
@@ -22,17 +22,17 @@ import type { ConsoleOptions } from './types.ts';
  * logMgr.add(consoleTransport);
  * ```
  */
-export class ConsoleTransport<M extends MsgBuilder.Base.Builder> extends Base.Transport<M> {
+export class ConsoleTransport extends Base.Transport {
   protected _levelWidth: Integer = 5;
   protected _format: OutputFormatType = OutputFormat.TEXT;
   protected _color: boolean = true;
 
   /**
    * Creates an instance of the `Console` transport.
-   * @param {LogMgr<M>} logMgr - The log manager instance.
+   * @param {LogMgr<MsgBuilder.Abstract>} logMgr - The log manager instance.
    * @param {ConsoleOptions} [opts={}] - Configuration options for the transport.
    */
-  constructor(logMgr: LogMgr<M>, opts: ConsoleOptions = {}) {
+  constructor(logMgr: LogMgr<MsgBuilder.Abstract>, opts: ConsoleOptions = {}) {
     super(logMgr, opts);
     if (opts.format) {
       this._format = opts.format;
@@ -97,10 +97,13 @@ export class ConsoleTransport<M extends MsgBuilder.Base.Builder> extends Base.Tr
       entry.reqId = msg.reqIds.join(this._show.reqIdSep);
     }
 
-    if (msg.msg instanceof MsgBuilder.Base.Builder) {
-      entry.msg = msg.msg.format(this._color, this._format);
+    if (msg.msg instanceof MsgBuilder.Abstract) {
+      const target = this._format === 'text' ? 'console' : this._format as MsgBuilder.EmitterTarget;
+      entry.msg = msg.msg.format({ color: this._color, target });
     } else if (_.isString(msg.msg)) {
       entry.msg = msg.msg;
+    } else {
+      entry.msg = '';
     }
     entry.data = msg.data;
 

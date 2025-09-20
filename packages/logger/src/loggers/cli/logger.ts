@@ -1,5 +1,5 @@
 import type { LogMgr } from '../../logmgr.ts';
-import type * as MsgBuilder from '../../message/mod.ts';
+import type * as MsgBuilder from '$msgbuilder';
 import type * as Base from '../base/mod.ts';
 import * as Indent from '../indent/mod.ts';
 
@@ -27,7 +27,7 @@ import * as Indent from '../indent/mod.ts';
  *
  * @template M - The type of message builder used by the logger.
  */
-export class CliLogger<M extends MsgBuilder.Base.Builder> extends Indent.Logger<M> {
+export class CliLogger<M extends MsgBuilder.Abstract> extends Indent.Logger<M> {
   constructor(logMgr: LogMgr<M>, params?: Base.IGetChildParams) {
     super(logMgr, params);
   }

@@ -16,7 +16,7 @@
     "publish": "deno publish",
     "build": "deno run -A scripts/build_npm.ts"
   },
-  "exports": "./mod.ts",
+  "exports": "./src/mod.ts",
   "test": {
     "include": [
       "src/**/*test.ts",

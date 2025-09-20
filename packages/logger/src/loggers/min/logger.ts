@@ -1,5 +1,5 @@
 import type { LogMgr } from '../../logmgr.ts';
-import type * as MsgBuilder from '../../message/mod.ts';
+import type * as MsgBuilder from '$msgbuilder';
 import * as Bare from '../bare/mod.ts';
 
 /**
@@ -21,7 +21,7 @@ import * as Bare from '../bare/mod.ts';
  *
  * @template M - The type of message builder used by the logger.
  */
-export class MinLogger<M extends MsgBuilder.Base.Builder> extends Bare.Logger<M> {
+export class MinLogger<M extends MsgBuilder.Abstract> extends Bare.Logger<M> {
   /**
    * Creates a shallow copy of the current `StdLogger` instance.
    * @returns {this} A new `StdLogger` instance with copied properties.

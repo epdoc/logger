@@ -1,7 +1,7 @@
 import * as colors from '@std/fmt/colors';
-import * as Level from '../../levels/mod.ts';
+import * as Level from '$level';
 import { LogMgr } from '../../logmgr.ts';
-import type * as MsgBuilder from '../../message/mod.ts';
+import type * as MsgBuilder from '$msgbuilder';
 import type * as Base from '../base/mod.ts';
 import type { IFactoryMethods } from '../factory.ts';
 import { MinLogger } from './logger.ts';
@@ -28,8 +28,8 @@ const minLogLevelDefs: Level.LogLevelsDef = {
   },
 } as const;
 
-export const minFactoryMethods: IFactoryMethods<MsgBuilder.Base.Builder, MinLogger<MsgBuilder.Base.Builder>> = {
-  createLogger: <M extends MsgBuilder.Base.Builder>(
+export const minFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, MinLogger<MsgBuilder.Abstract>> = {
+  createLogger: <M extends MsgBuilder.Abstract>(
     log: LogMgr<M> | Base.IEmitter,
     params?: Base.IGetChildParams,
   ): MinLogger<M> => {

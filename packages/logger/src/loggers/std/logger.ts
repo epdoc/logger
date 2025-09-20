@@ -22,7 +22,7 @@ import type * as Logger from '../types.ts';
  *
  * @template M - The type of message builder used by the logger.
  */
-export class StdLogger<M extends MsgBuilder.Base.Builder> extends Min.Logger<M> implements Logger.IEmitter {
+export class StdLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> implements Logger.IEmitter {
   /**
    * Creates a shallow copy of the current `StdLogger` instance.
    * @returns {this} A new `StdLogger` instance with copied properties.

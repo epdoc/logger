@@ -21,7 +21,7 @@ import * as Indent from '../indent/mod.ts';
  *
  * @template M - The type of message builder used by the logger.
  */
-export class BareLogger<M extends MsgBuilder.Base.Builder> extends Indent.Logger<M> {
+export class BareLogger<M extends MsgBuilder.Abstract> extends Indent.Logger<M> {
   /**
    * Creates a shallow copy of the current `StdLogger` instance.
    * @returns {this} A new `StdLogger` instance with copied properties.

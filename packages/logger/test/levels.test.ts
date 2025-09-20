@@ -1,5 +1,5 @@
 import { assertEquals } from '@std/assert';
-import * as LogLevels from '../src/mod/ts';
+import * as LogLevels from '../src/mod.ts';
 
 Deno.test('cli', () => {
   const logLevels = new LogLevels

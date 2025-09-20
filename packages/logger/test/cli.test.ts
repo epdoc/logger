@@ -1,6 +1,7 @@
-import * as Log from '../mod.ts';
+import type * as MsgBuilder from '$msgbuilder';
+import * as Log from '../src/mod.ts';
 
-type M = Log.MsgBuilder.Console.Builder;
+type M = MsgBuilder.Console.Builder;
 
 Deno.test('logger', () => {
   const logMgr = new Log.Mgr<M>().init(Log.Cli.factoryMethods);

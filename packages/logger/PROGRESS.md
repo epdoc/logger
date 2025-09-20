@@ -83,3 +83,80 @@ I recommend a phased approach to this refactor:
 3.  **Continue splitting** the remaining packages (`logger-std`, `logger-cli`, `transport-file`) one by one.
 
 I will keep this document updated as we make progress on these items.
+
+## 6. Architectural Changes Implemented (2025-09-20)
+
+### IEmitter Refactor - Decoupling MsgBuilder from LogMgr
+
+The core architectural improvement outlined in section 3 has been successfully implemented. The new `Emitter` class creates a direct path from `MsgBuilder` to `TransportMgr`, eliminating the complex chain through `Logger` and `LogMgr`.
+
+#### Complete Flow: What Happens When You Call `log.info`
+
+**1. Logger Method Call (`log.info`):**
+- Logger's `info` method calls `LogMgr.getMsgBuilder('info', this)`
+- Passes the log level ('info') and logger context (IEmitter interface with sid, reqIds, pkgs)
+
+**2. LogMgr Creates Specialized Emitter:**
+- `getMsgBuilder()` evaluates thresholds: `meetsThreshold()` and `meetsFlushThreshold()`
+- Creates new `Emitter` instance with:
+  - Log level and logger context (sid, reqIds, pkgs)
+  - Direct reference to `TransportMgr`
+  - Threshold flags (meetsThreshold, meetsFlushThreshold)
+  - Flush callback function if flush threshold is met
+
+**3. MsgBuilder Factory Selection:**
+- LogMgr uses configured `_msgBuilderFactory` to create appropriate MsgBuilder type
+- Factory receives: level, emitter, threshold flags
+- Returns typed MsgBuilder (e.g., Console.Builder, File.Builder)
+
+**4. MsgBuilder Construction:**
+- MsgBuilder receives the specialized `Emitter` instance
+- Emitter contains all transport information and threshold logic
+- MsgBuilder can check `emitter.dataEnabled`, `emitter.emitEnabled`, `emitter.stackEnabled`
+
+**5. Message Building and Emit:**
+- User builds message: `log.info.h2('Title').data({key: 'value'}).emit()`
+- When `.emit()` is called, MsgBuilder calls `emitter.emit(data)`
+- Emitter directly calls `transportMgr.emit(entry)` - **no routing through LogMgr**
+- If flush threshold met, emitter automatically calls flush callback
+
+#### Key Changes:
+
+**New Emitter Class (`src/emitter.ts`):**
+- Lightweight emitter that captures logger context (level, sid, reqIds, pkgs)
+- Holds direct reference to `TransportMgr` 
+- Implements threshold checking for both emit and flush operations
+- Handles flush callback directly when flush threshold is met
+
+**Simplified Emit Flow:**
+- **Before:** `MsgBuilder.emit()` → `Logger.emit()` → `LogMgr.emit()` → `TransportMgr.emit()` → `Transport.emit()`
+- **After:** `MsgBuilder.emit()` → `Emitter.emit()` → `TransportMgr.emit()` → `Transport.emit()`
+
+**LogMgr MsgBuilder Factory Integration:**
+- LogMgr determines which MsgBuilder type to create via `_msgBuilderFactory`
+- Factory method signature: `(level, emitter, meetsThreshold, meetsFlushThreshold) => MsgBuilder`
+- Supports different MsgBuilder types (Console, File, etc.) through factory pattern
+
+#### Flush Handling Improvements:
+
+**Direct Flush Management:**
+- Flush threshold checking moved to `Emitter` level
+- Automatic flush triggering when messages meet flush threshold
+- Flush callback passed during emitter construction eliminates routing complexity
+
+#### Mark/Demark Simplification:
+
+**Reduced Complexity:**
+- Mark functionality maintained in LogMgr (`_mark` property) but no longer requires complex routing
+- Timing operations can now work directly with emitter context
+- Eliminates need for mark/demark calls to traverse the full logger chain
+
+#### Benefits Achieved:
+
+- **Decoupling:** MsgBuilder no longer depends on Logger or LogMgr for emit operations
+- **Performance:** Eliminated multiple method calls in emit path
+- **Maintainability:** Cleaner separation of concerns between components
+- **Flexibility:** Emitter can be easily extended or replaced without affecting other components
+- **Type Safety:** Factory pattern ensures correct MsgBuilder type selection
+
+This refactor successfully addresses the architectural goals outlined in section 3 while maintaining backward compatibility and improving overall system performance.

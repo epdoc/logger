@@ -1,6 +1,6 @@
 import type * as Log from '$log';
 import { isArray, isNumber, isString } from '@epdoc/type';
-import * as MsgBuilder from '../../message/mod.ts';
+import * as MsgBuilder from '$msgbuilder';
 import * as Base from '../base/mod.ts';
 
 /**
@@ -15,7 +15,7 @@ import * as Base from '../base/mod.ts';
  * {@link MsgBuilder.Base.Builder}.
  * @implements {Logger.IIndent}
  */
-export class IndentLogger<M extends MsgBuilder.Base.Builder> extends Base.Logger<M> {
+export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> {
   /**
    * The start time for time-based logging operations.
    * @protected
@@ -68,11 +68,11 @@ export class IndentLogger<M extends MsgBuilder.Base.Builder> extends Base.Logger
   override emit(msg: Log.Entry): void {
     if (isString(msg.msg)) {
       msg.msg = [...this._indent, msg.msg].join(' ');
-    } else if (msg.msg instanceof MsgBuilder.Base.Builder) {
+    } else if (msg.msg instanceof MsgBuilder.Abstract) {
       // Iterate in reverse to prepend indents in the correct order
       for (let i = this._indent.length - 1; i >= 0; i--) {
         const indent = this._indent[i];
-        if (msg.msg instanceof MsgBuilder.Base.Builder) {
+        if (msg.msg instanceof MsgBuilder.Abstract) {
           msg.msg.prependMsgPart(indent);
         }
       }

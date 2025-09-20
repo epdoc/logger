@@ -1,7 +1,7 @@
 import type { Integer } from '@epdoc/type';
-import type * as Level from '../../levels/mod.ts';
+import type * as Level from '$level';
 import type { LogMgr } from '../../logmgr.ts';
-import type * as MsgBuilder from '../../message/mod.ts';
+import type * as MsgBuilder from '$msgbuilder';
 import * as Console from '../console/mod.ts';
 import type { FileLogMode, FileOptions } from './types.ts';
 
@@ -21,7 +21,7 @@ const BUFSIZE = 4096;
  * logMgr.add(fileTransport);
  * ```
  */
-export class FileTransport<M extends MsgBuilder.Base.Builder> extends Console.Transport<M> {
+export class FileTransport extends Console.Transport {
   protected _json = false;
   protected filepath: string;
   protected file: Deno.FsFile | undefined;
@@ -35,10 +35,10 @@ export class FileTransport<M extends MsgBuilder.Base.Builder> extends Console.Tr
 
   /**
    * Creates an instance of the `File` transport.
-   * @param {LogMgr<M>} logMgr - The log manager instance.
+   * @param {LogMgr<MsgBuilder.Abstract>} logMgr - The log manager instance.
    * @param {FileOptions} opts - Configuration options for the transport.
    */
-  constructor(logMgr: LogMgr<M>, opts: FileOptions) {
+  constructor(logMgr: LogMgr<MsgBuilder.Abstract>, opts: FileOptions) {
     super(logMgr, opts);
     this.filepath = opts.filepath;
     this.mode = opts.mode ?? 'a';

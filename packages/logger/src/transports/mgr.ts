@@ -1,29 +1,27 @@
 import type * as Log from '$log';
 import type * as MsgBuilder from '$msgbuilder';
 import { assert } from '@std/assert';
-import type * as Level from '../levels/types.ts';
+import type * as Level from '$level';
 import type { LogMgr } from '../logmgr.ts';
 import type { AbstractTransport } from './base/transport.ts';
 import { ConsoleTransport } from './console/transport.ts';
 /**
  * Manages a collection of log transports, handling the distribution of log
  * entries to each registered transport.
- *
- * @template M - The type of the message builder.
  */
-export class TransportMgr<M extends MsgBuilder.Base.Builder = MsgBuilder.Console.Builder> { // implements Base.IEmitter {
+export class TransportMgr {
   protected _bRunning = false;
-  protected _logMgr: LogMgr<M>;
+  protected _logMgr: LogMgr<MsgBuilder.Abstract>;
   /**
    * An array of registered transport instances.
    */
-  transports: AbstractTransport<M>[] = [];
+  transports: AbstractTransport[] = [];
 
   /**
    * Creates an instance of the `TransportMgr`.
-   * @param {LogMgr<M>} logMgr - The log manager instance.
+   * @param {LogMgr<MsgBuilder.Abstract>} logMgr - The log manager instance.
    */
-  constructor(logMgr: LogMgr<M>) {
+  constructor(logMgr: LogMgr<MsgBuilder.Abstract>) {
     this._logMgr = logMgr;
   }
 
@@ -108,9 +106,9 @@ export class TransportMgr<M extends MsgBuilder.Base.Builder = MsgBuilder.Console
   /**
    * Adds a new transport to the manager.
    *
-   * @param {AbstractTransport<M>} transport - The transport instance to add.
+   * @param {AbstractTransport<any>} transport - The transport instance to add.
    */
-  add(transport: AbstractTransport<M>) {
+  add(transport: AbstractTransport) {
     this._bRunning = false;
     this.transports.unshift(transport);
     const name = transport.toString();
@@ -131,10 +129,10 @@ export class TransportMgr<M extends MsgBuilder.Base.Builder = MsgBuilder.Console
   /**
    * Removes a transport from the manager.
    *
-   * @param {AbstractTransport<M>} transport - The transport instance to remove.
+   * @param {AbstractTransport<any>} transport - The transport instance to remove.
    * @returns {Promise<void>} A promise that resolves when the transport is removed.
    */
-  async remove(transport: AbstractTransport<M>): Promise<void> {
+  async remove(transport: AbstractTransport): Promise<void> {
     this._bRunning = false;
     const name = transport.toString();
     const found = this.transports.find((t) => {

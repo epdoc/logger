@@ -1,9 +1,9 @@
 import type * as Log from '$log';
 import type { HrMilliseconds } from '@epdoc/duration';
 import { isString } from '@epdoc/type';
-import type * as Level from '../../levels/mod.ts';
+import type * as Level from '$level';
 import type { LogMgr } from '../../logmgr.ts';
-import type * as MsgBuilder from '../../message/mod.ts';
+import type * as MsgBuilder from '$msgbuilder';
 import type { IEmitter, IGetChildParams, IInherit, ILevels } from '../types.ts';
 
 let markId = 0;
@@ -34,7 +34,7 @@ let markId = 0;
  * @implements {Logger.ILevels}
  * @implements {Logger.IInherit}
  */
-export abstract class AbstractLogger<M extends MsgBuilder.Base.Builder> implements IEmitter, ILevels, IInherit {
+export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements IEmitter, ILevels, IInherit {
   protected _logMgr: LogMgr<M>;
   protected _parent: this | undefined;
   protected _threshold: Level.Value | undefined;

@@ -1,6 +1,6 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import type { IBasic as LevelIBasic } from '../levels/ibasic.ts';
-import type * as Level from '../levels/types.ts';
+import type { IBasic as LevelIBasic } from '$level';
+import type * as Level from '$level';
 import type { Entry } from '../types.ts';
 
 export * from './factory.ts';

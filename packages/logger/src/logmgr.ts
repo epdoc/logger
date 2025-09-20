@@ -6,6 +6,7 @@ import type * as Log from '$log';
 import * as Logger from '$logger';
 import * as MsgBuilder from '$msgbuilder';
 import * as Transport from '$transport';
+import { Emitter } from './emitter.ts';
 
 /**
  * Manages the entire logging ecosystem, including loggers, levels, and
@@ -43,13 +44,13 @@ import * as Transport from '$transport';
  * the `MsgBuilder.Base.Builder` class.
  */
 export class LogMgr<
-  M extends MsgBuilder.Base.Builder = MsgBuilder.Console.Builder,
+  M extends MsgBuilder.Abstract = MsgBuilder.Console.Builder,
 > {
   protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
   protected _logLevels: Level.IBasic | undefined;
   protected _rootLogger: Logger.IEmitter | undefined;
-  protected _msgBuilder: MsgBuilder.Base.Builder | undefined;
+  protected _msgBuilder: MsgBuilder.Abstract | undefined;
   protected _threshold: Level.Value = 5;
   protected _show: Log.EmitterShowOpts = { reqIdSep: '.', pkgSep: '.' };
   // protected _pkg: string = '';
@@ -57,7 +58,7 @@ export class LogMgr<
   protected _mark: Record<string, HrMilliseconds> = {};
   protected _bRunning = true;
   protected _queue: Log.Entry[] = [];
-  readonly transportMgr: Transport.Mgr<M> = new Transport.Mgr<M>(this);
+  readonly transportMgr: Transport.Mgr = new Transport.Mgr(this as unknown as LogMgr<MsgBuilder.Abstract>);
   protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.createMsgBuilder;
   protected _loggerFactories: Logger.IFactoryMethods<M, Logger.IEmitter> = Logger.Std.factoryMethods;
 
@@ -217,7 +218,7 @@ export class LogMgr<
       this._rootLogger = this._loggerFactories.createLogger(this, params);
     }
     if (!this.transportMgr.transports.length) {
-      const transport = new Transport.Console.Transport<M>(this, { show: this._show });
+      const transport = new Transport.Console.Transport(this as unknown as LogMgr<MsgBuilder.Abstract>, { show: this._show });
       this.transportMgr.add(transport);
     }
     if (!this.transportMgr.running) {
@@ -230,17 +231,36 @@ export class LogMgr<
    * Creates a new message builder instance for a given log level.
    *
    * @remarks
-   * This method is typically called internally by a logger instance, which
-   * passes itself as the emitter.
+   * This method creates a lightweight Emitter that captures the logger's context
+   * and has a direct reference to the TransportMgr, allowing the MsgBuilder to
+   * emit directly to transports without going through the Logger and LogMgr.
    *
    * @param {string} level - The log level for the message.
-   * @param {Logger.IEmitter} emitter - The logger instance that will emit the message.
+   * @param {Logger.IEmitter} emitter - The logger instance that provides context.
    * @returns {M} A new message builder instance.
    */
   public getMsgBuilder(level: string, emitter: Logger.IEmitter): M {
     const meetsThreshold = this.meetsThreshold(level);
     const meetsFlushThreshold = this.meetsFlushThreshold(level);
-    return this._msgBuilderFactory(level, emitter, meetsThreshold, meetsFlushThreshold) as unknown as M;
+
+    // Create a lightweight emitter that captures context and has direct access to TransportMgr
+    const directEmitter = new Emitter(
+      level as Level.Name,
+      this.transportMgr,
+      {
+        sid: emitter.sid,
+        reqIds: emitter.reqIds,
+        pkgs: emitter.pkgs,
+      },
+      {
+        meetsThreshold,
+        meetsFlushThreshold,
+      },
+      // Pass flush callback to handle flush threshold
+      meetsFlushThreshold ? () => this.flushQueue() : undefined,
+    );
+
+    return this._msgBuilderFactory(directEmitter) as unknown as M;
   }
 
   /**
@@ -251,12 +271,12 @@ export class LogMgr<
     return this._t0;
   }
 
-  public addTransport(transport: Transport.Base.Transport<M>): this {
+  public addTransport(transport: Transport.Base.Transport): this {
     this.transportMgr.add(transport);
     return this;
   }
 
-  public removeTransport(transport: Transport.Base.Transport<M>): this {
+  public removeTransport(transport: Transport.Base.Transport): this {
     this.transportMgr.remove(transport);
     return this;
   }

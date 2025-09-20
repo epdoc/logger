@@ -1,7 +1,7 @@
 import * as colors from '@std/fmt/colors';
-import * as Level from '../../levels/mod.ts';
+import * as Level from '$level';
 import { LogMgr } from '../../logmgr.ts';
-import type * as MsgBuilder from '../../message/mod.ts';
+import type * as MsgBuilder from '$msgbuilder';
 import type * as Base from '../base/mod.ts';
 import type { IFactoryMethods } from '../factory.ts';
 import { BareLogger } from './logger.ts';
@@ -20,8 +20,8 @@ const bareLogLevelDefs: Level.LogLevelsDef = {
   info: { val: 3, fmtFn: colors.green, default: true },
 } as const;
 
-export const bareFactoryMethods: IFactoryMethods<MsgBuilder.Base.Builder, BareLogger<MsgBuilder.Base.Builder>> = {
-  createLogger: <M extends MsgBuilder.Base.Builder>(
+export const bareFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, BareLogger<MsgBuilder.Abstract>> = {
+  createLogger: <M extends MsgBuilder.Abstract>(
     log: LogMgr<M> | Base.IEmitter,
     params?: Base.IGetChildParams,
   ): BareLogger<M> => {

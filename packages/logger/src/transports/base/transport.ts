@@ -2,9 +2,9 @@ import { dateEx } from '@epdoc/datetime';
 import { duration } from '@epdoc/duration';
 import { isNonEmptyString, isValidDate } from '@epdoc/type';
 import { isTimestampFormat } from '../../consts.ts';
-import type * as Level from '../../levels/types.ts';
+import type * as Level from '$level';
 import type { LogMgr } from '../../logmgr.ts';
-import type * as MsgBuilder from '../../message/mod.ts';
+import type * as MsgBuilder from '$msgbuilder';
 import type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from '../../types.ts';
 import type { BaseOptions } from './types.ts';
 
@@ -21,14 +21,11 @@ import type { BaseOptions } from './types.ts';
  * - Managing its own log level threshold.
  * - Handling setup, teardown, and destruction of resources.
  * - Formatting and outputting log entries.
- *
- * @template M - The type of message builder used, which must conform to
- * {@link MsgBuilder.Base.Builder}.
  */
-export abstract class AbstractTransport<M extends MsgBuilder.Base.Builder> {
+export abstract class AbstractTransport {
   /** A string identifier for the transport type (e.g., 'console', 'file'). */
   public readonly type: string = 'basic';
-  protected _logMgr: LogMgr<M>;
+  protected _logMgr: LogMgr<MsgBuilder.Abstract>;
   protected _bReady = false;
   protected _opts: BaseOptions;
   protected _level: Level.Value;
@@ -39,10 +36,10 @@ export abstract class AbstractTransport<M extends MsgBuilder.Base.Builder> {
   /**
    * Initializes a new transport instance.
    *
-   * @param {LogMgr<M>} logMgr - The central log manager.
+   * @param {LogMgr<MsgBuilder.Abstract>} logMgr - The central log manager.
    * @param {BaseOptions} [opts={}] - Configuration options for the transport.
    */
-  constructor(logMgr: LogMgr<M>, opts: BaseOptions = {}) {
+  constructor(logMgr: LogMgr<MsgBuilder.Abstract>, opts: BaseOptions = {}) {
     this._logMgr = logMgr;
     this._opts = opts;
     this._level = logMgr.logLevels.asValue('info');
@@ -126,7 +123,7 @@ export abstract class AbstractTransport<M extends MsgBuilder.Base.Builder> {
    * A hook that is called when the threshold is updated.
    * @internal
    */
-  thresholdUpdated(): AbstractTransport<M> {
+  thresholdUpdated(): AbstractTransport {
     return this;
   }
 
@@ -199,7 +196,7 @@ export abstract class AbstractTransport<M extends MsgBuilder.Base.Builder> {
    * @param {AbstractTransport<M>} transport - The transport to compare against.
    * @returns {boolean} `true` if the types match.
    */
-  match(transport: AbstractTransport<M>): boolean {
+  match(transport: AbstractTransport): boolean {
     if (this.type === transport.type) {
       return true;
     }

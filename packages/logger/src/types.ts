@@ -27,7 +27,7 @@ export type Entry = {
   /** A namespace, such as a class or module name, for context. */
   pkgs?: string[];
   /** The log message, which can be a simple string or a formatable object. */
-  msg: string | MsgBuilder.IFormatter\ | undefined;
+  msg: string | MsgBuilder.IFormatter | undefined;
   /** Any structured data associated with the log entry. */
   data?: unknown | undefined;
 };
