@@ -2,6 +2,10 @@ import * as colors from '@std/fmt/colors';
 import type { IEmitter, StyleFormatterFn } from '../types.ts';
 import { ConsoleMsgBuilder } from './builder.ts';
 
+/**
+ * A record of style formatters for console messages.
+ * Each key corresponds to a style, and the value is a function that applies the style to a string.
+ */
 export const consoleStyleFormatters: Record<string, StyleFormatterFn> = {
   text: colors.brightWhite,
   h1: (str: string) => colors.bold(colors.magenta(str)),
@@ -36,8 +40,9 @@ export const consoleStyleFormatters: Record<string, StyleFormatterFn> = {
 } as const;
 
 /**
- * A factory method for creating a new `Console` instance.
- * @returns {ConsoleMsgBuilder} A new `Console` instance.
+ * A factory method for creating a new `ConsoleMsgBuilder` instance.
+ * @param {IEmitter} emitter - The emitter to be used by the message builder.
+ * @returns {ConsoleMsgBuilder} A new `ConsoleMsgBuilder` instance.
  */
 export function createConsoleMsgBuilder(emitter: IEmitter): ConsoleMsgBuilder {
   return new ConsoleMsgBuilder(emitter);

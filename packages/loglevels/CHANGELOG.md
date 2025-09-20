@@ -4,9 +4,5 @@ All notable changes to this project will be documented in this file.
 
 ## [0.0.1-alpha.3] - 2025-09-19
 
-- Establishing tagging practice.
-
-## [0.0.1-alpha.2] - 2025-09-19
-
 - Initial build with `loglevels` split out from `logger` and version reset.
 - Unit tests and all checks passed.

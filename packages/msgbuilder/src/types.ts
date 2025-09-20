@@ -1,23 +1,73 @@
 import type { Dict } from '@epdoc/type';
 
+/**
+ * Defines the interface for an emitter, which is responsible for outputting log messages.
+ */
 export interface IEmitter {
+  /**
+   * Indicates if data payloads are enabled for emission as part of the message string. An
+   * application using a MsgBuilder may want to handle data at a higher level when emit is called.
+   */
   dataEnabled: boolean;
+  /**
+   * Indicates if the emitter is globally enabled. This may depend on log level settings. For
+   * example, if this message is associated with a message at a VERBOSE log level, but the log
+   * reporting level is set to INFO, then none of this message will be output and the code can take
+   * execution shortcuts.
+   */
   emitEnabled: boolean;
+  /**
+   * Indicates if stack traces are to be emitted when there is an error being logged. This may
+   * depend on log level settings, for example an application might elect to emit a stack trace only
+   * when the log level is at DEBUG or lower.
+   */
   stackEnabled: boolean;
+  /**
+   * Emits a log message.
+   * @param {EmitterData} msg - The data to be emitted.
+   * @returns {EmitterData} The emitted data.
+   */
   emit: (msg: EmitterData) => EmitterData;
   // demark: (name?: string, keep?: boolean) => void;
 }
 
+/**
+ * Represents the data structure for a log message to be emitted.
+ */
 export type EmitterData = {
+  /**
+   * The timestamp of the log message.
+   */
   timestamp: Date;
+  /**
+   * The formatter to be used for the log message.
+   */
   formatter: IFormatter;
+  /**
+   * An optional data payload for the log message.
+   */
   data: Dict | undefined;
 };
 
+/**
+ * Defines the possible targets for log message emission.
+ * - `console`: Human-readable console output.
+ * - `json`: Single JSON object.
+ * - `jsonArray`: An array of JSON objects.
+ */
 export type EmitterTarget = 'console' | 'json' | 'jsonArray';
 
+/**
+ * Options for formatting a log message.
+ */
 export type FormatOpts = {
+  /**
+   * Whether to apply color styling to the output.
+   */
   color?: boolean;
+  /**
+   * The target format for the output.
+   */
   target?: EmitterTarget;
 };
 

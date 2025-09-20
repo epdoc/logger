@@ -31,7 +31,7 @@ export abstract class AbstractMsgBuilder implements IFormatter {
   protected _suffix: string[] = [];
   protected _showElapsed: boolean = false;
   protected _allow: boolean = true;
-  protected _conditionalMet = false;
+  protected _conditionMet = false;
 
   /**
    * Initializes a new message builder instance.
@@ -98,36 +98,36 @@ export abstract class AbstractMsgBuilder implements IFormatter {
   }
 
   public if(val: boolean): this {
-    this._conditionalMet = val;
+    this._conditionMet = val;
     this._allow = val;
     return this;
   }
 
   public elif(val: boolean): this {
-    if (this._conditionalMet) {
+    if (this._conditionMet) {
       this._allow = false;
     } else {
       this._allow = val;
       if (val) {
-        this._conditionalMet = true;
+        this._conditionMet = true;
       }
     }
     return this;
   }
 
   public else(): this {
-    if (this._conditionalMet) {
+    if (this._conditionMet) {
       this._allow = false;
     } else {
       this._allow = true;
-      this._conditionalMet = true;
+      this._conditionMet = true;
     }
     return this;
   }
 
   public endif(): this {
     this._allow = true;
-    this._conditionalMet = false;
+    this._conditionMet = false;
     return this;
   }
 
@@ -243,7 +243,7 @@ export abstract class AbstractMsgBuilder implements IFormatter {
    */
   public data(data: unknown): this {
     if (!this._allow) return this;
-    if (_.isDict(data) && this._emitter.dataEnabled) {
+    if (this._emitter.dataEnabled && _.isDict(data)) {
       if (_.isDict(this._data)) {
         this._data = Object.assign(this._data, data);
       } else {
