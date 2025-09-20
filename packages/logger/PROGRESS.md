@@ -1,4 +1,4 @@
-# Architecture and Organization Proposal
+# Architecture and Organization Proposal for `v1002.4.7` on 2025-09-20
 
 This document outlines a proposal for refactoring the `@epdoc/logger` ecosystem to improve modularity, decoupling, and maintainability, based on our recent discussions.
 
