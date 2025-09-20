@@ -1,4 +1,5 @@
-import * as Log from '../packages/logger/src/mod.ts';
+import * as Log from '$logger';
+import type * as MsgBuilder from '$msgbuilder';
 import { createCustomMsgBuilder, type CustomMsgBuilder } from './lib/builder.ts';
 
 /**
@@ -42,7 +43,7 @@ log.info.section(`Begin ${filename}`).emit();
 log.info.h2('Hello world').emit();
 
 // You can also create a message builder instance and use it multiple times.
-const line: Log.MsgBuilder.Console.Builder = log.silly;
+const line: MsgBuilder.Console.Builder = log.silly;
 line.h2('A silly level hello again');
 line.emit();
 

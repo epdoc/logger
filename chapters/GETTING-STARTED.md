@@ -5,8 +5,8 @@ setting up a logger, configuring its output, and logging messages.
 
 ## 1. Creating a Log Manager
 
-The `LogMgr` is the central component of the logging system. It is responsible for managing loggers, transports, and log
-levels. To get started, create a new `LogMgr` instance:
+The `LogMgr` is the central component of the logging system. It is responsible for managing loggers, transports, log
+levels, and the new `Emitter` instances that handle direct communication between message builders and transports. To get started, create a new `LogMgr` instance:
 
 ```typescript
 import { Log } from '@epdoc/logger';
@@ -46,7 +46,7 @@ logMgr.show = {
 
 ## 4. Logging a Simple Message
 
-Now you can use the `rootLogger` to log messages.
+Now you can use the `rootLogger` to log messages. With the new architecture, the logging process is more efficient:
 
 ```typescript
 rootLogger.info.text('Application has started.').emit();
@@ -54,6 +54,20 @@ rootLogger.info.text('Application has started.').emit();
 // Console output:
 // 2025-07-28T12:00:00.000Z [INFO] Application has started.
 ```
+
+### What Happens When You Log
+
+When you call `rootLogger.info.text('...').emit()`, the following streamlined process occurs:
+
+1. **Logger Method Call:** `rootLogger.info` calls `LogMgr.getMsgBuilder('info', this)`
+2. **Emitter Creation:** LogMgr creates a specialized `Emitter` that:
+   - Captures the logger's context (level, sid, reqIds, pkgs)
+   - Holds a direct reference to the `TransportMgr`
+   - Contains threshold information for efficient filtering
+3. **MsgBuilder Creation:** The configured factory creates a MsgBuilder with the Emitter
+4. **Direct Emit:** When `.emit()` is called, it goes directly: `MsgBuilder` → `Emitter` → `TransportMgr` → `Transport`
+
+This eliminates the previous complex routing through multiple logger layers.
 
 ## 5. Creating a Child Logger for a Specific Task
 
@@ -77,18 +91,28 @@ childLogger.debug.value('User authenticated successfully.').emit();
 ```
 
 As you can see, the `reqId` is now included in the log output for all messages logged with the `childLogger`. This makes
-it easy to trace the execution of a specific request.
+it easy to trace the execution of a specific request. The new architecture ensures this context is efficiently passed through the `Emitter` without additional overhead.
 
 ## 6. Setting Log Levels and Thresholds
 
-You can control which log messages are displayed by setting the `threshold` on the `LogMgr`. For example, if you only
-want to see messages with a severity of `warn` or higher, you can do the following:
+You can control which log messages are displayed by setting the `threshold` on the `LogMgr`. The new `Emitter` architecture makes threshold checking more efficient by evaluating thresholds once during emitter creation rather than on every emit call.
 
 ```typescript
 logMgr.threshold = 'warn';
 
 rootLogger.info.text('This message will NOT be displayed.').emit();
 rootLogger.warn.text('This message WILL be displayed.').emit();
+```
+
+### Flush Thresholds
+
+The new architecture also improves flush handling. Messages that meet the flush threshold automatically trigger a flush operation without routing back through the LogMgr:
+
+```typescript
+// Messages at 'error' level or higher will flush immediately
+logMgr.flushThreshold = 'error';
+
+rootLogger.error.text('Critical error - this will flush immediately').emit();
 ```
 
 You can also set a threshold on a specific logger. However, it's important to remember that the **most restrictive**

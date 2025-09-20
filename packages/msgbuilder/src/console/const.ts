@@ -47,3 +47,13 @@ export const consoleStyleFormatters: Record<string, StyleFormatterFn> = {
 export function createConsoleMsgBuilder(emitter: IEmitter): ConsoleMsgBuilder {
   return new ConsoleMsgBuilder(emitter);
 }
+
+/**
+ * A factory method for creating a new `ConsoleMsgBuilder` instance with full parameters.
+ * This is the factory method expected by the logger system.
+ * @param {IEmitter} emitter - The emitter to be used when emitting the actual message.
+ * @returns {ConsoleMsgBuilder} A new `ConsoleMsgBuilder` instance.
+ */
+export function createMsgBuilder(emitter: IEmitter): ConsoleMsgBuilder {
+  return new ConsoleMsgBuilder(emitter);
+}

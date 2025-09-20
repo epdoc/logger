@@ -2,14 +2,15 @@
  * This example demonstrates the effects of configuring timestamps and how
  * log level thresholds on the LogMgr and individual loggers interact.
  */
-import * as Log from '../packages/logger/src/mod.ts';
+import * as Log from '$logger';
+import type * as MsgBuilder from '$msgbuilder';
 
 const filename = new URL(import.meta.url).pathname.split('/').pop();
 
 // 1. SETUP
 // Get a standard logger instance.
 const logMgr = new Log.Mgr();
-const log = logMgr.getLogger<Log.Std.Logger<Log.MsgBuilder.Console.Builder>>();
+const log = logMgr.getLogger<Log.Std.Logger<MsgBuilder.Console.Builder>>();
 
 console.log('--- Timestamp Examples ---');
 

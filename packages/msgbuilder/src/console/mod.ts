@@ -6,5 +6,5 @@ import type { IConsoleErrOpts, IConsoleMsgBuilder } from './types.ts';
 export { ConsoleMsgBuilder as Builder };
 
 // Re-export types with their desired aliases
-export { consoleStyleFormatters as styleFormatters, createConsoleMsgBuilder as createMsgBuilder } from './const.ts';
+export { consoleStyleFormatters as styleFormatters, createConsoleMsgBuilder, createMsgBuilder } from './const.ts';
 export type { IConsoleErrOpts as IErrOpts, IConsoleMsgBuilder as IConsole };

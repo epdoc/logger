@@ -243,6 +243,11 @@
   },
   "workspace": {
     "members": {
+      "packages/examples": {
+        "dependencies": [
+          "jsr:@epdoc/type@^1.1.13"
+        ]
+      },
       "packages/logger": {
         "dependencies": [
           "jsr:@epdoc/datetime@^1.0.7",

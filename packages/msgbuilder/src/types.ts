@@ -1,4 +1,5 @@
 import type { Dict } from '@epdoc/type';
+import type { AbstractMsgBuilder } from './abstract.ts';
 
 /**
  * Defines the interface for an emitter, which is responsible for outputting log messages.
@@ -125,6 +126,18 @@ export interface IFormatter {
 
   // demark(name:string,keep?: boolean) : HrMilliseconds
 }
+
+/**
+ * A factory method for creating a message builder instance.
+ * @param {string} level - The log level.
+ * @param {IEmitter} emitter - The log emitter.
+ * @param {boolean} meetsThreshold - Whether the log level meets the threshold.
+ * @param {boolean} meetsFlushThreshold - Whether the log level meets the flush threshold.
+ * @returns {AbstractMsgBuilder} A new message builder instance.
+ */
+export type FactoryMethod = (
+  emitter: IEmitter,
+) => AbstractMsgBuilder;
 
 // /**
 //  * A factory method for creating a message builder instance.

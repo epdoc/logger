@@ -13,6 +13,7 @@ The `LogMgr` is the central component responsible for managing the entire loggin
 -   **Configuration:** Setting the global log level `threshold` and controlling what metadata is displayed (e.g., timestamps, request IDs) via the `show` property.
 -   **Transports:** Managing where your logs are sent (e.g., console, file).
 -   **Logger Factory:** Creating and providing `Logger` instances.
+-   **Emitter Management:** Creating specialized `Emitter` instances that handle the direct communication between message builders and transports.
 
 ### Creating a `LogMgr`
 
@@ -76,6 +77,22 @@ childLogger.info('Processing request...');
 
 To log a message, you access a property on the logger that corresponds to a log level (e.g., `log.info`, `log.debug`). This returns a `MsgBuilder` object that you can use to construct and then emit your message. The `MsgBuilder` provides a chainable interface.
 
+#### New Streamlined Architecture
+
+The logging architecture has been significantly improved with the introduction of the `Emitter` class. When you call `log.info`, the following happens:
+
+1. **Logger Method Call:** `log.info` calls `LogMgr.getMsgBuilder('info', this)`
+2. **Emitter Creation:** LogMgr creates a specialized `Emitter` instance that:
+   - Captures the logger's context (level, sid, reqIds, pkgs)
+   - Holds a direct reference to the `TransportMgr`
+   - Contains threshold information for both emit and flush operations
+3. **MsgBuilder Factory:** LogMgr uses the configured factory to create the appropriate MsgBuilder type
+4. **Direct Emit Path:** When you call `.emit()`, the MsgBuilder calls the Emitter directly, which then calls the TransportMgr
+
+This creates a much simpler and more efficient emit flow:
+- **Before:** `MsgBuilder.emit()` → `Logger.emit()` → `LogMgr.emit()` → `TransportMgr.emit()` → `Transport.emit()`
+- **After:** `MsgBuilder.emit()` → `Emitter.emit()` → `TransportMgr.emit()` → `Transport.emit()`
+
 ```typescript
 // Simplest example of writing a log message to the console
 import { Log } from '@epdoc/logger';
@@ -122,24 +139,12 @@ log.info
 
 ### Using the Message Builder Standalone
 
-You can also use a `MsgBuilder` (like `ConsoleMsgBuilder`) on its own, without a `Logger` or `LogMgr`, for general-purpose string formatting with styling.
+You can also use a `MsgBuilder` (like `ConsoleMsgBuilder`) on its own, without a `Logger` or `LogMgr`, for general-purpose string formatting with styling. 
 
-When you instantiate a builder without any arguments, the `emit()` method is disabled, but you can still use all the formatting and styling methods. To get the final string, call the `format()` method.
+When you instantiate a builder without any arguments, the `emit()` method outputs to the console, but you can still use all the formatting and styling methods. To get the final string, call the `format()` method.
 
-Here is an example:
+Refer to our [MsgBuilder documentation](./MSGBUILDER.md) for more concrete examples.
 
-```typescript
-import { Log } from '@epdoc/logger';
-
-const builder = new Log.MsgBuilder.Console.Builder();
-
-// Build a string with styling
-const myString = builder.h1('Chapter 1').h3('The beginning').format(false);
-// myString is "Chapter 1 The beginning"
-
-// You can also get a colored string
-const coloredString = builder.clear().h1('Chapter 1').h3('The beginning').format(true);
-```
 
 ## Transports
 

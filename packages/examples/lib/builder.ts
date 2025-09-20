@@ -2,9 +2,9 @@
  * This example demonstrates how to create and use a custom message builder
  * to extend the functionality of the logger.
  */
+import * as MsgBuilder from '$msgbuilder';
 import { asError } from '@epdoc/type';
 import os from 'node:os';
-import * as Log from '../../packages/logger/src/mod.ts';
 
 const _home = os.userInfo().homedir;
 
@@ -12,27 +12,17 @@ const _home = os.userInfo().homedir;
  * A factory method that the Log.Mgr will use to create new instances of our
  * custom message builder.
  */
-export const createCustomMsgBuilder: Log.MsgBuilder.FactoryMethod = (
-  level: Log.Level.Name,
-  emitter: Log.Base.IEmitter,
-  meetsThreshold: boolean,
+export const createCustomMsgBuilder: MsgBuilder.FactoryMethod = (
+  emitter: MsgBuilder.IEmitter,
 ) => {
-  return new CustomMsgBuilder(level, emitter, meetsThreshold);
+  return new CustomMsgBuilder(emitter);
 };
 
 /**
  * A custom message builder that extends the built-in `Console` message builder
  * with new methods.
  */
-export class CustomMsgBuilder extends Log.MsgBuilder.Console.Builder {
-  constructor(
-    level: Log.Level.Name,
-    emitter: Log.Base.IEmitter,
-    meetsThreshold: boolean,
-  ) {
-    super(level, emitter, meetsThreshold);
-  }
-
+export class CustomMsgBuilder extends MsgBuilder.Console.Builder {
   /**
    * A custom method to create a section header.
    *

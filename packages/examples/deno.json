@@ -1,0 +1,37 @@
+{
+  "name": "@epdoc/logger-examples",
+  "version": "0.0.1-alpha.0",
+  "description": "Logging module with chainable formatting, middleware mixins and extendable transports",
+  "author": {
+    "name": "James Pravetz",
+    "email": "jpravetz@epdoc.com"
+  },
+  "license": "MIT",
+  "tasks": {
+    "lint": "deno lint",
+    "check": "deno check *.ts lib",
+    "examples": "./run.sh"
+  },
+  "exports": "./simple.ts",
+  "lint": {
+    "include": [
+      "lib/**/*.ts",
+      "*.ts"
+    ]
+  },
+  "fmt": {
+    "include": [
+      "lib/**/*.ts",
+      "*.ts",
+      "deno.json"
+    ],
+    "singleQuote": true,
+    "lineWidth": 120
+  },
+  "imports": {
+    "$logger": "../logger/src/mod.ts",
+    "$level": "../loglevels/src/mod.ts",
+    "$msgbuilder": "../msgbuilder/src/mod.ts",
+    "@epdoc/type": "jsr:@epdoc/type@^1.1.13"
+  }
+}

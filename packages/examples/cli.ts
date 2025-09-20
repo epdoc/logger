@@ -1,8 +1,9 @@
-import * as Log from '../packages/logger/src/mod.ts';
+import * as Log from '$logger';
+import type * as MsgBuilder from '$msgbuilder';
 
 // Define the type for the message builder we want to use.
 // In this case, we are using the built-in Console message builder.
-type M = Log.MsgBuilder.Console.Builder;
+type M = MsgBuilder.Console.Builder;
 type L = Log.Cli.Logger<M>;
 
 // Create a new Log Manager instance.
@@ -24,7 +25,7 @@ log.info.section('Start').emit();
 log.info.h2('Hello world').emit();
 
 // You can also create a message builder instance and use it multiple times.
-const line: Log.MsgBuilder.Console.Builder = log.info;
+const line: MsgBuilder.Console.Builder = log.info;
 line.h2('Hello again');
 line.emit();
 
