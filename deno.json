@@ -1,7 +1,4 @@
 {
-  "name": "@epdoc/logger",
-  "version": "1002.4.7-alpha.0",
-  "description": "Logging module with chainable formatting, middleware mixins and extendable transports",
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
@@ -10,14 +7,10 @@
   "tasks": {
     "test": "deno test -A",
     "lint": "deno lint",
-    "check": "deno check src examples test",
-    "examples": "./examples/run.sh",
-    "prepublish": "deno publish --dry-run",
-    "publish": "deno publish",
-    "build": "deno run -A scripts/build_npm.ts",
-    "publish_npm": "cd npm & npm publish --access public"
+    "check": "deno check logger msgbuilder examples",
+    "examples": "./examples/run.sh"
   },
-  "exports": "./mod.ts",
+  "workspace": ["./packages/*"],
   "test": {
     "include": [
       "src/**/*test.ts",
@@ -26,37 +19,19 @@
   },
   "lint": {
     "include": [
-      "src",
-      "test/**/*test.ts",
-      "mod.ts",
+      "logger",
+      "msgbuilder",
       "examples"
     ]
   },
   "fmt": {
     "include": [
-      "src",
-      "test/**/*test.ts",
-      "mod.ts",
+      "logger",
+      "msgbuilder",
       "deno.json",
       "examples"
     ],
     "singleQuote": true,
     "lineWidth": 120
-  },
-  "imports": {
-    "$log": "./src/types.ts",
-    "$level": "./src/levels/mod.ts",
-    "$logger": "./src/loggers/mod.ts",
-    "$msgbuilder": "./src/message/mod.ts",
-    "$transport": "./src/transports/mod.ts",
-    "@std/expect": "jsr:@std/expect@^1.0.17",
-    "@std/fmt": "jsr:@std/fmt@^1.0.8",
-    "@std/fmt/colors": "jsr:@std/fmt@^1.0.8/colors",
-    "@epdoc/type": "jsr:@epdoc/type@^1.1.13",
-    "@epdoc/string": "jsr:@epdoc/string@^0.1.1",
-    "@epdoc/duration": "jsr:@epdoc/duration@^0.2.0",
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^1.0.7",
-    "@std/assert": "jsr:@std/assert@^1.0.14",
-    "@std/testing": "jsr:@std/testing@^1.0.15"
   }
 }

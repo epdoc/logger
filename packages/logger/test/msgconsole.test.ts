@@ -2,8 +2,8 @@ import { assertEquals } from '@std/assert';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import os from 'node:os';
+import { disable, enable } from '../../msgbuilder/test/color-map.ts';
 import * as Log from '../mod.ts';
-import { disable, enable } from './color-map.ts';
 
 type M = Log.MsgBuilder.Console.Builder;
 const home = os.userInfo().homedir;

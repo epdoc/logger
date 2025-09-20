@@ -1,0 +1,19 @@
+Decoupling `message` module from `logger` module.
+
+**Step 1: Define `IContextEmitter` and move `Entry` type**
+- [x] Create `src/message/base/i_context_emitter.ts`.
+- [x] Move `Entry` type from `src/types.ts` to the new file.
+- [x] Define `IContextEmitter` interface in the new file.
+
+**Step 2: Update `LogContext` to use `IContextEmitter`**
+- [x] Modify `src/message/base/context.ts` to import `IContextEmitter`.
+- [x] Update `LogContext` constructor to accept `IContextEmitter`.
+
+**Step 3: Update `AbstractLogger` to implement `IContextEmitter`**
+- [x] Modify `src/loggers/base/logger.ts` to import `IContextEmitter` and `Entry`.
+- [x] Update `AbstractLogger` class to implement `IContextEmitter`.
+- [x] Update `emit` method in `AbstractLogger` to use `Entry` from `message` module.
+
+**Step 4: Run Tests & Fix**
+- [ ] Run `deno test -A`.
+- [ ] Fix any resulting type errors.
