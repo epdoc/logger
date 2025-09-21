@@ -234,6 +234,16 @@ export class LogdyTransport extends Transport.Base.Transport {
    * Sends logs to Logdy with retry logic.
    */
   private async _sendLogs(logs: LogdyLogEntry[], attempt = 1): Promise<void> {
+    // Send each log individually as Logdy expects single messages
+    for (const log of logs) {
+      await this._sendSingleLog(log, attempt);
+    }
+  }
+
+  /**
+   * Sends a single log to Logdy with retry logic.
+   */
+  private async _sendSingleLog(log: LogdyLogEntry, attempt = 1): Promise<void> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this._timeout);
 
@@ -241,7 +251,7 @@ export class LogdyTransport extends Transport.Base.Transport {
       const response = await fetch(this._url, {
         method: 'POST',
         headers: this._headers,
-        body: JSON.stringify({ logs }),
+        body: log.message,
         signal: controller.signal,
       });
 
@@ -257,7 +267,7 @@ export class LogdyTransport extends Transport.Base.Transport {
         // Exponential backoff
         const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
         await new Promise(resolve => setTimeout(resolve, delay));
-        return this._sendLogs(logs, attempt + 1);
+        return this._sendSingleLog(log, attempt + 1);
       }
       
       throw error;

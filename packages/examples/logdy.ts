@@ -20,7 +20,7 @@ import type * as MsgBuilder from '$msgbuilder';
 
 // Constants
 const LOGDY_URL = 'http://localhost:8081';
-const LOGDY_API = 'http://localhost:8081/api/v1/logs';
+const LOGDY_API = 'http://localhost:8081/api/log';
 const LOGDY_API_KEY = 'logdylogdy'; // Set your Logdy API key
 const BATCH_SIZE = 10;
 const FLUSH_INTERVAL = 2000;
@@ -45,7 +45,7 @@ const logdyTransport = new LogdyTransport(logMgr as unknown as Log.Mgr<MsgBuilde
   timeout: TIMEOUT,
   retryAttempts: RETRY_ATTEMPTS,
   headers: {
-    'Content-Type': 'application/json',
+    'Content-Type': 'text/plain',
   },
 });
 
