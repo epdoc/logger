@@ -32,6 +32,7 @@
     "$logger": "../logger/src/mod.ts",
     "$level": "../loglevels/src/mod.ts",
     "$msgbuilder": "../msgbuilder/src/mod.ts",
+    "$logdy": "../logdy/src/mod.ts",
     "@epdoc/type": "jsr:@epdoc/type@^1.1.13"
   }
 }
