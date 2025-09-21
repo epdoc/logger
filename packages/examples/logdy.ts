@@ -20,7 +20,8 @@ import type * as MsgBuilder from '$msgbuilder';
 
 // Constants
 const LOGDY_URL = 'http://localhost:8081';
-const LOGDY_API = 'http://localhost:8081';
+const LOGDY_API = 'http://localhost:8081/api/v1/logs';
+const LOGDY_API_KEY = 'your-api-key-here'; // Set your Logdy API key
 const BATCH_SIZE = 10;
 const FLUSH_INTERVAL = 2000;
 const TIMEOUT = 5000;
@@ -38,13 +39,13 @@ logMgr.threshold = 'debug';
 // Configure Logdy transport with the manager
 const logdyTransport = new LogdyTransport(logMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, {
   url: LOGDY_API,
+  apiKey: LOGDY_API_KEY,
   batchSize: BATCH_SIZE,
   flushInterval: FLUSH_INTERVAL,
   timeout: TIMEOUT,
   retryAttempts: RETRY_ATTEMPTS,
   headers: {
     'Content-Type': 'application/json',
-    // Add API key if needed: 'Authorization': 'Bearer your-api-key'
   },
 });
 
@@ -104,6 +105,7 @@ async function demonstrateLoggerTypes() {
   cliLogMgr.threshold = 'debug';
   const cliTransport = new LogdyTransport(cliLogMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, {
     url: LOGDY_API,
+    apiKey: LOGDY_API_KEY,
     batchSize: SMALL_BATCH_SIZE,
   });
   cliLogMgr.addTransport(cliTransport);
@@ -121,6 +123,7 @@ async function demonstrateLoggerTypes() {
   stdLogMgr.threshold = 'debug';
   const stdTransport = new LogdyTransport(stdLogMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, {
     url: LOGDY_API,
+    apiKey: LOGDY_API_KEY,
     batchSize: SMALL_BATCH_SIZE,
   });
   stdLogMgr.addTransport(stdTransport);
@@ -139,6 +142,7 @@ async function demonstrateLoggerTypes() {
   minLogMgr.threshold = 'debug';
   const minTransport = new LogdyTransport(minLogMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, {
     url: LOGDY_API,
+    apiKey: LOGDY_API_KEY,
     batchSize: SMALL_BATCH_SIZE,
   });
   minLogMgr.addTransport(minTransport);

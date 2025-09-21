@@ -39,8 +39,9 @@ The `logdy.ts` example demonstrates real-time log streaming to Logdy web interfa
 
 ### Prerequisites
 1. Install Logdy: `npm install -g @logdy/core`
-2. Start Logdy in socket mode: `logdy socket 8081`
-3. Open web interface: http://localhost:8080
+2. Start Logdy in socket mode: `logdy socket 8081 --api-key your-api-key-here`
+3. Update `LOGDY_API_KEY` constant in `logdy.ts` with your API key
+4. Open web interface: http://localhost:8080
 
 ### Features Demonstrated
 - ✅ Real-time log streaming via HTTP API
@@ -52,10 +53,10 @@ The `logdy.ts` example demonstrates real-time log streaming to Logdy web interfa
 
 ### Usage
 ```bash
-# Start Logdy in socket mode (in separate terminal)
-logdy socket 8081
+# Start Logdy in socket mode with API key (in separate terminal)
+logdy socket 8081 --api-key your-api-key-here
 
-# Run the example
+# Update LOGDY_API_KEY in logdy.ts, then run the example
 deno run -A logdy.ts
 ```
 
