@@ -21,7 +21,7 @@ import type * as MsgBuilder from '$msgbuilder';
 // Constants
 const LOGDY_URL = 'http://localhost:8081';
 const LOGDY_API = 'http://localhost:8081/api/v1/logs';
-const LOGDY_API_KEY = 'your-api-key-here'; // Set your Logdy API key
+const LOGDY_API_KEY = 'logdylogdy'; // Set your Logdy API key
 const BATCH_SIZE = 10;
 const FLUSH_INTERVAL = 2000;
 const TIMEOUT = 5000;
@@ -49,12 +49,29 @@ const logdyTransport = new LogdyTransport(logMgr as unknown as Log.Mgr<MsgBuilde
   },
 });
 
-// Add transport to manager
+// Add console transport for local visibility
+const consoleTransport = new Log.Transport.Console.Transport(logMgr as unknown as Log.Mgr<MsgBuilder.Abstract>);
+
+// Add both transports to manager
+logMgr.addTransport(consoleTransport);
 logMgr.addTransport(logdyTransport);
 
-console.log('🚀 Starting Logdy transport example...');
-console.log(`📡 Logs will be streamed to Logdy socket at ${LOGDY_URL}`);
-console.log('🌐 Open Logdy web interface to see real-time logs\n');
+// Initialize function to setup transports
+async function initializeTransports() {
+  // Setup transports
+  await consoleTransport.setup();
+  await logdyTransport.setup();
+
+  console.log('🚀 Starting Logdy transport example...');
+  console.log(`📡 Logs will be streamed to Logdy socket at ${LOGDY_URL}`);
+  console.log('🔑 Using API key:', LOGDY_API_KEY);
+  console.log('🌐 Open Logdy web interface to see real-time logs\n');
+
+  // Test if transport is working
+  const testLogger = logMgr.getLogger<Log.Std.Logger<MsgBuilder.Console.Builder>>();
+  testLogger.info.text('🧪 Transport test message').emit();
+  console.log('📤 Sent test message to transport\n');
+}
 
 // Demonstrate different log levels
 async function demonstrateLogLevels() {
@@ -108,6 +125,8 @@ async function demonstrateLoggerTypes() {
     apiKey: LOGDY_API_KEY,
     batchSize: SMALL_BATCH_SIZE,
   });
+  const cliConsoleTransport = new Log.Transport.Console.Transport(cliLogMgr as unknown as Log.Mgr<MsgBuilder.Abstract>);
+  cliLogMgr.addTransport(cliConsoleTransport);
   cliLogMgr.addTransport(cliTransport);
 
   const cliLogger = cliLogMgr.getLogger<Log.Cli.Logger<MsgBuilder.Console.Builder>>();
@@ -126,6 +145,8 @@ async function demonstrateLoggerTypes() {
     apiKey: LOGDY_API_KEY,
     batchSize: SMALL_BATCH_SIZE,
   });
+  const stdConsoleTransport = new Log.Transport.Console.Transport(stdLogMgr as unknown as Log.Mgr<MsgBuilder.Abstract>);
+  stdLogMgr.addTransport(stdConsoleTransport);
   stdLogMgr.addTransport(stdTransport);
 
   const stdLogger = stdLogMgr.getLogger<Log.Std.Logger<MsgBuilder.Console.Builder>>();
@@ -145,6 +166,8 @@ async function demonstrateLoggerTypes() {
     apiKey: LOGDY_API_KEY,
     batchSize: SMALL_BATCH_SIZE,
   });
+  const minConsoleTransport = new Log.Transport.Console.Transport(minLogMgr as unknown as Log.Mgr<MsgBuilder.Abstract>);
+  minLogMgr.addTransport(minConsoleTransport);
   minLogMgr.addTransport(minTransport);
 
   const minLogger = minLogMgr.getLogger<Log.Min.Logger<MsgBuilder.Console.Builder>>();
@@ -179,6 +202,9 @@ async function demonstrateBatching() {
 // Main execution
 async function main() {
   try {
+    // Initialize transports first
+    await initializeTransports();
+    
     await demonstrateLogLevels();
     await demonstrateLoggerTypes();
     await demonstrateBatching();
