@@ -3,7 +3,7 @@ import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import os from 'node:os';
 import * as MsgBuilder from '../src/mod.ts';
-import { disable, enable } from './color-map.ts';
+import { disable, enable } from '../../../test-utils/color-map.ts';
 
 const home = os.userInfo().homedir;
 
