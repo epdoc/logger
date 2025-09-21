@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logdy",
-  "version": "1002.4.8-alpha.0",
+  "version": "0.0.1-alpha.0",
   "description": "Logdy transport for @epdoc/logger - stream logs to Logdy web interface",
   "author": {
     "name": "James Pravetz",
