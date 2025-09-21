@@ -2,24 +2,25 @@
 
 /**
  * Example demonstrating Logdy transport integration with @epdoc/logger
- * 
+ *
  * This example shows how to:
  * - Configure Logdy transport for real-time log streaming
  * - Use different logger types (CLI, STD, MIN) with Logdy
  * - Handle batching and error scenarios
  * - Stream logs to Logdy web interface
- * 
+ *
  * Prerequisites:
- * - Logdy should be running (default: http://localhost:8080)
- * - Start Logdy with: logdy serve
+ * - Logdy should be running in socket mode: logdy socket 8081
+ * - Web UI available at: http://localhost:8080
  */
 
-import * as Log from '$logger';
 import { LogdyTransport } from '$logdy';
+import * as Log from '$logger';
 import type * as MsgBuilder from '$msgbuilder';
 
 // Constants
-const LOGDY_URL = 'http://localhost:8080/api/v1/logs';
+const LOGDY_URL = 'http://localhost:8081';
+const LOGDY_API = 'http://localhost:8081';
 const BATCH_SIZE = 10;
 const FLUSH_INTERVAL = 2000;
 const TIMEOUT = 5000;
@@ -36,7 +37,7 @@ logMgr.threshold = 'debug';
 
 // Configure Logdy transport with the manager
 const logdyTransport = new LogdyTransport(logMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, {
-  url: LOGDY_URL,
+  url: LOGDY_API,
   batchSize: BATCH_SIZE,
   flushInterval: FLUSH_INTERVAL,
   timeout: TIMEOUT,
@@ -44,34 +45,34 @@ const logdyTransport = new LogdyTransport(logMgr as unknown as Log.Mgr<MsgBuilde
   headers: {
     'Content-Type': 'application/json',
     // Add API key if needed: 'Authorization': 'Bearer your-api-key'
-  }
+  },
 });
 
 // Add transport to manager
 logMgr.addTransport(logdyTransport);
 
 console.log('🚀 Starting Logdy transport example...');
-console.log('📡 Logs will be streamed to Logdy at http://localhost:8080');
+console.log('📡 Logs will be streamed to Logdy socket at http://localhost:8081');
 console.log('🌐 Open Logdy web interface to see real-time logs\n');
 
 // Demonstrate different log levels
 async function demonstrateLogLevels() {
   const logger = logMgr.getLogger<Log.Std.Logger<MsgBuilder.Console.Builder>>();
-  
+
   logger.info.text('🎯 Starting log level demonstration').emit();
-  
+
   // Basic log levels
   logger.error.text('❌ This is an error message').emit();
   logger.warn.text('⚠️ This is a warning message').emit();
   logger.info.text('ℹ️ This is an info message').emit();
   logger.debug.text('🐛 This is a debug message').emit();
-  
+
   // Structured logging with context
   logger.info.text('📦 Processing order').value('orderId', 'ORD-12345')
     .value('customerId', 'CUST-67890')
     .value('amount', 99.99)
     .emit();
-  
+
   // Error with details
   try {
     throw new Error('Simulated database connection error');
@@ -81,10 +82,10 @@ async function demonstrateLogLevels() {
       .value('error', err.message)
       .emit();
   }
-  
+
   // Performance logging
   const startTime = Date.now();
-  await new Promise(resolve => setTimeout(resolve, WORK_DELAY)); // Simulate work
+  await new Promise((resolve) => setTimeout(resolve, WORK_DELAY)); // Simulate work
   const duration = Date.now() - startTime;
   logger.info.text('⏱️ Operation completed')
     .value('duration', `${duration}ms`)
@@ -95,53 +96,53 @@ async function demonstrateLogLevels() {
 // Demonstrate different logger types
 async function demonstrateLoggerTypes() {
   console.log('\n📊 Demonstrating different logger types...\n');
-  
+
   // CLI Logger
   const cliLogMgr = new Log.Mgr<MsgBuilder.Console.Builder>();
   cliLogMgr.loggerFactory = Log.Cli.factoryMethods;
   cliLogMgr.init();
   cliLogMgr.threshold = 'debug';
   const cliTransport = new LogdyTransport(cliLogMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, {
-    url: LOGDY_URL,
-    batchSize: SMALL_BATCH_SIZE
+    url: LOGDY_API,
+    batchSize: SMALL_BATCH_SIZE,
   });
   cliLogMgr.addTransport(cliTransport);
-  
+
   const cliLogger = cliLogMgr.getLogger<Log.Cli.Logger<MsgBuilder.Console.Builder>>();
   cliLogger.info.text('🖥️ CLI Logger: User interface interaction')
     .value('component', 'dashboard')
     .value('action', 'view-reports')
     .emit();
-  
-  // STD Logger  
+
+  // STD Logger
   const stdLogMgr = new Log.Mgr<MsgBuilder.Console.Builder>();
   stdLogMgr.loggerFactory = Log.Std.factoryMethods;
   stdLogMgr.init();
   stdLogMgr.threshold = 'debug';
   const stdTransport = new LogdyTransport(stdLogMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, {
-    url: LOGDY_URL,
-    batchSize: SMALL_BATCH_SIZE
+    url: LOGDY_API,
+    batchSize: SMALL_BATCH_SIZE,
   });
   stdLogMgr.addTransport(stdTransport);
-  
+
   const stdLogger = stdLogMgr.getLogger<Log.Std.Logger<MsgBuilder.Console.Builder>>();
   stdLogger.warn.text('📋 STD Logger: System resource warning')
     .value('cpu', '85%')
     .value('memory', '78%')
     .value('disk', '92%')
     .emit();
-  
+
   // MIN Logger
   const minLogMgr = new Log.Mgr<MsgBuilder.Console.Builder>();
   minLogMgr.loggerFactory = Log.Min.factoryMethods;
   minLogMgr.init();
   minLogMgr.threshold = 'debug';
   const minTransport = new LogdyTransport(minLogMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, {
-    url: LOGDY_URL,
-    batchSize: SMALL_BATCH_SIZE
+    url: LOGDY_API,
+    batchSize: SMALL_BATCH_SIZE,
   });
   minLogMgr.addTransport(minTransport);
-  
+
   const minLogger = minLogMgr.getLogger<Log.Min.Logger<MsgBuilder.Console.Builder>>();
   minLogger.error.text('🔧 MIN Logger: Service unavailable')
     .value('service', 'payment-gateway')
@@ -153,9 +154,9 @@ async function demonstrateLoggerTypes() {
 // Demonstrate batch processing
 async function demonstrateBatching() {
   console.log('\n📦 Demonstrating batch processing...\n');
-  
+
   const logger = logMgr.getLogger<Log.Std.Logger<MsgBuilder.Console.Builder>>();
-  
+
   // Generate multiple logs quickly to show batching
   for (let i = 1; i <= BATCH_COUNT; i++) {
     logger.info.text(`📈 Batch log entry ${i}`)
@@ -163,11 +164,11 @@ async function demonstrateBatching() {
       .value('sequence', i)
       .value('timestamp', new Date().toISOString())
       .emit();
-    
+
     // Small delay to make it visible
-    await new Promise(resolve => setTimeout(resolve, WORK_DELAY));
+    await new Promise((resolve) => setTimeout(resolve, WORK_DELAY));
   }
-  
+
   logger.info.text('✅ Batch processing demonstration complete').emit();
 }
 
@@ -177,14 +178,13 @@ async function main() {
     await demonstrateLogLevels();
     await demonstrateLoggerTypes();
     await demonstrateBatching();
-    
+
     console.log('\n🎉 Example completed successfully!');
     console.log('📊 Check Logdy web interface for all logged messages');
     console.log('⏳ Waiting for final batch to flush...\n');
-    
+
     // Wait for final flush
-    await new Promise(resolve => setTimeout(resolve, FINAL_FLUSH_DELAY));
-    
+    await new Promise((resolve) => setTimeout(resolve, FINAL_FLUSH_DELAY));
   } catch (error) {
     console.error('💥 Example failed:', error);
   } finally {
