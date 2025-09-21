@@ -18,6 +18,17 @@ import * as Log from '$logger';
 import { LogdyTransport } from '$logdy';
 import type * as MsgBuilder from '$msgbuilder';
 
+// Constants
+const LOGDY_URL = 'http://localhost:8080/api/v1/logs';
+const BATCH_SIZE = 10;
+const FLUSH_INTERVAL = 2000;
+const TIMEOUT = 5000;
+const RETRY_ATTEMPTS = 3;
+const SMALL_BATCH_SIZE = 5;
+const BATCH_COUNT = 15;
+const WORK_DELAY = 100;
+const FINAL_FLUSH_DELAY = 3000;
+
 // Create logger manager first and initialize it
 const logMgr = new Log.Mgr<MsgBuilder.Console.Builder>();
 logMgr.init(); // Initialize before setting threshold
@@ -25,11 +36,11 @@ logMgr.threshold = 'debug';
 
 // Configure Logdy transport with the manager
 const logdyTransport = new LogdyTransport(logMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, {
-  url: 'http://localhost:8080/api/v1/logs',
-  batchSize: 10, // Smaller batch for demo
-  flushInterval: 2000, // 2 seconds
-  timeout: 5000,
-  retryAttempts: 3,
+  url: LOGDY_URL,
+  batchSize: BATCH_SIZE,
+  flushInterval: FLUSH_INTERVAL,
+  timeout: TIMEOUT,
+  retryAttempts: RETRY_ATTEMPTS,
   headers: {
     'Content-Type': 'application/json',
     // Add API key if needed: 'Authorization': 'Bearer your-api-key'
@@ -73,7 +84,7 @@ async function demonstrateLogLevels() {
   
   // Performance logging
   const startTime = Date.now();
-  await new Promise(resolve => setTimeout(resolve, 100)); // Simulate work
+  await new Promise(resolve => setTimeout(resolve, WORK_DELAY)); // Simulate work
   const duration = Date.now() - startTime;
   logger.info.text('⏱️ Operation completed')
     .value('duration', `${duration}ms`)
@@ -91,8 +102,8 @@ async function demonstrateLoggerTypes() {
   cliLogMgr.init();
   cliLogMgr.threshold = 'debug';
   const cliTransport = new LogdyTransport(cliLogMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, {
-    url: 'http://localhost:8080/api/v1/logs',
-    batchSize: 5
+    url: LOGDY_URL,
+    batchSize: SMALL_BATCH_SIZE
   });
   cliLogMgr.addTransport(cliTransport);
   
@@ -108,8 +119,8 @@ async function demonstrateLoggerTypes() {
   stdLogMgr.init();
   stdLogMgr.threshold = 'debug';
   const stdTransport = new LogdyTransport(stdLogMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, {
-    url: 'http://localhost:8080/api/v1/logs',
-    batchSize: 5
+    url: LOGDY_URL,
+    batchSize: SMALL_BATCH_SIZE
   });
   stdLogMgr.addTransport(stdTransport);
   
@@ -126,8 +137,8 @@ async function demonstrateLoggerTypes() {
   minLogMgr.init();
   minLogMgr.threshold = 'debug';
   const minTransport = new LogdyTransport(minLogMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, {
-    url: 'http://localhost:8080/api/v1/logs',
-    batchSize: 5
+    url: LOGDY_URL,
+    batchSize: SMALL_BATCH_SIZE
   });
   minLogMgr.addTransport(minTransport);
   
@@ -146,7 +157,7 @@ async function demonstrateBatching() {
   const logger = logMgr.getLogger<Log.Std.Logger<MsgBuilder.Console.Builder>>();
   
   // Generate multiple logs quickly to show batching
-  for (let i = 1; i <= 15; i++) {
+  for (let i = 1; i <= BATCH_COUNT; i++) {
     logger.info.text(`📈 Batch log entry ${i}`)
       .value('batchId', 'BATCH-001')
       .value('sequence', i)
@@ -154,7 +165,7 @@ async function demonstrateBatching() {
       .emit();
     
     // Small delay to make it visible
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise(resolve => setTimeout(resolve, WORK_DELAY));
   }
   
   logger.info.text('✅ Batch processing demonstration complete').emit();
@@ -172,7 +183,7 @@ async function main() {
     console.log('⏳ Waiting for final batch to flush...\n');
     
     // Wait for final flush
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, FINAL_FLUSH_DELAY));
     
   } catch (error) {
     console.error('💥 Example failed:', error);
