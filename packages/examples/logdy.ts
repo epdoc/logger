@@ -52,7 +52,7 @@ const logdyTransport = new LogdyTransport(logMgr as unknown as Log.Mgr<MsgBuilde
 logMgr.addTransport(logdyTransport);
 
 console.log('🚀 Starting Logdy transport example...');
-console.log('📡 Logs will be streamed to Logdy socket at http://localhost:8081');
+console.log(`📡 Logs will be streamed to Logdy socket at ${LOGDY_URL}`);
 console.log('🌐 Open Logdy web interface to see real-time logs\n');
 
 // Demonstrate different log levels
