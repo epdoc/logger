@@ -251,7 +251,11 @@ export class LogdyTransport extends Transport.Base.Transport {
       const response = await fetch(this._url, {
         method: 'POST',
         headers: this._headers,
-        body: log.message,
+        body: JSON.stringify({
+          message: log.message,
+          level: log.level,
+          timestamp: log.timestamp
+        }),
         signal: controller.signal,
       });
 

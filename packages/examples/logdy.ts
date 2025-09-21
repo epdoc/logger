@@ -45,7 +45,7 @@ const logdyTransport = new LogdyTransport(logMgr as unknown as Log.Mgr<MsgBuilde
   timeout: TIMEOUT,
   retryAttempts: RETRY_ATTEMPTS,
   headers: {
-    'Content-Type': 'text/plain',
+    'Content-Type': 'application/json',
   },
 });
 
