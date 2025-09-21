@@ -24,7 +24,7 @@ logMgr.init(); // Initialize before setting threshold
 logMgr.threshold = 'debug';
 
 // Configure Logdy transport with the manager
-const logdyTransport = new LogdyTransport(logMgr, {
+const logdyTransport = new LogdyTransport(logMgr as any, {
   url: 'http://localhost:8080/api/v1/logs',
   batchSize: 10, // Smaller batch for demo
   flushInterval: 2000, // 2 seconds
@@ -90,7 +90,7 @@ async function demonstrateLoggerTypes() {
   cliLogMgr.loggerFactory = Log.Cli.factoryMethods;
   cliLogMgr.init();
   cliLogMgr.threshold = 'debug';
-  const cliTransport = new LogdyTransport(cliLogMgr, {
+  const cliTransport = new LogdyTransport(cliLogMgr as any, {
     url: 'http://localhost:8080/api/v1/logs',
     batchSize: 5
   });
@@ -107,7 +107,7 @@ async function demonstrateLoggerTypes() {
   stdLogMgr.loggerFactory = Log.Std.factoryMethods;
   stdLogMgr.init();
   stdLogMgr.threshold = 'debug';
-  const stdTransport = new LogdyTransport(stdLogMgr, {
+  const stdTransport = new LogdyTransport(stdLogMgr as any, {
     url: 'http://localhost:8080/api/v1/logs',
     batchSize: 5
   });
@@ -125,7 +125,7 @@ async function demonstrateLoggerTypes() {
   minLogMgr.loggerFactory = Log.Min.factoryMethods;
   minLogMgr.init();
   minLogMgr.threshold = 'debug';
-  const minTransport = new LogdyTransport(minLogMgr, {
+  const minTransport = new LogdyTransport(minLogMgr as any, {
     url: 'http://localhost:8080/api/v1/logs',
     batchSize: 5
   });
