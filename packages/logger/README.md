@@ -4,6 +4,20 @@ A logging module supporting built-in and custom transports, webserver response m
 and data syntax with color console output, chainable methods for recording log events, many of which
 can be chained to create richer output with more columns of data.
 
+## Features
+
+- **Fluent API**: Chainable message building with rich formatting options
+- **Multiple Log Levels**: Standard (`error`, `warn`, `info`, `verbose`, `debug`, `trace`, `spam`) and CLI-specific levels
+- **Performance Timing**: Built-in `mark()` and `ewt()` (Emit With Time) for measuring operation durations
+- **Flexible Transports**: Console, file, and custom transport support
+- **Hierarchical Loggers**: Root and child loggers with inherited context
+- **Conditional Logging**: Build messages only when conditions are met
+- **Middleware Support**: Express and Oak middleware for request tracking
+- **Contextual Logging**: Session IDs, request IDs, and package namespacing
+- **Multiple Output Formats**: Console text, JSON, and JSON array formats
+- **Configurable Display**: Control timestamps, log levels, and metadata display
+- **TypeScript Support**: Full type safety with generic message builders
+
 ## Versions
 
 **Version 1000.0.0 indicates a major rewrite that is incompatible with prior versions of this module**

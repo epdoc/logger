@@ -29,7 +29,13 @@ export interface IEmitter {
    * @returns {EmitterData} The emitted data.
    */
   emit: (msg: EmitterData) => EmitterData;
-  // demark: (name?: string, keep?: boolean) => void;
+  /**
+   * Measures the time elapsed since a performance mark was created.
+   * @param {string} name - The name of the mark to measure.
+   * @param {boolean} [keep=false] - If true, the mark is not removed after measurement.
+   * @returns {number} The elapsed time in milliseconds.
+   */
+  demark?: (name: string, keep?: boolean) => number;
 }
 
 /**

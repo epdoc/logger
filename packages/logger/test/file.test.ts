@@ -1,6 +1,7 @@
-import * as Log from '../mod.ts';
+import type * as MsgBuilder from '$msgbuilder';
+import * as Log from '../src/mod.ts';
 
-type M = Log.MsgBuilder.Console.Builder;
+type M = MsgBuilder.Console.Builder;
 type L = Log.Std.Logger<M>;
 
 const LOG_FILE = './tmp/file_handler_test.log';
@@ -8,10 +9,10 @@ const LOG_FILE = './tmp/file_handler_test.log';
 const logMgr = new Log.Mgr<M>();
 logMgr.show = { level: true, timestamp: 'elapsed' };
 logMgr.init();
-const console = new Log.Transport.Console.Transport<M>(logMgr, {});
+const console = new Log.Transport.Console.Transport(logMgr, {});
 logMgr.addTransport(console);
 logMgr.threshold = 'spam';
-const transport = new Log.Transport.File.Transport<M>(logMgr, {
+const transport = new Log.Transport.File.Transport(logMgr, {
   filepath: LOG_FILE,
   color: false,
   format: Log.Transport.OutputFormat.JSON_ARRAY,

@@ -1,8 +1,9 @@
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
-import * as Log from '../mod.ts';
+import type * as MsgBuilder from '$msgbuilder';
+import * as Log from '../src/mod.ts';
 
-type M = Log.MsgBuilder.Console.Builder;
+type M = MsgBuilder.Console.Builder;
 type L = Log.Std.Logger<M>;
 const logMgr = new Log.Mgr<M>().init();
 logMgr.threshold = 'spam';

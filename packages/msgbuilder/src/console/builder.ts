@@ -41,6 +41,14 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   protected _nextPartPluralize: boolean | undefined; // true for plural, false for singular, undefined for no effect
 
   /**
+   * Returns the style formatter for elapsed time display.
+   * @returns {MsgBuilder.StyleFormatterFn} The elapsed time style formatter.
+   */
+  protected override getElapsedTimeStyle(): MsgBuilder.StyleFormatterFn {
+    return consoleStyleFormatters._elapsed;
+  }
+
+  /**
    * Factory method for creating a new `ConsoleMsgBuilder` instance.
    *
    * @param {Level.Name} [level] - The log level.

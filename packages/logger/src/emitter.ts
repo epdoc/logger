@@ -27,6 +27,7 @@ export class Emitter implements MsgBuilder.IEmitter {
   private readonly _meetsThreshold: boolean;
   private readonly _meetsFlushThreshold: boolean;
   private readonly _flushCallback?: () => void;
+  private readonly _demark?: (name: string, keep?: boolean) => number;
 
   constructor(
     level: Level.Name,
@@ -41,6 +42,7 @@ export class Emitter implements MsgBuilder.IEmitter {
       meetsFlushThreshold: boolean;
     },
     flushCallback?: () => void,
+    demark?: (name: string, keep?: boolean) => number,
   ) {
     this._level = level;
     this._transportMgr = transportMgr;
@@ -50,6 +52,7 @@ export class Emitter implements MsgBuilder.IEmitter {
     this._meetsThreshold = thresholds.meetsThreshold;
     this._meetsFlushThreshold = thresholds.meetsFlushThreshold;
     this._flushCallback = flushCallback;
+    this._demark = demark;
   }
 
   get dataEnabled(): boolean {
@@ -62,6 +65,16 @@ export class Emitter implements MsgBuilder.IEmitter {
 
   get stackEnabled(): boolean {
     return this._meetsThreshold;
+  }
+
+  /**
+   * Measures the time elapsed since a performance mark was created.
+   * @param {string} name - The name of the mark to measure.
+   * @param {boolean} [keep=false] - If true, the mark is not removed after measurement.
+   * @returns {number} The elapsed time in milliseconds.
+   */
+  demark(name: string, keep = false): number {
+    return this._demark ? this._demark(name, keep) : 0;
   }
 
   /**

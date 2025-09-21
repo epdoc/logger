@@ -258,6 +258,8 @@ export class LogMgr<
       },
       // Pass flush callback to handle flush threshold
       meetsFlushThreshold ? () => this.flushQueue() : undefined,
+      // Pass the logger's demark method for ewt functionality
+      emitter.demark ? (name: string, keep?: boolean) => emitter.demark!(name, keep ?? false) : undefined,
     );
 
     return this._msgBuilderFactory(directEmitter) as unknown as M;

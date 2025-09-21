@@ -118,3 +118,22 @@ rootLogger.error.text('Critical error - this will flush immediately').emit();
 You can also set a threshold on a specific logger. However, it's important to remember that the **most restrictive**
 threshold (between the logger, the log manager, and the transport) is the one that takes effect. For more information,
 please see the [Configuration documentation](./configuration.md).
+
+## Performance Timing
+
+The logger includes built-in performance timing capabilities for measuring operation durations:
+
+```typescript
+const log = logMgr.getLogger();
+
+// Create a performance mark
+const mark = log.mark();
+
+// ... perform some operation ...
+
+// Log with elapsed time automatically included
+log.info.h1('Operation completed').ewt(mark);
+// Output: "Operation completed (123 ms)"
+```
+
+For detailed information about performance timing features, see the [Classes documentation](./CLASSES.md#performance-timing).

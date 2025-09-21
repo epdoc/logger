@@ -284,6 +284,60 @@ export abstract class AbstractMsgBuilder implements IFormatter {
   }
 
   /**
+   * Emits the log message with elapsed wall time (EWT) since a mark was created.
+   *
+   * @remarks
+   * This method calculates the elapsed time since a mark was created using the
+   * logger's `mark()` method, appends the elapsed time to the message, and emits it.
+   * The elapsed time is formatted with appropriate precision based on the duration.
+   *
+   * @param {string | number} mark - The mark identifier or timestamp to calculate elapsed time from.
+   * @param {boolean} [keep=false] - Whether to keep the mark for future use.
+   * @returns {EmitterData | undefined} The generated log entry if emitted, otherwise `undefined`.
+   */
+  public ewt(mark: string | number, keep = false): EmitterData | undefined {
+    if (this._emitter && this._emitter.emitEnabled) {
+      let duration: number;
+      
+      if (typeof mark === 'string' && this._emitter.demark) {
+        // Use the emitter's demark method to get the elapsed time
+        duration = this._emitter.demark(mark, keep);
+      } else if (typeof mark === 'number') {
+        // If mark is a number, treat it as a timestamp
+        duration = performance.now() - mark;
+      } else {
+        // Fallback: treat string as a timestamp
+        duration = performance.now() - parseFloat(mark as string);
+      }
+
+      // Format duration with appropriate precision
+      let digits = 3;
+      if (duration > 100) {
+        digits = 0;
+      } else if (duration > 10) {
+        digits = 1;
+      } else if (duration > 1) {
+        digits = 2;
+      }
+
+      // Add elapsed time to the message
+      const elapsedStyle = this.getElapsedTimeStyle();
+      this.appendMsgPart(` (${duration.toFixed(digits)} ms)`, elapsedStyle);
+      
+      return this.emit();
+    }
+    return undefined;
+  }
+
+  /**
+   * Override this method in subclasses to provide elapsed time styling.
+   * @returns {StyleFormatterFn | undefined} The style formatter for elapsed time.
+   */
+  protected getElapsedTimeStyle(): StyleFormatterFn | undefined {
+    return undefined;
+  }
+
+  /**
    * Converts the message parts into a single, unformatted string.
    * @internal
    */

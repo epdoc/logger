@@ -160,3 +160,38 @@ The core architectural improvement outlined in section 3 has been successfully i
 - **Type Safety:** Factory pattern ensures correct MsgBuilder type selection
 
 This refactor successfully addresses the architectural goals outlined in section 3 while maintaining backward compatibility and improving overall system performance.
+## Test Issues Identified (2025-09-20)
+
+### ✅ **Successfully Fixed:**
+- **Import paths**: Fixed `../mod.ts` → `../src/mod.ts` in multiple files
+- **MsgBuilder imports**: Changed from `import type` to regular imports where needed
+- **Conditional tests**: All conditional logic tests pass ✅
+- **CLI tests**: Basic CLI logger tests pass ✅  
+- **STD tests**: All 9 standard logger tests pass ✅
+
+### ❌ **Issues Found:**
+
+#### **1. Import/Reference Issues:**
+- **MsgBuilder not defined**: Fixed in `message.test.ts` and `msgconsole.test.ts`
+- **Missing directory**: File test needs `./tmp/` directory created
+
+#### **2. Threshold Logic Issues:**
+- **levels1.test.ts**: Threshold tests failing - expecting `true` but getting `false`
+- This suggests the `meetsThreshold` logic may have changed
+
+#### **3. Logger Method Issues:**
+- **nesting.test.ts**: `getChild()` method returning `undefined`
+- **recurse.test.ts**: Format output includes ANSI color codes when expecting plain text
+
+#### **4. Test Architecture Issues:**
+- Many tests expect direct `MsgBuilder` instantiation but the new architecture uses Emitters
+- Tests may need updating to match the new streamlined architecture
+
+### 🎯 **Key Findings:**
+
+1. **Performance timing works**: The `ewt()` functionality is working correctly in std.test.ts
+2. **Basic logging works**: Core logging functionality is operational
+3. **Architecture changes**: The new Emitter-based architecture requires test updates
+4. **Import consistency**: Need to standardize MsgBuilder imports across all test files
+
+The tests reveal that while the core functionality works, several tests need updates to match the new architecture, particularly around MsgBuilder instantiation and threshold logic.

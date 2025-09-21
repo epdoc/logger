@@ -137,6 +137,90 @@ log.info
   .emit();
 ```
 
+### Performance Timing
+
+Loggers provide built-in performance timing capabilities through the `mark()` and `demark()` methods, along with the message builder's `ewt()` (Emit With Time) method.
+
+#### Creating Performance Marks
+
+Use `mark()` to create a performance mark that records the current timestamp:
+
+```typescript
+const log = logMgr.getLogger();
+const mark = log.mark(); // Returns a unique mark identifier (e.g., "mark.1")
+```
+
+#### Measuring Elapsed Time
+
+Use `demark()` to measure elapsed time since a mark was created:
+
+```typescript
+const mark = log.mark();
+// ... perform some operation ...
+const elapsed = log.demark(mark); // Returns elapsed time in milliseconds
+console.log(`Operation took ${elapsed}ms`);
+```
+
+The `demark()` method accepts an optional `keep` parameter:
+- `keep: false` (default): Removes the mark after measurement
+- `keep: true`: Preserves the mark for future measurements
+
+```typescript
+const mark = log.mark();
+// ... first operation ...
+const elapsed1 = log.demark(mark, true); // Keep the mark
+// ... second operation ...
+const elapsed2 = log.demark(mark); // Total elapsed time, mark is removed
+```
+
+#### Emit With Time (`ewt()`)
+
+The `ewt()` method combines timing measurement with log emission, automatically formatting and including the elapsed time in the log output:
+
+```typescript
+const log = logMgr.getLogger();
+
+// Basic usage
+const mark = log.mark();
+// ... perform operation ...
+log.info.h1('Operation completed').ewt(mark);
+// Output: "Operation completed (123 ms)"
+
+// With keep parameter
+const processMark = log.mark();
+// ... step 1 ...
+log.debug.h1('Step 1 done').ewt(processMark, true);
+// ... step 2 ...
+log.info.h1('Process completed').ewt(processMark);
+```
+
+#### Time Formatting
+
+Elapsed times are automatically formatted with appropriate precision:
+- **> 100ms**: No decimal places (e.g., "123 ms")
+- **10-100ms**: 1 decimal place (e.g., "45.6 ms")
+- **1-10ms**: 2 decimal places (e.g., "7.89 ms")
+- **< 1ms**: 3 decimal places (e.g., "0.123 ms")
+
+#### Example: Measuring Database Operations
+
+```typescript
+import { Log } from '@epdoc/logger';
+
+const logMgr = new Log.Mgr().init();
+const log = logMgr.getLogger();
+
+async function processUser(userId: string) {
+  const queryMark = log.mark();
+  const user = await database.findUser(userId);
+  log.debug.h1('User query').value(userId).ewt(queryMark);
+  
+  const updateMark = log.mark();
+  await database.updateUser(user);
+  log.info.h1('User updated').value(userId).ewt(updateMark);
+}
+```
+
 ### Using the Message Builder Standalone
 
 You can also use a `MsgBuilder` (like `ConsoleMsgBuilder`) on its own, without a `Logger` or `LogMgr`, for general-purpose string formatting with styling. 
