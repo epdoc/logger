@@ -9,39 +9,38 @@ import * as Transport from '$transport';
 import { Emitter } from './emitter.ts';
 
 /**
- * Manages the entire logging ecosystem, including loggers, levels, and
- * transports.
+ * Central logging manager that coordinates loggers, transports, and message builders.
  *
  * @remarks
- * `LogMgr` is the central hub for configuring and controlling all logging
- * operations. It is responsible for:
- * - Creating and managing logger instances via specified factories.
- * - Defining and applying log level thresholds.
- * - Coordinating transports that direct logs to various outputs (e.g.,
- *   console, file).
+ * LogMgr serves as the hub for all logging operations, managing:
+ * - Logger instance creation and lifecycle
+ * - Log level thresholds and filtering
+ * - Transport coordination for output routing
+ * - Message builder factory selection
+ * - Performance timing and flush management
  *
- * This class is exported as `Mgr` from the top-level `Log` module, making it
- * accessible via `Log.Mgr`.
+ * The manager uses a factory pattern to support different logger types (std, cli, etc.)
+ * and implements the new Emitter architecture for direct MsgBuilder-to-Transport communication.
  *
- * @example
+ * @example Basic usage
  * ```ts
- * // Define the type of logger and message builder
- * type M = Log.MsgBuilder.Console.Builder;
- * type L = Log.Std.Logger<M>;
+ * const logMgr = new Log.Mgr<Log.MsgBuilder.Console.Builder>();
+ * logMgr.threshold = 'info';
  *
- * // Create a new Log Manager instance.
- * const logMgr = new Log.Mgr<M>();
- *
- * // Get a logger, which also initializes the manager on first call.
- * const log = logMgr.getLogger<L>();
- *
- * // Configure and use the logger.
- * logMgr.threshold = 'verbose';
- * log.info.h2('Hello world').emit();
+ * const logger = logMgr.getLogger<Log.Std.Logger>();
+ * logger.info.h1('Hello World').emit();
  * ```
  *
- * @template M - The type of message builder to be used, which must conform to
- * the `MsgBuilder.Base.Builder` class.
+ * @example Advanced configuration
+ * ```ts
+ * const logMgr = new Log.Mgr();
+ * logMgr.loggerFactory = Log.Cli.factoryMethods;
+ * logMgr.msgBuilderFactory = Log.MsgBuilder.Console.createMsgBuilder;
+ * logMgr.addTransport(new Log.Transport.File.Transport(logMgr, { filepath: 'app.log' }));
+ * ```
+ *
+ * @template M - The message builder type, defaults to Console.Builder
+ * @public
  */
 export class LogMgr<
   M extends MsgBuilder.Abstract = MsgBuilder.Console.Builder,
@@ -218,7 +217,9 @@ export class LogMgr<
       this._rootLogger = this._loggerFactories.createLogger(this, params);
     }
     if (!this.transportMgr.transports.length) {
-      const transport = new Transport.Console.Transport(this as unknown as LogMgr<MsgBuilder.Abstract>, { show: this._show });
+      const transport = new Transport.Console.Transport(this as unknown as LogMgr<MsgBuilder.Abstract>, {
+        show: this._show,
+      });
       this.transportMgr.add(transport);
     }
     if (!this.transportMgr.running) {

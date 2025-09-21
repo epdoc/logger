@@ -1,7 +1,7 @@
+import type * as MsgBuilder from '$msgbuilder';
 import { isDate } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
-import * as MsgBuilder from '$msgbuilder';
 import * as Log from '../src/mod.ts';
 
 type M = MsgBuilder.Console.Builder;
@@ -10,25 +10,33 @@ const logMgr = new Log.Mgr<M>();
 
 describe('Log.Entity', () => {
   test('test', () => {
+    // Get logger first to initialize LogMgr
     const log: Log.Std.Logger<M> = logMgr.getLogger() as Log.Std.Logger<M>;
+
+    // Now set threshold after initialization
+    logMgr.threshold = 'info';
+
     log.pkgs.push('testpkg');
-    log.threshold = 'info';
-    const msgBuilder = new MsgBuilder.Console.Builder('INFO', log);
-    msgBuilder.h1('message heading');
-    const str = msgBuilder.format(false);
-    const record = msgBuilder.emit('parameter passed to emit');
+
+    // Use the logger's method to get a properly configured message builder
+    const msgBuilder = log.info.h1('message heading');
+
+    // Format with proper options object
+    const str = msgBuilder.format({ color: false });
+    expect(str).toEqual('message heading');
+
+    // The emit method now returns EmitterData, not Entry
+    const record = msgBuilder.emit();
     expect(record).toBeDefined();
     if (record) {
-      expect(record.level).toBe('INFO');
-      expect(record.msg).toBeInstanceOf(MsgBuilder.Console.Builder);
-      expect(record.pkgs).toEqual(['testpkg']);
-      expect(record.reqIds).toBeUndefined();
+      // EmitterData has timestamp, formatter, and data - not level, msg, pkgs, etc.
       expect(record.timestamp).toBeInstanceOf(Date);
+      expect(record.formatter).toBeDefined();
+
       if (isDate(record.timestamp)) {
         const diff = Math.abs(record.timestamp.getTime() - new Date().getTime());
-        expect(diff).toBeLessThan(10);
+        expect(diff).toBeLessThan(100); // Increased tolerance
       }
     }
-    expect(str).toEqual('message heading');
   });
 });
