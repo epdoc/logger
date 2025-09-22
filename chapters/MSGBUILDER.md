@@ -55,9 +55,37 @@ const log = new Log.Mgr().getLogger();
 log.info.h1('Hello').text('World').emit();
 ```
 
+### Conditional Logging
+
+Our default `MsgBuilder` supports conditional logging, which allows you to build and emit log messages only when certain conditions are met. This is useful for reducing logging verbosity and focusing on specific scenarios.
+
+The conditional logging methods are:
+
+-   `if(condition: boolean)`: Starts a conditional block. The following methods will only be executed if the `condition` is `true`.
+-   `elif(condition: boolean)`: Starts an "else if" block. The following methods will only be executed if the previous `if` or `elif` conditions were `false` and this `condition` is `true`.
+-   `else()`: Starts an "else" block. The following methods will only beexecuted if all previous `if` and `elif` conditions were `false`.
+-   `endif()`: Ends a conditional block.
+
+Here's an example of how to use conditional logging:
+
+```typescript
+const someCondition = true;
+const anotherCondition = false;
+
+log.info
+  .if(someCondition)
+    .text('This will be logged because someCondition is true.')
+  .elif(anotherCondition)
+    .text('This will NOT be logged.')
+  .else()
+    .text('This will NOT be logged either.')
+  .endif()
+  .emit();
+```
+
 ## Performance Timing
 
-The message builder supports elapsed wall time (EWT) functionality for performance measurement when used with a logger.
+The message builder supports emit with time (EWT) functionality for performance measurement when used with a logger.
 
 ### Creating Performance Marks
 
@@ -70,7 +98,7 @@ const mark = log.mark(); // Returns a unique mark identifier
 
 ### Using `ewt()` - Emit With Time
 
-The `ewt()` method calculates elapsed time since a mark was created and includes it in the log output:
+The message builder's `ewt()` method calculates elapsed time since a mark was created and includes it in the log output:
 
 ```ts
 const log = new Log.Mgr().getLogger();

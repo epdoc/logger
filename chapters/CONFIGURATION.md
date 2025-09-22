@@ -42,7 +42,7 @@ logMgr.show = {
 };
 ```
 
-The type `EmitterShowOpts` is defined in [../src/types.ts](../src/types.ts).
+The type `EmitterShowOpts` is defined in [../src/types.ts](../packages/logger/src/types.ts).
 
 ## Log Levels
 

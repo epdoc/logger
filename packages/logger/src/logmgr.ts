@@ -87,7 +87,7 @@ export class LogMgr<
   // }
 
   /**
-   * Sets the factory used to create message builder instances.
+   * Sets the factory used to create message builder instances. Defaults to `@epdoc/msgbuilder` if not set.
    * @param {MsgBuilder.FactoryMethod} msgBuilderFactory - The factory function.
    */
   public set msgBuilderFactory(msgBuilderFactory: MsgBuilder.FactoryMethod) {
@@ -144,7 +144,7 @@ export class LogMgr<
   }
 
   /**
-   * Sets the log threshold level. This will apply across all transports.
+   * Sets the log threshold level. This will apply across all transports, unless overriden by a transport.
    * @param {Level.Name | Level.Value} level - The new threshold level.
    * @returns {this} The instance of LogMgr.
    * @throws Will throw an error if log levels are not set.
@@ -164,7 +164,7 @@ export class LogMgr<
           }) is less restrictive than root logger threshold (${
             this.logLevels.asName(this._rootLogger.threshold)
           }). Root logger threshold will apply.`,
-          pkgs: ['LogMgr'],
+          pkg: 'LogMgr',
         };
         this.forceEmit(msg);
       }

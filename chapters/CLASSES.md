@@ -1,6 +1,6 @@
 # Classes
 
-From a developer's perspective, the `@epdoc/logger` library is built around the core concepts of: the [LogMgr](#log-manager-logmgr) (Log Manager) and [Logger](#loggers) instances. The developer can further customize by their selection of Message Builders and Transports.
+From a developer's perspective, the `@epdoc/logger` library's core concepts are the [LogMgr](#log-manager-logmgr) (Log Manager) and [Logger](#loggers) instances. Developers can customize their use with different Message Builders and Transports.
 
 ### Hierarchy
 
@@ -11,7 +11,7 @@ From a developer's perspective, the `@epdoc/logger` library is built around the 
 The `LogMgr` is the central component responsible for managing the entire logging setup. It's typically a singleton in your application. Its main responsibilities include:
 
 -   **Configuration:** Setting the global log level `threshold` and controlling what metadata is displayed (e.g., timestamps, request IDs) via the `show` property.
--   **Transports:** Managing where your logs are sent (e.g., console, file).
+-   **Transports:** Managing where your logs are sent (e.g., console, file). Typically transports inherit log level thresholds from the LogMgr, however the implementation allows per-transport log levels to be set.
 -   **Logger Factory:** Creating and providing `Logger` instances.
 -   **Emitter Management:** Creating specialized `Emitter` instances that handle the direct communication between message builders and transports.
 
@@ -27,7 +27,7 @@ const logMgr = new Log.Mgr();
 
 ### Selecting the [Logger](#loggers) Type
 
-`@epdoc/logger` supports two types of loggers out of the box, each with its own set of log levels:
+`@epdoc/logger` includes two types of loggers out of the box, each with its own set of log levels:
 
 -   **`std` (Default):** Standard log levels (`error`, `warn`, `info`, `verbose`, `debug`, `trace`, `spam`).
 -   **`cli`:** Log levels suited for command-line applications (`error`, `warn`, `help`, `data`, `info`, `debug`, `prompt`, `verbose`, `input`, `silly`).
@@ -46,6 +46,17 @@ const logger = logMgr.getLogger<Log.cli.Logger<Log.MsgBuilder.Console>>(); // Th
 
 If you don't provide these, the `LogMgr` defaults to the `std` logger.
 
+```typescript
+import { Log } from '@epdoc/logger';
+import { MsgBuilder } from '@epdoc/msgbuilder';
+
+// LogMgr is using the default Logger
+const logMgr = new Log.Mgr<MsgBuilder.Console.Builder,Log.std.Logger>();
+
+const logger = logMgr.getLogger); // This will be a Log.Std.Logger instance
+```
+
+
 ### Important `LogMgr` Methods
 
 -   `set threshold(level: Level.Name | Level.Value)`: Sets the minimum log level to be output to a transport.
@@ -55,16 +66,16 @@ If you don't provide these, the `LogMgr` defaults to the `std` logger.
 
 ## Loggers (`Logger`)
 
-A `Logger` is the object you interact with directly to write log messages. You can get a logger from a [LogMgr](#log-manager-logmgr) instance.
+A `Logger` is the object you interact with directly to write log messages. You can get a logger from a [LogMgr](#log-manager-logmgr) instance. You choose which Logger implementation you wish to use based on what log levels it supports.
 
 ### Root and Child Loggers
 
 -   **Root Logger:** Your primary, application-wide logger, obtained by calling `logMgr.getLogger()`.
--   **Child Logger:** A logger created from another logger (a root or another child). It inherits its parent's configuration but can have unique properties, which is especially useful for tracing specific operations like handling a web request.
+-   **Child Logger:** A logger created from another logger (a root or another child). It inherits its parent's configuration but can have unique properties, which is especially useful for tracing specific operations like handling a web request. The unique properties are referred to in this documentation as the _logger context_.
 
 ```typescript
 // Get a root logger
-const rootLogger = logMgr.getLogger<Log.std.Logger<Log.MsgBuilder.Console>>();
+const rootLogger = logMgr.getLogger();
 
 // Create a child logger for a specific request
 const childLogger = rootLogger.getChild({ reqId: 'xyz-123' });
@@ -75,7 +86,7 @@ childLogger.info('Processing request...').emit();
 
 ### Logging a Message (`Emitter`)
 
-To log a message, you access a property on the logger that corresponds to a log level (e.g., `log.info`, `log.debug`). This returns a [MsgBuilder](#building-a-message-string-msgbuilder) object that you can use to construct and then emit the string portion of your message (excluding the timestamp, level, etc). 
+To log a message, when using one of the provided Logger implementations, you access a property on the logger that corresponds to a log level (e.g., `log.info`, `log.debug`). This returns a [MsgBuilder](#building-a-message-string-msgbuilder) object that you can use to construct and then emit the string portion of your message (excluding the timestamp, level, etc). 
 
 The logging architecture uses an `Emitter` class to bridge beween the [Logger](#loggers), [MsgBuilder](#building-a-message-string-msgbuilder) and [Transport](#transports). When you call `log.info`, the following happens:
 
@@ -90,6 +101,8 @@ The logging architecture uses an `Emitter` class to bridge beween the [Logger](#
 The emit flow:
 
 `MsgBuilder.emit()` → `Emitter.emit()` → `TransportMgr.emit()` → `Transport.emit()`
+
+The lifespan of the objects in this flow is confined to the creation of a single log output message. In other words, we create new MsgBuilder and Emitter objects for each output message.
 
 ```typescript
 // Simplest example of writing a log message to the console
@@ -107,146 +120,50 @@ log.info
   .emit();
 ```
 
-### Building a Message String [`MsgBuilder`] 
+### Emitting a Message
 
-A MessageBuilder is **only used for string formatting** to create the `Entry.msg` field (see below). It can create formatted strings with colors, styling, and structure. **Transports** handle the overall Entry serialization (JSON, plain text, etc.).
+Emitting a message involves sending the transport an `Entry` object, which contains the following fields:
 
-
-### Current Entry Structure
 ```typescript
 export type Entry = {
   level: Level.Name;
   timestamp?: Date;
-  sid?: string;        // ✅ Single session ID (correct)
-  reqIds?: string[];   // ❌ Array doesn't match single-request use case  
-  pkgs?: string[];     // ❌ Array doesn't match single-module use case
+  sid?: string; 
+  reqId?: string;
+  pkg?: string;
   msg: string | MsgBuilder.IFormatter | undefined;
-  data?: unknown | undefined;
+  data?: Record<string,unknown> | undefined;
 };
 ```
 
-Our `ConsoleMsgBuilder` provides a chainable interface for building formatted strings.
+#### Emit to Console Transport 
+A console transport might output the message as shown below. Here the transport is outputing the timestamp, log level and msg and using console.log() to output the final string. The Transport is told which of these fields to show using the `EmitterShowOpts` object. 
 
-
-### Conditional Logging
-
-Our default `MsgBuilder` also supports conditional logging, which allows you to build and emit log messages only when certain conditions are met. This is useful for reducing logging verbosity and focusing on specific scenarios.
-
-The conditional logging methods are:
-
--   `if(condition: boolean)`: Starts a conditional block. The following methods will only be executed if the `condition` is `true`.
--   `elif(condition: boolean)`: Starts an "else if" block. The following methods will only be executed if the previous `if` or `elif` conditions were `false` and this `condition` is `true`.
--   `else()`: Starts an "else" block. The following methods will only beexecuted if all previous `if` and `elif` conditions were `false`.
--   `endif()`: Ends a conditional block.
-
-Here's an example of how to use conditional logging:
-
-```typescript
-const someCondition = true;
-const anotherCondition = false;
-
-log.info
-  .if(someCondition)
-    .text('This will be logged because someCondition is true.')
-  .elif(anotherCondition)
-    .text('This will NOT be logged.')
-  .else()
-    .text('This will NOT be logged either.')
-  .endif()
-  .emit();
+```bash
+0.170s [INFO] Opened database for prod (6.76 ms response)
 ```
+
+If all files were available and enabled, the output console message would look like this (with colors)
+
+```bash
+0.170s [INFO] username req001 pkgname Opened database for prod (6.76 ms response) { "name": "Bob" }
+```
+#### Emit to Logdy Transport
+
+A logdy transport would assign each of the Entry fields to a different column in the display. The additional `data` field is provided in order to allow custom columns, or raw JSON data for whatever purpose is desired.
+
+The msg field is either a string or a [message builder](#building-a-message-string-msgbuilder) that can format a string for output.
+
+### Building a Message String [`MsgBuilder`] 
+
+Message Builders are **only used for string formatting** to create the `Entry.msg` field. The string can create formatted strings with colors, styling, and structure.
+
+Message builders are documented in [MSGBUILDER.md](./MSGBUILDER.md).
+
 
 ### Performance Timing
 
-[Loggers](#loggers) provide built-in performance timing capabilities through the `mark()` and `demark()` methods, along with the message builder's `ewt()` (Emit With Time) method.
-
-#### Creating Performance Marks
-
-Use `mark()` to create a performance mark that records the current high resolution timestamp:
-
-```typescript
-const log = logMgr.getLogger();
-const mark = log.mark(); // Returns a unique mark identifier (e.g., "mark.1")
-```
-
-#### Measuring Elapsed Time
-
-Use `demark()` to measure elapsed time since a mark was created:
-
-```typescript
-const mark = log.mark();
-// ... perform some operation ...
-const elapsed = log.demark(mark); // Returns elapsed time in milliseconds
-console.log(`Operation took ${elapsed}ms`);
-```
-
-The `demark()` method accepts an optional `keep` parameter:
-- `keep: false` (default): Removes the mark after measurement
-- `keep: true`: Preserves the mark for future measurements
-
-```typescript
-const mark = log.mark();
-// ... first operation ...
-const elapsed1 = log.demark(mark, true); // Keep the mark
-// ... second operation ...
-const elapsed2 = log.demark(mark); // Total elapsed time, mark is removed
-```
-
-#### Emit With Time (`ewt()`)
-
-The `ewt()` method combines timing measurement with log emission, automatically formatting and including the elapsed time in the log output:
-
-```typescript
-const log = logMgr.getLogger();
-
-// Basic usage
-const mark = log.mark();
-// ... perform operation ...
-log.info.h1('Operation completed').ewt(mark);
-// Output: "Operation completed (123 ms)"
-
-// With keep parameter
-const processMark = log.mark();
-// ... step 1 ...
-log.debug.h1('Step 1 done').ewt(processMark, true);
-// ... step 2 ...
-log.info.h1('Process completed').ewt(processMark);
-```
-
-#### Time Formatting
-
-Elapsed times are automatically formatted with appropriate precision:
-- **> 100ms**: No decimal places (e.g., "123 ms")
-- **10-100ms**: 1 decimal place (e.g., "45.6 ms")
-- **1-10ms**: 2 decimal places (e.g., "7.89 ms")
-- **< 1ms**: 3 decimal places (e.g., "0.123 ms")
-
-#### Example: Measuring Database Operations
-
-```typescript
-import { Log } from '@epdoc/logger';
-
-const logMgr = new Log.Mgr().init();
-const log = logMgr.getLogger();
-
-async function processUser(userId: string) {
-  const queryMark = log.mark();
-  const user = await database.findUser(userId);
-  log.debug.h1('User query').value(userId).ewt(queryMark);
-  
-  const updateMark = log.mark();
-  await database.updateUser(user);
-  log.info.h1('User updated').value(userId).ewt(updateMark);
-}
-```
-
-### Using the Message Builder Standalone
-
-You can also use a `MsgBuilder` (such as our default `ConsoleMsgBuilder`) on its own, without a `Logger` or `LogMgr`, for general-purpose string formatting with styling. 
-
-When you instantiate a builder without any arguments, the `emit()` method outputs to the console, but you can still use all the formatting and styling methods. Rather than calling emit, you can directly access the final string by calling the `format()` method.
-
-Refer to our [MsgBuilder documentation](./MSGBUILDER.md) for more concrete examples.
+[Loggers](#loggers) provide built-in performance timing capabilities through the `mark()` and `demark()` methods, along with the message builder's `ewt()` (Emit With Time) method. Refer to the [Message Builder](./MSGBUILDER.md) documentation for how this is used.
 
 
 ## Transports
