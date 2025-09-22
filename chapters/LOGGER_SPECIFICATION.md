@@ -6,7 +6,7 @@ This specification focuses on enhancing the context tracking capabilities of @ep
 
 ## Current Architecture (Correct Understanding)
 
-### MessageBuilder Role
+### MessageBuilder 
 MessageBuilder is **only for string formatting** of the `Entry.msg` field. It creates formatted strings with colors, styling, and structure. **Transports** handle the overall Entry serialization (JSON, plain text, etc.).
 
 ### Current Entry Structure
