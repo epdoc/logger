@@ -1,327 +1,216 @@
-# Logger Architecture Specification
+# Logger Context Enhancement Specification
 
-## Core Architecture Philosophy
+## Overview
 
-The logger is built around **pluggable message building** as its central concept. The MessageBuilder abstraction allows different output formats (Console, JSON, XML, etc.) while maintaining a consistent logging API. Context tracking (sid/reqId/pkg) is a secondary feature that enhances the core message building system.
+This specification focuses on enhancing the context tracking capabilities of @epdoc/logger for server applications. The current architecture uses arrays for `reqIds` and `pkgs` which doesn't match typical server application patterns where each logger instance should track a single request and each log message comes from a single module.
 
-## Primary Components
+## Current Architecture (Correct Understanding)
 
-### 1. MessageBuilder - The Core Abstraction
-The MessageBuilder is the heart of the system, defining how log messages are constructed and formatted:
+### MessageBuilder Role
+MessageBuilder is **only for string formatting** of the `Entry.msg` field. It creates formatted strings with colors, styling, and structure. **Transports** handle the overall Entry serialization (JSON, plain text, etc.).
 
+### Current Entry Structure
 ```typescript
-interface MessageBuilder {
-  // Core message construction
-  text(message: string): this;
-  value(key: string, value: any): this;
-  
-  // Formatting and output
-  format(options?: FormatOptions): string;
-  
-  // Builder pattern methods
-  clone(): this;
-  reset(): this;
-}
+export type Entry = {
+  level: Level.Name;
+  timestamp?: Date;
+  sid?: string;        // ✅ Single session ID (correct)
+  reqIds?: string[];   // ❌ Array doesn't match single-request use case  
+  pkgs?: string[];     // ❌ Array doesn't match single-module use case
+  msg: string | MsgBuilder.IFormatter | undefined;
+  data?: unknown | undefined;
+};
 ```
 
-**Key insight**: Different MessageBuilder implementations (Console, JSON, Structured) determine the final output format, making the logger adaptable to any logging destination or format requirement.
+### Current Flow (from CLASSES.md)
+```
+Logger → LevelEmitter → Emitter → MsgBuilder → Emitter.emit() → TransportMgr → Transport
+```
 
-### 2. LogMgr - Configuration and Orchestration
-The LogMgr manages the overall logging configuration and coordinates between loggers and transports:
+## Context Enhancement Requirements
 
+### Server Application Use Case
 ```typescript
-interface LogMgr<T extends MessageBuilder> {
-  // Core configuration
-  threshold: LogLevel;
-  loggerFactory: IFactoryMethods<T>;
-  
-  // Logger creation (enhanced for context)
-  getLogger(): Logger<T>;
-  createLogger(sid?: string, reqId?: string): Logger<T>;
-  
-  // Transport management
-  addTransport(transport: Transport): void;
-  emit(entry: Entry): void;
-}
-```
-
-**Key insight**: The generic `<T extends MessageBuilder>` makes the entire system type-safe and ensures consistency between message building and transport handling.
-
-### 3. Logger - Message Initiation
-The Logger provides the developer-facing API and manages message lifecycle:
-
-```typescript
-interface Logger<T extends MessageBuilder> {
-  // Context (secondary feature)
-  readonly sid?: string;
-  readonly reqId?: string;
-  
-  // Core logging interface
-  readonly error: LevelEmitter<T>;
-  readonly warn: LevelEmitter<T>;
-  readonly info: LevelEmitter<T>;
-  readonly debug: LevelEmitter<T>;
-  
-  // Enhanced emitter creation
-  createEmitter(level: LogLevel, pkg?: string): Emitter<T>;
-}
-```
-
-### 4. Emitter - Message Construction
-The Emitter is where MessageBuilder integration happens:
-
-```typescript
-interface Emitter<T extends MessageBuilder> {
-  // Core message building (delegates to MessageBuilder)
-  text(message: string): this;
-  value(key: string, value: any): this;
-  
-  // Context enhancement
-  pkg(packagePath: string): this;
-  
-  // Finalization
-  emit(): void;
-  
-  // Internal
-  readonly messageBuilder: T;
-  readonly logger: Logger<T>;
-}
-```
-
-**Key insight**: The Emitter wraps the MessageBuilder, adding context and lifecycle management while preserving the builder pattern.
-
-## Architecture Diagrams
-
-```mermaid
-classDiagram
-    class MessageBuilder {
-        <<interface>>
-        +text(msg: string) this
-        +value(key: string, val: any) this
-        +format(options?) string
-        +clone() this
-        +reset() this
-    }
-    
-    class ConsoleMessageBuilder {
-        +text(msg: string) this
-        +value(key: string, val: any) this
-        +format() string
-        +h1(text: string) this
-        +color(color: string) this
-    }
-    
-    class JSONMessageBuilder {
-        +text(msg: string) this
-        +value(key: string, val: any) this
-        +format() string
-        +nested(key: string) this
-    }
-    
-    class LogMgr~T~ {
-        +threshold: LogLevel
-        +loggerFactory: IFactoryMethods~T~
-        +getLogger() Logger~T~
-        +createLogger(sid?, reqId?) Logger~T~
-        +addTransport(transport) void
-        +emit(entry) void
-    }
-    
-    class Logger~T~ {
-        +sid?: string
-        +reqId?: string
-        +mgr: LogMgr~T~
-        +error: LevelEmitter~T~
-        +info: LevelEmitter~T~
-        +createEmitter(level, pkg?) Emitter~T~
-    }
-    
-    class Emitter~T~ {
-        +messageBuilder: T
-        +logger: Logger~T~
-        +pkg?: string
-        +text(msg) this
-        +value(key, val) this
-        +emit() void
-    }
-    
-    class Entry {
-        +timestamp: Date
-        +level: LogLevel
-        +sid?: string
-        +reqId?: string
-        +pkg?: string
-        +msg: MessageBuilder
-        +data?: Record~string, any~
-    }
-    
-    MessageBuilder <|-- ConsoleMessageBuilder
-    MessageBuilder <|-- JSONMessageBuilder
-    LogMgr ||--o{ Logger : creates
-    Logger ||--o{ Emitter : creates
-    Emitter ||--|| MessageBuilder : wraps
-    Emitter ||--|| Entry : builds
-```
-
-```mermaid
-sequenceDiagram
-    participant Dev as Developer
-    participant Logger as Logger~Console~
-    participant Emitter as Emitter~Console~
-    participant MsgBuilder as ConsoleMessageBuilder
-    participant LogMgr as LogMgr
-    participant Transport as Transport
-    
-    Dev->>Logger: info.text("User login")
-    Logger->>Emitter: create with ConsoleMessageBuilder
-    Emitter->>MsgBuilder: text("User login")
-    MsgBuilder-->>Emitter: this (fluent)
-    
-    Dev->>Emitter: value("userId", "123")
-    Emitter->>MsgBuilder: value("userId", "123")
-    MsgBuilder-->>Emitter: this (fluent)
-    
-    Dev->>Emitter: emit()
-    Emitter->>Entry: build with formatted message
-    Emitter->>LogMgr: emit(entry)
-    LogMgr->>Transport: emit(entry)
-    Transport->>Transport: format and output
-```
-
-## Core Design Principles
-
-### 1. MessageBuilder Polymorphism
-Different MessageBuilder implementations enable different output formats without changing the logging API:
-
-```typescript
-// Console output with colors and formatting
-const consoleMgr = new LogMgr<ConsoleMessageBuilder>();
-consoleMgr.loggerFactory = Console.factoryMethods;
-
-// JSON output for structured logging
-const jsonMgr = new LogMgr<JSONMessageBuilder>();
-jsonMgr.loggerFactory = JSON.factoryMethods;
-
-// Same API, different output
-logger.info.text("User action").value("userId", 123).emit();
-```
-
-### 2. Type Safety Through Generics
-The `<T extends MessageBuilder>` constraint ensures compile-time compatibility:
-
-```typescript
-// This ensures Transport can handle the MessageBuilder type
-class Transport<T extends MessageBuilder> {
-  constructor(private mgr: LogMgr<T>) {}
-  
-  emit(entry: Entry<T>): void {
-    // entry.msg is guaranteed to be type T
-    const formatted = entry.msg.format();
-  }
-}
-```
-
-### 3. Builder Pattern Consistency
-All components use fluent interfaces for ease of use:
-
-```typescript
-logger.error
-  .text("Database connection failed")
-  .value("host", "db.example.com")
-  .value("timeout", 5000)
-  .emit();
-```
-
-## Context Enhancement (Secondary Feature)
-
-The context system (sid/reqId/pkg) enhances the core MessageBuilder system for server applications:
-
-### Single-Value Context Fields
-```typescript
-interface Entry {
-  // Core message
-  msg: MessageBuilder;
-  level: LogLevel;
-  timestamp: Date;
-  
-  // Context enhancement
-  sid?: string;      // Session ID (single value)
-  reqId?: string;    // Request ID (single value)  
-  pkg?: string;      // Package path (nestable: "api/users/service")
-  data?: Record<string, any>;
-}
-```
-
-### Request-Scoped Loggers
-```typescript
-// Express.js middleware
+// Express.js middleware - each request gets its own logger
 app.use((req, res, next) => {
-  req.logger = logMgr.createLogger(
-    req.session?.id,
-    `req-${Date.now()}`
-  );
+  req.logger = logMgr.createLogger(req.session?.id, `req-${Date.now()}`);
   next();
 });
 
-// All logs in request carry same sid/reqId
-req.logger.info.text("Processing request").emit();
+// All logs in this request carry the same sid/reqId
+req.logger.info.text('Processing user request').emit();
+
+// Different modules specify their package context
+// In api/users/controller.ts
+req.logger.createEmitter('api/users/controller').info.text('Validating input').emit();
+
+// In services/database.ts  
+req.logger.createEmitter('services/database').debug.text('Executing query').emit();
 ```
 
-## Implementation Analysis
+### Expected Entry Output
+```typescript
+{
+  level: 'info',
+  timestamp: Date,
+  sid: 'session-abc123',           // Single session ID
+  reqId: 'req-1642789123456',      // Single request ID (not array)
+  pkg: 'api/users/controller',     // Single package path (not array)
+  msg: 'Formatted message string',
+  data: {...}
+}
+```
 
-### Current Issues
-1. **Array-based context**: `reqIds: string[]` and `pkgs: string[]` don't match the single-value use case
-2. **Missing factory method**: No `createLogger()` for request-scoped loggers
-3. **Package context**: No way to specify module/file context per log message
+## Implementation Roadmap
 
-### Proposed Changes
+### Phase 1: Entry Interface Update
+**Goal**: Change from arrays to single values for reqId and pkg
 
-#### Phase 1: Entry Interface Update
+**Changes**:
 ```typescript
 // Before
-interface Entry {
-  reqIds?: string[];  // ❌ Array doesn't match use case
-  pkgs?: string[];    // ❌ Array doesn't match use case
-  sid?: string;       // ✅ Already correct
-}
+export type Entry = {
+  reqIds?: string[];   // ❌ Remove array
+  pkgs?: string[];     // ❌ Remove array
+  sid?: string;        // ✅ Keep unchanged
+  // ... other fields
+};
 
-// After  
-interface Entry {
-  reqId?: string;     // ✅ Single request ID
-  pkg?: string;       // ✅ Single package path
-  sid?: string;       // ✅ Unchanged
-}
+// After
+export type Entry = {
+  reqId?: string;      // ✅ Single request ID
+  pkg?: string;        // ✅ Single package path  
+  sid?: string;        // ✅ Unchanged
+  // ... other fields
+};
 ```
 
-#### Phase 2: Logger Factory Enhancement
+**Files to update**:
+- `packages/logger/src/types.ts` - Entry type definition
+- All transport implementations to handle single values
+- All examples and tests
+
+### Phase 2: LogMgr Factory Enhancement
+**Goal**: Add request-scoped logger creation
+
+**Design Decision**: How should LogMgr create context-aware loggers?
+
+**Analysis**: Looking at current architecture, LogMgr already has `getLogger()`. We need to add `createLogger(sid?, reqId?)` that creates a Logger instance with embedded context.
+
+**Changes**:
 ```typescript
-class LogMgr<T extends MessageBuilder> {
-  // Enhanced factory method
-  createLogger(sid?: string, reqId?: string): Logger<T> {
-    return new Logger(this, sid, reqId);
-  }
+// In LogMgr class
+createLogger(sid?: string, reqId?: string): Logger<T> {
+  // Create logger instance with embedded context
+  // This context flows to all Emitters created by this logger
 }
 ```
 
-#### Phase 3: Package Context in Emitters
+**Files to update**:
+- `packages/logger/src/logmgr.ts` - Add createLogger method
+- Logger constructor to accept and store sid/reqId context
+
+### Phase 3: Package Context in Emitters  
+**Goal**: Add module/file context per log message
+
+**Design Decision**: Where should package context be specified?
+
+**Options**:
+- **Option A**: `logger.createEmitter('pkg').info.text()` - pkg at emitter creation
+- **Option B**: `logger.info.pkg('pkg').text()` - pkg per message
+- **Option C**: `logger.pkg('pkg').info.text()` - pkg at logger level
+
+**Analysis**: 
+- Option A is cleanest - package context is typically constant within a code location
+- Option B adds complexity to MsgBuilder interface
+- Option C makes pkg logger-scoped instead of message-scoped
+
+**Recommendation**: Option A - `logger.createEmitter(pkg)`
+
+**Changes**:
 ```typescript
-class Logger<T extends MessageBuilder> {
-  createEmitter(level: LogLevel, pkg?: string): Emitter<T> {
-    return new Emitter(this, level, pkg);
-  }
+// In Logger class
+createEmitter(pkg?: string): Emitter<T> {
+  // Create emitter with package context
+  // Emitter combines logger's sid/reqId with its own pkg
 }
 ```
 
-## Architecture Strengths
+### Phase 4: Emitter Context Integration
+**Goal**: Emitter builds Entry with combined context
 
-1. **MessageBuilder Abstraction**: Enables any output format while maintaining consistent API
-2. **Type Safety**: Generic constraints ensure compile-time compatibility
-3. **Pluggable Transports**: Clean separation between message building and output
-4. **Fluent Interface**: Developer-friendly builder pattern throughout
-5. **Context Layering**: Clean separation of application (LogMgr), request (Logger), and message (Emitter) concerns
+**Changes**:
+```typescript
+// In Emitter class
+emit(): void {
+  const entry: Entry = {
+    level: this.level,
+    timestamp: new Date(),
+    sid: this.logger.sid,      // From logger context
+    reqId: this.logger.reqId,  // From logger context  
+    pkg: this.pkg,             // From emitter context
+    msg: this.msgBuilder.format(),
+    data: this.data
+  };
+  this.transportMgr.emit(entry);
+}
+```
 
-## Conclusion
+### Phase 5: Transport Updates
+**Goal**: Update all transports to handle single-value context
 
-The logger's strength lies in its **MessageBuilder-centric architecture** that enables format flexibility while maintaining type safety. The context enhancement (sid/reqId/pkg) is a valuable addition for server applications but should not overshadow the core message building abstraction that makes the system truly powerful and reusable.
+**Changes**:
+- Console transport: Format single reqId/pkg instead of arrays
+- File transport: Handle single values in output format
+- Logdy transport: Already updated to use single values
+- Any custom transports
 
-The proposed changes maintain this architectural integrity while adding the context features needed for modern server application logging.
+### Phase 6: Backward Compatibility & Migration
+**Goal**: Smooth migration path for existing code
+
+**Strategy**:
+- Keep existing `getLogger()` method unchanged
+- Add deprecation warnings for array access patterns
+- Provide migration guide for common patterns
+
+## Open Design Questions & Resolutions
+
+### Q1: Should pkg be at Logger or Emitter level?
+**Resolution**: Emitter level via `logger.createEmitter(pkg)` 
+**Rationale**: Package context is message-specific, not logger-specific. A single logger (request) may log from multiple modules.
+
+### Q2: How to maintain fluent interface?
+**Current**: `logger.info.text('message').emit()`
+**Enhanced**: `logger.createEmitter('pkg').info.text('message').emit()`
+**Alternative**: Keep existing interface, add optional pkg method: `logger.info.pkg('pkg').text('message').emit()`
+
+**Resolution**: Provide both patterns:
+- `logger.createEmitter(pkg)` for explicit package context
+- Keep existing `logger.info` for backward compatibility (pkg = undefined)
+
+### Q3: Package path format?
+**Resolution**: Use forward slashes like file paths: `'api/users/controller'`, `'services/database'`
+
+### Q4: Context inheritance in child loggers?
+**Current**: Child loggers inherit parent context
+**Enhanced**: Child loggers should inherit sid/reqId but can override pkg per emitter
+
+## Success Criteria
+
+1. **Single-value context**: Entry uses `reqId?: string`, `pkg?: string` (not arrays)
+2. **Request-scoped loggers**: `logMgr.createLogger(sid, reqId)` creates isolated context
+3. **Package context**: Emitters can specify module context via `createEmitter(pkg)`
+4. **Transport compatibility**: All transports handle new Entry format correctly
+5. **Backward compatibility**: Existing `logger.info.text().emit()` continues to work
+6. **Performance**: No significant overhead from context tracking
+
+## Implementation Priority
+
+**Phase 1** (Critical): Entry interface update - enables all other phases
+**Phase 2** (High): LogMgr factory method - core functionality for server apps  
+**Phase 3** (High): Package context in emitters - completes context system
+**Phase 4** (High): Emitter context integration - makes it all work
+**Phase 5** (Medium): Transport updates - ensures proper output formatting
+**Phase 6** (Low): Migration support - helps adoption
+
+This enhancement transforms @epdoc/logger from a general-purpose logger into a context-aware system ideal for server applications while preserving its MessageBuilder flexibility and transport architecture.
