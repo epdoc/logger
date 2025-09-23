@@ -22,7 +22,7 @@ export type Entry = {
 };
 ```
 
-### Current Flow (from CLASSES.md)
+### Current Flow (from ARCHITECTURE.md)
 ```
 Logger → LevelEmitter → Emitter → MsgBuilder → Emitter.emit() → TransportMgr → Transport
 ```

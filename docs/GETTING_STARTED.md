@@ -1,6 +1,6 @@
 # Getting Started
 
-This guide provides a comprehensive introduction to the `@epdoc/logger` library. It will walk you through the process of
+This guide provides an introduction to the `@epdoc/logger` library. It will walk you through the process of
 setting up a logger, configuring its output, and logging messages.
 
 ## 1. Creating a Log Manager

@@ -175,7 +175,14 @@ export class ConsoleTransport extends Base.Transport {
    * @param {boolean | Integer | undefined} show - Configuration for displaying the level.
    * @returns {string} The styled log level string.
    */
-  styledLevel(level: Level.Name, show: boolean | Integer | undefined): string {
+  styledLevel(level: Level.Name, show: boolean | Integer | 'icon' | undefined): string {
+    if (show === 'icon') {
+      const def = this._logMgr.logLevels.get(level);
+      if (def && def.icon) {
+        return def.icon;
+      }
+      show = true;
+    }
     let s = StringEx(level).rightPad(this._levelWidth);
     if (_.isInteger(show)) {
       if (show > 0) {

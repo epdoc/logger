@@ -17,7 +17,7 @@ import { Emitter } from './emitter.ts';
  * - Log level thresholds and filtering
  * - Transport coordination for output routing
  * - Message builder factory selection
- * - Performance timing and flush management
+ * - Flush management
  *
  * The manager uses a factory pattern to support different logger types (std, cli, etc.)
  * and implements the new Emitter architecture for direct MsgBuilder-to-Transport communication.
@@ -51,11 +51,14 @@ export class LogMgr<
   protected _rootLogger: Logger.IEmitter | undefined;
   protected _msgBuilder: MsgBuilder.Abstract | undefined;
   protected _threshold: Level.Value = 5;
-  protected _show: Log.EmitterShowOpts = { reqIdSep: '.', pkgSep: '.' };
+  protected _show: Log.EmitterShowOpts = { pkgSep: '.' };
   // protected _pkg: string = '';
   // protected _reqId: string = '';
   protected _mark: Record<string, HrMilliseconds> = {};
   protected _bRunning = true;
+  /**
+   * A queue of log messages waiting for a transport to come online.
+   */
   protected _queue: Log.Entry[] = [];
   readonly transportMgr: Transport.Mgr = new Transport.Mgr(this as unknown as LogMgr<MsgBuilder.Abstract>);
   protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.createMsgBuilder;
@@ -87,7 +90,8 @@ export class LogMgr<
   // }
 
   /**
-   * Sets the factory used to create message builder instances. Defaults to `@epdoc/msgbuilder` if not set.
+   * Sets the factory used to create message builder instances. Used to override the
+   * default behaviour, which is to use `@epdoc/msgbuilder`.
    * @param {MsgBuilder.FactoryMethod} msgBuilderFactory - The factory function.
    */
   public set msgBuilderFactory(msgBuilderFactory: MsgBuilder.FactoryMethod) {
@@ -95,25 +99,35 @@ export class LogMgr<
   }
 
   /**
-   * Gets the factory used to create message builder instances.
+   * Gets the factory used to create message builder instances. Under normal circumstances you
+   * should not need to use this getter.
+   *
    * @returns {MsgBuilder.FactoryMethod} The factory function.
+   * @deprecated Give me a reason not to deprecate this getter.
    */
   get msgBuilderFactory(): MsgBuilder.FactoryMethod {
     return this._msgBuilderFactory;
   }
 
   /**
-   * Sets the factories used to create the logger and its dependencies.
-   * This will also re-initialize the logger system.
+   * Sets the factories used to create the logger and its dependencies. This will also re-initialize
+   * the logger system. Under normal circumstances you would provide the logger factory methods only
+   * if not using the default logger, and the prefered way to do this is by calling `init` method
+   * directly.
+   *
    * @param {Logger.IFactoryMethods<M, Logger.IEmitter>} factories - The set of factory methods.
+   * @deprecated Use init method
    */
   public set loggerFactory(factories: Logger.IFactoryMethods<M, Logger.IEmitter>) {
     this.init(factories);
   }
 
   /**
-   * Gets the factories used to create the logger and its dependencies.
+   * Gets the factories used to create the logger and its dependencies. Under normal circumstances
+   * you should not need to use this getter.
+   *
    * @returns {Logger.IFactoryMethods<M, Logger.IEmitter>} The set of factory methods.
+   * @deprecated Give me a reason not to deprecate this getter.
    */
   public get loggerFactory(): Logger.IFactoryMethods<M, Logger.IEmitter> {
     return this._loggerFactories;
@@ -229,12 +243,14 @@ export class LogMgr<
   }
 
   /**
-   * Creates a new message builder instance for a given log level.
+   * @internal
+   * Creates a new message builder instance for a given log level. This is called by the logger and
+   * does not need to be called by a user.
    *
    * @remarks
-   * This method creates a lightweight Emitter that captures the logger's context
-   * and has a direct reference to the TransportMgr, allowing the MsgBuilder to
-   * emit directly to transports without going through the Logger and LogMgr.
+   * This method creates a lightweight Emitter that captures the logger's context and has a direct
+   * reference to the TransportMgr, allowing the MsgBuilder to emit directly to transports without
+   * going through the Logger and LogMgr.
    *
    * @param {string} level - The log level for the message.
    * @param {Logger.IEmitter} emitter - The logger instance that provides context.
@@ -362,6 +378,7 @@ export class LogMgr<
   }
 
   /**
+   * @internal
    * Emits a log message. This is called by the
    * Logger implementation which, in turn, is called by the {@link IMsgBuilder}
    * implementation.

@@ -40,10 +40,10 @@ export type EmitterShowOpts = {
   /**
    * Controls the display of the log level.
    * - `true`: Show the full level name (e.g., 'info').
-   * - `number`: Show a truncated version of the level name.
+   * - `number`: Show a truncated version of the level name, truncated to this many characters.
    * - `false` (or omitted): Do not show the level.
    */
-  level?: boolean | number;
+  level?: boolean | number | 'icon';
   /** Controls the display format of the timestamp. */
   timestamp?: TimestampFormatType;
   /** Controls the display of the session ID. */
@@ -64,7 +64,7 @@ export type EmitterShowOpts = {
   pkg?: boolean | number;
   /** Controls the display of structured data. */
   data?: boolean;
-  reqIdSep?: string;
+  /** The separater to show between package names (defaults to '.', which is set in the class LogMgr) */
   pkgSep?: string;
 };
 

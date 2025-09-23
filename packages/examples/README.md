@@ -14,6 +14,7 @@ This package contains examples demonstrating various features of the @epdoc/logg
 - [app-by-settings.ts](./app-by-settings.ts) - Application-level logging setup
 - [extend-mgr.ts](./extend-mgr.ts) - Extending logger manager functionality
 - [settings-mgr.ts](./settings-mgr.ts) - Settings-based configuration
+- [wrapper.ts](./wrapper.ts) - Wrapper pattern to hide generic complexity
 
 ### Transport Examples
 - [logdy.ts](./logdy.ts) - Logdy transport for real-time log streaming

@@ -163,9 +163,9 @@ export interface IGetChildParams {
   /**
    * A unique identifier for a request or operation.
    */
-  reqId?: string | string[];
+  reqId?: string;
   /**
    * A namespace, such as a class or module name.
    */
-  pkg?: string | string[];
+  pkg?: string;
 }

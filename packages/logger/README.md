@@ -62,7 +62,7 @@ log.info.h2('Hello world').emit();
 
 - [Getting Started](./chapters/GETTING-STARTED.md)
 - [Configuration](./chapters/CONFIGURATION.md)
-- [Classes](./chapters/CLASSES.md)
+- [Architecture](./chapters/ARCHITECTURE.md)
 - [Middleware](./chapters/MIDDLEWARE.md)
 - [Oak Middleware](./chapters/OAK.md)
 - [Customization Overview](./chapters/CUSTOMIZATION.md)

@@ -70,6 +70,8 @@ export type LogLevelDef = {
    * @default false
    */
   flush?: boolean;
+  /** An icon that can be displayed in place of the log level string. */
+  icon?: string;
 };
 
 /**

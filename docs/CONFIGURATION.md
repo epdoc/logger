@@ -1,6 +1,6 @@
 # Configuration
 
-This document explains how to configure the `@epdoc/logger` library.
+This document explains how to configure the `@epdoc/logger` library. However, the best way to learn about configuring the logger is in the [examples files](../packages/examples/README.md).
 
 ## Log Manager Configuration
 

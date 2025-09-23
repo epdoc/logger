@@ -37,8 +37,8 @@ export class Emitter implements MsgBuilder.IEmitter {
   private readonly _level: Level.Name;
   private readonly _transportMgr: Transport.Mgr;
   private readonly _sid?: string;
-  private readonly _reqIds: string[];
-  private readonly _pkgs: string[];
+  private readonly _reqId?: string;
+  private readonly _pkg?: string;
   private readonly _meetsThreshold: boolean;
   private readonly _meetsFlushThreshold: boolean;
   private readonly _flushCallback?: () => void;
