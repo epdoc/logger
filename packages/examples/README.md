@@ -5,18 +5,18 @@ This package contains examples demonstrating various features of the @epdoc/logg
 ## Examples
 
 ### Basic Examples
-- **`simple.ts`** - Basic logger usage
-- **`cli.ts`** - CLI logger with colored output
-- **`threshold.ts`** - Log level thresholds and filtering
+- [simple.ts](./simple.ts) - Basic logger usage
+- [cli.ts](./cli.ts) - CLI logger with colored output
+- [threshold.ts](./threshold.ts) - Log level thresholds and filtering
 
 ### Advanced Examples
-- **`mgr-by-settings.ts`** - Logger manager configuration
-- **`app-by-settings.ts`** - Application-level logging setup
-- **`extend-mgr.ts`** - Extending logger manager functionality
-- **`settings-mgr.ts`** - Settings-based configuration
+- [mgr-by-settings.ts](./mgr-by-settings.ts) - Logger manager configuration
+- [app-by-settings.ts](./app-by-settings.ts) - Application-level logging setup
+- [extend-mgr.ts](./extend-mgr.ts) - Extending logger manager functionality
+- [settings-mgr.ts](./settings-mgr.ts) - Settings-based configuration
 
 ### Transport Examples
-- **`logdy.ts`** - Logdy transport for real-time log streaming
+- [logdy.ts](./logdy.ts) - Logdy transport for real-time log streaming
 
 ## Running Examples
 
@@ -35,12 +35,12 @@ deno run -A logdy.ts
 
 ## Logdy Transport Example
 
-The `logdy.ts` example demonstrates real-time log streaming to Logdy web interface.
+The [logdy.ts](./logdy.ts) example demonstrates real-time log streaming to Logdy web interface.
 
 ### Prerequisites
 1. Install Logdy: `npm install -g @logdy/core`
 2. Start Logdy in socket mode: `logdy socket 8081 --api-key your-api-key-here`
-3. Update `LOGDY_API_KEY` constant in `logdy.ts` with your API key
+3. Update `LOGDY_API_KEY` constant in [logdy.ts](./logdy.ts) with your API key
 4. Open web interface: http://localhost:8080
 
 ### Features Demonstrated
