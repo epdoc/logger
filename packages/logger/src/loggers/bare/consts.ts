@@ -1,7 +1,7 @@
-import * as colors from '@std/fmt/colors';
 import * as Level from '$level';
-import { LogMgr } from '../../logmgr.ts';
 import type * as MsgBuilder from '$msgbuilder';
+import * as colors from '@std/fmt/colors';
+import { LogMgr } from '../../logmgr.ts';
 import type * as Base from '../base/mod.ts';
 import type { IFactoryMethods } from '../factory.ts';
 import { BareLogger } from './logger.ts';
@@ -36,10 +36,10 @@ export const bareFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, BareLogger
    * Factory method to create an instance of {@link LogLevels} configured with
    * the CLI-specific log level definitions.
    *
-   * @returns {Level.IBasic} A new `LogLevels` instance for CLI logging.
+   * @returns A new `LogLevels` instance for CLI logging.
    */
   createLevels: () => {
-    return new Level.LogLevels(bareLogLevelDefs);
+    return new Level.LogLevels(bareLogLevelDefs, 'bare');
   },
   /**
    * An array containing the names of all CLI log levels.

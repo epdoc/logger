@@ -2,11 +2,12 @@ import type * as Level from '$level';
 import type * as Log from '$log';
 import type * as MsgBuilder from '$msgbuilder';
 import type { HrMilliseconds } from '@epdoc/duration';
-import { isString } from '@epdoc/type';
+import { _ } from '@epdoc/type';
 import type { LogMgr } from '../../logmgr.ts';
 import type { IEmitter, IGetChildParams, IInherit, ILevels } from '../types.ts';
 
 let markId = 0;
+let loggerId = 0;
 
 /**
  * Provides the core foundation for all logger instances, handling essential
@@ -39,10 +40,12 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
   protected _parent: this | undefined;
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = { pkgSep: '.' };
+  /** Contains the chain of pkg values for all super loggers */
   protected _pkgs: string[] = [];
   protected _reqId: string | undefined;
   protected _sid: string | undefined;
   protected _mark: Record<string, HrMilliseconds> = {};
+  protected _childCount = 0;
 
   /**
    * Initializes a new logger instance.
@@ -57,10 +60,6 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
     if (params) {
       this.#appendParams(params);
     }
-  }
-
-  public getLogLevels(): ILevels {
-    return this;
   }
 
   /**
@@ -98,10 +97,10 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
         this._sid = params.sid;
       }
       // Handle reqId efficiently
-      if (isString(params.reqId)) {
+      if (_.isString(params.reqId)) {
         this._reqId = params.reqId;
       }
-      if (isString(params.pkg)) {
+      if (_.isString(params.pkg)) {
         this._pkgs.push(params.pkg);
       }
     }
@@ -128,6 +127,10 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
     this._sid = logger._sid;
     this._reqId = logger._reqId;
     this._pkgs = [...logger._pkgs];
+  }
+
+  public getLogLevels(): ILevels {
+    return this;
   }
 
   get levels(): ILevels {

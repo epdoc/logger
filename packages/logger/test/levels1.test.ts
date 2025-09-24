@@ -1,6 +1,6 @@
 import { assertEquals } from '@std/assert';
 import { describe, test } from '@std/testing/bdd';
-import { set, reset } from '../../../test-utils/color-map.ts';
+import { reset, set } from '../../../test-utils/color-map.ts';
 import * as Log from '../src/mod.ts';
 
 describe('levels', () => {
@@ -32,10 +32,10 @@ describe('levels', () => {
     test('cli threshold', () => {
       const logLevels = Log.Cli.factoryMethods.createLevels();
       // For increasing levels: level meets threshold if level >= threshold
-      assertEquals(logLevels.meetsThreshold(4, 4), true);  // level 4 >= threshold 4
-      assertEquals(logLevels.meetsThreshold(4, 5), false); // level 4 < threshold 5
-      assertEquals(logLevels.meetsThreshold(5, 4), true);  // level 5 >= threshold 4
-      assertEquals(logLevels.meetsThreshold(4, 2), true);  // level 4 >= threshold 2
+      assertEquals(logLevels.meetsThreshold(4, 4), true);
+      assertEquals(logLevels.meetsThreshold(4, 5), true);
+      assertEquals(logLevels.meetsThreshold(5, 4), false);
+      assertEquals(logLevels.meetsThreshold(4, 2), false);
     });
 
     test('cli flush threshold', () => {
@@ -92,10 +92,10 @@ describe('levels', () => {
     test('std threshold', () => {
       const logLevels = Log.Std.factoryMethods.createLevels();
       // For increasing levels: level meets threshold if level >= threshold
-      assertEquals(logLevels.meetsThreshold(4, 4), true);  // level 4 >= threshold 4
-      assertEquals(logLevels.meetsThreshold(4, 5), false); // level 4 < threshold 5
-      assertEquals(logLevels.meetsThreshold(5, 4), true);  // level 5 >= threshold 4
-      assertEquals(logLevels.meetsThreshold(4, 2), true);  // level 4 >= threshold 2
+      assertEquals(logLevels.meetsThreshold(4, 4), true);
+      assertEquals(logLevels.meetsThreshold(4, 5), true);
+      assertEquals(logLevels.meetsThreshold(5, 4), false);
+      assertEquals(logLevels.meetsThreshold(4, 2), false);
     });
 
     test('std flush threshold', () => {
@@ -119,9 +119,15 @@ describe('levels', () => {
       assertEquals(logLevels.applyColors('test', 'WARN'), set.yellowText + 'test' + reset.fg);
       assertEquals(logLevels.applyColors('test', 'INFO'), set.greenText + 'test' + reset.fg);
       assertEquals(logLevels.applyColors('test', 'VERBOSE'), set.cyanText + 'test' + reset.fg);
-      assertEquals(logLevels.applyColors('test', 'DEBUG'), '\u001b[2m' + set.blueText + 'test' + reset.fg + '\u001b[22m');
+      assertEquals(
+        logLevels.applyColors('test', 'DEBUG'),
+        '\u001b[2m' + set.blueText + 'test' + reset.fg + '\u001b[22m',
+      );
       assertEquals(logLevels.applyColors('test', 'TRACE'), set.grayText + 'test' + reset.fg);
-      assertEquals(logLevels.applyColors('test', 'SPAM'), '\u001b[2m' + set.grayText + 'test' + reset.fg + '\u001b[22m');
+      assertEquals(
+        logLevels.applyColors('test', 'SPAM'),
+        '\u001b[2m' + set.grayText + 'test' + reset.fg + '\u001b[22m',
+      );
     });
   });
 
@@ -141,10 +147,10 @@ describe('levels', () => {
     test('std threshold', () => {
       const logLevels = Log.Min.factoryMethods.createLevels();
       // For increasing levels: level meets threshold if level >= threshold
-      assertEquals(logLevels.meetsThreshold(2, 2), true);  // level 2 >= threshold 2
-      assertEquals(logLevels.meetsThreshold(2, 3), false); // level 2 < threshold 3
-      assertEquals(logLevels.meetsThreshold(3, 2), true);  // level 3 >= threshold 2
-      assertEquals(logLevels.meetsThreshold(2, 1), true);  // level 2 >= threshold 1
+      assertEquals(logLevels.meetsThreshold(2, 2), true);
+      assertEquals(logLevels.meetsThreshold(2, 3), true);
+      assertEquals(logLevels.meetsThreshold(3, 2), false);
+      assertEquals(logLevels.meetsThreshold(2, 1), false);
     });
 
     test('std flush threshold', () => {
@@ -160,7 +166,10 @@ describe('levels', () => {
       assertEquals(logLevels.applyColors('test', 'ERROR'), set.redText + 'test' + reset.fg);
       assertEquals(logLevels.applyColors('test', 'WARN'), set.yellowText + 'test' + reset.fg);
       assertEquals(logLevels.applyColors('test', 'INFO'), set.greenText + 'test' + reset.fg);
-      assertEquals(logLevels.applyColors('test', 'DEBUG'), '\u001b[2m' + set.blueText + 'test' + reset.fg + '\u001b[22m');
+      assertEquals(
+        logLevels.applyColors('test', 'DEBUG'),
+        '\u001b[2m' + set.blueText + 'test' + reset.fg + '\u001b[22m',
+      );
     });
   });
 });

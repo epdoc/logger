@@ -215,7 +215,9 @@ describe('MsgBuilder.Console', () => {
       logMgr.threshold = 'info';
 
       const err = new Error('test error');
-      const _result = (log.info as MsgBuilder.Console.Builder).err(err, { stack: false, cause: false }).format({ color: true });
+      const _result = (log.info as MsgBuilder.Console.Builder).err(err, { stack: false, cause: false }).format({
+        color: true,
+      });
       // Test passes if no error thrown
     });
 
@@ -225,7 +227,8 @@ describe('MsgBuilder.Console', () => {
       logMgr.threshold = 'info';
 
       const err = new Error('test error');
-      const _result = (log.info as MsgBuilder.Console.Builder).err(err, { stack: false, path: false, code: true }).format({ color: true });
+      const _result = (log.info as MsgBuilder.Console.Builder).err(err, { stack: false, path: false, code: true })
+        .format({ color: true });
       // Test passes if no error thrown
     });
   });
@@ -281,7 +284,9 @@ describe('MsgBuilder.Console', () => {
       logMgr.init();
       logMgr.threshold = 'info';
 
-      const _result = (log.info as MsgBuilder.Console.Builder).count(10).h2('message').h2('inbox').format({ color: false });
+      const _result = (log.info as MsgBuilder.Console.Builder).count(10).h2('message').h2('inbox').format({
+        color: false,
+      });
       // Test passes if no error thrown
     });
 

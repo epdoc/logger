@@ -47,7 +47,7 @@ export const cliFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, CliLogger<M
    * @returns {Level.IBasic} A new `LogLevels` instance for CLI logging.
    */
   createLevels: () => {
-    return new Level.LogLevels(cliLogLevelDefs);
+    return new Level.LogLevels(cliLogLevelDefs, 'cli');
   },
   /**
    * An array containing the names of all CLI log levels.

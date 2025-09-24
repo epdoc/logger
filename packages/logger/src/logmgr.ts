@@ -63,6 +63,7 @@ export class LogMgr<
   readonly transportMgr: Transport.Mgr = new Transport.Mgr(this as unknown as LogMgr<MsgBuilder.Abstract>);
   protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.createMsgBuilder;
   protected _loggerFactories: Logger.IFactoryMethods<M, Logger.IEmitter> = Logger.Std.factoryMethods;
+  protected _loggerCount: Map<string, number> = new Map();
 
   // protected registeredLogLevels: Record<
   //   string,
@@ -153,7 +154,7 @@ export class LogMgr<
       this._loggerFactories = factories;
     }
     this._logLevels = this._loggerFactories.createLevels();
-    this._rootLogger = this._loggerFactories.createLogger(this);
+    // this._rootLogger = this._loggerFactories.createLogger(this);
     return this;
   }
 
@@ -217,7 +218,7 @@ export class LogMgr<
    * @example
    * ```ts
    * const logMgr = new Log.Mgr();
-   * // Specify the expected logger type for type safety.
+   * // Specify the expected logger type for type safety.f
    * const logger = logMgr.getLogger<Log.Std.Logger>();
    * logger.info.text('Hello').emit();
    * ```

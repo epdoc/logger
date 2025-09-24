@@ -6,6 +6,7 @@ type M = MsgBuilder.Abstract;
 type L = Log.Std.Logger<M>;
 
 const LOG_FILE = '../../../tmp/file_handler_test.log';
+const logFilePath = new URL(LOG_FILE, import.meta.url).pathname;
 
 describe('File Transport', () => {
   test('should write to a file', async () => {
@@ -16,7 +17,7 @@ describe('File Transport', () => {
     logMgr.addTransport(console);
     logMgr.threshold = 'spam';
     const transport = new Log.Transport.File.Transport(logMgr, {
-      filepath: LOG_FILE,
+      filepath: logFilePath,
       color: false,
       format: Log.Transport.OutputFormat.JSON_ARRAY,
       mode: 'w',

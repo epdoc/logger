@@ -1,5 +1,5 @@
-import type { LogMgr } from '../../logmgr.ts';
 import type * as MsgBuilder from '$msgbuilder';
+import type { LogMgr } from '../../logmgr.ts';
 import * as Indent from '../indent/mod.ts';
 
 /**

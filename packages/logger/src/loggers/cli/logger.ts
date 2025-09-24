@@ -1,7 +1,7 @@
-import type { LogMgr } from '../../logmgr.ts';
 import type * as MsgBuilder from '$msgbuilder';
+import type { LogMgr } from '../../logmgr.ts';
 import type * as Base from '../base/mod.ts';
-import * as Indent from '../indent/mod.ts';
+import * as Min from '../min/mod.ts';
 
 /**
  * Implements a logger with a comprehensive set of log levels tailored for CLI applications.
@@ -27,7 +27,7 @@ import * as Indent from '../indent/mod.ts';
  *
  * @template M - The type of message builder used by the logger.
  */
-export class CliLogger<M extends MsgBuilder.Abstract> extends Indent.Logger<M> {
+export class CliLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> {
   constructor(logMgr: LogMgr<M>, params?: Base.IGetChildParams) {
     super(logMgr, params);
   }
@@ -41,32 +41,6 @@ export class CliLogger<M extends MsgBuilder.Abstract> extends Indent.Logger<M> {
     const result = new (this.constructor as new (logMgr: LogMgr<M>) => this)(this._logMgr);
     result.assign(this);
     return result;
-  }
-
-  /**
-   * Provides a message builder for the `ERROR` log level.
-   *
-   * @remarks
-   * Use this level for critical errors that indicate a failure in the CLI
-   * application, often requiring user intervention or indicating a bug.
-   *
-   * @returns {M} A message builder configured for the `ERROR` level.
-   */
-  public get error(): M {
-    return this._logMgr.getMsgBuilder('ERROR', this);
-  }
-
-  /**
-   * Provides a message builder for the `WARN` log level.
-   *
-   * @remarks
-   * Use this level for potential issues or non-critical problems that the user
-   * should be aware of, but which do not prevent the application from continuing.
-   *
-   * @returns {M} A message builder configured for the `WARN` level.
-   */
-  public get warn(): M {
-    return this._logMgr.getMsgBuilder('WARN', this);
   }
 
   /**
@@ -93,33 +67,6 @@ export class CliLogger<M extends MsgBuilder.Abstract> extends Indent.Logger<M> {
    */
   public get data(): M {
     return this._logMgr.getMsgBuilder('DATA', this);
-  }
-
-  /**
-   * Provides a message builder for the `INFO` log level.
-   *
-   * @remarks
-   * Use this level for general informational messages that provide high-level
-   * feedback on the application's progress or state.
-   *
-   * @returns {M} A message builder configured for the `INFO` level.
-   */
-  public get info(): M {
-    return this._logMgr.getMsgBuilder('INFO', this);
-  }
-
-  /**
-   * Provides a message builder for the `DEBUG` log level.
-   *
-   * @remarks
-   * Use this level for detailed diagnostic information, typically intended
-   * for developers during debugging. This might include internal states or
-   * execution paths.
-   *
-   * @returns {M} A message builder configured for the `DEBUG` level.
-   */
-  public get debug(): M {
-    return this._logMgr.getMsgBuilder('DEBUG', this);
   }
 
   /**
