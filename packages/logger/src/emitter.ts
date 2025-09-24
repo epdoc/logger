@@ -61,8 +61,9 @@ export class Emitter implements MsgBuilder.IEmitter {
     transportMgr: Transport.Mgr,
     context: {
       sid?: string;
-      reqIds: string[];
+      reqId?: string;
       pkgs: string[];
+      pkgSep: string;
     },
     thresholds: {
       meetsThreshold: boolean;
@@ -74,8 +75,8 @@ export class Emitter implements MsgBuilder.IEmitter {
     this._level = level;
     this._transportMgr = transportMgr;
     this._sid = context.sid;
-    this._reqIds = [...context.reqIds];
-    this._pkgs = [...context.pkgs];
+    this._reqId = context.reqId;
+    this._pkg = context.pkgs.join(context.pkgSep);
     this._meetsThreshold = thresholds.meetsThreshold;
     this._meetsFlushThreshold = thresholds.meetsFlushThreshold;
     this._flushCallback = flushCallback;
@@ -186,8 +187,8 @@ export class Emitter implements MsgBuilder.IEmitter {
         level: this._level,
         timestamp: data.timestamp,
         sid: this._sid,
-        reqIds: this._reqIds.length > 0 ? [...this._reqIds] : undefined,
-        pkgs: this._pkgs.length > 0 ? [...this._pkgs] : undefined,
+        reqId: this._reqId,
+        pkg: this._pkg,
         msg: data.formatter,
         data: data.data,
       };

@@ -40,7 +40,7 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
   protected _threshold: Level.Value | undefined;
   protected _show: Log.EmitterShowOpts = { pkgSep: '.' };
   protected _pkgs: string[] = [];
-  protected _reqIds: string[] = [];
+  protected _reqId: string | undefined;
   protected _sid: string | undefined;
   protected _mark: Record<string, HrMilliseconds> = {};
 
@@ -99,7 +99,7 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
       }
       // Handle reqId efficiently
       if (isString(params.reqId)) {
-        this._reqIds.push(params.reqId);
+        this._reqId = params.reqId;
       }
       if (isString(params.pkg)) {
         this._pkgs.push(params.pkg);
@@ -126,7 +126,7 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
     this._threshold = logger._threshold;
     this._show = logger._show;
     this._sid = logger._sid;
-    this._reqIds = [...logger._reqIds];
+    this._reqId = logger._reqId;
     this._pkgs = [...logger._pkgs];
   }
 
@@ -179,8 +179,8 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
   /**
    * Retrieves the array of request IDs. Callers can use push and pull to populate the array.
    */
-  public get reqIds(): string[] {
-    return this._reqIds;
+  public get reqId(): string | undefined {
+    return this._reqId;
   }
 
   /**
@@ -190,12 +190,9 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
    * @returns {this} The current logger instance.
    * @internal
    */
-  // setReqId(val: string | undefined): this {
-  //   if (val) {
-  //     this._reqIds.push(val);
-  //   }
-  //   return this;
-  // }
+  public set reqId(val: string | undefined) {
+    this._reqId = val;
+  }
 
   /**
    * Gets the active log level configuration from the log manager.

@@ -266,8 +266,9 @@ export class LogMgr<
       this.transportMgr,
       {
         sid: emitter.sid,
-        reqIds: emitter.reqIds,
+        reqId: emitter.reqId,
         pkgs: emitter.pkgs,
+        pkgSep: this._show.pkgSep || '.',
       },
       {
         meetsThreshold,

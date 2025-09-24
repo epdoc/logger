@@ -88,14 +88,8 @@ export class ConsoleTransport extends Base.Transport {
       {
         timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
       },
-      _.pick(msg, 'level', 'sid'),
+      _.pick(msg, 'level', 'sid', 'pkg', 'reqId'),
     );
-    if (_.isNonEmptyArray(msg.pkgs)) {
-      entry.pkg = msg.pkgs.join(this._show.pkgSep);
-    }
-    if (_.isNonEmptyArray(msg.reqIds)) {
-      entry.reqId = msg.reqIds.join(this._show.reqIdSep);
-    }
 
     if (msg.msg instanceof MsgBuilder.Abstract) {
       const target = this._format === 'text' ? 'console' : this._format as MsgBuilder.EmitterTarget;
@@ -177,7 +171,7 @@ export class ConsoleTransport extends Base.Transport {
    */
   styledLevel(level: Level.Name, show: boolean | Integer | 'icon' | undefined): string {
     if (show === 'icon') {
-      const def = this._logMgr.logLevels.get(level);
+      const def = this._logMgr.logLevels.levelDefs[level];
       if (def && def.icon) {
         return def.icon;
       }

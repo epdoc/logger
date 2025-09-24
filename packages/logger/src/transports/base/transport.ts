@@ -31,7 +31,7 @@ export abstract class AbstractTransport {
   protected _level: Level.Value;
   protected _threshold: Level.Value;
   protected _flushThreshold: Level.Value;
-  protected _show: EmitterShowOpts = { reqIdSep: '.', pkgSep: '.' };
+  protected _show: EmitterShowOpts = { pkgSep: '.' };
 
   /**
    * Initializes a new transport instance.

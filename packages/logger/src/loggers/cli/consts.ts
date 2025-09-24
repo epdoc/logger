@@ -16,16 +16,16 @@ import { CliLogger } from './logger.ts';
  * and `lowest` (the lowest priority level).
  */
 const cliLogLevelDefs: Level.LogLevelsDef = {
-  error: { val: 0, fmtFn: colors.red, flush: true, icon: '❌' },
-  warn: { val: 1, fmtFn: colors.yellow, warn: true, icon: '⚠️' },
-  help: { val: 2, fmtFn: colors.cyan, icon: '💡' },
-  data: { val: 3, fmtFn: colors.gray, icon: '📊' },
-  info: { val: 4, fmtFn: colors.green, default: true, icon: 'ℹ️' },
-  debug: { val: 5, fmtFn: colors.blue, icon: '🔍' },
-  prompt: { val: 6, fmtFn: colors.gray, icon: '➡️' },
-  verbose: { val: 7, fmtFn: colors.cyan, icon: '📝' },
-  input: { val: 8, fmtFn: colors.gray, icon: '⌨️' },
-  silly: { val: 9, fmtFn: colors.magenta, lowest: true, icon: '🤪' },
+  error: { val: 0, fmtFn: colors.red, flush: true, icon: '✗' },
+  warn: { val: 1, fmtFn: colors.yellow, warn: true, icon: '⚠' },
+  help: { val: 2, fmtFn: colors.cyan, icon: '?' },
+  data: { val: 3, fmtFn: colors.gray, icon: '≡' },
+  info: { val: 4, fmtFn: colors.green, default: true, icon: 'ℹ' },
+  debug: { val: 5, fmtFn: colors.blue, icon: '⚙' },
+  prompt: { val: 6, fmtFn: colors.gray, icon: '»' },
+  verbose: { val: 7, fmtFn: colors.cyan, icon: '…' },
+  input: { val: 8, fmtFn: colors.gray, icon: '⌨' },
+  silly: { val: 9, fmtFn: colors.magenta, lowest: true, icon: '☺' },
 } as const;
 
 export const cliFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, CliLogger<MsgBuilder.Abstract>> = {

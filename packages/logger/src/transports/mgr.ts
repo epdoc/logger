@@ -111,19 +111,7 @@ export class TransportMgr {
   add(transport: AbstractTransport) {
     this._bRunning = false;
     this.transports.unshift(transport);
-    const name = transport.toString();
-    const topts = transport.getOptions();
     this._bRunning = true;
-    const lowestLogLevel = this._logMgr.logLevels.lowestLevelName;
-    if (this.meetsAnyThresholdValue(this._logMgr.logLevels.asValue(lowestLogLevel))) {
-      const msg: Log.Entry = {
-        level: lowestLogLevel,
-        msg: `Added transport '${name}'`,
-        pkgs: ['logger', 'transport', 'add'],
-        data: { transport: name, options: topts },
-      };
-      this._logMgr.emit(msg);
-    }
   }
 
   /**
@@ -146,7 +134,7 @@ export class TransportMgr {
     });
     const msg: Log.Entry = {
       level: 'info',
-      pkgs: ['logger', 'transport', 'remove'],
+      pkg: 'logger.transport.remove',
       msg: `Removed transport '${name}'`,
     };
 

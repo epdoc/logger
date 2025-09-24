@@ -33,16 +33,11 @@ export interface IEmitter extends IMark {
    * Appends a request ID to the logger's context.
    * @param {string} val - The unique request identifier.
    */
-  // set reqId(val: string);
+  set reqId(val: string | undefined);
   /**
    * Retrieves the fully-qualified, dot-separated request ID.
    */
-  // get reqId(): string;
-  /**
-   * Retrieves the array of request IDs.
-   * @internal
-   */
-  get reqIds(): string[];
+  get reqId(): string | undefined;
   /**
    * Sets the session ID for the logger's context.
    * @param {string} val - The session identifier, often tied to a user.

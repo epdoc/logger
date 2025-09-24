@@ -12,7 +12,7 @@ describe('Logger Recursion', () => {
     logMgr.threshold = 'spam'; // Allow all levels
     
     rootLogger.sid = 'sid1';
-    rootLogger.reqIds.push('req1');
+    rootLogger.reqId = 'req1';
     rootLogger.pkgs.push('pkg1');
 
     // Create message builder and test basic functionality
