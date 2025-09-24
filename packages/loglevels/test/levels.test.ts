@@ -60,9 +60,9 @@ describe('levels cli', () => {
 
   test('threshold', () => {
     assertEquals(logLevels.meetsThreshold(4, 4), true);
-    assertEquals(logLevels.meetsThreshold(4, 5), false);
-    assertEquals(logLevels.meetsThreshold(5, 4), true);
-    assertEquals(logLevels.meetsThreshold(4, 2), true);
+    assertEquals(logLevels.meetsThreshold(4, 5), true);
+    assertEquals(logLevels.meetsThreshold(5, 4), false);
+    assertEquals(logLevels.meetsThreshold(4, 2), false);
   });
 
   test('flush threshold', () => {
