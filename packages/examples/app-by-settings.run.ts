@@ -1,3 +1,4 @@
+#!/usr/bin/env -S deno run -A
 import type * as Log from '../packages/logger/src/mod.ts';
 import { log, logMgr } from './settings-mgr.ts';
 

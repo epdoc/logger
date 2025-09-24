@@ -1,3 +1,4 @@
+#!/usr/bin/env -S deno run -A
 import * as Log from '$logger';
 import type * as MsgBuilder from '$msgbuilder';
 

@@ -1,3 +1,4 @@
+#!/usr/bin/env -S deno run -A
 import * as Log from '$logger';
 import type * as MsgBuilder from '$msgbuilder';
 
@@ -14,7 +15,7 @@ const log = logMgr.getLogger<L>();
 
 // Set the logging threshold.
 logMgr.threshold = 'verbose';
-11;
+
 // Show the log level in the output
 logMgr.show = { level: true };
 

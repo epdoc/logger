@@ -1,3 +1,4 @@
+#!/usr/bin/env -S deno run -A
 /**
  * This example demonstrates the effects of configuring timestamps and how
  * log level thresholds on the LogMgr and individual loggers interact.
