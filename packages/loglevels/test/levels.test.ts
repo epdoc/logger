@@ -1,8 +1,8 @@
 import { assertEquals } from '@std/assert';
 import * as colors from '@std/fmt/colors';
 import { describe, test } from '@std/testing/bdd';
-import * as Level from '../src/mod.ts';
 import { reset, set } from '../../../test-utils/color-map.ts';
+import * as Level from '../src/mod.ts';
 
 const DEFS: Level.LogLevelsDef = {
   error: { val: 0, fmtFn: colors.red, flush: true },
@@ -18,7 +18,7 @@ const DEFS: Level.LogLevelsDef = {
 } as const;
 
 describe('levels cli', () => {
-  const logLevels = new Level.LogLevels(DEFS);
+  const logLevels = new Level.LogLevels(DEFS, 'test');
 
   test('names and values', () => {
     assertEquals(logLevels.names, [
@@ -33,6 +33,7 @@ describe('levels cli', () => {
       'INPUT',
       'SILLY',
     ]);
+    assertEquals(logLevels.$$id, 'test');
     assertEquals(logLevels.asValue('info'), 4);
     assertEquals(logLevels.asName(4), 'INFO');
     assertEquals(logLevels.asName(5), 'DEBUG');
@@ -59,9 +60,9 @@ describe('levels cli', () => {
 
   test('threshold', () => {
     assertEquals(logLevels.meetsThreshold(4, 4), true);
-    assertEquals(logLevels.meetsThreshold(4, 5), true);
-    assertEquals(logLevels.meetsThreshold(5, 4), false);
-    assertEquals(logLevels.meetsThreshold(4, 2), false);
+    assertEquals(logLevels.meetsThreshold(4, 5), false);
+    assertEquals(logLevels.meetsThreshold(5, 4), true);
+    assertEquals(logLevels.meetsThreshold(4, 2), true);
   });
 
   test('flush threshold', () => {

@@ -19,6 +19,7 @@ import type { LogLevelsDef, Name, Value } from './types.ts';
  * logging, a more verbose set for CLI tools) to be used interchangeably.
  */
 export interface IBasic {
+  readonly $$id: string;
   /**
    * An array of all defined log level names, typically in uppercase.
    */

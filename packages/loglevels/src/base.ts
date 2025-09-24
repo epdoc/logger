@@ -24,6 +24,7 @@ import type * as Level from './types.ts';
  * @implements {Level.IBasic}
  */
 export class LogLevels implements Level.IBasic {
+  $$id: string;
   protected _levelDef: Level.LogLevelsDef;
   protected _increasing = false;
   protected _levelValues: Level.Value[];
@@ -33,8 +34,9 @@ export class LogLevels implements Level.IBasic {
    *
    * @param {Level.LogLevelsDef} levelDef - An object defining the custom log levels.
    */
-  constructor(levelDef: Level.LogLevelsDef) {
+  constructor(levelDef: Level.LogLevelsDef, id: string = 'LogLevels') {
     const _levelDef: Level.LogLevelsDef = levelDef as Level.LogLevelsDef;
+    this.$$id = id;
 
     // Convert all keys to uppercase for case-insensitive lookups.
     this._levelDef = Object.fromEntries(
@@ -171,7 +173,8 @@ export class LogLevels implements Level.IBasic {
     const thresholdVal = this.asValue(threshold);
     let w = 0;
     for (const name of this.names) {
-      if (this.meetsThreshold(name, thresholdVal)) {
+      const levelVal = this.asValue(name);
+      if (this.meetsThresholdValue(thresholdVal, levelVal)) {
         const len = name.length;
         if (len > w) {
           w = len;
