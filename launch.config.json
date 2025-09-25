@@ -1,0 +1,24 @@
+{
+  "port": 9229,
+  "console": "internalConsole",
+  "tests": {
+    "runtimeArgs": ["--check"]
+  },
+
+  "groups": [
+    {
+      "program": "packages/examples/cliapp-context.ts",
+      "runtimeArgs": ["run", "--inspect-brk", "--allow-all"],
+      "scriptArgs": [],
+      "scripts": [
+        "-SA --log_show level:-11,sid,reqId,pkg --sid Session2343 --reqId ReqId01 --pkg 'pkg01' --purge --choose bb"
+      ]
+    },
+    {
+      "program": "packages/examples/cliapp-basic.ts",
+      "runtimeArgs": ["run", "--inspect-brk", "--allow-all"],
+      "scriptArgs": [],
+      "scripts": [""]
+    }
+  ]
+}

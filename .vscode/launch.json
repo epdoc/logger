@@ -4,6 +4,44 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "Debug cliapp/test/mod.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/cliapp/test/mod.test.ts",
+        "--check"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug cliapp/test/utils.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/cliapp/test/utils.test.ts",
+        "--check"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "Debug examples/app-by-settings.run.ts",
       "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno",
@@ -11,10 +49,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/app-by-settings.run.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/app-by-settings.run.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -29,10 +68,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/cli.run.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/cli.run.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -47,10 +87,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/complex-type-issue.run.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/complex-type-issue.run.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -65,10 +106,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/extend-mgr.run.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/extend-mgr.run.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -83,10 +125,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/logdy.run.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/logdy.run.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -101,10 +144,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/mgr-by-settings.run.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/mgr-by-settings.run.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -119,10 +163,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/settings-mgr.run.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/settings-mgr.run.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -137,10 +182,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/simple.run.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/simple.run.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -155,10 +201,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/threshold.run.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/threshold.run.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -173,10 +220,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/wrapper.run.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/wrapper.run.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -191,10 +239,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logdy/test/transport.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logdy/test/transport.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -209,10 +258,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/all.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/all.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -227,10 +277,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/cli.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/cli.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -245,10 +296,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/conditional.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/conditional.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -263,10 +315,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/demo.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/demo.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -281,10 +334,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/file.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/file.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -299,10 +353,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/levels1.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/levels1.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -317,10 +372,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/message.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/message.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -335,10 +391,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/msgconsole.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/msgconsole.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -353,10 +410,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/nesting.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/nesting.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -371,10 +429,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/recurse.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/recurse.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -389,10 +448,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/std.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/std.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -407,10 +467,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/logjava/test/basic.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logjava/test/basic.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -425,10 +486,11 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/loglevels/test/levels.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/loglevels/test/levels.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
@@ -443,13 +505,67 @@
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/test/builder.test.ts"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/test/builder.test.ts",
+        "--check"
       ],
       "attachSimplePort": 9229,
-      "console": "integratedTerminal",
+      "console": "internalConsole",
       "env": {
         "LAUNCHGEN": "true"
       }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug packages/examples/cliapp-context.ts -SA --log_show level:-11,sid,reqId,pkg --sid Session2343 --reqId ReqId01 --pkg 'pkg01' --purge --choose bb",
+      "program": "${workspaceFolder}/packages/examples/cliapp-context.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "run",
+        "--inspect-brk",
+        "--allow-all"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "args": [
+        "-SA",
+        "--log_show",
+        "level:-11,sid,reqId,pkg",
+        "--sid",
+        "Session2343",
+        "--reqId",
+        "ReqId01",
+        "--pkg",
+        "'pkg01'",
+        "--purge",
+        "--choose",
+        "bb"
+      ]
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug packages/examples/cliapp-basic.ts ",
+      "program": "${workspaceFolder}/packages/examples/cliapp-basic.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "run",
+        "--inspect-brk",
+        "--allow-all"
+      ],
+      "attachSimplePort": 9229,
+      "console": "internalConsole",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "args": [
+        ""
+      ]
     }
   ]
 }
