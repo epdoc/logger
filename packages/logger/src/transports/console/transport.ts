@@ -80,7 +80,6 @@ export class ConsoleTransport extends Base.Transport {
     if (!this.meetsThresholdValue(levelValue)) {
       return;
     }
-
     const show = this._show;
     const logLevels = this._logMgr.logLevels;
     const color = this._color;
@@ -187,19 +186,22 @@ export class ConsoleTransport extends Base.Transport {
    * @returns {string} The styled log level string.
    */
   styledLevel(level: Level.Name, show: boolean | Integer | 'icon' | undefined): string {
+    let s = '';
     if (show === 'icon') {
       const def = this._logMgr.logLevels.levelDefs[level];
       if (def && def.icon) {
-        return def.icon;
+        s = def.icon;
       }
       show = true;
     }
-    let s = StringEx(level).rightPad(this._levelWidth);
-    if (_.isInteger(show)) {
-      if (show > 0) {
-        s = StringEx(level).rightPad(show, ' ', true);
-      } else if (show < 0) {
-        s = StringEx(level).leftPad(0 - show, ' ', true);
+    if (show && !s.length) {
+      s = StringEx(level).rightPad(this._levelWidth);
+      if (_.isInteger(show)) {
+        if (show > 0) {
+          s = StringEx(level).rightPad(show, ' ', true);
+        } else if (show < 0) {
+          s = StringEx(level).leftPad(0 - show, ' ', true);
+        }
       }
     }
     s = '[' + s + ']';

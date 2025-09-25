@@ -16,8 +16,8 @@ import { StdLogger } from './logger.ts';
  * priority level).
  */
 const stdLogLevelDefs: Level.LogLevelsDef = {
-  fatal: { val: 0, fmtFn: colors.red, flush: true, icon: '☠' },
-  critical: { val: 0, fmtFn: colors.red, flush: true, icon: '⚡' },
+  fatal: { val: 0, fmtFn: colors.brightRed, flush: true, icon: '☠' },
+  critical: { val: 0, fmtFn: colors.brightRed, flush: true, icon: '↯' },
   error: { val: 1, fmtFn: colors.red, flush: true, icon: '✗' },
   warn: { val: 2, fmtFn: colors.yellow, warn: true, icon: '⚠' },
   info: { val: 3, fmtFn: colors.green, default: true, icon: 'ℹ' },
@@ -27,7 +27,7 @@ const stdLogLevelDefs: Level.LogLevelsDef = {
     fmtFn: (str: string) => {
       return colors.dim(colors.blue(str));
     },
-    icon: '🔍',
+    icon: 'Δ',
   },
   trace: { val: 6, fmtFn: colors.gray, icon: '↳' },
   spam: {

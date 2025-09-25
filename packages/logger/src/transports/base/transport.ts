@@ -2,7 +2,7 @@ import type * as Level from '$level';
 import { dateEx } from '@epdoc/datetime';
 import { duration } from '@epdoc/duration';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import { isNonEmptyString, isValidDate } from '@epdoc/type';
+import { _ } from '@epdoc/type';
 import { isTimestampFormat } from '../../consts.ts';
 import type { LogMgr } from '../../logmgr.ts';
 import type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from '../../types.ts';
@@ -77,7 +77,7 @@ export abstract class AbstractTransport {
   show(opts: EmitterShowOpts): this {
     Object.keys(opts).forEach((key) => {
       const k: EmitterShowKey = key as EmitterShowKey;
-      if (opts[k] === true || opts[k] === false || isNonEmptyString(opts[k])) {
+      if (opts[k] === true || opts[k] === false || _.isNonEmptyString(opts[k]) || _.isInteger(opts[k])) {
         // @ts-ignore Allow dynamic assignment
         this._show[k] = opts[k];
       }
@@ -135,7 +135,7 @@ export abstract class AbstractTransport {
    * @returns {string | undefined} The formatted date string or `undefined`.
    */
   dateToString(d: Date | undefined, format: TimestampFormatType | undefined): string | undefined {
-    if (isValidDate(d) && isTimestampFormat(format)) {
+    if (_.isValidDate(d) && isTimestampFormat(format)) {
       if (format === 'utc') {
         return d.toISOString();
       } else if (format === 'local') {

@@ -271,6 +271,10 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
     return this._threshold || this._logMgr.threshold;
   }
 
+  public get thresholdName(): Level.Name {
+    return this._logMgr.logLevels.asName(this.threshold);
+  }
+
   /**
    * Checks if a given log level meets the effective threshold.
    * @internal
