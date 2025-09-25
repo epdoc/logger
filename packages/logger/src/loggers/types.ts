@@ -1,6 +1,5 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import type { IBasic as LevelIBasic } from '$level';
-import type * as Level from '$level';
+import type * as Level from '@epdoc/loglevels';
 import type { Entry } from '../types.ts';
 
 export * from './factory.ts';
@@ -99,7 +98,7 @@ export interface ILevels {
   /**
    * Retrieves the active log level configuration.
    */
-  get logLevels(): LevelIBasic;
+  get logLevels(): Level.IBasic;
   /**
    * Sets the log level threshold.
    * @param {Level.Name | Level.Value} level - The threshold to set.

@@ -7,7 +7,6 @@ import type { LogMgr } from '../../logmgr.ts';
 import type { IEmitter, IGetChildParams, IInherit, ILevels } from '../types.ts';
 
 let markId = 0;
-let loggerId = 0;
 
 /**
  * Provides the core foundation for all logger instances, handling essential
