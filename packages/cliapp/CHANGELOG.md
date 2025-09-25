@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.2] - 2025-09-25
+
+- Ported to new `@epdoc/logger@1003.0.0-alpha.4`
+- CliApp has not changed, however @epdoc/logger has undergone a major update.
+
 ## [0.10.3] - 2025-09-25
 
 - Integrate into @epdoc/logger repo with unit tests passing

@@ -55,7 +55,7 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
         '--log_show [show]',
         'Enable log message output of log level, date and emitting package. ' +
           'Can comma separate ' +
-          colors.blue('level|package|reqId|utc|locale|elapsed|all') +
+          colors.blue('level|level:icon|level:int|package|reqId|utc|locale|elapsed|all') +
           '. E.g. ' +
           colors.green('--log_show level,elapsed,package') +
           ', or ' +

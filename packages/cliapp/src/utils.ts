@@ -10,6 +10,10 @@ import * as Log from '@epdoc/logger';
 import * as _ from '@epdoc/type';
 import type { ICtx, ISilentError, Logger, MsgBuilder, Opts } from './types.ts';
 
+const REG = {
+  levelType: new RegExp(/^level(:(icon|\d{1,2}|\-\d{1,2}))?$/),
+};
+
 /**
  * Configures logging settings based on parsed command-line options. This function adjusts the log
  * level threshold and output format (e.g., showing timestamps or package names) based on flags like
@@ -55,24 +59,43 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
     ctx.logMgr.threshold = 'spam';
   }
 
-  let show: Log.EmitterShowOpts = {};
+  let show: Log.EmitterShowOpts = {
+    level: true,
+    timestamp: Log.TimestampFormat.ELAPSED,
+    pkg: true,
+    reqId: true,
+  };
   if (opts.showall) {
     show.timestamp = Log.TimestampFormat.ELAPSED;
     show.pkg = true;
     show.level = true;
     show.reqId = true;
     ctx.logMgr.show = show;
-  } else if (opts.log_show) {
+  }
+  if (opts.log_show) {
     if (_.isNonEmptyArray(opts.log_show)) {
       for (const prefix of opts.log_show) {
-        if (prefix === 'level') {
+        const m = prefix.match(REG.levelType);
+        if (m && m.length) {
           show.level = true;
+          if (m.length > 1) {
+            if (m[2] === 'icon') {
+              show.level = 'icon';
+            } else {
+              const val = _.asInt(m[2]);
+              if (val) {
+                show.level = val;
+              }
+            }
+          }
         } else if (Log.isTimestampFormat(prefix)) {
           show.timestamp = prefix;
         } else if (prefix === 'package' || prefix === 'pkg') {
           show.pkg = true;
         } else if (prefix === 'reqId') {
           show.reqId = true;
+        } else if (prefix === 'sid') {
+          show.sid = true;
         } else if (prefix === 'all') {
           show.timestamp = Log.TimestampFormat.ELAPSED;
           show.pkg = true;
@@ -80,16 +103,9 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
           show.reqId = true;
         }
       }
-    } else {
-      show = {
-        level: true,
-        timestamp: 'elapsed',
-        pkg: true,
-        reqId: true,
-      };
     }
-    ctx.logMgr.show = show;
   }
+  ctx.logMgr.show = show;
 }
 
 /**
