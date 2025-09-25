@@ -1,8 +1,3 @@
-/**
- * @module
- * Provides internal helper functions for the loglevels module.
- */
-
 import type { LogLevelDef } from './types.ts';
 
 /**

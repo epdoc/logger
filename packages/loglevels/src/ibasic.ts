@@ -1,8 +1,3 @@
-/**
- * @module
- * Defines the core `IBasic` interface for a log level management system.
- */
-
 import type { Integer } from '@epdoc/type';
 import type { LogLevelsDef, Name, Value } from './types.ts';
 

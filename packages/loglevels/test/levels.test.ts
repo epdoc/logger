@@ -1,8 +1,8 @@
 import { assertEquals } from '@std/assert';
 import * as colors from '@std/fmt/colors';
 import { describe, test } from '@std/testing/bdd';
-import { reset, set } from '../../../test-utils/color-map.ts';
 import * as Level from '../src/mod.ts';
+import { reset, set } from './color-map.ts';
 
 const DEFS: Level.LogLevelsDef = {
   error: { val: 0, fmtFn: colors.red, flush: true },

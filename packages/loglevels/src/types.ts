@@ -17,7 +17,6 @@
  * ```
  */
 
-import type { StyleFormatterFn } from '$msgbuilder';
 import type { Integer } from '@epdoc/type';
 import type { IBasic } from './ibasic.ts';
 
@@ -46,7 +45,7 @@ export type LogLevelDef = {
    * @param {string} msg - The message to format.
    * @returns {string} The formatted message.
    */
-  fmtFn?: StyleFormatterFn;
+  fmtFn?: (str: string) => string;
   /**
    * If `true`, this level is considered the default logging threshold if no
    * other level is specified.

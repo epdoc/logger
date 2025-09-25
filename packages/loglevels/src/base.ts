@@ -1,9 +1,3 @@
-/**
- * @module
- * Provides the `LogLevels` class, a foundational implementation for managing
- * a collection of custom log levels.
- */
-
 import type { Integer } from '@epdoc/type';
 import { isLogLevelDef } from './helpers.ts';
 import type * as Level from './types.ts';
