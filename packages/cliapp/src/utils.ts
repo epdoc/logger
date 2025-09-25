@@ -59,17 +59,19 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
     ctx.logMgr.threshold = 'spam';
   }
 
-  let show: Log.EmitterShowOpts = {
+  const show: Log.EmitterShowOpts = {
     level: true,
     timestamp: Log.TimestampFormat.ELAPSED,
     pkg: true,
     reqId: true,
+    elapsed: true,
   };
   if (opts.showall) {
     show.timestamp = Log.TimestampFormat.ELAPSED;
     show.pkg = true;
     show.level = true;
     show.reqId = true;
+    show.elapsed = true;
     ctx.logMgr.show = show;
   }
   if (opts.log_show) {
@@ -96,6 +98,8 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
           show.reqId = true;
         } else if (prefix === 'sid') {
           show.sid = true;
+        } else if (prefix === 'elapsed') {
+          show.elapsed = true;
         } else if (prefix === 'all') {
           show.timestamp = Log.TimestampFormat.ELAPSED;
           show.pkg = true;
