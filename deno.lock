@@ -4,8 +4,8 @@
     "jsr:@epdoc/datetime@^1.0.9-beta.1": "1.0.9-beta.1",
     "jsr:@epdoc/duration@0.2": "0.2.1",
     "jsr:@epdoc/duration@~0.2.1": "0.2.1",
+    "jsr:@epdoc/logger@^1003.0.0-alpha.4": "1003.0.0-alpha.4",
     "jsr:@epdoc/loglevels@^0.0.1-alpha.8": "0.0.1-alpha.8",
-    "jsr:@epdoc/msgbuilder@^0.0.1-alpha.5": "0.0.1-alpha.5",
     "jsr:@epdoc/string@~0.1.1": "0.1.1",
     "jsr:@epdoc/type@^1.1.0": "1.1.13",
     "jsr:@epdoc/type@^1.1.13": "1.1.13",
@@ -33,6 +33,7 @@
     "jsr:@std/testing@^1.0.15": "1.0.15",
     "npm:@types/node@*": "22.15.15",
     "npm:checksum@1": "1.0.0",
+    "npm:commander@^14.0.1": "14.0.1",
     "npm:pdf-lib@*": "1.17.1",
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
@@ -49,17 +50,19 @@
         "jsr:@epdoc/type@^1.1.13"
       ]
     },
-    "@epdoc/loglevels@0.0.1-alpha.8": {
-      "integrity": "6e2b5c639ca73b171fc17b821f088ced6d36082c9988fdbd14d7cbb6f9549544"
-    },
-    "@epdoc/msgbuilder@0.0.1-alpha.5": {
-      "integrity": "12ad61337d93b6edc6acad89808acab52090639ebed4b228d10effd955bbd0ba",
+    "@epdoc/logger@1003.0.0-alpha.4": {
+      "integrity": "dac6ff89ce506b67531b8bcc7cd0d8b56524e16eeaa21249c9c151aabcd1ed82",
       "dependencies": [
+        "jsr:@epdoc/datetime",
         "jsr:@epdoc/duration@~0.2.1",
         "jsr:@epdoc/string",
         "jsr:@epdoc/type@^1.1.13",
+        "jsr:@std/assert@^1.0.14",
         "jsr:@std/fmt"
       ]
+    },
+    "@epdoc/loglevels@0.0.1-alpha.8": {
+      "integrity": "6e2b5c639ca73b171fc17b821f088ced6d36082c9988fdbd14d7cbb6f9549544"
     },
     "@epdoc/string@0.1.1": {
       "integrity": "66bbabd6fdbe0bca8342f4dbdcd4927e744cf7a393d0ceb853c1566f7b19b4b2",
@@ -192,6 +195,9 @@
       ],
       "bin": true
     },
+    "commander@14.0.1": {
+      "integrity": "sha512-2JkV3gUZUVrbNA+1sjBOYLsMZ5cEEl8GTFP2a4AVz5hvasAMCQ1D2l2le/cX+pV4N6ZU17zjUahLpIXRrnWL8A=="
+    },
     "optimist@0.3.7": {
       "integrity": "sha512-TCx0dXQzVtSCg2OgY/bO9hjM9cV4XYx09TVK+s3+FhkjT6LovsLe+pPMzpWf+6yXK/hUizs2gUoTw3jHM0VaTQ==",
       "dependencies": [
@@ -257,6 +263,17 @@
   },
   "workspace": {
     "members": {
+      "packages/cliapp": {
+        "dependencies": [
+          "jsr:@epdoc/logger@^1003.0.0-alpha.4",
+          "jsr:@epdoc/msgbuilder@^0.0.1-alpha.5",
+          "jsr:@epdoc/type@^1.1.13",
+          "jsr:@std/assert@^1.0.14",
+          "jsr:@std/fmt@^1.0.8",
+          "jsr:@std/testing@^1.0.15",
+          "npm:commander@^14.0.1"
+        ]
+      },
       "packages/examples": {
         "dependencies": [
           "jsr:@epdoc/type@^1.1.13"

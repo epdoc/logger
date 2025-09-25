@@ -16,6 +16,29 @@ This package contains examples demonstrating various features of the @epdoc/logg
 - [settings-mgr.ts](./settings-mgr.ts) - Settings-based configuration
 - [wrapper.ts](./wrapper.ts) - Wrapper pattern to hide generic complexity
 
+### CliApp Examples
+
+- [Basic CliApp example](./cliapp-basic.ts)
+- [CliApp Example with arguments](./cliapp-context.ts)
+
+Try this command for fun:
+
+```bash
+[~/dev/@epdoc/logger/packages/examples]> ./cliapp-context.ts -SA --log_show level:-11,sid,reqId,pkg --sid Session2343 --reqId ReqId01 --pkg 'pkg01' --purge --choose bb
+0.032s [       INFO] pkg01 Session2343 ReqId01 Running Purge: true Choose: bb Log threshold: SPAM ReqId: ReqId01 SID: Session2343 pkg: pkg01
+0.061s [      FATAL] pkg01 Session2343 ReqId01 Fatal message
+0.062s [   CRITICAL] pkg01 Session2343 ReqId01 Critical message
+0.063s [      ERROR] pkg01 Session2343 ReqId01 Error message
+0.064s [       WARN] pkg01 Session2343 ReqId01 Warn message
+0.068s [       INFO] pkg01 Session2343 ReqId01 Info message
+0.073s [    VERBOSE] pkg01 Session2343 ReqId01 Verbose message
+0.074s [      DEBUG] pkg01 Session2343 ReqId01 Debug message
+0.074s [      TRACE] pkg01 Session2343 ReqId01 Trace message
+0.076s [       SPAM] pkg01 Session2343 ReqId01 Spam message
+0.086s [      SILLY] pkg01 Session2343 ReqId01 Silly message
+0.099s [       INFO] pkg01 Session2343 ReqId01 Application done```
+```
+
 ### Transport Examples
 - [logdy.ts](./logdy.ts) - Logdy transport for real-time log streaming
 

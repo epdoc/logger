@@ -29,6 +29,7 @@
     "lineWidth": 120
   },
   "imports": {
+    "$cliapp": "../cliapp/src/mod.ts",
     "$logger": "../logger/src/mod.ts",
     "$level": "../loglevels/src/mod.ts",
     "$msgbuilder": "../msgbuilder/src/mod.ts",
