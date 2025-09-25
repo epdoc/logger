@@ -1,12 +1,14 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/datetime@^1.0.7": "1.0.7",
-    "jsr:@epdoc/duration@0.2": "0.2.0",
+    "jsr:@epdoc/datetime@^1.0.9-beta.1": "1.0.9-beta.1",
+    "jsr:@epdoc/duration@0.2": "0.2.1",
+    "jsr:@epdoc/duration@~0.2.1": "0.2.1",
+    "jsr:@epdoc/loglevels@^0.0.1-alpha.8": "0.0.1-alpha.8",
+    "jsr:@epdoc/msgbuilder@^0.0.1-alpha.4": "0.0.1-alpha.4",
     "jsr:@epdoc/string@~0.1.1": "0.1.1",
     "jsr:@epdoc/type@^1.1.0": "1.1.13",
     "jsr:@epdoc/type@^1.1.13": "1.1.13",
-    "jsr:@epdoc/type@^1.1.9": "1.1.13",
     "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@^1.0.13": "1.0.14",
     "jsr:@std/assert@^1.0.14": "1.0.14",
@@ -35,16 +37,27 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
-    "@epdoc/datetime@1.0.7": {
-      "integrity": "29b3d9c518809048dc4fdc227653b90297cc439378cc9bb161b72ff79d7f5c0b",
+    "@epdoc/datetime@1.0.9-beta.1": {
+      "integrity": "0493617ac092064768e92c40f4459fd7ca3a79203c3d29f5233c30c08c3a4a7c",
       "dependencies": [
-        "jsr:@epdoc/type@^1.1.9"
+        "jsr:@epdoc/type@^1.1.13"
       ]
     },
-    "@epdoc/duration@0.2.0": {
-      "integrity": "991cbc0fa757a154678ffe75fe0c397ccf63f5ed759340ff9ad719ac374275d4",
+    "@epdoc/duration@0.2.1": {
+      "integrity": "1578c9906a0b0deeda2b2444ae990e42ec64ff0ad9af9e8c9712cac058ea41f9",
       "dependencies": [
-        "jsr:@epdoc/type@^1.1.9"
+        "jsr:@epdoc/type@^1.1.13"
+      ]
+    },
+    "@epdoc/loglevels@0.0.1-alpha.8": {
+      "integrity": "6e2b5c639ca73b171fc17b821f088ced6d36082c9988fdbd14d7cbb6f9549544"
+    },
+    "@epdoc/msgbuilder@0.0.1-alpha.4": {
+      "integrity": "fb0a6df0b4965f09101c9f92708eadd3def9099901ee09cce2875fb8094bf6d7",
+      "dependencies": [
+        "jsr:@epdoc/string",
+        "jsr:@epdoc/type@^1.1.13",
+        "jsr:@std/fmt"
       ]
     },
     "@epdoc/string@0.1.1": {
@@ -256,8 +269,8 @@
       },
       "packages/logger": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^1.0.7",
-          "jsr:@epdoc/duration@0.2",
+          "jsr:@epdoc/datetime@^1.0.9-beta.1",
+          "jsr:@epdoc/duration@~0.2.1",
           "jsr:@epdoc/loglevels@^0.0.1-alpha.8",
           "jsr:@epdoc/msgbuilder@^0.0.1-alpha.4",
           "jsr:@epdoc/string@~0.1.1",
