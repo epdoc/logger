@@ -146,7 +146,7 @@ export class ConsoleTransport extends Base.Transport {
       if (entry.msg) {
         parts.push(entry.msg);
       }
-      if (show.elapsed && _.isPosInteger(entry.elapsed)) {
+      if (show.elapsed && _.isNumber(entry.elapsed)) {
         // Format duration with appropriate precision
         let digits = 3;
         if (entry.elapsed > 100) {
@@ -156,7 +156,7 @@ export class ConsoleTransport extends Base.Transport {
         } else if (entry.elapsed > 1) {
           digits = 2;
         }
-        parts.push(this._styledString(` (${entry.elapsed.toFixed(digits)} ms)`, false, '_elapsed'));
+        parts.push(this._styledString(`(${entry.elapsed.toFixed(digits)} ms)`, false, '_elapsed'));
       }
 
       if (!_.isNullOrUndefined(msg.data) && show.data) {

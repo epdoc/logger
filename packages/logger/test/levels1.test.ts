@@ -113,8 +113,8 @@ describe('levels', () => {
 
     test('std applyColors', () => {
       const logLevels = Log.Std.factoryMethods.createLevels();
-      assertEquals(logLevels.applyColors('test', 'FATAL'), set.redText + 'test' + reset.fg);
-      assertEquals(logLevels.applyColors('test', 'CRITICAL'), set.redText + 'test' + reset.fg);
+      assertEquals(logLevels.applyColors('test', 'FATAL'), set.brightRedText + 'test' + reset.fg);
+      assertEquals(logLevels.applyColors('test', 'CRITICAL'), set.brightRedText + 'test' + reset.fg);
       assertEquals(logLevels.applyColors('test', 'ERROR'), set.redText + 'test' + reset.fg);
       assertEquals(logLevels.applyColors('test', 'WARN'), set.yellowText + 'test' + reset.fg);
       assertEquals(logLevels.applyColors('test', 'INFO'), set.greenText + 'test' + reset.fg);
