@@ -300,6 +300,7 @@
       },
       "packages/msgbuilder": {
         "dependencies": [
+          "jsr:@epdoc/duration@~0.2.1",
           "jsr:@epdoc/string@~0.1.1",
           "jsr:@epdoc/type@^1.1.13",
           "jsr:@std/assert@^1.0.14",
