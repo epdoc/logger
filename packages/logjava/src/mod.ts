@@ -23,6 +23,3 @@
 
 export { javaFactoryMethods as factoryMethods } from './consts.ts';
 export { JavaLogger as Logger } from './logger.ts';
-
-// Re-export types for convenience
-export type { IFactoryMethods, IGetChildParams } from '@epdoc/logger';
