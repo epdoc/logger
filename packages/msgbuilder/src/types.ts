@@ -1,3 +1,4 @@
+import type { HrMilliseconds } from '@epdoc/duration';
 import type { Dict } from '@epdoc/type';
 import type { AbstractMsgBuilder } from './abstract.ts';
 
@@ -54,6 +55,10 @@ export type EmitterData = {
    * An optional data payload for the log message.
    */
   data: Dict | undefined;
+  /**
+   * An optional elapsed time to be displayed by transport as separate column.
+   */
+  elapsed: HrMilliseconds;
 };
 
 /**

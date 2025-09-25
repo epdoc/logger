@@ -20,7 +20,7 @@ export const consoleStyleFormatters: Record<string, StyleFormatterFn> = {
   warn: colors.brightYellow,
   error: (str: string) => colors.bold(colors.brightRed(str)),
   strikethru: colors.inverse,
-  _reqId: colors.brightYellow,
+  /*   _reqId: colors.brightYellow,
   _sid: (str: string) => colors.underline(colors.yellow(str)),
   _package: colors.green,
   _action: colors.blue,
@@ -37,6 +37,7 @@ export const consoleStyleFormatters: Record<string, StyleFormatterFn> = {
   _sillyPrefix: colors.gray,
   _httpPrefix: colors.gray,
   _timePrefix: colors.gray,
+ */
 } as const;
 
 /**

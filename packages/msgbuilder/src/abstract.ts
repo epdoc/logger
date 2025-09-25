@@ -1,3 +1,4 @@
+import { HrMilliseconds } from '@epdoc/duration';
 import { _, type Dict, type Integer } from '@epdoc/type';
 import { ConsoleEmitter } from './emitter.ts';
 import type { EmitterData, FormatOpts, IEmitter, IFormatter, MsgPart, StyleArg, StyleFormatterFn } from './types.ts';
@@ -23,6 +24,7 @@ const DEFAULT_TAB_SIZE = 2;
 export abstract class AbstractMsgBuilder implements IFormatter {
   protected $$id: string = 'AbstractLogger';
   protected _timestamp: Date = new Date();
+  protected _elapsed: HrMilliseconds = 0;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
   protected _emitter: IEmitter;
 
@@ -276,6 +278,7 @@ export abstract class AbstractMsgBuilder implements IFormatter {
         timestamp: this._timestamp,
         data: this._data,
         formatter: this,
+        elapsed: this._elapsed,
       };
       this._emitter.emit(entry);
       this.clear();
@@ -298,33 +301,31 @@ export abstract class AbstractMsgBuilder implements IFormatter {
    */
   public ewt(mark: string | number, keep = false): EmitterData | undefined {
     if (this._emitter && this._emitter.emitEnabled) {
-      let duration: number;
-
       if (typeof mark === 'string' && this._emitter.demark) {
         // Use the emitter's demark method to get the elapsed time
-        duration = this._emitter.demark(mark, keep);
+        this._elapsed = this._emitter.demark(mark, keep);
       } else if (typeof mark === 'number') {
         // If mark is a number, treat it as a timestamp
-        duration = performance.now() - mark;
+        this._elapsed = performance.now() - mark;
       } else {
         // Fallback: treat string as a timestamp
-        duration = performance.now() - parseFloat(mark as string);
+        this._elapsed = performance.now() - parseFloat(mark as string);
       }
 
       // Format duration with appropriate precision
-      let digits = 3;
-      if (duration > 100) {
+      /*       let digits = 3;
+      if (elapsed > 100) {
         digits = 0;
-      } else if (duration > 10) {
+      } else if (elapsed > 10) {
         digits = 1;
-      } else if (duration > 1) {
+      } else if (elapsed > 1) {
         digits = 2;
       }
 
       // Add elapsed time to the message
       const elapsedStyle = this.getElapsedTimeStyle();
-      this.appendMsgPart(` (${duration.toFixed(digits)} ms)`, elapsedStyle);
-
+      this.appendMsgPart(` (${elapsed.toFixed(digits)} ms)`, elapsedStyle);
+ */
       return this.emit();
     }
     return undefined;
