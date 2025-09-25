@@ -1,5 +1,5 @@
 import * as Level from '$level';
-import type * as MsgBuilder from '$msgbuilder';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
 import * as colors from '@std/fmt/colors';
 import { LogMgr } from '../../logmgr.ts';
 import type * as Base from '../base/mod.ts';

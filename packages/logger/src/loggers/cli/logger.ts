@@ -1,4 +1,4 @@
-import type * as MsgBuilder from '$msgbuilder';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { LogMgr } from '../../logmgr.ts';
 import type * as Base from '../base/mod.ts';
 import * as Min from '../min/mod.ts';

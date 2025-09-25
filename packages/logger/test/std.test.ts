@@ -1,4 +1,4 @@
-import type * as MsgBuilder from '$msgbuilder';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
 import * as Log from '../src/mod.ts';
 
 type M = MsgBuilder.Console.Builder;

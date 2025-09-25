@@ -1,4 +1,4 @@
-import type * as MsgBuilder from '$msgbuilder';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { isDate } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';

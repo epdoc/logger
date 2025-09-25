@@ -1,7 +1,7 @@
 import type * as Level from '$level';
 import type * as Log from '$log';
-import type * as MsgBuilder from '$msgbuilder';
 import type { HrMilliseconds } from '@epdoc/duration';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { _ } from '@epdoc/type';
 import type { LogMgr } from '../../logmgr.ts';
 import type { IEmitter, IGetChildParams, IInherit, ILevels } from '../types.ts';

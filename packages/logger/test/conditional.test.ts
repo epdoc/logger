@@ -1,6 +1,6 @@
+import * as MsgBuilder from '@epdoc/msgbuilder';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
-import * as MsgBuilder from '$msgbuilder';
 
 describe('MsgBuilder.Console conditional', () => {
   describe('if', () => {

@@ -1,7 +1,7 @@
 import type * as Level from '$level';
 import type * as Log from '$log';
-import type * as MsgBuilder from '$msgbuilder';
 import type * as Transport from '$transport';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
 
 /**
  * Lightweight emitter that captures logger context and directly emits to the transport manager.

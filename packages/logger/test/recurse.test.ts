@@ -1,6 +1,6 @@
+import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
-import type * as MsgBuilder from '$msgbuilder';
 import * as Log from '../src/mod.ts';
 
 type M = MsgBuilder.Console.Builder;

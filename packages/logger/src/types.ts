@@ -1,5 +1,5 @@
 import type * as Level from '$level';
-import type * as MsgBuilder from '$msgbuilder';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { TimestampFormat } from './consts.ts';
 
 /**

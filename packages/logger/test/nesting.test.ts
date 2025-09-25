@@ -1,4 +1,4 @@
-import type * as MsgBuilder from '$msgbuilder';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import * as Log from '../src/mod.ts';

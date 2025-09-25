@@ -1,6 +1,6 @@
 import type * as Level from '$level';
 import type * as Logger from '$logger';
-import type * as MsgBuilder from '$msgbuilder';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
 
 /**
  * Defines the available output formats for transports.

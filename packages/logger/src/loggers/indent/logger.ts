@@ -1,5 +1,5 @@
 import type * as Log from '$log';
-import * as MsgBuilder from '$msgbuilder';
+import * as MsgBuilder from '@epdoc/msgbuilder';
 import { isArray, isNumber, isString } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
 

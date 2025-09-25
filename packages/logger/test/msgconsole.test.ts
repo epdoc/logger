@@ -1,4 +1,4 @@
-import * as MsgBuilder from '$msgbuilder';
+import * as MsgBuilder from '@epdoc/msgbuilder';
 import { assertEquals } from '@std/assert';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';

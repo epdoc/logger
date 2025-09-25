@@ -1,7 +1,7 @@
-import type { Integer } from '@epdoc/type';
 import type * as Level from '$level';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
+import type { Integer } from '@epdoc/type';
 import type { LogMgr } from '../../logmgr.ts';
-import type * as MsgBuilder from '$msgbuilder';
 import * as Console from '../console/mod.ts';
 import type { FileLogMode, FileOptions } from './types.ts';
 

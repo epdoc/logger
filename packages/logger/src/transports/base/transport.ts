@@ -1,10 +1,10 @@
+import type * as Level from '$level';
 import { dateEx } from '@epdoc/datetime';
 import { duration } from '@epdoc/duration';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { isNonEmptyString, isValidDate } from '@epdoc/type';
 import { isTimestampFormat } from '../../consts.ts';
-import type * as Level from '$level';
 import type { LogMgr } from '../../logmgr.ts';
-import type * as MsgBuilder from '$msgbuilder';
 import type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from '../../types.ts';
 import type { BaseOptions } from './types.ts';
 

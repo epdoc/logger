@@ -1,11 +1,11 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { assert } from '@std/assert';
 // import { cli, ILogLevels, type Level.Name, Level.Value, LogLevelFactoryMethod, std } from './levels/index.ts';
-import type * as Level from '$level';
 import type * as Log from '$log';
 import * as Logger from '$logger';
-import * as MsgBuilder from '$msgbuilder';
 import * as Transport from '$transport';
+import type * as Level from '@epdoc/loglevels';
+import * as MsgBuilder from '@epdoc/msgbuilder';
 import { Emitter } from './emitter.ts';
 
 /**
