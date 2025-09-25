@@ -1,5 +1,5 @@
 import { ConsoleTransport } from './transport.ts';
-import type { ConsoleOptions } from './types.ts';
+import type { Options } from './types.ts';
 
 export { ConsoleTransport as Transport };
-export type { ConsoleOptions as Options };
+export type { Options as Options };

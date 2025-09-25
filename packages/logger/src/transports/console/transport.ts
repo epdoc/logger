@@ -7,7 +7,8 @@ import type { Entry } from '../../types.ts';
 import * as Base from '../base/mod.ts';
 import { OutputFormat } from '../consts.ts';
 import type { OutputFormatType, TransportEntry } from '../types.ts';
-import type { ConsoleOptions } from './types.ts';
+import { consoleStyleFormatters } from './consts.ts';
+import type * as Console from './types.ts';
 
 /**
  * A transport for logging messages to the console.
@@ -30,9 +31,9 @@ export class ConsoleTransport extends Base.Transport {
   /**
    * Creates an instance of the `Console` transport.
    * @param {LogMgr<MsgBuilder.Abstract>} logMgr - The log manager instance.
-   * @param {ConsoleOptions} [opts={}] - Configuration options for the transport.
+   * @param {Options} [opts={}] - Configuration options for the transport.
    */
-  constructor(logMgr: LogMgr<MsgBuilder.Abstract>, opts: ConsoleOptions = {}) {
+  constructor(logMgr: LogMgr<MsgBuilder.Abstract>, opts: Console.Options = {}) {
     super(logMgr, opts);
     if (opts.format) {
       this._format = opts.format;
@@ -88,7 +89,7 @@ export class ConsoleTransport extends Base.Transport {
       {
         timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
       },
-      _.pick(msg, 'level', 'sid', 'pkg', 'reqId'),
+      _.pick(msg, 'level', 'sid', 'pkg', 'reqId', 'elapsed'),
     );
 
     if (msg.msg instanceof MsgBuilder.Abstract) {
@@ -102,9 +103,11 @@ export class ConsoleTransport extends Base.Transport {
     entry.data = msg.data;
 
     if (this._format === 'json') {
+      // Output as JSON object
       this.output(JSON.stringify(entry), levelValue);
     } else if (this._format === 'jsonArray') {
-      const parts: (string | null | object)[] = [];
+      // Output as JSON Array
+      const parts: (string | null | object | number)[] = [];
       if (entry.timestamp) {
         parts.push(color ? logLevels.applyColors(entry.timestamp, msg.level) : entry.timestamp);
       } else {
@@ -115,9 +118,11 @@ export class ConsoleTransport extends Base.Transport {
       parts.push(entry.sid ?? null);
       parts.push(entry.reqId ?? null);
       parts.push(entry.msg ?? null);
+      parts.push(entry.elapsed ?? null);
       parts.push(entry.data ?? null);
       this.output(JSON.stringify(parts), levelValue);
     } else {
+      // Output as string (eg. console, file transports)
       const parts: string[] = [];
       if (_.isString(entry.timestamp) && show.timestamp) {
         parts.push(color ? logLevels.applyColors(entry.timestamp, msg.level) : entry.timestamp);
@@ -141,6 +146,18 @@ export class ConsoleTransport extends Base.Transport {
 
       if (entry.msg) {
         parts.push(entry.msg);
+      }
+      if (show.elapsed && _.isPosInteger(entry.elapsed)) {
+        // Format duration with appropriate precision
+        let digits = 3;
+        if (entry.elapsed > 100) {
+          digits = 0;
+        } else if (entry.elapsed > 10) {
+          digits = 1;
+        } else if (entry.elapsed > 1) {
+          digits = 2;
+        }
+        parts.push(this._styledString(` (${entry.elapsed.toFixed(digits)} ms)`, false, '_elapsed'));
       }
 
       if (!_.isNullOrUndefined(msg.data) && show.data) {
@@ -226,8 +243,8 @@ export class ConsoleTransport extends Base.Transport {
         s += opts.post;
       }
     }
-    if (this._color && MsgBuilder.Console.styleFormatters[colorFn]) {
-      return (MsgBuilder.Console.styleFormatters as Record<string, (str: string) => string>)[colorFn](s);
+    if (this._color && consoleStyleFormatters[colorFn]) {
+      return (consoleStyleFormatters as Console.StyleFormatterMap)[colorFn](s);
     }
     return s;
   }

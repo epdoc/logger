@@ -60,14 +60,14 @@ log.info.h2('Hello world').emit();
 
 # Documentation
 
-- [Getting Started](./chapters/GETTING-STARTED.md)
-- [Configuration](./chapters/CONFIGURATION.md)
-- [Architecture](./chapters/ARCHITECTURE.md)
-- [Middleware](./chapters/MIDDLEWARE.md)
-- [Oak Middleware](./chapters/OAK.md)
-- [Customization Overview](./chapters/CUSTOMIZATION.md)
+- [Getting Started](./docs/GETTING-STARTED.md)
+- [Configuration](./docs/CONFIGURATION.md)
+- [Architecture](./docs/ARCHITECTURE.md)
+- [Message Builder](./docs/MSGBUILDER.md)
+- [Middleware](./docs/MIDDLEWARE.md)
+- [Oak Middleware](./docs/OAK.md)
 
-Check out our [example implementations](./examples).
+Check out our [example implementations](./packages/examples).
 
 # Why Another Logger?
 
@@ -85,8 +85,7 @@ None of the existing loggers that I could find supported the following requireme
 - middleware to support backend server display of reqId, session ID so that log messaages could be filtered by request
   ID.
 - custom transports:
-  - at various points I have had transports for [Loggly](http://loggly.com) and SOS (a defunct desktop log display
-    application)
+  - A [logdy](https://logdy.dev/) transport is in development
   - external transports requires open and close support, or equivalent.
 - JSON, JSON array and console text output all supported
 

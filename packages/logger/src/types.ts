@@ -1,4 +1,5 @@
 import type * as Level from '$level';
+import { HrMilliseconds } from '@epdoc/duration';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { TimestampFormat } from './consts.ts';
 
@@ -20,6 +21,8 @@ export type Entry = {
   level: Level.Name;
   /** The timestamp of when the log entry was created. */
   timestamp?: Date;
+  /** A 'response time' to be output by the transport. */
+  elapsed?: HrMilliseconds;
   /** A session identifier, often tied to a user. */
   sid?: string;
   /** A unique identifier for a specific request or operation. */
@@ -64,6 +67,7 @@ export type EmitterShowOpts = {
   pkg?: boolean | number;
   /** Controls the display of structured data. */
   data?: boolean;
+  elapsed?: boolean;
   /** The separater to show between package names (defaults to '.', which is set in the class LogMgr) */
   pkgSep?: string;
 };

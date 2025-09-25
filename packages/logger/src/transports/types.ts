@@ -1,3 +1,4 @@
+import type { HrMilliseconds } from '@epdoc/duration';
 import type { OutputFormat } from './consts.ts';
 
 /**
@@ -19,6 +20,8 @@ export type TransportEntry = Partial<{
   level: string;
   /** The formatted timestamp string. */
   timestamp: string;
+  /** The response time to be displayed. */
+  elapsed: HrMilliseconds;
   /** The package name. */
   pkg: string;
   /** The session ID. */
