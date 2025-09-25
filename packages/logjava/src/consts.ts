@@ -1,8 +1,8 @@
-import * as colors from '@std/fmt/colors';
-import * as Level from '@epdoc/loglevels';
-import { Mgr as LogMgr } from '@epdoc/logger';
-import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { IEmitter, IFactoryMethods, IGetChildParams } from '@epdoc/logger';
+import { Mgr as LogMgr } from '@epdoc/logger';
+import * as Level from '@epdoc/loglevels';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
+import * as colors from '@std/fmt/colors';
 import { JavaLogger } from './logger.ts';
 
 /**
@@ -57,7 +57,7 @@ export const javaFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, JavaLogger
   },
 
   createLevels: () => {
-    return new Level.LogLevels(javaLogLevelDefs);
+    return new Level.LogLevels(javaLogLevelDefs, 'java');
   },
 
   logLevelNames: () => {

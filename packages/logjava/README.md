@@ -1,6 +1,6 @@
 # @epdoc/logjava
 
-Java-style logger implementation for the `@epdoc/logger` ecosystem, providing standard Java log levels and formatting.
+Java-style logger implementation for the [@epdoc/logger v1003.0.0](http://jsr.io/@epdoc/logger) ecosystem, providing standard Java log levels and formatting.
 
 ## Features
 
@@ -78,4 +78,4 @@ This package is designed to work seamlessly with the `@epdoc/logger` ecosystem:
 
 ## License
 
-MIT - see LICENSE file for details.
+MIT - see [LICENSE](../../LICENSE) file for details.
