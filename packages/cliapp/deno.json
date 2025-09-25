@@ -11,7 +11,7 @@
   },
   "license": "MIT",
   "imports": {
-    "@epdoc/logger": "jsr:@epdoc/logger@^1003.0.0-alpha.4",
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.0.0-alpha.6",
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.0.1-alpha.5",
     "@epdoc/type": "jsr:@epdoc/type@^1.1.13",
     "@std/assert": "jsr:@std/assert@^1.0.14",
