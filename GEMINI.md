@@ -109,7 +109,7 @@ When providing code examples, combine information from multiple docs:
 - Reference CONFIGURATION.md for proper setup
 
 ## Current Development Context
-The library is actively developing context enhancement features (see PROGRESS.md). When discussing server applications or context tracking, emphasize the new single-value approach (`reqId`, `pkg`) over the legacy array approach (`reqIds[]`, `pkgs[]`).
+The library is actively developing various features (see documents in [./docs/progress](./docs/progress)). Open issues that need to be resolved are in [ISSUES.md](./docs/progress/ISSUES.md).
 
 ## Response Strategy
 1. **Identify task type** from user question

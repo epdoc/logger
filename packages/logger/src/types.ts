@@ -1,5 +1,5 @@
 import type * as Level from '$level';
-import { HrMilliseconds } from '@epdoc/duration';
+import type { HrMilliseconds } from '@epdoc/duration';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { TimestampFormat } from './consts.ts';
 
