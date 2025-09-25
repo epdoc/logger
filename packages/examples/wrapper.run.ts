@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run -A
 /**
  * Wrapper Pattern Example
- * 
+ *
  * Demonstrates how to create project-specific wrappers that hide generic complexity
  * and prevent mistakes when using the logger throughout a codebase.
  */

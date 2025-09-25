@@ -69,7 +69,8 @@ class Cli {
       .label('pkg:').value(opts.pkg)
       .emit();
     ctx.log.fatal.h1('Fatal message').emit();
-    ctx.log.critical.h1('Critical message').emit();
+    const mark = ctx.log.mark();
+    ctx.log.critical.h1('Critical message').text('Set mark').emit();
     ctx.log.error.h1('Error message').emit();
     ctx.log.warn.h1('Warn message').emit();
     ctx.log.info.h1('Info message').emit();
@@ -77,7 +78,7 @@ class Cli {
     ctx.log.debug.h1('Debug message').emit();
     ctx.log.trace.h1('Trace message').emit();
     ctx.log.spam.h1('Spam message').emit();
-    ctx.log.silly.h1('Silly message').emit();
+    ctx.log.silly.h1('Silly message').text('Show mark').ewt(mark);
     return Promise.resolve();
   }
 }

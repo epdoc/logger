@@ -204,7 +204,7 @@ async function main() {
   try {
     // Initialize transports first
     await initializeTransports();
-    
+
     await demonstrateLogLevels();
     await demonstrateLoggerTypes();
     await demonstrateBatching();
