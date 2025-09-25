@@ -44,10 +44,10 @@
   },
   "imports": {
     "$log": "./src/types.ts",
-    "$level": "../loglevels/src/mod.ts",
     "$logger": "./src/loggers/mod.ts",
-    "$msgbuilder": "../msgbuilder/src/mod.ts",
     "$transport": "./src/transports/mod.ts",
+    "$level": "@epdoc/loglevels",
+    "$msgbuilder": "@epdoc/msgbuilder",
     "@std/expect": "jsr:@std/expect@^1.0.17",
     "@std/fmt": "jsr:@std/fmt@^1.0.8",
     "@std/fmt/colors": "jsr:@std/fmt@^1.0.8/colors",
