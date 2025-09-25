@@ -21,6 +21,7 @@ const DEFAULT_TAB_SIZE = 2;
  * data, and implements the {@link IFormatter} interface for final string conversion.
  */
 export abstract class AbstractMsgBuilder implements IFormatter {
+  protected $$id: string = 'AbstractLogger';
   protected _timestamp: Date = new Date();
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
   protected _emitter: IEmitter;
@@ -298,7 +299,7 @@ export abstract class AbstractMsgBuilder implements IFormatter {
   public ewt(mark: string | number, keep = false): EmitterData | undefined {
     if (this._emitter && this._emitter.emitEnabled) {
       let duration: number;
-      
+
       if (typeof mark === 'string' && this._emitter.demark) {
         // Use the emitter's demark method to get the elapsed time
         duration = this._emitter.demark(mark, keep);
@@ -323,7 +324,7 @@ export abstract class AbstractMsgBuilder implements IFormatter {
       // Add elapsed time to the message
       const elapsedStyle = this.getElapsedTimeStyle();
       this.appendMsgPart(` (${duration.toFixed(digits)} ms)`, elapsedStyle);
-      
+
       return this.emit();
     }
     return undefined;

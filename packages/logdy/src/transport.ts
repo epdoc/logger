@@ -152,8 +152,8 @@ export class LogdyTransport extends Transport.Base.Transport {
     const fields: Record<string, unknown> = {};
     
     if (entry.sid) fields.sid = entry.sid;
-    if (entry.reqIds?.length) fields.reqIds = entry.reqIds;
-    if (entry.pkgs?.length) fields.pkgs = entry.pkgs;
+    if (entry.reqId) fields.reqId = entry.reqId;
+    if (entry.pkg) fields.pkg = entry.pkg;
     if (entry.data) fields.data = entry.data;
 
     if (Object.keys(fields).length > 0) {

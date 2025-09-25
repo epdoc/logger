@@ -1,10 +1,10 @@
 import { assertEquals, assertExists } from '@std/assert';
 import { describe, test } from '@std/testing/bdd';
 import { Mgr as LogMgr, Std } from '@epdoc/logger';
-import type * as MsgBuilder from '@epdoc/msgbuilder';
+import type * as MsgBuilder from '../../msgbuilder/src/mod.ts';
 import { LogdyTransport } from '../src/mod.ts';
 
-type M = MsgBuilder.Console.Builder;
+type M = MsgBuilder.Abstract;
 
 describe('@epdoc/logdy', () => {
   test('should create LogdyTransport with default options', () => {
@@ -49,6 +49,7 @@ describe('@epdoc/logdy', () => {
     };
 
     try {
+      logMgr.init();
       // Get logger first to initialize LogMgr
       const logger = logMgr.getLogger<Std.Logger<M>>();
       
@@ -61,24 +62,23 @@ describe('@epdoc/logdy', () => {
       logMgr.addTransport(transport);
       logMgr.threshold = 'info';
       
+      await logMgr.start();
       // Emit a log message
-      logger.info.h1('Test message').emit();
+      (logger.info as MsgBuilder.Console.Builder).h1('Test message').emit();
       
       // Wait for async flush
       await new Promise(resolve => setTimeout(resolve, 50));
       
       // Verify the request was made
       assertExists(capturedRequest);
+      // @ts-ignore
       assertEquals(capturedRequest.url, 'http://test-logdy.com/api/v1/logs');
       
+      // @ts-ignore
       const requestBody = JSON.parse(capturedRequest.body);
-      assertExists(requestBody.logs);
-      assertEquals(requestBody.logs.length, 1);
-      
-      const logEntry = requestBody.logs[0];
-      assertEquals(logEntry.level, 'info');
-      assertEquals(logEntry.message, 'Test message');
-      assertExists(logEntry.timestamp);
+      assertEquals(requestBody.level, 'info');
+      assertEquals(requestBody.message, 'Test message');
+      assertExists(requestBody.timestamp);
       
       await transport.destroy();
     } finally {
@@ -119,26 +119,32 @@ describe('@epdoc/logdy', () => {
     };
 
     try {
-      // Get logger first to initialize LogMgr
-      const logger = logMgr.getLogger<Std.Logger<M>>();
-      
+      logMgr.init();
       const transport = new LogdyTransport(logMgr, {
+        batchSize: 3,
+        flushInterval: 1000
+      });
+      logMgr.addTransport(transport);
+      logMgr.removeTransport(logMgr.transportMgr.transports[1]);
         batchSize: 3,
         flushInterval: 1000
       });
       
       logMgr.addTransport(transport);
+      // Get logger first to initialize LogMgr
+      const logger = logMgr.getLogger<Std.Logger<M>>();
       logMgr.threshold = 'info';
       
+      await logMgr.start();
       // Emit 2 logs (should not trigger flush yet)
-      logger.info.text('Message 1').emit();
-      logger.info.text('Message 2').emit();
+      (logger.info as MsgBuilder.Console.Builder).text('Message 1').emit();
+      (logger.info as MsgBuilder.Console.Builder).text('Message 2').emit();
       
       await new Promise(resolve => setTimeout(resolve, 10));
       assertEquals(requestCount, 0);
       
       // Emit 3rd log (should trigger batch flush)
-      logger.info.text('Message 3').emit();
+      (logger.info as MsgBuilder.Console.Builder).text('Message 3').emit();
       
       await new Promise(resolve => setTimeout(resolve, 10));
       assertEquals(requestCount, 1);

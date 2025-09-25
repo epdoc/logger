@@ -4,195 +4,452 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Debug demo.test.ts",
+      "name": "Debug examples/app-by-settings.run.ts",
       "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeExecutable": "deno",
       "runtimeArgs": [
         "test",
         "--inspect-brk",
         "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/test/demo.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug msgconsole.test.ts",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/test/msgconsole.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug message.test.ts",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/test/message.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug file.test.ts",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/test/file.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug recurse.test.ts",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/test/recurse.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug std.test.ts",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/test/std.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug levels.test.ts",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/test/levels.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug cli.test.ts",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/test/cli.test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Debug test.ts",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "test",
-        "--inspect-brk",
-        "-A",
-        "/Users/jpravetz/dev/@epdoc/logger/src/levels/test.ts"
-      ],
-      "attachSimplePort": 9229
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "./examples/log.ts ",
-      "program": "${workspaceFolder}/./examples/log.ts",
-      "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "runtimeArgs": [
-        "run",
-        "--inspect-wait",
-        "--allow-all"
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/app-by-settings.run.ts"
       ],
       "attachSimplePort": 9229,
-      "args": [
-        ""
-      ]
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "./examples/custom_builder.ts ",
-      "program": "${workspaceFolder}/./examples/custom_builder.ts",
+      "name": "Debug examples/cli.run.ts",
       "cwd": "${workspaceFolder}",
-      "env": {
-        "UNIT_TEST": "1"
-      },
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeExecutable": "deno",
       "runtimeArgs": [
-        "run",
-        "--inspect-wait",
-        "--allow-all"
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/cli.run.ts"
       ],
       "attachSimplePort": 9229,
-      "args": [
-        ""
-      ]
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug examples/complex-type-issue.run.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/complex-type-issue.run.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug examples/extend-mgr.run.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/extend-mgr.run.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug examples/logdy.run.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/logdy.run.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug examples/mgr-by-settings.run.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/mgr-by-settings.run.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug examples/settings-mgr.run.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/settings-mgr.run.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug examples/simple.run.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/simple.run.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug examples/threshold.run.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/threshold.run.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug examples/wrapper.run.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/examples/wrapper.run.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logdy/test/transport.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logdy/test/transport.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logger/test/all.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/all.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logger/test/cli.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/cli.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logger/test/conditional.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/conditional.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logger/test/demo.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/demo.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logger/test/file.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/file.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logger/test/levels1.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/levels1.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logger/test/message.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/message.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logger/test/msgconsole.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/msgconsole.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logger/test/nesting.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/nesting.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logger/test/recurse.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/recurse.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logger/test/std.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logger/test/std.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug logjava/test/basic.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/logjava/test/basic.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug loglevels/test/levels.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/loglevels/test/levels.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug msgbuilder/test/builder.test.ts",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "test",
+        "--inspect-brk",
+        "-A",
+        "/Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/test/builder.test.ts"
+      ],
+      "attachSimplePort": 9229,
+      "console": "integratedTerminal",
+      "env": {
+        "LAUNCHGEN": "true"
+      }
     }
   ]
 }
