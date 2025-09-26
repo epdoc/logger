@@ -1,16 +1,16 @@
 # cliapp
 
-A CLI application helper for [@epdoc/logger](https://github.com/epdoc/logger).
+A CLI helper application using [@epdoc/logger](https://github.com/epdoc/logger) and [commanderjs](https://www.npmjs.com/package/commander).
 
 ## Overview
 
-`cliapp` provides command line support for [@epdoc/logger](https://github.com/epdoc/logger). Key features include:
+`cliapp` captures common code needed across multiple command line applications that use [@epdoc/logger](https://github.com/epdoc/logger). Key features include:
 
 - **Command Parsing:** Extends the [commanderjs](https://www.npmjs.com/package/commander) Command object.
   - `CliApp.Command` in [command.ts](./src/command.ts) adds standard [@epdoc/logger](https://github.com/epdoc/logger)
     logging options to the Command object.
   - The `Commander` object from `commanderjs` is exported as well, allowing you to create custom options (e.g.,
-    `new CliApp.Commander.Option(...)`).
+    `new CliApp.Commander.Option(...)`) without reimporting Commanderjs.
   - Continue to use the `CliApp.Command` object as you did the `Command` object from Commanderjs.
   - Apply cli logging options to [@epdoc/logger](https://github.com/epdoc/logger) using
     [configureLogging](./src/util.ts).
@@ -41,14 +41,15 @@ deno add jsr:@epdoc/cliapp
 This example can be found in [purge.ts](./examples/purge.ts) which can be run using `deno run -S ./examples/purge.ts`.
 
 ```ts
-import * as Log from 'jsr:@epdoc/logger@^1002.4';
+import * as Log from '@epdoc/logger';
+import { Console } from '@epdoc/msgbuilder'
 import pkg from '../deno.json' with { type: 'json' };
 // Import both CliApp and the Commander object
-import * as CliApp from 'jsr:@epdoc/cliapp';
+import * as CliApp from '@epdoc/cliapp';
 
 // deno run -A examples/basic.ts -t
 
-type M = Log.MsgBuilder.Console.Builder;
+type M = Console.Builder;
 type L = Log.Std.Logger<M>;
 
 const logMgr: Log.Mgr<M> = new Log.Mgr<M>().init();
