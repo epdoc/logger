@@ -146,7 +146,7 @@ export class ConsoleTransport extends Base.Transport {
       if (entry.msg) {
         parts.push(entry.msg);
       }
-      if (show.elapsed && _.isNumber(entry.elapsed)) {
+      if (show.elapsed && _.isNumber(entry.elapsed) && entry.elapsed) {
         // Format duration with appropriate precision
         let digits = 3;
         if (entry.elapsed > 100) {
