@@ -1,4 +1,4 @@
-import { HrMilliseconds } from '@epdoc/duration';
+import type { HrMilliseconds } from '@epdoc/duration';
 import { _, type Dict, type Integer } from '@epdoc/type';
 import { ConsoleEmitter } from './emitter.ts';
 import type { EmitterData, FormatOpts, IEmitter, IFormatter, MsgPart, StyleArg, StyleFormatterFn } from './types.ts';
