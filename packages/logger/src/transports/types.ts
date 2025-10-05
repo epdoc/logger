@@ -21,7 +21,7 @@ export type TransportEntry = Partial<{
   /** The formatted timestamp string. */
   timestamp: string;
   /** The response time to be displayed. */
-  elapsed: HrMilliseconds;
+  time: HrMilliseconds;
   /** The package name. */
   pkg: string;
   /** The session ID. */

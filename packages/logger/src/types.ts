@@ -22,7 +22,7 @@ export type Entry = {
   /** The timestamp of when the log entry was created. */
   timestamp?: Date;
   /** A 'response time' to be output by the transport. */
-  elapsed?: HrMilliseconds;
+  time?: HrMilliseconds;
   /** A session identifier, often tied to a user. */
   sid?: string;
   /** A unique identifier for a specific request or operation. */
@@ -67,7 +67,8 @@ export type EmitterShowOpts = {
   pkg?: boolean | number;
   /** Controls the display of structured data. */
   data?: boolean;
-  elapsed?: boolean;
+  /** Show the response time for this operation */
+  time?: boolean;
   /** The separater to show between package names (defaults to '.', which is set in the class LogMgr) */
   pkgSep?: string;
 };
