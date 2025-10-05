@@ -82,6 +82,7 @@ describe('util', () => {
     it('should configure show options from opts.showall', () => {
       configureLogging(testCtx, { showall: true });
       assertEquals(testCtx.logMgr.show, {
+        time: true,
         timestamp: 'elapsed',
         pkg: true,
         level: true,
@@ -90,8 +91,9 @@ describe('util', () => {
     });
 
     it('should configure show options from opts.log_show array', () => {
-      configureLogging(testCtx, { log_show: ['level', 'elapsed', 'pkg', 'reqId'] });
+      configureLogging(testCtx, { log_show: ['level', 'elapsed', 'pkg', 'reqId', 'time'] });
       assertEquals(testCtx.logMgr.show, {
+        time: true,
         level: true,
         timestamp: 'elapsed',
         pkg: true,
@@ -113,6 +115,7 @@ describe('util', () => {
     it('should handle "all" in log_show', () => {
       configureLogging(testCtx, { log_show: ['all'] });
       assertEquals(testCtx.logMgr.show, {
+        time: true,
         timestamp: 'elapsed',
         pkg: true,
         level: true,
@@ -123,6 +126,7 @@ describe('util', () => {
     it('should set default show options if log_show is an empty array', () => {
       configureLogging(testCtx, { log_show: [] });
       assertEquals(testCtx.logMgr.show, {
+        time: true,
         level: true,
         timestamp: 'elapsed',
         pkg: true,

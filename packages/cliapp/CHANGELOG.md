@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.5] - 2025-10-05
+
+- Updated dependencies
+- Fix issues with conflicting elapsed for timestamp and elapsed, so renamed elapsed to `time`.
+
 ## [1.0.0-alpha.4] - 2025-10-05
 
 - Updated dependencies
