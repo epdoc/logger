@@ -1,16 +1,12 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/datetime@^2.0.0-beta.1": "2.0.0-beta.1",
-    "jsr:@epdoc/duration@0.2": "0.2.2",
-    "jsr:@epdoc/duration@~0.2.2": "0.2.3",
+    "jsr:@epdoc/datetime@^2.0.0-beta.2": "2.0.0-beta.2",
+    "jsr:@epdoc/duration@0.2": "0.2.3",
     "jsr:@epdoc/duration@~0.2.3": "0.2.3",
-    "jsr:@epdoc/logger@^1003.0.0-alpha.9": "1003.0.0-alpha.9",
-    "jsr:@epdoc/loglevels@^0.0.1-alpha.9": "0.0.1-alpha.9",
-    "jsr:@epdoc/msgbuilder@^0.0.1-alpha.6": "0.0.1-alpha.6",
-    "jsr:@epdoc/string@~0.1.1": "0.1.2",
+    "jsr:@epdoc/loglevels@^0.0.1-alpha.10": "0.0.1-alpha.10",
+    "jsr:@epdoc/msgbuilder@^0.0.1-alpha.7": "0.0.1-alpha.7",
     "jsr:@epdoc/string@~0.1.2": "0.1.2",
-    "jsr:@epdoc/type@^1.1.0": "1.1.17",
     "jsr:@epdoc/type@^1.1.13": "1.1.17",
     "jsr:@epdoc/type@^1.1.16": "1.1.17",
     "jsr:@epdoc/type@^1.1.17": "1.1.17",
@@ -43,16 +39,10 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
-    "@epdoc/datetime@2.0.0-beta.1": {
-      "integrity": "a5b146ebd64862038713018da2eeb7f7a16522827a3f8d49ba253b3edf0f3862",
+    "@epdoc/datetime@2.0.0-beta.2": {
+      "integrity": "1c82532bbf000dfb974c7f8a91fa0adbb7d182ab0932333283b9809dc78801e5",
       "dependencies": [
-        "jsr:@epdoc/type@^1.1.16"
-      ]
-    },
-    "@epdoc/duration@0.2.2": {
-      "integrity": "21954181c9e3999d01f58e013b07e2e87962249cb7814853ed7291da20609e0b",
-      "dependencies": [
-        "jsr:@epdoc/type@^1.1.16"
+        "jsr:@epdoc/type@^1.1.17"
       ]
     },
     "@epdoc/duration@0.2.3": {
@@ -61,33 +51,15 @@
         "jsr:@epdoc/type@^1.1.17"
       ]
     },
-    "@epdoc/logger@1003.0.0-alpha.9": {
-      "integrity": "17a244e0fb082b1326b5cef3e707cd5263beb4fb5dc1660dbf6d411b49f468d2",
+    "@epdoc/loglevels@0.0.1-alpha.10": {
+      "integrity": "ecfd1941ad2fc6ae667111a7a0fccb5e94cd1eb4d3f9ea3fb5f36e8bf42c4dcc"
+    },
+    "@epdoc/msgbuilder@0.0.1-alpha.7": {
+      "integrity": "99365688900fa028ed278bcbd49739d9d121d155341570e1dcc742174222ab8a",
       "dependencies": [
-        "jsr:@epdoc/datetime",
-        "jsr:@epdoc/duration@~0.2.2",
-        "jsr:@epdoc/string@~0.1.1",
-        "jsr:@epdoc/type@^1.1.16",
-        "jsr:@std/assert@^1.0.14",
+        "jsr:@epdoc/string",
+        "jsr:@epdoc/type@^1.1.17",
         "jsr:@std/fmt"
-      ]
-    },
-    "@epdoc/loglevels@0.0.1-alpha.9": {
-      "integrity": "c66643263c6f0a761907f6ef737ff8f3fdc4540d6f2325d5cdb00edfc3ebf566"
-    },
-    "@epdoc/msgbuilder@0.0.1-alpha.6": {
-      "integrity": "7b545085c2cc6bece1290cfc0e8e7785c5caffefb99d7950add5421fac8f9b11",
-      "dependencies": [
-        "jsr:@epdoc/string@~0.1.1",
-        "jsr:@epdoc/type@^1.1.16",
-        "jsr:@std/fmt"
-      ]
-    },
-    "@epdoc/string@0.1.1": {
-      "integrity": "66bbabd6fdbe0bca8342f4dbdcd4927e744cf7a393d0ceb853c1566f7b19b4b2",
-      "dependencies": [
-        "jsr:@epdoc/type@^1.1.0",
-        "jsr:@std/assert@^1.0.13"
       ]
     },
     "@epdoc/string@0.1.2": {
@@ -95,12 +67,6 @@
       "dependencies": [
         "jsr:@epdoc/type@^1.1.17",
         "jsr:@std/assert@^1.0.14"
-      ]
-    },
-    "@epdoc/type@1.1.16": {
-      "integrity": "71328c17e6b34af69f75a0afca2bf611b47afe498b8058fb540a2951bcda2372",
-      "dependencies": [
-        "jsr:@std/encoding"
       ]
     },
     "@epdoc/type@1.1.17": {
@@ -319,12 +285,12 @@
       },
       "packages/logger": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^2.0.0-beta.1",
-          "jsr:@epdoc/duration@~0.2.2",
-          "jsr:@epdoc/loglevels@^0.0.1-alpha.9",
-          "jsr:@epdoc/msgbuilder@^0.0.1-alpha.5",
-          "jsr:@epdoc/string@~0.1.1",
-          "jsr:@epdoc/type@^1.1.16",
+          "jsr:@epdoc/datetime@^2.0.0-beta.2",
+          "jsr:@epdoc/duration@~0.2.3",
+          "jsr:@epdoc/loglevels@^0.0.1-alpha.10",
+          "jsr:@epdoc/msgbuilder@^0.0.1-alpha.7",
+          "jsr:@epdoc/string@~0.1.2",
+          "jsr:@epdoc/type@^1.1.17",
           "jsr:@std/assert@^1.0.14",
           "jsr:@std/expect@^1.0.17",
           "jsr:@std/fmt@^1.0.8",
