@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-alpha.7] - 2025-10-05
+
+- Update @epdoc/* dependencies.
+
 ## [1.0.0-alpha.5] - 2025-10-05
 
 - Updated dependencies
