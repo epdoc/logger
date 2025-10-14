@@ -1,18 +1,13 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/datetime@^2.0.0-beta.4": "2.0.0-beta.4",
-    "jsr:@epdoc/duration@0.2": "0.2.3",
+    "jsr:@epdoc/datetime@^2.0.0-beta.4": "2.0.1",
     "jsr:@epdoc/duration@~0.2.3": "0.2.3",
-    "jsr:@epdoc/logger@^1003.0.0-alpha.12": "1003.0.0-alpha.12",
     "jsr:@epdoc/loglevels@^0.0.1-alpha.10": "0.0.1-alpha.10",
-    "jsr:@epdoc/msgbuilder@^0.0.1-alpha.9": "0.0.1-alpha.9",
     "jsr:@epdoc/string@~0.1.4": "0.1.5",
     "jsr:@epdoc/string@~0.1.5": "0.1.5",
-    "jsr:@epdoc/type@^1.1.13": "1.1.17",
     "jsr:@epdoc/type@^1.1.17": "1.1.17",
     "jsr:@std/assert@1": "1.0.6",
-    "jsr:@std/assert@^1.0.13": "1.0.15",
     "jsr:@std/assert@^1.0.14": "1.0.15",
     "jsr:@std/assert@^1.0.15": "1.0.15",
     "jsr:@std/assert@^1.0.6": "1.0.6",
@@ -44,51 +39,25 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
-    "@epdoc/datetime@2.0.0-beta.4": {
-      "integrity": "432b2b266ba6c32de75b6ea72152d9443bd96ca30257311a36a2777b13061d7a",
+    "@epdoc/datetime@2.0.1": {
+      "integrity": "4afda1be7f94c7859e6a56c447b6e4eac05b5e9653797c0d707d58cbe415fe24",
       "dependencies": [
-        "jsr:@epdoc/type@^1.1.17"
+        "jsr:@epdoc/type"
       ]
     },
     "@epdoc/duration@0.2.3": {
       "integrity": "e8c05070df55466a33938d950f81b26fb7f803e5a9b491cda60607016cf0dcab",
       "dependencies": [
-        "jsr:@epdoc/type@^1.1.17"
-      ]
-    },
-    "@epdoc/logger@1003.0.0-alpha.12": {
-      "integrity": "707fda36f7fe9ce6bddb09bfb5f3bc32014c610dafe8dfb450cdeec96bfab537",
-      "dependencies": [
-        "jsr:@epdoc/datetime",
-        "jsr:@epdoc/duration@~0.2.3",
-        "jsr:@epdoc/string@~0.1.4",
-        "jsr:@epdoc/type@^1.1.17",
-        "jsr:@std/assert@^1.0.14",
-        "jsr:@std/fmt"
+        "jsr:@epdoc/type"
       ]
     },
     "@epdoc/loglevels@0.0.1-alpha.10": {
       "integrity": "ecfd1941ad2fc6ae667111a7a0fccb5e94cd1eb4d3f9ea3fb5f36e8bf42c4dcc"
     },
-    "@epdoc/msgbuilder@0.0.1-alpha.9": {
-      "integrity": "a523af7ed0a2bd43a5791998c6fb35663790dc84d0a27c8a58090d2ad1458857",
-      "dependencies": [
-        "jsr:@epdoc/string@~0.1.4",
-        "jsr:@epdoc/type@^1.1.17",
-        "jsr:@std/fmt"
-      ]
-    },
-    "@epdoc/string@0.1.4": {
-      "integrity": "0cade790f0f30cad8510932308c16f5dd818c469d06d5eadf3553642c9b422a9",
-      "dependencies": [
-        "jsr:@epdoc/type@^1.1.17",
-        "jsr:@std/assert@^1.0.14"
-      ]
-    },
     "@epdoc/string@0.1.5": {
       "integrity": "0a8f0d537754de5af58537aa7c45d47d701b737908f2ab109facbd176b1646db",
       "dependencies": [
-        "jsr:@epdoc/type@^1.1.17",
+        "jsr:@epdoc/type",
         "jsr:@std/assert@^1.0.15"
       ]
     },
@@ -102,12 +71,6 @@
       "integrity": "1904c05806a25d94fe791d6d883b685c9e2dcd60e4f9fc30f4fc5cf010c72207",
       "dependencies": [
         "jsr:@std/internal@^1.0.4"
-      ]
-    },
-    "@std/assert@1.0.14": {
-      "integrity": "68d0d4a43b365abc927f45a9b85c639ea18a9fab96ad92281e493e4ed84abaa4",
-      "dependencies": [
-        "jsr:@std/internal@^1.0.10"
       ]
     },
     "@std/assert@1.0.15": {
@@ -186,16 +149,6 @@
       "dependencies": [
         "jsr:@std/assert@^1.0.6",
         "jsr:@std/internal@^1.0.4"
-      ]
-    },
-    "@std/testing@1.0.15": {
-      "integrity": "a490169f5ccb0f3ae9c94fbc69d2cd43603f2cffb41713a85f99bbb0e3087cbc",
-      "dependencies": [
-        "jsr:@std/assert@^1.0.13",
-        "jsr:@std/data-structures",
-        "jsr:@std/fs@^1.0.19",
-        "jsr:@std/internal@^1.0.10",
-        "jsr:@std/path@^1.1.1"
       ]
     },
     "@std/testing@1.0.16": {
@@ -341,11 +294,11 @@
       },
       "packages/logjava": {
         "dependencies": [
-          "jsr:@epdoc/duration@0.2",
-          "jsr:@epdoc/type@^1.1.13",
-          "jsr:@std/assert@^1.0.14",
+          "jsr:@epdoc/duration@~0.2.3",
+          "jsr:@epdoc/type@^1.1.17",
+          "jsr:@std/assert@^1.0.15",
           "jsr:@std/fmt@^1.0.8",
-          "jsr:@std/testing@^1.0.15"
+          "jsr:@std/testing@^1.0.16"
         ]
       },
       "packages/loglevels": {
