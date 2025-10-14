@@ -1,10 +1,10 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/datetime@^2.0.0-beta.4": "2.0.1",
+    "jsr:@epdoc/datetime@^2.0.1": "2.0.1",
     "jsr:@epdoc/duration@~0.2.3": "0.2.3",
-    "jsr:@epdoc/loglevels@^0.0.1-alpha.10": "0.0.1-alpha.10",
-    "jsr:@epdoc/string@~0.1.4": "0.1.5",
+    "jsr:@epdoc/loglevels@^0.0.1-alpha.11": "0.0.1-alpha.11",
+    "jsr:@epdoc/msgbuilder@^0.0.1-beta.0": "0.0.1-beta.0",
     "jsr:@epdoc/string@~0.1.5": "0.1.5",
     "jsr:@epdoc/type@^1.1.17": "1.1.17",
     "jsr:@std/assert@1": "1.0.6",
@@ -51,8 +51,16 @@
         "jsr:@epdoc/type"
       ]
     },
-    "@epdoc/loglevels@0.0.1-alpha.10": {
-      "integrity": "ecfd1941ad2fc6ae667111a7a0fccb5e94cd1eb4d3f9ea3fb5f36e8bf42c4dcc"
+    "@epdoc/loglevels@0.0.1-alpha.11": {
+      "integrity": "7958e2625c2bcda1777d8e957ef172f449294add4403f2affad64c8b1c53d743"
+    },
+    "@epdoc/msgbuilder@0.0.1-beta.0": {
+      "integrity": "fc50e7afc90e15d62af25fc0855f40076850c32ce97bfaf10c00e30107cb3e19",
+      "dependencies": [
+        "jsr:@epdoc/string",
+        "jsr:@epdoc/type",
+        "jsr:@std/fmt"
+      ]
     },
     "@epdoc/string@0.1.5": {
       "integrity": "0a8f0d537754de5af58537aa7c45d47d701b737908f2ab109facbd176b1646db",
@@ -280,16 +288,16 @@
       },
       "packages/logger": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^2.0.0-beta.4",
+          "jsr:@epdoc/datetime@^2.0.1",
           "jsr:@epdoc/duration@~0.2.3",
-          "jsr:@epdoc/loglevels@^0.0.1-alpha.10",
-          "jsr:@epdoc/msgbuilder@^0.0.1-alpha.9",
-          "jsr:@epdoc/string@~0.1.4",
+          "jsr:@epdoc/loglevels@^0.0.1-alpha.11",
+          "jsr:@epdoc/msgbuilder@^0.0.1-beta.0",
+          "jsr:@epdoc/string@~0.1.5",
           "jsr:@epdoc/type@^1.1.17",
-          "jsr:@std/assert@^1.0.14",
+          "jsr:@std/assert@^1.0.15",
           "jsr:@std/expect@^1.0.17",
           "jsr:@std/fmt@^1.0.8",
-          "jsr:@std/testing@^1.0.15"
+          "jsr:@std/testing@^1.0.16"
         ]
       },
       "packages/logjava": {
