@@ -23,6 +23,7 @@ const ctx: CliApp.ICtx<MsgBuilder, Logger> = {
 };
 
 const run = async (): Promise<void> => {
+  const mark = ctx.log.mark();
   const command = new CliApp.Command(pkg).init(ctx).addLogging(ctx).addDryRun();
   const opts = await command.parseOpts();
   CliApp.configureLogging(ctx, opts);
@@ -39,6 +40,7 @@ const run = async (): Promise<void> => {
   ctx.log.trace.h1('Trace message').emit();
   ctx.log.spam.h1('Spam message').emit();
   ctx.log.silly.h1('Silly message').emit();
+  ctx.log.info.h1('Final INFO message should show response time here ->').ewt(mark);
   return Promise.resolve();
 };
 
