@@ -3,6 +3,7 @@
   "specifiers": {
     "jsr:@epdoc/datetime@^2.0.1": "2.0.1",
     "jsr:@epdoc/duration@~0.2.3": "0.2.3",
+    "jsr:@epdoc/logger@^1003.0.0-beta.0": "1003.0.0-beta.0",
     "jsr:@epdoc/loglevels@^0.0.1-alpha.11": "0.0.1-alpha.11",
     "jsr:@epdoc/msgbuilder@^0.0.1-beta.0": "0.0.1-beta.0",
     "jsr:@epdoc/string@~0.1.5": "0.1.5",
@@ -49,6 +50,17 @@
       "integrity": "e8c05070df55466a33938d950f81b26fb7f803e5a9b491cda60607016cf0dcab",
       "dependencies": [
         "jsr:@epdoc/type"
+      ]
+    },
+    "@epdoc/logger@1003.0.0-beta.0": {
+      "integrity": "f9a029ec4b60484a6a62790f4d6c2e42a9abe585cbffc1f92b7d2f02ef29e59c",
+      "dependencies": [
+        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/duration",
+        "jsr:@epdoc/string",
+        "jsr:@epdoc/type",
+        "jsr:@std/assert@^1.0.15",
+        "jsr:@std/fmt"
       ]
     },
     "@epdoc/loglevels@0.0.1-alpha.11": {
@@ -266,12 +278,12 @@
     "members": {
       "packages/cliapp": {
         "dependencies": [
-          "jsr:@epdoc/logger@^1003.0.0-alpha.12",
-          "jsr:@epdoc/msgbuilder@^0.0.1-alpha.9",
+          "jsr:@epdoc/logger@^1003.0.0-beta.0",
+          "jsr:@epdoc/msgbuilder@^0.0.1-beta.0",
           "jsr:@epdoc/type@^1.1.17",
-          "jsr:@std/assert@^1.0.14",
+          "jsr:@std/assert@^1.0.15",
           "jsr:@std/fmt@^1.0.8",
-          "jsr:@std/testing@^1.0.15",
+          "jsr:@std/testing@^1.0.16",
           "npm:commander@^14.0.1"
         ]
       },
