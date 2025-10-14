@@ -1,4 +1,4 @@
-import { Transport, Mgr as LogMgr } from '@epdoc/logger';
+import { Mgr as LogMgr, Transport } from '@epdoc/logger';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { Entry } from '@epdoc/logger';
 
@@ -34,28 +34,28 @@ interface LogdyLogEntry {
 
 /**
  * Transport for streaming logs to Logdy web interface via HTTP API.
- * 
+ *
  * @remarks
  * This transport sends logs to a Logdy instance using the HTTP API.
  * It supports batching, retries, and graceful error handling.
- * 
+ *
  * @example
  * ```ts
  * import { Mgr as LogMgr } from '@epdoc/logger';
  * import { LogdyTransport } from '@epdoc/logdy';
- * 
+ *
  * const logMgr = new LogMgr();
  * const transport = new LogdyTransport(logMgr, {
  *   url: 'http://localhost:8080/api/v1/logs',
  *   batchSize: 50
  * });
- * 
+ *
  * logMgr.addTransport(transport);
  * ```
  */
 export class LogdyTransport extends Transport.Base.Transport {
   public override readonly type = 'logdy';
-  
+
   private readonly _url: string;
   private readonly _apiKey?: string;
   private readonly _batchSize: number;
@@ -63,20 +63,20 @@ export class LogdyTransport extends Transport.Base.Transport {
   private readonly _timeout: number;
   private readonly _retryAttempts: number;
   private readonly _headers: Record<string, string>;
-  
+
   private _logQueue: LogdyLogEntry[] = [];
   private _flushTimer?: number;
   private _isDestroyed = false;
 
   /**
    * Creates a new Logdy transport instance.
-   * 
+   *
    * @param logMgr - The log manager instance
    * @param options - Configuration options
    */
   constructor(logMgr: LogMgr<any>, options: LogdyTransportOptions = {}) {
     super(logMgr, options);
-    
+
     this._url = options.url ?? 'http://localhost:8080/api/v1/logs';
     this._apiKey = options.apiKey;
     this._batchSize = options.batchSize ?? 50;
@@ -87,11 +87,11 @@ export class LogdyTransport extends Transport.Base.Transport {
       'Content-Type': 'application/json',
       ...options.headers,
     };
-    
+
     if (this._apiKey) {
       this._headers['Authorization'] = `Bearer ${this._apiKey}`;
     }
-    
+
     this._startFlushTimer();
   }
 
@@ -105,7 +105,7 @@ export class LogdyTransport extends Transport.Base.Transport {
 
   /**
    * Emits a log entry to Logdy.
-   * 
+   *
    * @param entry - The log entry to emit
    */
   override emit(entry: Entry): void {
@@ -150,7 +150,7 @@ export class LogdyTransport extends Transport.Base.Transport {
 
     // Add structured fields
     const fields: Record<string, unknown> = {};
-    
+
     if (entry.sid) fields.sid = entry.sid;
     if (entry.reqId) fields.reqId = entry.reqId;
     if (entry.pkg) fields.pkg = entry.pkg;
@@ -169,7 +169,7 @@ export class LogdyTransport extends Transport.Base.Transport {
   private _mapLogLevel(level: string): string {
     const levelMap: Record<string, string> = {
       'FATAL': 'error',
-      'CRITICAL': 'error', 
+      'CRITICAL': 'error',
       'ERROR': 'error',
       'SEVERE': 'error',
       'WARN': 'warn',
@@ -198,7 +198,7 @@ export class LogdyTransport extends Transport.Base.Transport {
     if (typeof entry.msg === 'string') {
       return entry.msg;
     }
-    
+
     if (entry.msg && typeof entry.msg === 'object' && 'format' in entry.msg) {
       try {
         return entry.msg.format({ color: false });
@@ -206,7 +206,7 @@ export class LogdyTransport extends Transport.Base.Transport {
         return '[Message formatting error]';
       }
     }
-    
+
     return '[No message]';
   }
 
@@ -253,7 +253,7 @@ export class LogdyTransport extends Transport.Base.Transport {
         timestamp: new Date(log.timestamp).getTime(),
         level: log.level,
         message: log.message,
-        ...(log.fields || {})
+        ...(log.fields || {}),
       };
 
       const response = await fetch(this._url, {
@@ -270,14 +270,14 @@ export class LogdyTransport extends Transport.Base.Transport {
       }
     } catch (error) {
       clearTimeout(timeoutId);
-      
+
       if (attempt < this._retryAttempts) {
         // Exponential backoff
         const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
         return this._sendSingleLog(log, attempt + 1);
       }
-      
+
       throw error;
     }
   }
