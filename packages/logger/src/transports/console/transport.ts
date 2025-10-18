@@ -32,6 +32,10 @@ export class ConsoleTransport extends Base.Transport {
    * Creates an instance of the `Console` transport.
    * @param {LogMgr<MsgBuilder.Abstract>} logMgr - The log manager instance.
    * @param {Options} [opts={}] - Configuration options for the transport.
+   * @param opts.format - Output format ('text', 'json', or 'json-array')
+   * @param opts.color - Whether to use colors in output (defaults to true)
+   * @param opts.threshold - Minimum log level for this transport
+   * @param opts.flushThreshold - Log level that triggers immediate flush
    */
   constructor(logMgr: LogMgr<MsgBuilder.Abstract>, opts: Console.Options = {}) {
     super(logMgr, opts);

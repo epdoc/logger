@@ -55,35 +55,41 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
   }
 
   /**
-   * Emits a log entry, applying the current indentation to the message.
-   *
-   * @remarks
-   * This method overrides the base `emit` to prepend the accumulated indentation
-   * strings to the log message before passing it to the `LogMgr`'s transport
-   * manager. This ensures that all messages emitted by this logger (or its
-   * children) are properly indented.
-   *
+   * Creates a message builder with indentation applied.
+   * This method wraps the LogMgr's getMsgBuilder to apply indentation.
+   * @internal
+   */
+  protected getIndentedMsgBuilder(level: string): M {
+    const msgBuilder = this._logMgr.getMsgBuilder(level, this);
+    
+    // Apply indentation if present
+    if (this._indent.length > 0) {
+      const indentPrefix = this._indent.join(' ');
+      if (msgBuilder && typeof msgBuilder === 'object' && 'prependMsgPart' in msgBuilder) {
+        (msgBuilder as unknown as { prependMsgPart: (str: string) => void }).prependMsgPart(indentPrefix);
+      }
+    }
+    
+    return msgBuilder;
+  }
+
+  /**
+   * Emits a log entry, applying indentation for direct emit calls.
    * @param {Log.Entry} msg - The log entry to emit.
    */
   override emit(msg: Log.Entry): void {
-    if (isString(msg.msg)) {
-      msg.msg = [...this._indent, msg.msg].join(' ');
-    } else if (msg.msg instanceof MsgBuilder.Abstract) {
-      // Iterate in reverse to prepend indents in the correct order
-      for (let i = this._indent.length - 1; i >= 0; i--) {
-        const indent = this._indent[i];
-        if (msg.msg instanceof MsgBuilder.Abstract) {
-          msg.msg.prependMsgPart(indent);
+    if (this.meetsThreshold(msg.level) && msg.msg) {
+      // Apply indentation for direct emit calls
+      if (this._indent.length > 0) {
+        const indentPrefix = this._indent.join(' ');
+        if (typeof msg.msg === 'string') {
+          msg.msg = indentPrefix + msg.msg;
+        } else if (msg.msg && typeof msg.msg === 'object' && 'prependMsgPart' in msg.msg) {
+          (msg.msg as unknown as { prependMsgPart: (str: string) => void }).prependMsgPart(indentPrefix);
         }
       }
+      this._logMgr.emit(msg);
     }
-    // Hand off emitting to LogMgr, which will direct to all transports
-    // The parent Base class's emit method calls this._logMgr.emit(msg)
-    // This override calls _logMgr.transportMgr.emit(msg) directly.
-    // It seems the intention is to bypass the LogMgr's own emit logic here.
-    // If this is not the case, consider calling super.emit(msg)
-    // or this._logMgr.emit(msg) for consistency.
-    this._logMgr.transportMgr.emit(msg);
   }
 
   /**

@@ -195,6 +195,14 @@ export class LogMgr<
    * Sets the show options for log emission. What is shown may also depend on
    * the transport being used.
    * @param {EmitterShowOpts} opts - The show options.
+   * @param opts.level - Controls display of log level (boolean, number for truncation, or 'icon')
+   * @param opts.timestamp - Controls timestamp format ('iso', 'elapsed', 'time', or boolean)
+   * @param opts.sid - Controls display of session ID (boolean or number for truncation)
+   * @param opts.reqId - Controls display of request ID (boolean or number for truncation)
+   * @param opts.pkg - Controls display of package name (boolean or number for truncation)
+   * @param opts.data - Controls display of structured data (boolean)
+   * @param opts.time - Controls display of response time (boolean)
+   * @param opts.pkgSep - Separator between package names (string, defaults to '.')
    * @returns {this} The instance of LogMgr.
    */
   public set show(opts: Log.EmitterShowOpts) {

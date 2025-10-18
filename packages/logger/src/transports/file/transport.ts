@@ -37,6 +37,13 @@ export class FileTransport extends Console.Transport {
    * Creates an instance of the `File` transport.
    * @param {LogMgr<MsgBuilder.Abstract>} logMgr - The log manager instance.
    * @param {FileOptions} opts - Configuration options for the transport.
+   * @param opts.filepath - Path to the log file
+   * @param opts.mode - File logging mode ('a' for append, 'w' for write, 'x' for create new)
+   * @param opts.bufferSize - Buffer size in bytes (defaults to 4096)
+   * @param opts.format - Output format ('text', 'json', or 'json-array')
+   * @param opts.color - Whether to use colors in output (defaults to true)
+   * @param opts.threshold - Minimum log level for this transport
+   * @param opts.flushThreshold - Log level that triggers immediate flush
    */
   constructor(logMgr: LogMgr<MsgBuilder.Abstract>, opts: FileOptions) {
     super(logMgr, opts);

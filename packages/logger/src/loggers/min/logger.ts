@@ -43,7 +43,7 @@ export class MinLogger<M extends MsgBuilder.Abstract> extends Bare.Logger<M> {
    * @returns {M} A message builder configured for the `ERROR` level.
    */
   public get error(): M {
-    return this._logMgr.getMsgBuilder('ERROR', this);
+    return this.getIndentedMsgBuilder('ERROR');
   }
 
   /**
@@ -69,7 +69,7 @@ export class MinLogger<M extends MsgBuilder.Abstract> extends Bare.Logger<M> {
    * @returns {M} A message builder configured for the `DEBUG` level.
    */
   public get debug(): M {
-    return this._logMgr.getMsgBuilder('DEBUG', this);
+    return this.getIndentedMsgBuilder('DEBUG');
   }
 
   /**

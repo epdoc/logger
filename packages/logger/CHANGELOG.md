@@ -5,21 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1003.0.0-beta.1] - 2025-10-17
+
+- Fixed indent support
+
+## [1003.0.0-beta.1] - 2025-10-17
+
+### Added
+- Fixed indentation functionality for hierarchical logging
+- Revised `IndentLogger` class with `indent()`, `outdent()`, `nodent()`, and `getdent()` methods
+- Support for multiple indentation types: numeric (spaces), string, and array-based
+- Indentation unit tests
+- Child logger indentation inheritance with independent state management
+
+### Changed
+- **BREAKING**: Refactored logger architecture to use clean method overrides instead of scattered indentation logic
+- Updated all logger subclasses (`BareLogger`, `MinLogger`, `StdLogger`, `CliLogger`) to use `getIndentedMsgBuilder()` for consistent indentation application
+- Improved separation of concerns by centralizing indentation logic in `IndentLogger` class
+- Enhanced message flow to apply indentation at message builder creation time for better performance
+
+### Fixed
+- Indentation now properly applies to all logging paths (both message builder flow and direct emit calls)
+- Resolved scattered indentation logic across multiple classes (`Emitter`, `LogMgr`, `AbstractLogger`)
+
+### Technical Details
+- Indentation applied by joining array elements with spaces (single space becomes double space as intended)
+- Two code paths handle indentation: normal message builder flow via `getIndentedMsgBuilder()` and direct `emit()` calls
+- Clean architecture eliminates type casting and improves maintainability
+- All level methods (`info`, `debug`, `error`, etc.) now consistently apply indentation
+
 ## [1003.0.0-beta.0] - 2025-10-13
 
 - Updated dependencies
-
-## [1003.0.0-alpha.12] - 2025-10-06
-
-- update dependencies
-
-## [1003.0.0-alpha.11] - 2025-10-05
-
-- Update dependencies
-
-## [1003.0.0-alpha.10] - 2025-10-05
-
-- Update @epdoc/* dependencies.
 
 ## [1003.0.0-alpha.8] - 2025-10-05
 

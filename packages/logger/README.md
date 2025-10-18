@@ -8,9 +8,10 @@ can be chained to create richer output with more columns of data.
 
 - **Fluent API**: Chainable message building with rich formatting options
 - **Multiple Log Levels**: Standard (`error`, `warn`, `info`, `verbose`, `debug`, `trace`, `spam`) and CLI-specific levels
+- **Hierarchical Indentation**: Built-in `indent()`, `outdent()`, `nodent()` methods for structured, nested logging output
 - **Performance Timing**: Built-in `mark()` and `ewt()` (Emit With Time) for measuring operation durations
 - **Flexible Transports**: Console, file, and custom transport support
-- **Hierarchical Loggers**: Root and child loggers with inherited context
+- **Hierarchical Loggers**: Root and child loggers with inherited context and indentation
 - **Conditional Logging**: Build messages only when conditions are met
 - **Middleware Support**: Express and Oak middleware for request tracking
 - **Contextual Logging**: Session IDs, request IDs, and package namespacing
@@ -56,6 +57,17 @@ log.info.section('Start simple.ts std logger').emit();
 
 // A simple log message.
 log.info.h2('Hello world').emit();
+
+// Hierarchical logging with indentation
+log.info.text('Starting operation').emit();
+log.indent('  ');
+log.info.text('Step 1: Initialize').emit();
+log.info.text('Step 2: Process').emit();
+log.indent('  ');
+log.info.text('Substep 2.1: Validate').emit();
+log.info.text('Substep 2.2: Transform').emit();
+log.outdent(2); // Back to root level
+log.info.text('Operation complete').emit();
 ```
 
 # Documentation
@@ -78,12 +90,13 @@ I use logging extensively to
 
 None of the existing loggers that I could find supported the following requirements:
 
-- easy colorization using chaninable methods
+- easy colorization using chainable methods
 - ability to customize log levels to my own liking
 - ability to extend existing classes with my own functionality (most modules default to making code private rather than
   protected)
-- middleware to support backend server display of reqId, session ID so that log messaages could be filtered by request
+- middleware to support backend server display of reqId, session ID so that log messages could be filtered by request
   ID.
+- hierarchical indentation for structured logging output
 - custom transports:
   - A [logdy](https://logdy.dev/) transport is in development
   - external transports requires open and close support, or equivalent.

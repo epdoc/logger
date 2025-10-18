@@ -44,7 +44,7 @@ export class StdLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> impl
    * @returns {M} A message builder configured for the `ERROR` level.
    */
   public get fatal(): M {
-    return this._logMgr.getMsgBuilder('FATAL', this);
+    return this.getIndentedMsgBuilder('FATAL');
   }
 
   /**
@@ -57,7 +57,7 @@ export class StdLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> impl
    * @returns {M} A message builder configured for the `ERROR` level.
    */
   public get critical(): M {
-    return this._logMgr.getMsgBuilder('CRITICAL', this);
+    return this.getIndentedMsgBuilder('CRITICAL');
   }
 
   /**
@@ -70,7 +70,7 @@ export class StdLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> impl
    * @returns {M} A message builder configured for the `VERBOSE` level.
    */
   public get verbose(): M {
-    return this._logMgr.getMsgBuilder('VERBOSE', this);
+    return this.getIndentedMsgBuilder('VERBOSE');
   }
 
   /**
@@ -83,7 +83,7 @@ export class StdLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> impl
    * @returns {M} A message builder configured for the `TRACE` level.
    */
   public get trace(): M {
-    return this._logMgr.getMsgBuilder('TRACE', this);
+    return this.getIndentedMsgBuilder('TRACE');
   }
 
   /**
@@ -96,9 +96,9 @@ export class StdLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> impl
    * @returns {M} A message builder configured for the `SPAM` level.
    */
   public get spam(): M {
-    return this._logMgr.getMsgBuilder('SPAM', this);
+    return this.getIndentedMsgBuilder('SPAM');
   }
   public get silly(): M {
-    return this._logMgr.getMsgBuilder('SILLY', this);
+    return this.getIndentedMsgBuilder('SILLY');
   }
 }

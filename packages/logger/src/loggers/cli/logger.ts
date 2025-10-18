@@ -53,7 +53,7 @@ export class CliLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> {
    * @returns {M} A message builder configured for the `HELP` level.
    */
   public get help(): M {
-    return this._logMgr.getMsgBuilder('HELP', this);
+    return this.getIndentedMsgBuilder('HELP');
   }
 
   /**
@@ -66,7 +66,7 @@ export class CliLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> {
    * @returns {M} A message builder configured for the `DATA` level.
    */
   public get data(): M {
-    return this._logMgr.getMsgBuilder('DATA', this);
+    return this.getIndentedMsgBuilder('DATA');
   }
 
   /**
@@ -79,7 +79,7 @@ export class CliLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> {
    * @returns {M} A message builder configured for the `PROMPT` level.
    */
   public get prompt(): M {
-    return this._logMgr.getMsgBuilder('PROMPT', this);
+    return this.getIndentedMsgBuilder('PROMPT');
   }
 
   /**
@@ -92,7 +92,7 @@ export class CliLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> {
    * @returns {M} A message builder configured for the `VERBOSE` level.
    */
   public get verbose(): M {
-    return this._logMgr.getMsgBuilder('VERBOSE', this);
+    return this.getIndentedMsgBuilder('VERBOSE');
   }
 
   /**
@@ -105,7 +105,7 @@ export class CliLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> {
    * @returns {M} A message builder configured for the `INPUT` level.
    */
   public get input(): M {
-    return this._logMgr.getMsgBuilder('INPUT', this);
+    return this.getIndentedMsgBuilder('INPUT');
   }
 
   /**
@@ -118,6 +118,6 @@ export class CliLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> {
    * @returns {M} A message builder configured for the `SILLY` level.
    */
   public get silly(): M {
-    return this._logMgr.getMsgBuilder('SILLY', this);
+    return this.getIndentedMsgBuilder('SILLY');
   }
 }

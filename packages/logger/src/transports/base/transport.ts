@@ -38,6 +38,7 @@ export abstract class AbstractTransport {
    *
    * @param {LogMgr<MsgBuilder.Abstract>} logMgr - The central log manager.
    * @param {BaseOptions} [opts={}] - Configuration options for the transport.
+   * @param opts.show - Overrides default visibility settings for log metadata
    */
   constructor(logMgr: LogMgr<MsgBuilder.Abstract>, opts: BaseOptions = {}) {
     this._logMgr = logMgr;

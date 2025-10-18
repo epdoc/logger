@@ -43,7 +43,7 @@ export class BareLogger<M extends MsgBuilder.Abstract> extends Indent.Logger<M> 
    * @returns {M} A message builder configured for the `WARN` level.
    */
   public get warn(): M {
-    return this._logMgr.getMsgBuilder('WARN', this);
+    return this.getIndentedMsgBuilder('WARN');
   }
 
   /**
@@ -56,6 +56,6 @@ export class BareLogger<M extends MsgBuilder.Abstract> extends Indent.Logger<M> 
    * @returns {M} A message builder configured for the `INFO` level.
    */
   public get info(): M {
-    return this._logMgr.getMsgBuilder('INFO', this);
+    return this.getIndentedMsgBuilder('INFO');
   }
 }
