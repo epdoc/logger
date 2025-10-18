@@ -1,5 +1,5 @@
 import type * as Log from '$log';
-import * as MsgBuilder from '@epdoc/msgbuilder';
+import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { isArray, isNumber, isString } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
 
@@ -61,7 +61,7 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    */
   protected getIndentedMsgBuilder(level: string): M {
     const msgBuilder = this._logMgr.getMsgBuilder(level, this);
-    
+
     // Apply indentation if present
     if (this._indent.length > 0) {
       const indentPrefix = this._indent.join(' ');
@@ -69,7 +69,7 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
         (msgBuilder as unknown as { prependMsgPart: (str: string) => void }).prependMsgPart(indentPrefix);
       }
     }
-    
+
     return msgBuilder;
   }
 

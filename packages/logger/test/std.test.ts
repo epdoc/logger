@@ -1,5 +1,5 @@
-import { describe, it } from 'jsr:@std/testing/bdd';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
+import { describe, it } from '@std/testing/bdd';
 import * as Log from '../src/mod.ts';
 
 type M = MsgBuilder.Console.Builder;
