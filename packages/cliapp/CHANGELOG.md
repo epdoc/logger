@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.0-beta.2] - 2025-10-20
+
+- Updated dependencies
+
 ## [1.0.0-beta.1] - 2025-10-17
 
 - Update logger dependency
