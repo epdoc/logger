@@ -7,32 +7,34 @@ import type * as MsgBuilder from '$msgbuilder';
 type M = MsgBuilder.Console.Builder;
 type L = Log.Std.Logger<M>;
 
-// Create a new Log Manager instance.
-const logMgr = new Log.Mgr<M>();
+if (import.meta.main) {
+  // Create a new Log Manager instance.
+  const logMgr = new Log.Mgr<M>();
 
-// Get a logger instance from the manager.
-const log = logMgr.getLogger<L>();
+  // Get a logger instance from the manager.
+  const log = logMgr.getLogger<L>();
 
-// Set the logging threshold.
-logMgr.threshold = 'verbose';
+  // Set the logging threshold.
+  logMgr.threshold = 'verbose';
 
-// Show the log level in the output
-logMgr.show = { level: true };
+  // Show the log level in the output
+  logMgr.show = { level: true };
 
-// --- Example Usage ---
-log.info.section('Start simple.ts std logger').emit();
+  // --- Example Usage ---
+  log.info.section('Start simple.ts std logger').emit();
 
-// A simple log message.
-log.info.h2('Hello world').emit();
+  // A simple log message.
+  log.info.h2('Hello world').emit();
 
-// You can also create a message builder instance and use it multiple times.
-const line: MsgBuilder.Console.Builder = log.info;
-line.h2('Hello again');
-line.emit();
+  // You can also create a message builder instance and use it multiple times.
+  const line: MsgBuilder.Console.Builder = log.info;
+  line.h2('Hello again');
+  line.emit();
 
-// A more complex log message with different styles.
-log.info.h1('Output').value('my value').h2('to').path('/Users/me/myfiles').emit();
+  // A more complex log message with different styles.
+  log.info.h1('Output').value('my value').h2('to').path('/Users/me/myfiles').emit();
 
-// An example of logging an error.
-log.error.err(new Error('Nothing actually went wrong')).emit();
-log.info.section('Finish').emit();
+  // An example of logging an error.
+  log.error.err(new Error('Nothing actually went wrong')).emit();
+  log.info.section('Finish').emit();
+}

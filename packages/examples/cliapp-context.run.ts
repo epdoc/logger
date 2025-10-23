@@ -83,7 +83,9 @@ class Cli {
   }
 }
 
-const app = new Cli();
+if (import.meta.main) {
+  const app = new Cli();
 
-// Our utility run method
-await CliApp.run(ctx, () => app.run(ctx));
+  // Our utility run method
+  await CliApp.run(ctx, () => app.run(ctx));
+}

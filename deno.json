@@ -5,33 +5,33 @@
   },
   "license": "MIT",
   "tasks": {
-    "test": "deno test -A",
-    "lint": "deno lint",
-    "check": "deno check logger msgbuilder examples",
-    "examples": "./examples/run.sh"
+    "lint": "deno lint packages deno.json launch.config.json",
+    "check": "deno check packages"
   },
   "workspace": ["./packages/*"],
-  "test": {
-    "include": [
-      "src/**/*test.ts",
-      "test/**/*test.ts"
-    ]
-  },
-  "lint": {
-    "include": [
-      "logger",
-      "msgbuilder",
-      "examples"
-    ]
-  },
   "fmt": {
     "include": [
-      "logger",
-      "msgbuilder",
+      "packages",
       "deno.json",
-      "examples"
+      "launch.config.json"
     ],
     "singleQuote": true,
     "lineWidth": 120
+  },
+  "lint": {
+    "include": ["packages"],
+    "exclude": ["packages/logdy", "packages/examples/logdy.run.ts"]
+  },
+  "test": {
+    "include": ["packages/**/*.test.ts"],
+    "exclude": ["packages/logdy"],
+    "permissions": {
+      "read": true,
+      "write": true,
+      "env": true,
+      "net": true,
+      "run": true,
+      "sys": true
+    }
   }
 }
