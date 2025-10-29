@@ -3,6 +3,7 @@
   "specifiers": {
     "jsr:@epdoc/datetime@^2.0.1": "2.0.1",
     "jsr:@epdoc/duration@~0.2.3": "0.2.3",
+    "jsr:@epdoc/logger@1003": "1003.0.0",
     "jsr:@epdoc/loglevels@^0.0.1": "0.0.1",
     "jsr:@epdoc/msgbuilder@^0.0.1": "0.0.1",
     "jsr:@epdoc/string@~0.1.6": "0.1.6",
@@ -33,7 +34,7 @@
     "jsr:@std/testing@^1.0.16": "1.0.16",
     "npm:@types/node@*": "22.15.15",
     "npm:checksum@1": "1.0.0",
-    "npm:commander@^14.0.1": "14.0.1",
+    "npm:commander@^14.0.2": "14.0.2",
     "npm:pdf-lib@*": "1.17.1",
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
@@ -48,6 +49,17 @@
       "integrity": "e8c05070df55466a33938d950f81b26fb7f803e5a9b491cda60607016cf0dcab",
       "dependencies": [
         "jsr:@epdoc/type"
+      ]
+    },
+    "@epdoc/logger@1003.0.0": {
+      "integrity": "f815efc6c6ffaf6a8c69fa1b000b1d2b69e202baaf04eed0271f841bffda8f83",
+      "dependencies": [
+        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/duration",
+        "jsr:@epdoc/string",
+        "jsr:@epdoc/type",
+        "jsr:@std/assert@^1.0.15",
+        "jsr:@std/fmt"
       ]
     },
     "@epdoc/loglevels@0.0.1": {
@@ -195,8 +207,8 @@
       ],
       "bin": true
     },
-    "commander@14.0.1": {
-      "integrity": "sha512-2JkV3gUZUVrbNA+1sjBOYLsMZ5cEEl8GTFP2a4AVz5hvasAMCQ1D2l2le/cX+pV4N6ZU17zjUahLpIXRrnWL8A=="
+    "commander@14.0.2": {
+      "integrity": "sha512-TywoWNNRbhoD0BXs1P3ZEScW8W5iKrnbithIl0YH+uCmBd0QpPOA8yc82DS3BIE5Ma6FnBVUsJ7wVUDz4dvOWQ=="
     },
     "optimist@0.3.7": {
       "integrity": "sha512-TCx0dXQzVtSCg2OgY/bO9hjM9cV4XYx09TVK+s3+FhkjT6LovsLe+pPMzpWf+6yXK/hUizs2gUoTw3jHM0VaTQ==",
@@ -265,13 +277,13 @@
     "members": {
       "packages/cliapp": {
         "dependencies": [
-          "jsr:@epdoc/logger@^1003.0.0-beta.2",
-          "jsr:@epdoc/msgbuilder@^0.0.1-beta.0",
+          "jsr:@epdoc/logger@1003",
+          "jsr:@epdoc/msgbuilder@^0.0.1",
           "jsr:@epdoc/type@^1.1.17",
           "jsr:@std/assert@^1.0.15",
           "jsr:@std/fmt@^1.0.8",
           "jsr:@std/testing@^1.0.16",
-          "npm:commander@^14.0.1"
+          "npm:commander@^14.0.2"
         ]
       },
       "packages/examples": {
