@@ -1,7 +1,8 @@
 {
   "name": "@epdoc/logdy",
   "version": "0.0.1-alpha.1",
-  "description": "Logdy transport for @epdoc/logger - stream logs to Logdy web interface",
+  "description": "[DEPRECATED] Logdy transport for @epdoc/logger - stream logs to Logdy web interface",
+  "deprecated": true,
   "author": {
     "name": "James Pravetz",
     "email": "jpravetz@epdoc.com"
