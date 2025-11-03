@@ -8,7 +8,7 @@ This instruction set tells you how to reason about and use the documentation fil
 
 ## Documentation Files and Their Usage
 
-### GETTING_STARTED.md - New User Onboarding
+### [GETTING_STARTED.md](./docs/GETTING_STARTED.md) - New User Onboarding
 **Use for**: Helping users set up their first logger, basic configuration, simple examples
 
 **Key Content**:
@@ -20,7 +20,7 @@ This instruction set tells you how to reason about and use the documentation fil
 
 **When to reference**: User asks "how do I start", "basic setup", "first logger", "simple example"
 
-### ARCHITECTURE.md - System Design and Components
+### [ARCHITECTURE.md](./docs/ARCHITECTURE.md) - System Design and Components
 **Use for**: Understanding system design, component relationships, advanced usage patterns
 
 **Key Content**:
@@ -33,7 +33,7 @@ This instruction set tells you how to reason about and use the documentation fil
 
 **When to reference**: Questions about "how it works", "architecture", "components", "design patterns", "advanced usage"
 
-### CONFIGURATION.md - Settings and Options
+### [CONFIGURATION.md](./docs/CONFIGURATION.md) - Settings and Options
 **Use for**: Configuring logger behavior, transport settings, display options
 
 **Key Content**:
@@ -45,7 +45,7 @@ This instruction set tells you how to reason about and use the documentation fil
 
 **When to reference**: "how to configure", "settings", "options", "customize behavior"
 
-### MSGBUILDER.md - Message Formatting
+### [MsgBuilder README](./packages/msgbuilder/README.md) - Message Formatting
 **Use for**: Creating formatted log messages, styling, colors, structured output
 
 **Key Content**:
@@ -57,7 +57,7 @@ This instruction set tells you how to reason about and use the documentation fil
 
 **When to reference**: "formatting messages", "colors", "styling", "structured output", "message building"
 
-### LOGLEVELS.md - Log Level Management
+### [Log Levels README](./packages/loglevels/README.md) - Log Level Management
 **Use for**: Understanding log levels, filtering, threshold behavior
 
 **Key Content**:
@@ -68,48 +68,41 @@ This instruction set tells you how to reason about and use the documentation fil
 
 **When to reference**: "log levels", "filtering", "thresholds", "severity"
 
-### PROGRESS.md - Current Development Status
-**Use for**: Understanding ongoing development, context enhancement features, implementation roadmap
-
-**Key Content**:
-- Context enhancement: changing from arrays (`reqIds[]`, `pkgs[]`) to single values (`reqId`, `pkg`)
-- Request-scoped loggers: `logMgr.createLogger(sid, reqId)`
-- Package context: `logger.createEmitter('api/users/service')`
-- Server application patterns for Express.js integration
-- Implementation phases and current status
+### [PROGRESS.md](./PROGRESS.md) - Current Development Status
+**Use for**: Understanding ongoing development, context enhancement features, implementation roadmap. This document will be absent if there is no ongoing development.
 
 **When to reference**: "what's new", "upcoming features", "server applications", "context tracking", "development status"
 
 ## Task-Specific Guidance
 
 ### For Basic Setup Questions:
-1. Start with GETTING_STARTED.md content
-2. Reference ARCHITECTURE.md for component explanations
-3. Use CONFIGURATION.md for customization options
+1. Start with [GETTING_STARTED.md](./docs/GETTING_STARTED.md) content
+2. Reference [ARCHITECTURE.md](./docs/ARCHITECTURE.md) for component explanations
+3. Use [CONFIGURATION.md](./docs/CONFIGURATION.md) for customization options
 
 ### For Advanced Implementation:
-1. Use ARCHITECTURE.md for system design understanding
-2. Reference MSGBUILDER.md for message formatting
-3. Check PROGRESS.md for latest features
+1. Use [ARCHITECTURE.md](./docs/ARCHITECTURE.md) for system design understanding
+2. Reference [MsgBuilder README](./packages/msgbuilder/README.md) for message formatting
+3. Check [PROGRESS.md](./PROGRESS.md), if it exists, for latest features
 
 ### For Server Applications:
-1. Secondary: PROGRESS.md for implementation status
-1. Supplement: ARCHITECTURE.md for Logger methods
+1. Secondary: [PROGRESS.md](./PROGRESS.md) for implementation status
+1. Supplement: [ARCHITECTURE.md](./docs/ARCHITECTURE.md) for Logger methods
 
 ### For Troubleshooting:
-1. ARCHITECTURE.md for understanding component flow
-2. CONFIGURATION.md for settings issues
-3. GETTING_STARTED.md for basic setup problems
+1. [ARCHITECTURE.md](./docs/ARCHITECTURE.md) for understanding component flow
+2. [CONFIGURATION.md](./docs/CONFIGURATION.md) for settings issues
+3. [GETTING_STARTED.md](./docs/GETTING_STARTED.md) for basic setup problems
 
 ## Code Examples Integration
 When providing code examples, combine information from multiple docs:
-- Use GETTING_STARTED.md patterns for basic structure
-- Apply ARCHITECTURE.md knowledge for proper typing
-- Include MSGBUILDER.md techniques for formatting
-- Reference CONFIGURATION.md for proper setup
+- Use [GETTING_STARTED.md](./docs/GETTING_STARTED.md) patterns for basic structure
+- Apply [ARCHITECTURE.md](./docs/ARCHITECTURE.md) knowledge for proper typing
+- Include [MsgBuilder README](./packages/msgbuilder/README.md) techniques for formatting
+- Reference [CONFIGURATION.md](./docs/CONFIGURATION.md) for proper setup
 
 ## Current Development Context
-The library is actively developing various features (see documents in [./docs/progress](./docs/progress)). Open issues that need to be resolved are in [ISSUES.md](./docs/progress/ISSUES.md).
+The library is actively developing various features (see  [PROGRESS.md](./PROGRESS.md), if it exists). Open issues that need to be resolved may also be found in [ISSUES.md](./ISSUES.md).
 
 ## Response Strategy
 1. **Identify task type** from user question

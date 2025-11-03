@@ -55,6 +55,98 @@ const log = new Log.Mgr().getLogger();
 log.info.h1('Hello').text('World').emit();
 ```
 
+### Conditional Logging
+
+Our default `MsgBuilder` supports conditional logging, which allows you to build and emit log messages only when certain conditions are met. This is useful for reducing logging verbosity and focusing on specific scenarios.
+
+The conditional logging methods are:
+
+-   `if(condition: boolean)`: Starts a conditional block. The following methods will only be executed if the `condition` is `true`.
+-   `elif(condition: boolean)`: Starts an "else if" block. The following methods will only be executed if the previous `if` or `elif` conditions were `false` and this `condition` is `true`.
+-   `else()`: Starts an "else" block. The following methods will only beexecuted if all previous `if` and `elif` conditions were `false`.
+-   `endif()`: Ends a conditional block.
+
+Here's an example of how to use conditional logging:
+
+```typescript
+const someCondition = true;
+const anotherCondition = false;
+
+log.info
+  .if(someCondition)
+    .text('This will be logged because someCondition is true.')
+  .elif(anotherCondition)
+    .text('This will NOT be logged.')
+  .else()
+    .text('This will NOT be logged either.')
+  .endif()
+  .emit();
+```
+
+## Performance Timing
+
+The message builder supports emit with time (EWT) functionality for performance measurement when used with a logger.
+
+### Creating Performance Marks
+
+Use the logger's `mark()` method to create a performance mark:
+
+```ts
+const log = new Log.Mgr().getLogger();
+const mark = log.mark(); // Returns a unique mark identifier
+```
+
+### Using `ewt()` - Emit With Time
+
+The message builder's `ewt()` method calculates elapsed time since a mark was created and includes it in the log output:
+
+```ts
+const log = new Log.Mgr().getLogger();
+
+// Basic usage
+const mark1 = log.mark();
+// ... some operation ...
+log.info.h1('Operation completed').ewt(mark1);
+// Output: "Operation completed (123 ms)"
+
+// Keep mark for reuse
+const mark2 = log.mark();
+// ... first operation ...
+log.info.h1('First checkpoint').ewt(mark2, true); // keep=true preserves the mark
+// ... second operation ...
+log.info.h1('Final result').ewt(mark2); // Measures total time from original mark
+```
+
+### Time Formatting
+
+The elapsed time is automatically formatted with appropriate precision:
+- **> 100ms**: No decimal places (e.g., "123 ms")
+- **10-100ms**: 1 decimal place (e.g., "45.6 ms") 
+- **1-10ms**: 2 decimal places (e.g., "7.89 ms")
+- **< 1ms**: 3 decimal places (e.g., "0.123 ms")
+
+### Example Usage
+
+```ts
+import { Log } from '@epdoc/logger';
+
+const log = new Log.Mgr().init().getLogger();
+
+// Measure database operation
+const dbMark = log.mark();
+await database.query('SELECT * FROM users');
+log.info.h1('Database query').ewt(dbMark);
+
+// Measure multiple checkpoints
+const processMark = log.mark();
+await step1();
+log.debug.h1('Step 1 completed').ewt(processMark, true);
+await step2();
+log.debug.h1('Step 2 completed').ewt(processMark, true);
+await step3();
+log.info.h1('Process completed').ewt(processMark);
+```
+
 ## API
 
 ### `AbstractMsgBuilder`
