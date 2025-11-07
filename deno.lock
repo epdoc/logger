@@ -2,6 +2,7 @@
   "version": "5",
   "specifiers": {
     "jsr:@epdoc/datetime@^2.0.1": "2.0.1",
+    "jsr:@epdoc/duration@0.3": "0.3.0",
     "jsr:@epdoc/duration@~0.2.3": "0.2.3",
     "jsr:@epdoc/string@~0.1.6": "0.1.6",
     "jsr:@epdoc/type@^1.1.17": "1.1.18",
@@ -46,6 +47,12 @@
       "integrity": "e8c05070df55466a33938d950f81b26fb7f803e5a9b491cda60607016cf0dcab",
       "dependencies": [
         "jsr:@epdoc/type@^1.1.17"
+      ]
+    },
+    "@epdoc/duration@0.3.0": {
+      "integrity": "3ec5bd1dadec3c9f109da3247dfb041ca2819d2d4ebae0f62a2c63e86abba50a",
+      "dependencies": [
+        "jsr:@epdoc/type@^1.1.18"
       ]
     },
     "@epdoc/string@0.1.6": {
@@ -305,7 +312,7 @@
       },
       "packages/msgbuilder": {
         "dependencies": [
-          "jsr:@epdoc/duration@~0.2.3",
+          "jsr:@epdoc/duration@0.3",
           "jsr:@epdoc/string@~0.1.6",
           "jsr:@epdoc/type@^1.1.18",
           "jsr:@std/assert@^1.0.15",
