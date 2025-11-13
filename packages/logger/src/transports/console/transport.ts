@@ -1,9 +1,9 @@
-import type * as Level from '$level';
+import type { Entry } from '$log';
+import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { StringEx } from '@epdoc/string';
 import { _, type Integer } from '@epdoc/type';
 import type { LogMgr } from '../../logmgr.ts';
-import type { Entry } from '../../types.ts';
 import * as Base from '../base/mod.ts';
 import { OutputFormat } from '../consts.ts';
 import type { OutputFormatType, TransportEntry } from '../types.ts';
