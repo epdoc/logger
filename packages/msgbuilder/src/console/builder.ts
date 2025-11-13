@@ -111,10 +111,18 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   }
 
   /**
-   * Sets a flag for the next chained method to apply pluralization logic,
-   * and outputs the provided number with 'value' styling.
+   * Sets a flag for the next chained method to apply pluralization logic, and outputs the provided
+   * number with 'value' styling.
+   *
+   * If the next chained method has one string parameter, an 's' will be added to the parameter to
+   * pluralize. If the next chained method has two parameters, the first should be the singular
+   * string, and the second the plural string.
    * @param {Integer} num - The number to display and use for pluralization determination.
    * @returns {this} The current instance for method chaining.
+   * @example
+   * ```ts
+   * log.info.text('Found').count(activities.length).text('activity', 'activities').emit();
+   * ```
    */
   public count(num: Integer): this {
     // First, output the number itself using the base stylize method.

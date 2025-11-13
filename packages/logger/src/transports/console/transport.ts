@@ -92,7 +92,7 @@ export class ConsoleTransport extends Base.Transport {
       {
         timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
       },
-      _.pick(msg, 'level', 'sid', 'pkg', 'reqId', 'elapsed'),
+      _.pick(msg, 'level', 'sid', 'pkg', 'reqId', 'time'),
     );
 
     if (msg.msg instanceof MsgBuilder.Abstract) {
