@@ -170,6 +170,10 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
     return this.stylize(consoleStyleFormatters.path, ...args);
   }
 
+  public url(...args: MsgBuilder.StyleArg[]): this {
+    return this.stylize(consoleStyleFormatters.url, ...args);
+  }
+
   /**
    * Appends a styled file or folder path, displaying the path relative to the
    * user's home directory. Use for displaying file paths or filenames.
@@ -188,6 +192,10 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    */
   public date(...args: MsgBuilder.StyleArg[]): this {
     return this.stylize(consoleStyleFormatters.date, ...args);
+  }
+
+  public code(...args: MsgBuilder.StyleArg[]): this {
+    return this.stylize(consoleStyleFormatters.code, ...args);
   }
 
   /**
@@ -249,6 +257,10 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    */
   public error(...args: MsgBuilder.StyleArg[]): this {
     return this._allow ? this.stylize(consoleStyleFormatters.error, ...args) : this;
+  }
+
+  public success(...args: MsgBuilder.StyleArg[]): this {
+    return this._allow ? this.stylize(consoleStyleFormatters.success, ...args) : this;
   }
 
   /**

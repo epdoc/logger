@@ -55,23 +55,26 @@ export const reset = {
 };
 
 export const enable = {
-  text: set.brightWhiteText,
-  h1: set.bold + set.magentaText, // Original: magenta THEN bold
-  h2: set.magentaText, // Original: magenta
-  h3: set.yellowText, // Original: yellow
-  action: set.blackText + set.bgYellow, // Original: bgYellow THEN black
-  label: set.blueText, // Original: blue
-  highlight: set.brightMagentaText, // Original: brightMagenta (was magenta code) THEN bold
-  value: set.greenText, // Original: green
-  path: set.underline + set.grayText, // Original: underline THEN gray
+  text: set.whiteText, // Changed from brightWhite to white
+  h1: set.brightWhiteText, // Changed from bold + magenta to just brightWhite
+  h2: set.magentaText,
+  h3: set.yellowText,
+  action: set.blackText + set.bgYellow,
+  label: set.grayText, // Changed from blue to gray
+  highlight: set.brightMagentaText,
+  value: set.brightGreenText, // Changed from green to brightGreen
+  url: set.cyanText, // cyan for URLs
+  path: set.cyanText, // Changed from underline + gray to just cyan
+  code: set.brightWhiteText, // bright white for code
   date: set.brightCyanText,
-  warn: set.brightYellowText, // Original: brightYellow (was yellow code) THEN bold
-  error: set.bold + set.brightRedText, // Original: brightRed THEN bold (order of codes was bold then red)
-  strikethru: set.inverse, // Original: inverse (strikethrough is \x1b[9m, inverse is \x1b[7m) - kept inverse as per original code
-  _reqId: set.brightYellowText, // Original: brightYellow (was yellow code)
-  _sid: set.underline + set.brightYellowText, // Original: underline THEN yellow
-  _package: set.brightGreenText, // Original: green
-  _action: set.brightBlueText, // Original: blue
+  warn: set.yellowText, // Changed from brightYellow to yellow
+  error: set.redText, // Changed from bold + brightRed to just red
+  success: set.brightGreenText, // bright green for success
+  strikethru: set.inverse,
+  _reqId: set.brightYellowText,
+  _sid: set.underline + set.brightYellowText,
+  _package: set.brightGreenText,
+  _action: set.brightBlueText,
   _plain: set.whiteText,
   _suffix: set.whiteText,
   _elapsed: set.whiteText,
@@ -82,20 +85,23 @@ export const enable = {
 
 export const disable = {
   text: reset.fg,
-  h1: reset.fg + reset.bold, // reset bold THEN reset color
+  h1: reset.fg, // Changed from fg + bold to just fg
   h2: reset.fg,
   h3: reset.fg,
-  action: reset.bg + reset.fg, // reset fg THEN reset bg
+  action: reset.bg + reset.fg,
   label: reset.fg,
-  highlight: reset.fg, // reset bold THEN reset color
+  highlight: reset.fg,
   value: reset.fg,
-  path: reset.fg + reset.underline, // reset fg THEN reset underline
+  url: reset.fg,
+  path: reset.fg, // Changed from fg + underline to just fg
+  code: reset.fg,
   date: reset.fg,
-  warn: reset.fg, // reset bold THEN reset color
-  error: reset.fg + reset.bold, // reset bold THEN reset color (corrected from fg only)
-  strikethru: reset.inverse, // reset inverse
+  warn: reset.fg,
+  error: reset.fg, // Changed from fg + bold to just fg
+  success: reset.fg,
+  strikethru: reset.inverse,
   _reqId: reset.fg,
-  _sid: reset.fg + reset.underline, // reset fg THEN reset underline
+  _sid: reset.fg + reset.underline,
   _package: reset.fg,
   _action: reset.fg,
   _plain: reset.fg,

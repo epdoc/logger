@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.5] - 2025-11-21
+
+### Added
+- Added `.url()` method for styling URLs with cyan color
+- Added `.code()` method for styling inline code/commands with bright white color
+- Added `.success()` method for styling success messages with bright green color
+
+### Changed
+- Updated default color scheme for better visibility:
+  - `text`: Changed from bright white to white
+  - `h1`: Changed from bold magenta to bright white
+  - `label`: Changed from blue to gray
+  - `value`: Changed from green to bright green
+  - `path`: Changed from underlined gray to cyan
+  - `warn`: Changed from bright yellow to yellow
+  - `error`: Changed from bold bright red to red
+- Updated test utilities (`color-map.ts`) to match new color scheme
+- Fixed `label` test to use color constants instead of hardcoded ANSI codes
+
+### Fixed
+- All unit tests now pass with updated color scheme (39 tests)
+
 ## [0.0.4] - 2025-11-13
 
 - Update dependencies

@@ -19,19 +19,22 @@ describe('MsgBuilder.Console', () => {
         .label('label')
         .highlight('highlight')
         .value('value')
+        .url('url')
         .path('path')
+        .code('code')
         .date('date')
+        .success('success')
         .strikethru('strikethru')
         .warn('warn')
         .error('error');
       const result = builder.format({ color: true });
       console.log(result);
       expect(result).toMatch(
-        /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*path.*date.*strikethru.*warn.*error.*$/,
+        /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*url.*path.*code.*date.*success.*strikethru.*warn.*error.*$/,
       );
       const r2 = builder.format({ color: false });
       console.log(r2);
-      expect(r2).toEqual('h1 h2 h3 action label highlight value path date strikethru warn error');
+      expect(r2).toEqual('h1 h2 h3 action label highlight value url path code date success strikethru warn error');
     });
     test('display no colors', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
@@ -43,14 +46,17 @@ describe('MsgBuilder.Console', () => {
         .label('label')
         .highlight('highlight')
         .value('value')
+        .url('url')
         .path('path')
+        .code('code')
         .date('date')
+        .success('success')
         .strikethru('strikethru')
         .warn('warn')
         .error('error')
         .format({ color: false });
       console.log(result);
-      assertEquals(result, 'h1 h2 h3 action label highlight value path date strikethru warn error');
+      assertEquals(result, 'h1 h2 h3 action label highlight value url path code date success strikethru warn error');
     });
     test('display applyColor', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
@@ -83,7 +89,7 @@ describe('MsgBuilder.Console', () => {
     test('label', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
       const result = msgBuilder.label('label').format({ color: true });
-      assertEquals(result, '\x1b[34mlabel\x1b[39m');
+      assertEquals(result, enable.label + 'label' + disable.label);
     });
     test('highlight', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
@@ -142,6 +148,21 @@ describe('MsgBuilder.Console', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
       const result = msgBuilder.strikethru('strikethru').format({ color: true });
       assertEquals(result, enable.strikethru + 'strikethru' + disable.strikethru);
+    });
+    test('url', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.url('https://example.com').format({ color: true });
+      assertEquals(result, enable.url + 'https://example.com' + disable.url);
+    });
+    test('code', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.code('const foo = 42;').format({ color: true });
+      assertEquals(result, enable.code + 'const foo = 42;' + disable.code);
+    });
+    test('success', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.success('Operation completed').format({ color: true });
+      assertEquals(result, enable.success + 'Operation completed' + disable.success);
     });
   });
   describe('err method', () => {
