@@ -15,7 +15,9 @@ export type DenoPkg = {
   name: string;
   version: string;
   description: string;
+  author?: { name?: string; email?: string };
   workspace?: string[];
+  license?: string;
 };
 
 /**
