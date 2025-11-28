@@ -36,6 +36,45 @@ deno add jsr:@epdoc/cliapp
 7. Apply logging CLI options to `@epdoc/logger` using `CliApp.util.configureLogging(ctx, opts)`.
 8. Optionally use the `CliApp.util.run` wrapper to log your application's termination consistently.
 
+## Controlling Option Order in Help Text
+
+The order in which options appear in help text is determined by the order in which they are added to the command. The `addLogging()` and `addDryRun()` methods are deliberately separate to give you control over option placement.
+
+### Pattern: Create Methods for Application-Specific Options
+
+To maintain clean control over option ordering, extend the `Command` class with your own `addXxx()` methods:
+
+```typescript
+// In your types.ts or command extensions file
+export class Command extends CliApp.Command<MsgBuilder, Logger> {
+  /**
+   * Adds the --local global option.
+   */
+  addLocal(): this {
+    this.option(
+      '--local',
+      'Force local-only mode (do not connect to remote cache)',
+    );
+    return this;
+  }
+}
+```
+
+Then control the order when building your command:
+
+```typescript
+// Options will appear in help text in this order:
+cmd.addLocal();       // Position 2 (after --version)
+cmd.addLogging(ctx);  // Adds --log, --log_show, -A, -V, -D, -T, -S
+cmd.addDryRun();      // Adds -n, --dry-run
+```
+
+This pattern:
+- Keeps option definitions centralized and reusable
+- Gives explicit control over help text ordering
+- Follows the same pattern as built-in `addLogging()` and `addDryRun()` methods
+- Enables method chaining for clean, declarative command setup
+
 ## Example
 
 This example can be found in [purge.ts](./examples/purge.ts) which can be run using `deno run -S ./examples/purge.ts`.
