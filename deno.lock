@@ -4,11 +4,10 @@
     "jsr:@epdoc/datetime@^2.0.5": "2.0.5",
     "jsr:@epdoc/duration@~0.2.3": "0.2.3",
     "jsr:@epdoc/duration@~0.3.4": "0.3.4",
+    "jsr:@epdoc/logger@^1003.0.7": "1003.0.7",
     "jsr:@epdoc/loglevels@^0.0.5": "0.0.5",
-    "jsr:@epdoc/msgbuilder@^0.0.8": "0.0.8",
     "jsr:@epdoc/msgbuilder@^0.0.9": "0.0.9",
     "jsr:@epdoc/string@~0.1.10": "0.1.10",
-    "jsr:@epdoc/string@~0.1.9": "0.1.10",
     "jsr:@epdoc/type@^1.1.17": "1.1.20",
     "jsr:@epdoc/type@^1.1.18": "1.1.20",
     "jsr:@epdoc/type@^1.1.20": "1.1.20",
@@ -61,21 +60,24 @@
         "jsr:@epdoc/type@^1.1.20"
       ]
     },
-    "@epdoc/loglevels@0.0.5": {
-      "integrity": "8794bb16cf3e76a6710d123bebd657e23fb7d14b64c682332f06422d30799e7e"
-    },
-    "@epdoc/msgbuilder@0.0.8": {
-      "integrity": "a5762351a7782ae1803236b3f9ef21adfa001b0ff7003b416b03bfcfdf27b7fe",
+    "@epdoc/logger@1003.0.7": {
+      "integrity": "f06afaba758ca63e0285ab23b072f7433a8b660fed265f32b581547796ae2f5d",
       "dependencies": [
-        "jsr:@epdoc/string@~0.1.9",
+        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/duration@~0.3.4",
+        "jsr:@epdoc/string",
         "jsr:@epdoc/type@^1.1.20",
+        "jsr:@std/assert@^1.0.16",
         "jsr:@std/fmt"
       ]
+    },
+    "@epdoc/loglevels@0.0.5": {
+      "integrity": "8794bb16cf3e76a6710d123bebd657e23fb7d14b64c682332f06422d30799e7e"
     },
     "@epdoc/msgbuilder@0.0.9": {
       "integrity": "af58dc24f16029b40fdee3de37c47fe05101877cf1339b5ddede6464931babeb",
       "dependencies": [
-        "jsr:@epdoc/string@~0.1.10",
+        "jsr:@epdoc/string",
         "jsr:@epdoc/type@^1.1.20",
         "jsr:@std/fmt"
       ]
@@ -284,8 +286,8 @@
     "members": {
       "packages/cliapp": {
         "dependencies": [
-          "jsr:@epdoc/logger@^1003.0.6",
-          "jsr:@epdoc/msgbuilder@^0.0.8",
+          "jsr:@epdoc/logger@^1003.0.7",
+          "jsr:@epdoc/msgbuilder@^0.0.9",
           "jsr:@epdoc/type@^1.1.20",
           "jsr:@std/assert@^1.0.16",
           "jsr:@std/fmt@^1.0.8",
