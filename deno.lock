@@ -3,11 +3,13 @@
   "specifiers": {
     "jsr:@epdoc/datetime@^2.0.3": "2.0.3",
     "jsr:@epdoc/duration@~0.2.3": "0.2.3",
-    "jsr:@epdoc/duration@~0.3.3": "0.3.3",
+    "jsr:@epdoc/duration@~0.3.3": "0.3.4",
+    "jsr:@epdoc/duration@~0.3.4": "0.3.4",
     "jsr:@epdoc/logger@^1003.0.5": "1003.0.5",
     "jsr:@epdoc/loglevels@^0.0.4": "0.0.4",
     "jsr:@epdoc/msgbuilder@^0.0.7": "0.0.7",
-    "jsr:@epdoc/string@~0.1.8": "0.1.8",
+    "jsr:@epdoc/string@~0.1.8": "0.1.9",
+    "jsr:@epdoc/string@~0.1.9": "0.1.9",
     "jsr:@epdoc/type@^1.1.17": "1.1.20",
     "jsr:@epdoc/type@^1.1.18": "1.1.20",
     "jsr:@epdoc/type@^1.1.19": "1.1.20",
@@ -61,12 +63,18 @@
         "jsr:@epdoc/type@^1.1.19"
       ]
     },
+    "@epdoc/duration@0.3.4": {
+      "integrity": "84ced22753052efbc22ced18c8991841a703a30a1a6eb8aba1a0d9123cc11227",
+      "dependencies": [
+        "jsr:@epdoc/type@^1.1.20"
+      ]
+    },
     "@epdoc/logger@1003.0.5": {
       "integrity": "8e27c8fe141e0eab633eb32f107d3c8c47d1f21b77b8c3d9ed4cb0ecc26b0326",
       "dependencies": [
         "jsr:@epdoc/datetime",
         "jsr:@epdoc/duration@~0.3.3",
-        "jsr:@epdoc/string",
+        "jsr:@epdoc/string@~0.1.8",
         "jsr:@epdoc/type@^1.1.19",
         "jsr:@std/assert@^1.0.16",
         "jsr:@std/fmt"
@@ -78,7 +86,7 @@
     "@epdoc/msgbuilder@0.0.7": {
       "integrity": "188260e875b57b7d95ec8395e5fd1a142268b217e8e807fe676006c2d29fb09a",
       "dependencies": [
-        "jsr:@epdoc/string",
+        "jsr:@epdoc/string@~0.1.8",
         "jsr:@epdoc/type@^1.1.19",
         "jsr:@std/fmt"
       ]
@@ -87,6 +95,13 @@
       "integrity": "e5018ca100a38420c07ac10f57ba25152bc2b7052cb4544574a8986ebe7e6b60",
       "dependencies": [
         "jsr:@epdoc/type@^1.1.19",
+        "jsr:@std/assert@^1.0.16"
+      ]
+    },
+    "@epdoc/string@0.1.9": {
+      "integrity": "52bcfabad94a2227bde059d5bb5dabd0fe8eea33b25e6104f89dcb651d87bd3c",
+      "dependencies": [
+        "jsr:@epdoc/type@^1.1.20",
         "jsr:@std/assert@^1.0.16"
       ]
     },
@@ -346,9 +361,9 @@
       },
       "packages/msgbuilder": {
         "dependencies": [
-          "jsr:@epdoc/duration@~0.3.3",
-          "jsr:@epdoc/string@~0.1.8",
-          "jsr:@epdoc/type@^1.1.19",
+          "jsr:@epdoc/duration@~0.3.4",
+          "jsr:@epdoc/string@~0.1.9",
+          "jsr:@epdoc/type@^1.1.20",
           "jsr:@std/assert@^1.0.16",
           "jsr:@std/expect@^1.0.17",
           "jsr:@std/fmt@^1.0.8",
