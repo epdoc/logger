@@ -3,13 +3,11 @@
   "specifiers": {
     "jsr:@epdoc/datetime@^2.0.10": "2.0.10",
     "jsr:@epdoc/duration@~0.3.5": "0.3.5",
+    "jsr:@epdoc/logger@^1003.0.9": "1003.0.9",
     "jsr:@epdoc/loglevels@^0.0.6": "0.0.6",
-    "jsr:@epdoc/msgbuilder@^0.0.10": "0.0.10",
     "jsr:@epdoc/msgbuilder@^0.0.11": "0.0.11",
-    "jsr:@epdoc/string@~0.1.11": "0.1.12",
     "jsr:@epdoc/string@~0.1.12": "0.1.12",
     "jsr:@epdoc/type@^1.1.17": "1.2.1",
-    "jsr:@epdoc/type@^1.1.20": "1.2.1",
     "jsr:@epdoc/type@^1.2.1": "1.2.1",
     "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@^1.0.14": "1.0.16",
@@ -54,21 +52,24 @@
         "jsr:@epdoc/type@^1.2.1"
       ]
     },
-    "@epdoc/loglevels@0.0.6": {
-      "integrity": "60097bca1379fdc0735a8ec3b26bdc1dc763bda9f403ee175d1456d767109413"
-    },
-    "@epdoc/msgbuilder@0.0.10": {
-      "integrity": "fd40ca6c64c5d5ce42d7683762791cd8278953d67e34c7b47403a79d39895739",
+    "@epdoc/logger@1003.0.9": {
+      "integrity": "644fd5f10afc46a023bde6c9e4607b9abb9f5615370bd0d8b257e06026324f39",
       "dependencies": [
-        "jsr:@epdoc/string@~0.1.11",
-        "jsr:@epdoc/type@^1.1.20",
+        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/duration",
+        "jsr:@epdoc/string",
+        "jsr:@epdoc/type@^1.2.1",
+        "jsr:@std/assert@^1.0.16",
         "jsr:@std/fmt"
       ]
+    },
+    "@epdoc/loglevels@0.0.6": {
+      "integrity": "60097bca1379fdc0735a8ec3b26bdc1dc763bda9f403ee175d1456d767109413"
     },
     "@epdoc/msgbuilder@0.0.11": {
       "integrity": "73a6f74d7332512d7a7aea6ba0fbc4ccdfb54bd5719ae35d6b33b5436a8fd54f",
       "dependencies": [
-        "jsr:@epdoc/string@~0.1.12",
+        "jsr:@epdoc/string",
         "jsr:@epdoc/type@^1.2.1",
         "jsr:@std/fmt"
       ]
@@ -277,9 +278,9 @@
     "members": {
       "packages/cliapp": {
         "dependencies": [
-          "jsr:@epdoc/logger@^1003.0.8",
-          "jsr:@epdoc/msgbuilder@^0.0.10",
-          "jsr:@epdoc/type@^1.1.20",
+          "jsr:@epdoc/logger@^1003.0.9",
+          "jsr:@epdoc/msgbuilder@^0.0.11",
+          "jsr:@epdoc/type@^1.2.1",
           "jsr:@std/assert@^1.0.16",
           "jsr:@std/fmt@^1.0.8",
           "jsr:@std/testing@^1.0.16",
