@@ -3,8 +3,10 @@
   "specifiers": {
     "jsr:@epdoc/datetime@^2.0.7": "2.0.10",
     "jsr:@epdoc/duration@~0.3.4": "0.3.5",
+    "jsr:@epdoc/duration@~0.3.5": "0.3.5",
     "jsr:@epdoc/loglevels@^0.0.5": "0.0.5",
     "jsr:@epdoc/string@~0.1.11": "0.1.12",
+    "jsr:@epdoc/string@~0.1.12": "0.1.12",
     "jsr:@epdoc/type@^1.1.17": "1.2.1",
     "jsr:@epdoc/type@^1.1.20": "1.2.1",
     "jsr:@epdoc/type@^1.2.1": "1.2.1",
@@ -296,9 +298,9 @@
       },
       "packages/msgbuilder": {
         "dependencies": [
-          "jsr:@epdoc/duration@~0.3.4",
-          "jsr:@epdoc/string@~0.1.11",
-          "jsr:@epdoc/type@^1.1.20",
+          "jsr:@epdoc/duration@~0.3.5",
+          "jsr:@epdoc/string@~0.1.12",
+          "jsr:@epdoc/type@^1.2.1",
           "jsr:@std/assert@^1.0.16",
           "jsr:@std/expect@^1.0.17",
           "jsr:@std/fmt@^1.0.8",
