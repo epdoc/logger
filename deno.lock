@@ -1,16 +1,13 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/datetime@^2.0.7": "2.0.7",
-    "jsr:@epdoc/duration@~0.2.3": "0.2.3",
-    "jsr:@epdoc/duration@~0.3.4": "0.3.4",
-    "jsr:@epdoc/logger@^1003.0.8": "1003.0.8",
+    "jsr:@epdoc/datetime@^2.0.7": "2.0.10",
+    "jsr:@epdoc/duration@~0.3.4": "0.3.5",
     "jsr:@epdoc/loglevels@^0.0.5": "0.0.5",
-    "jsr:@epdoc/msgbuilder@^0.0.10": "0.0.10",
-    "jsr:@epdoc/string@~0.1.11": "0.1.11",
-    "jsr:@epdoc/type@^1.1.17": "1.1.20",
-    "jsr:@epdoc/type@^1.1.18": "1.1.20",
-    "jsr:@epdoc/type@^1.1.20": "1.1.20",
+    "jsr:@epdoc/string@~0.1.11": "0.1.12",
+    "jsr:@epdoc/type@^1.1.17": "1.2.1",
+    "jsr:@epdoc/type@^1.1.20": "1.2.1",
+    "jsr:@epdoc/type@^1.2.1": "1.2.1",
     "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@^1.0.14": "1.0.16",
     "jsr:@std/assert@^1.0.15": "1.0.16",
@@ -42,55 +39,30 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
-    "@epdoc/datetime@2.0.7": {
-      "integrity": "f427b609cd18e6fdd03cf5e5860f43a85889ff775ec019c560d41b3cabf9f061",
+    "@epdoc/datetime@2.0.10": {
+      "integrity": "a326d860ccbbfdaca048889ebd163c07cf1154ca873e1a5a84a6d0ec98daf8cb",
       "dependencies": [
-        "jsr:@epdoc/type@^1.1.20"
+        "jsr:@epdoc/type@^1.2.1"
       ]
     },
-    "@epdoc/duration@0.2.3": {
-      "integrity": "e8c05070df55466a33938d950f81b26fb7f803e5a9b491cda60607016cf0dcab",
+    "@epdoc/duration@0.3.5": {
+      "integrity": "7b8155fbac77efd6157d2028e3d90be8bddcc63b37c224750378344af32b0ac1",
       "dependencies": [
-        "jsr:@epdoc/type@^1.1.17"
-      ]
-    },
-    "@epdoc/duration@0.3.4": {
-      "integrity": "84ced22753052efbc22ced18c8991841a703a30a1a6eb8aba1a0d9123cc11227",
-      "dependencies": [
-        "jsr:@epdoc/type@^1.1.20"
-      ]
-    },
-    "@epdoc/logger@1003.0.8": {
-      "integrity": "ff90b8d13a3059885b074e9e078c78176b7c54372434ce3e15096abf1d6375e3",
-      "dependencies": [
-        "jsr:@epdoc/datetime",
-        "jsr:@epdoc/duration@~0.3.4",
-        "jsr:@epdoc/string",
-        "jsr:@epdoc/type@^1.1.20",
-        "jsr:@std/assert@^1.0.16",
-        "jsr:@std/fmt"
+        "jsr:@epdoc/type@^1.2.1"
       ]
     },
     "@epdoc/loglevels@0.0.5": {
       "integrity": "8794bb16cf3e76a6710d123bebd657e23fb7d14b64c682332f06422d30799e7e"
     },
-    "@epdoc/msgbuilder@0.0.10": {
-      "integrity": "fd40ca6c64c5d5ce42d7683762791cd8278953d67e34c7b47403a79d39895739",
+    "@epdoc/string@0.1.12": {
+      "integrity": "e4a347e789bf2e72281d239d7f7e2f8d5d93601911e186fbf24e99ac43564702",
       "dependencies": [
-        "jsr:@epdoc/string",
-        "jsr:@epdoc/type@^1.1.20",
-        "jsr:@std/fmt"
-      ]
-    },
-    "@epdoc/string@0.1.11": {
-      "integrity": "1a6559b2c2d834b1b7503aaad142246ae2e45a7da339cc95188968edfc446668",
-      "dependencies": [
-        "jsr:@epdoc/type@^1.1.20",
+        "jsr:@epdoc/type@^1.2.1",
         "jsr:@std/assert@^1.0.16"
       ]
     },
-    "@epdoc/type@1.1.20": {
-      "integrity": "ae737015f06bdb85c9872557209c393cfa6a1c726da3884f728735578005e02d",
+    "@epdoc/type@1.2.1": {
+      "integrity": "d049eb7628c7a1b2e08fe96ae30d01a774f0a23f41cb738db0a40dfe9dbca8d4",
       "dependencies": [
         "jsr:@std/encoding"
       ]
@@ -300,12 +272,6 @@
           "jsr:@epdoc/type@^1.1.17"
         ]
       },
-      "packages/logdy": {
-        "dependencies": [
-          "jsr:@std/assert@^1.0.15",
-          "jsr:@std/testing@^1.0.16"
-        ]
-      },
       "packages/logger": {
         "dependencies": [
           "jsr:@epdoc/datetime@^2.0.7",
@@ -320,18 +286,9 @@
           "jsr:@std/testing@^1.0.16"
         ]
       },
-      "packages/logjava": {
-        "dependencies": [
-          "jsr:@epdoc/duration@~0.2.3",
-          "jsr:@epdoc/type@^1.1.18",
-          "jsr:@std/assert@^1.0.15",
-          "jsr:@std/fmt@^1.0.8",
-          "jsr:@std/testing@^1.0.16"
-        ]
-      },
       "packages/loglevels": {
         "dependencies": [
-          "jsr:@epdoc/type@^1.1.20",
+          "jsr:@epdoc/type@^1.2.1",
           "jsr:@std/assert@^1.0.16",
           "jsr:@std/fmt@^1.0.8",
           "jsr:@std/testing@^1.0.16"

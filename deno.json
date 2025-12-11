@@ -8,7 +8,13 @@
     "lint": "deno lint packages deno.json launch.config.json",
     "check": "deno check packages"
   },
-  "workspace": ["./packages/*"],
+  "workspace": [
+    "./packages/loglevels",
+    "./packages/msgbuilder",
+    "./packages/logger",
+    "./packages/cliapp",
+    "./packages/examples"
+  ],
   "fmt": {
     "include": [
       "packages",
@@ -20,11 +26,11 @@
   },
   "lint": {
     "include": ["packages"],
-    "exclude": ["packages/logdy", "packages/examples/logdy.run.ts"]
+    "exclude": ["packages/logdy", "packages/examples/logdy.run.ts", "packages/logjava"]
   },
   "test": {
     "include": ["packages/**/*.test.ts"],
-    "exclude": ["packages/logdy"],
+    "exclude": ["packages/logdy", "packages/logjava"],
     "permissions": {
       "read": true,
       "write": true,
