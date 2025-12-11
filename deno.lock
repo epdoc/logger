@@ -1,10 +1,11 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/datetime@^2.0.7": "2.0.10",
-    "jsr:@epdoc/duration@~0.3.4": "0.3.5",
+    "jsr:@epdoc/datetime@^2.0.10": "2.0.10",
     "jsr:@epdoc/duration@~0.3.5": "0.3.5",
-    "jsr:@epdoc/loglevels@^0.0.5": "0.0.5",
+    "jsr:@epdoc/loglevels@^0.0.6": "0.0.6",
+    "jsr:@epdoc/msgbuilder@^0.0.10": "0.0.10",
+    "jsr:@epdoc/msgbuilder@^0.0.11": "0.0.11",
     "jsr:@epdoc/string@~0.1.11": "0.1.12",
     "jsr:@epdoc/string@~0.1.12": "0.1.12",
     "jsr:@epdoc/type@^1.1.17": "1.2.1",
@@ -53,8 +54,24 @@
         "jsr:@epdoc/type@^1.2.1"
       ]
     },
-    "@epdoc/loglevels@0.0.5": {
-      "integrity": "8794bb16cf3e76a6710d123bebd657e23fb7d14b64c682332f06422d30799e7e"
+    "@epdoc/loglevels@0.0.6": {
+      "integrity": "60097bca1379fdc0735a8ec3b26bdc1dc763bda9f403ee175d1456d767109413"
+    },
+    "@epdoc/msgbuilder@0.0.10": {
+      "integrity": "fd40ca6c64c5d5ce42d7683762791cd8278953d67e34c7b47403a79d39895739",
+      "dependencies": [
+        "jsr:@epdoc/string@~0.1.11",
+        "jsr:@epdoc/type@^1.1.20",
+        "jsr:@std/fmt"
+      ]
+    },
+    "@epdoc/msgbuilder@0.0.11": {
+      "integrity": "73a6f74d7332512d7a7aea6ba0fbc4ccdfb54bd5719ae35d6b33b5436a8fd54f",
+      "dependencies": [
+        "jsr:@epdoc/string@~0.1.12",
+        "jsr:@epdoc/type@^1.2.1",
+        "jsr:@std/fmt"
+      ]
     },
     "@epdoc/string@0.1.12": {
       "integrity": "e4a347e789bf2e72281d239d7f7e2f8d5d93601911e186fbf24e99ac43564702",
@@ -276,12 +293,12 @@
       },
       "packages/logger": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^2.0.7",
-          "jsr:@epdoc/duration@~0.3.4",
-          "jsr:@epdoc/loglevels@^0.0.5",
-          "jsr:@epdoc/msgbuilder@^0.0.10",
-          "jsr:@epdoc/string@~0.1.11",
-          "jsr:@epdoc/type@^1.1.20",
+          "jsr:@epdoc/datetime@^2.0.10",
+          "jsr:@epdoc/duration@~0.3.5",
+          "jsr:@epdoc/loglevels@^0.0.6",
+          "jsr:@epdoc/msgbuilder@^0.0.11",
+          "jsr:@epdoc/string@~0.1.12",
+          "jsr:@epdoc/type@^1.2.1",
           "jsr:@std/assert@^1.0.16",
           "jsr:@std/expect@^1.0.17",
           "jsr:@std/fmt@^1.0.8",
