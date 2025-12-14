@@ -7,8 +7,9 @@
     "jsr:@epdoc/loglevels@^0.0.6": "0.0.6",
     "jsr:@epdoc/msgbuilder@^0.0.11": "0.0.11",
     "jsr:@epdoc/string@~0.1.12": "0.1.12",
-    "jsr:@epdoc/type@^1.1.17": "1.2.1",
-    "jsr:@epdoc/type@^1.2.1": "1.2.1",
+    "jsr:@epdoc/type@^1.1.17": "1.2.2",
+    "jsr:@epdoc/type@^1.2.1": "1.2.2",
+    "jsr:@epdoc/type@^1.2.2": "1.2.2",
     "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@^1.0.14": "1.0.16",
     "jsr:@std/assert@^1.0.15": "1.0.16",
@@ -83,6 +84,12 @@
     },
     "@epdoc/type@1.2.1": {
       "integrity": "d049eb7628c7a1b2e08fe96ae30d01a774f0a23f41cb738db0a40dfe9dbca8d4",
+      "dependencies": [
+        "jsr:@std/encoding"
+      ]
+    },
+    "@epdoc/type@1.2.2": {
+      "integrity": "24d40406abd44e7586235347de70edf3bf5a14bf75f2a77427c800354f038dee",
       "dependencies": [
         "jsr:@std/encoding"
       ]
@@ -308,7 +315,7 @@
       },
       "packages/loglevels": {
         "dependencies": [
-          "jsr:@epdoc/type@^1.2.1",
+          "jsr:@epdoc/type@^1.2.2",
           "jsr:@std/assert@^1.0.16",
           "jsr:@std/fmt@^1.0.8",
           "jsr:@std/testing@^1.0.16"
