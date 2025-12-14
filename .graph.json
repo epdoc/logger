@@ -1,0 +1,6 @@
+{
+  "loglevels": ["logger"],
+  "msgbuilder": ["logger"],
+  "logger": ["cliapp"],
+  "cliapp": []
+}
