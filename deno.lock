@@ -3,13 +3,11 @@
   "specifiers": {
     "jsr:@epdoc/datetime@^2.0.11": "2.0.11",
     "jsr:@epdoc/duration@~0.3.6": "0.3.6",
+    "jsr:@epdoc/logger@^1003.0.10": "1003.0.10",
     "jsr:@epdoc/loglevels@^0.0.7": "0.0.7",
-    "jsr:@epdoc/msgbuilder@^0.0.11": "0.0.11",
     "jsr:@epdoc/msgbuilder@^0.0.12": "0.0.12",
-    "jsr:@epdoc/string@~0.1.12": "0.1.13",
     "jsr:@epdoc/string@~0.1.13": "0.1.13",
     "jsr:@epdoc/type@^1.1.17": "1.2.2",
-    "jsr:@epdoc/type@^1.2.1": "1.2.2",
     "jsr:@epdoc/type@^1.2.2": "1.2.2",
     "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@^1.0.14": "1.0.16",
@@ -54,21 +52,24 @@
         "jsr:@epdoc/type@^1.2.2"
       ]
     },
-    "@epdoc/loglevels@0.0.7": {
-      "integrity": "763ee892613eeac955aebfa2b5818b0088ffe1b3e8c9fc5b54032dcb9f24ac21"
-    },
-    "@epdoc/msgbuilder@0.0.11": {
-      "integrity": "73a6f74d7332512d7a7aea6ba0fbc4ccdfb54bd5719ae35d6b33b5436a8fd54f",
+    "@epdoc/logger@1003.0.10": {
+      "integrity": "1a3f4bbf39b2c8ae39e5ff919c6178339ef767dc874229b504b4bcc7af3bdfa7",
       "dependencies": [
-        "jsr:@epdoc/string@~0.1.12",
-        "jsr:@epdoc/type@^1.2.1",
+        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/duration",
+        "jsr:@epdoc/string",
+        "jsr:@epdoc/type@^1.2.2",
+        "jsr:@std/assert@^1.0.16",
         "jsr:@std/fmt"
       ]
+    },
+    "@epdoc/loglevels@0.0.7": {
+      "integrity": "763ee892613eeac955aebfa2b5818b0088ffe1b3e8c9fc5b54032dcb9f24ac21"
     },
     "@epdoc/msgbuilder@0.0.12": {
       "integrity": "31781cd8434bd35d62937c450a753fee12ac2534818f5ba2a5fd4c9cd45fd80f",
       "dependencies": [
-        "jsr:@epdoc/string@~0.1.13",
+        "jsr:@epdoc/string",
         "jsr:@epdoc/type@^1.2.2",
         "jsr:@std/fmt"
       ]
@@ -277,9 +278,9 @@
     "members": {
       "packages/cliapp": {
         "dependencies": [
-          "jsr:@epdoc/logger@^1003.0.9",
-          "jsr:@epdoc/msgbuilder@^0.0.11",
-          "jsr:@epdoc/type@^1.2.1",
+          "jsr:@epdoc/logger@^1003.0.10",
+          "jsr:@epdoc/msgbuilder@^0.0.12",
+          "jsr:@epdoc/type@^1.2.2",
           "jsr:@std/assert@^1.0.16",
           "jsr:@std/fmt@^1.0.8",
           "jsr:@std/testing@^1.0.16",
