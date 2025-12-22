@@ -14,7 +14,7 @@ const basicLogMgr = Log.createLogManager(undefined, {
   showTimestamp: 'elapsed',
 });
 
-const basicLogger = basicLogMgr.getLogger();
+const basicLogger = basicLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 basicLogger.info.h1('Basic Logger').text(' - Simple setup').emit();
 
 // Example 2: Custom builder with project-specific methods
@@ -36,21 +36,19 @@ const ProjectBuilder = Console.extender({
   },
 });
 
+type ProjectBuilderType = InstanceType<typeof ProjectBuilder>;
 const projectLogMgr = Log.createLogManager(ProjectBuilder, {
   threshold: 'debug',
   showLevel: true,
   showTimestamp: 'local',
 });
 
-const projectLogger = projectLogMgr.getLogger();
+const projectLogger = projectLogMgr.getLogger<Log.Std.Logger<ProjectBuilderType>>();
 
-// Demonstrate custom methods
-// deno-lint-ignore no-explicit-any
-(projectLogger.info as any).apiCall('GET', '/api/users').emit();
-// deno-lint-ignore no-explicit-any
-(projectLogger.info as any).metric('response_time', 245, 'ms').emit();
-// deno-lint-ignore no-explicit-any
-(projectLogger.debug as any).fileOp('READ', '/tmp/config.json').emit();
+// Demonstrate custom methods - now with proper typing
+projectLogger.info.apiCall('GET', '/api/users').emit();
+projectLogger.info.metric('response_time', 245, 'ms').emit();
+projectLogger.debug.fileOp('READ', '/tmp/config.json').emit();
 
 // Example 3: Migration comparison
 console.log('\n=== Example 3: Before vs After ===');
@@ -68,7 +66,7 @@ console.log('\n// After: Simple helper');
 console.log('// const logMgr = Log.createLogManager(CustomBuilder, { threshold: "info" });');
 
 const simpleLogMgr = Log.createLogManager(ProjectBuilder, { threshold: 'info' });
-const simpleLogger = simpleLogMgr.getLogger();
+const simpleLogger = simpleLogMgr.getLogger<Log.Std.Logger<ProjectBuilderType>>();
 simpleLogger.info.h1('Migration Complete').text(' - 70% less boilerplate!').emit();
 
 // Example 4: Real-world usage pattern
@@ -93,24 +91,23 @@ const AppBuilder = Console.extender({
   },
 });
 
+type AppBuilderType = InstanceType<typeof AppBuilder>;
 const appLogMgr = Log.createLogManager(AppBuilder, {
   threshold: 'info',
   showLevel: false,
   showTimestamp: 'elapsed',
 });
 
-const appLogger = appLogMgr.getLogger();
+const appLogger = appLogMgr.getLogger<Log.Std.Logger<AppBuilderType>>();
 
-// deno-lint-ignore no-explicit-any
-(appLogger.info as any).startup('Application').emit();
-// deno-lint-ignore no-explicit-any
-(appLogger.info as any).config('port', '3000').emit();
-// deno-lint-ignore no-explicit-any
-(appLogger.info as any).success('Server ready').emit();
+// Now with proper typing - no more type assertions needed!
+appLogger.info.startup('Application').emit();
+appLogger.info.config('port', '3000').emit();
+appLogger.info.success('Server ready').emit();
 
 console.log('\n=== Summary ===');
 console.log('✨ The createLogManager helper eliminates complex factory setup');
 console.log('🎯 Projects can now easily add custom logging methods');
-console.log('📦 Works seamlessly with the extendBuilder helper');
+console.log('📦 Works seamlessly with the Console.extender helper');
 console.log('🔄 Maintains full backward compatibility');
 console.log('📈 Reduces CLI setup boilerplate by ~70%');

@@ -7,6 +7,8 @@ A CLI helper application using [@epdoc/logger](https://github.com/epdoc/logger) 
 `cliapp` captures common code needed across multiple command line applications that use [@epdoc/logger](https://github.com/epdoc/logger). Key features include:
 
 - **Declarative Command API:** New simplified API for defining commands with automatic type inference and minimal boilerplate.
+- **Extensible Option System:** Built-in option types (string, number, boolean, date, path, array) with support for custom option types through subclassing.
+- **Inverted Boolean Flags:** Support for `--no-` style flags that invert boolean values.
 - **Command Parsing:** Extends the [commanderjs](https://www.npmjs.com/package/commander) Command object.
   - `CliApp.Command` in [command.ts](./src/command.ts) adds standard [@epdoc/logger](https://github.com/epdoc/logger)
     logging options to the Command object.
@@ -27,7 +29,7 @@ deno add jsr:@epdoc/cliapp
 
 ## Quick Start (Declarative API)
 
-The new declarative API eliminates most boilerplate and provides full type safety:
+The declarative API eliminates most boilerplate and provides full type safety:
 
 ### Single Command App
 
@@ -104,6 +106,9 @@ CliApp.option.date('--since <date>', 'Date option')
 CliApp.option.path('--output <path>', 'File/directory path')
 CliApp.option.array('--items <list>', 'Comma-separated array')
 
+// Boolean options support inversion for --no- style flags:
+CliApp.option.boolean('--no-online', 'Disable online mode').inverted()
+
 // All options support chaining:
 CliApp.option.string('--format <type>', 'Format')
   .choices(['json', 'csv', 'xml'])
@@ -111,9 +116,35 @@ CliApp.option.string('--format <type>', 'Format')
   .required()
 ```
 
-## Traditional API (Still Supported)
+### Custom Option Types
 
-The original imperative API remains fully supported for existing projects:
+You can create custom option types by extending `BaseOption`:
+
+```typescript
+import { Declarative } from '@epdoc/cliapp';
+import { dateRanges, type DateRanges } from '@epdoc/daterange';
+
+export class DateRangeOption extends Declarative.Option.Base<DateRanges> {
+  parse(value: string): DateRanges {
+    return dateRanges(value);
+  }
+}
+
+// Usage:
+const options = {
+  period: new DateRangeOption('-p, --period <range>', 'Date range to process')
+    .default(dateRanges('last-week'))
+    .required()
+};
+
+// Supports formats like:
+// --period 2025           (entire year)
+// --period 202501         (entire month) 
+// --period 20250101       (entire day)
+// --period 20250101-20250107  (date range)
+// --period 2025,202601-202603 (multiple ranges)
+```
+
 
 ## Traditional API (Still Supported)
 
@@ -131,9 +162,35 @@ The original imperative API remains fully supported for existing projects:
 7. Apply logging CLI options to `@epdoc/logger` using `CliApp.util.configureLogging(ctx, opts)`.
 8. Optionally use the `CliApp.util.run` wrapper to log your application's termination consistently.
 
-### Traditional Example
+## Examples
 
-This example can be found in [purge.ts](../examples/purge.ts).
+The `packages/examples/` directory contains educational examples:
+
+### Complete Example (Recommended Starting Point)
+**[complete-example.ts](../examples/complete-example.ts)** - The definitive example showing:
+- ✨ **Custom MsgBuilder** with project-specific logging methods (`apiCall`, `fileOp`, `progress`)
+- 🏗️ **Extended Context** with application state and helper methods  
+- 📋 **Multi-command app** using declarative API with global options
+- 🎯 **Real-world patterns** like progress indicators, file operations, API calls
+- 🔧 **All option types** including inverted booleans and validation
+
+```bash
+# Try the complete example
+deno run -A examples/complete-example.ts fetch --endpoint /users --limit 50
+deno run -A examples/complete-example.ts process --input data.json --validate
+```
+
+### Other Examples
+- **[declarative.ts](../examples/declarative.ts)** - Simple declarative API patterns
+- **[traditional-api.ts](../examples/traditional-api.ts)** - Original imperative API for legacy projects  
+- **[logger-helper.ts](../examples/logger-helper.ts)** - Using the `createLogManager` helper
+
+### Migration Guide
+Projects using the traditional API can migrate incrementally:
+1. **Keep existing setup** - Traditional API remains fully supported
+2. **Try declarative commands** - Add new commands using the declarative API
+3. **Extend msgbuilder** - Add custom logging methods with `Console.extender`
+4. **Use createLogManager** - Simplify logger setup (optional)
 
 ```ts
 import * as Log from '@epdoc/logger';
