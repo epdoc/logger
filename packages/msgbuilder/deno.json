@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/msgbuilder",
-  "version": "0.0.13",
+  "version": "0.1.0-alpha.2",
   "description": "Message builder module with chainable formatting",
   "author": {
     "name": "James Pravetz",
@@ -10,7 +10,7 @@
   "tasks": {
     "test": "deno test -A",
     "lint": "deno lint",
-    "check": "deno check src test",
+    "check": "deno check src test deno.json",
     "prepublish": "deno publish --dry-run",
     "publish": "deno publish"
   },
@@ -24,13 +24,14 @@
   "lint": {
     "include": [
       "./src",
-      "./test/**/*test.ts"
+      "./test",
+      "deno.json"
     ]
   },
   "fmt": {
     "include": [
       "./src",
-      "./test/**/*test.ts",
+      "./test",
       "deno.json"
     ],
     "singleQuote": true,

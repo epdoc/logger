@@ -147,6 +147,86 @@ await step3();
 log.info.h1('Process completed').ewt(processMark);
 ```
 
+## Extending MsgBuilder
+
+You can easily extend the MsgBuilder with custom methods using the `extendBuilder()` helper. This eliminates the complexity of manual inheritance and factory setup.
+
+### Basic Extension
+
+```ts
+import { extendBuilder } from '@epdoc/msgbuilder';
+
+const MyBuilder = extendBuilder({
+  apiCall(method: string, endpoint: string) {
+    return this.label(method).text(' ').text(endpoint);
+  },
+  
+  metric(name: string, value: number, unit?: string) {
+    return this.text(name).text(': ').text(value.toString()).text(unit ? ` ${unit}` : '');
+  }
+});
+
+// Use with logger
+const logMgr = new Log.Mgr();
+logMgr.msgBuilderFactory = (emitter) => new MyBuilder(emitter);
+const log = logMgr.getLogger();
+
+log.info.apiCall('GET', '/api/users').emit();
+log.info.metric('Response Time', 245, 'ms').emit();
+```
+
+### Real-World Examples
+
+```ts
+// For API logging
+const ApiBuilder = extendBuilder({
+  request(method: string, url: string, status?: number) {
+    let builder = this.text(method).text(' ').text(url);
+    if (status) {
+      const color = status < 400 ? 'success' : 'error';
+      builder = builder.text(` (${status})`);
+    }
+    return builder;
+  },
+  
+  timing(duration: number) {
+    return this.text('[').text(`${duration}ms`).text(']');
+  }
+});
+
+// For file operations
+const FileBuilder = extendBuilder({
+  fileOp(operation: string, path: string, size?: number) {
+    let builder = this.action(operation).text(' ').path(path);
+    if (size) {
+      const kb = Math.round(size / 1024);
+      builder = builder.text(` (${kb}KB)`);
+    }
+    return builder;
+  }
+});
+
+// Usage
+log.info.request('POST', '/api/data', 201).text(' ').timing(156).emit();
+log.info.fileOp('copied', '/path/to/file.txt', 2048).emit();
+```
+
+### Type Safety
+
+The extended builder maintains full type safety for your custom methods:
+
+```ts
+const TypedBuilder = extendBuilder({
+  status(level: 'success' | 'warning' | 'error', message: string) {
+    return this.text(`[${level.toUpperCase()}]`).text(` ${message}`);
+  }
+});
+
+// TypeScript will enforce the correct parameter types
+log.info.status('success', 'Operation completed').emit();
+// log.info.status('invalid', 'test').emit(); // TypeScript error
+```
+
 ## API
 
 ### `AbstractMsgBuilder`

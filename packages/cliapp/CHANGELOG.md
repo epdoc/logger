@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- **Declarative Command API**: New simplified API for defining CLI commands with minimal boilerplate
+  - `defineCommand()` and `defineRootCommand()` factory functions
+  - `option` helpers for common option types (string, number, boolean, date, path, array)
+  - Automatic type inference for command options
+  - `createApp()` utility for single-line app creation
+  - Support for single-command, multi-command, and hybrid app patterns
+  - Automatic option ordering (app options first, logging options last)
+  - Full backward compatibility with existing imperative API
+
+### Changed
+- Updated README with declarative API examples and migration guide
+- Added comprehensive examples in `../examples/declarative.ts`
+
 ## [1.0.12] - 2025-12-16
 
 - Updated dependencies

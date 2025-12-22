@@ -6,6 +6,7 @@ A CLI helper application using [@epdoc/logger](https://github.com/epdoc/logger) 
 
 `cliapp` captures common code needed across multiple command line applications that use [@epdoc/logger](https://github.com/epdoc/logger). Key features include:
 
+- **Declarative Command API:** New simplified API for defining commands with automatic type inference and minimal boilerplate.
 - **Command Parsing:** Extends the [commanderjs](https://www.npmjs.com/package/commander) Command object.
   - `CliApp.Command` in [command.ts](./src/command.ts) adds standard [@epdoc/logger](https://github.com/epdoc/logger)
     logging options to the Command object.
@@ -24,7 +25,101 @@ A CLI helper application using [@epdoc/logger](https://github.com/epdoc/logger) 
 deno add jsr:@epdoc/cliapp
 ```
 
-## Basics
+## Quick Start (Declarative API)
+
+The new declarative API eliminates most boilerplate and provides full type safety:
+
+### Single Command App
+
+```typescript
+import * as CliApp from '@epdoc/cliapp';
+import { MyContext } from './context.ts';
+
+const app = CliApp.defineRootCommand({
+  name: 'my-tool',
+  description: 'A simple CLI tool',
+  options: {
+    input: CliApp.option.path('--input <file>', 'Input file').required(),
+    format: CliApp.option.string('--format <type>', 'Output format').choices(['json', 'csv']).default('json')
+  },
+  async action(opts, ctx) {
+    // opts is fully typed: { input: string, format: 'json' | 'csv' }
+    ctx.log.info.text(`Processing ${opts.input} as ${opts.format}`).emit();
+    // Your business logic here
+  }
+});
+
+await CliApp.createApp(app, () => new MyContext());
+```
+
+### Multi-Command App
+
+```typescript
+import * as CliApp from '@epdoc/cliapp';
+import { MyContext } from './context.ts';
+
+const fetchCmd = CliApp.defineCommand({
+  name: 'fetch',
+  description: 'Fetch data from source',
+  options: {
+    since: CliApp.option.date('--since <date>', 'Fetch since date'),
+    limit: CliApp.option.number('--limit <n>', 'Max items').default(100)
+  },
+  async action(opts, ctx) {
+    // opts is fully typed: { since: Date, limit: number }
+    await ctx.app.fetch(opts);
+  }
+});
+
+const exportCmd = CliApp.defineCommand({
+  name: 'export',
+  description: 'Export processed data',
+  options: {
+    output: CliApp.option.path('--output <dir>', 'Output directory').default('./output')
+  },
+  async action(opts, ctx) {
+    await ctx.app.export(opts);
+  }
+});
+
+const app = CliApp.defineRootCommand({
+  name: 'data-tool',
+  description: 'Process and export data',
+  globalOptions: {
+    profile: CliApp.option.string('--profile <name>', 'Profile to use').default('default')
+  },
+  subcommands: [fetchCmd, exportCmd]
+});
+
+await CliApp.createApp(app, () => new MyContext());
+```
+
+### Available Option Types
+
+```typescript
+CliApp.option.string('--name <value>', 'String option')
+CliApp.option.number('--count <n>', 'Number option')  
+CliApp.option.boolean('--flag', 'Boolean flag')
+CliApp.option.date('--since <date>', 'Date option')
+CliApp.option.path('--output <path>', 'File/directory path')
+CliApp.option.array('--items <list>', 'Comma-separated array')
+
+// All options support chaining:
+CliApp.option.string('--format <type>', 'Format')
+  .choices(['json', 'csv', 'xml'])
+  .default('json')
+  .required()
+```
+
+## Traditional API (Still Supported)
+
+The original imperative API remains fully supported for existing projects:
+
+## Traditional API (Still Supported)
+
+The original imperative API remains fully supported for existing projects:
+
+### Basics
 
 1. Import `CliApp` and `Commander` from the module.
 2. Create your command object: `cmd = new CliApp.Command()`.
@@ -36,48 +131,9 @@ deno add jsr:@epdoc/cliapp
 7. Apply logging CLI options to `@epdoc/logger` using `CliApp.util.configureLogging(ctx, opts)`.
 8. Optionally use the `CliApp.util.run` wrapper to log your application's termination consistently.
 
-## Controlling Option Order in Help Text
+### Traditional Example
 
-The order in which options appear in help text is determined by the order in which they are added to the command. The `addLogging()` and `addDryRun()` methods are deliberately separate to give you control over option placement.
-
-### Pattern: Create Methods for Application-Specific Options
-
-To maintain clean control over option ordering, extend the `Command` class with your own `addXxx()` methods:
-
-```typescript
-// In your types.ts or command extensions file
-export class Command extends CliApp.Command<MsgBuilder, Logger> {
-  /**
-   * Adds the --local global option.
-   */
-  addLocal(): this {
-    this.option(
-      '--local',
-      'Force local-only mode (do not connect to remote cache)',
-    );
-    return this;
-  }
-}
-```
-
-Then control the order when building your command:
-
-```typescript
-// Options will appear in help text in this order:
-cmd.addLocal();       // Position 2 (after --version)
-cmd.addLogging(ctx);  // Adds --log, --log_show, -A, -V, -D, -T, -S
-cmd.addDryRun();      // Adds -n, --dry-run
-```
-
-This pattern:
-- Keeps option definitions centralized and reusable
-- Gives explicit control over help text ordering
-- Follows the same pattern as built-in `addLogging()` and `addDryRun()` methods
-- Enables method chaining for clean, declarative command setup
-
-## Example
-
-This example can be found in [purge.ts](./examples/purge.ts) which can be run using `deno run -S ./examples/purge.ts`.
+This example can be found in [purge.ts](../examples/purge.ts).
 
 ```ts
 import * as Log from '@epdoc/logger';

@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0-alpha.2] - 2025-12-22
+
+- feat: add extendBuilder helper for easy MsgBuilder customization
+
+- Add extendBuilder() function to simplify extending Console.Builder with custom methods
+- Eliminates complex inheritance patterns and factory setup boilerplate
+- Maintains full type safety for custom methods
+- Add comprehensive BDD-style tests demonstrating functionality
+- Update README with extension examples and real-world use cases
+- Export helper from main module for easy access
+
+BREAKING CHANGE: None - fully backward compatible addition
+
 ## [0.0.13] - 2025-12-16
 
 - Updated dependencies
