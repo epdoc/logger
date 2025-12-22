@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1003.1.0-alpha.2] - 2025-12-22
+
+- feat: add createLogManager helper for simplified logger setup
+
+- Add createLogManager helper function to eliminate complex factory setup boilerplate
+- Provides clean options interface for threshold, showLevel, showTimestamp, showData
+- Works seamlessly with extendBuilder from @epdoc/msgbuilder for custom methods
+- Reduces CLI setup code by ~70% while maintaining full type safety
+- Add comprehensive BDD-style test suite demonstrating all functionality
+- Update README with helper documentation and migration examples
+- Maintains full backward compatibility with existing logger functionality
+
 ## [1003.0.11] - 2025-12-16
 
 - Updated dependencies

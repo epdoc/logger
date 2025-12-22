@@ -8,7 +8,7 @@ describe('Log.createLogManager', () => {
   describe('basic functionality', () => {
     test('should create log manager with default Console.Builder', () => {
       const logMgr = Log.createLogManager();
-      
+
       expect(logMgr).toBeInstanceOf(Log.Mgr);
       expect(typeof logMgr.getLogger).toBe('function');
     });
@@ -17,11 +17,11 @@ describe('Log.createLogManager', () => {
       const CustomBuilder = extendBuilder({
         customMethod(text: string) {
           return this.text(`CUSTOM: ${text}`);
-        }
+        },
       });
 
       const logMgr = Log.createLogManager(CustomBuilder);
-      
+
       expect(logMgr).toBeInstanceOf(Log.Mgr);
       expect(logMgr.msgBuilderFactory).toBeDefined();
     });
@@ -31,7 +31,7 @@ describe('Log.createLogManager', () => {
         threshold: 'debug',
         showLevel: true,
         showTimestamp: 'elapsed',
-        showData: false
+        showData: false,
       });
 
       assertEquals(logMgr.threshold, 5); // debug level for std logger
@@ -54,13 +54,13 @@ describe('Log.createLogManager', () => {
       const TestBuilder = extendBuilder({
         apiCall(method: string, endpoint: string) {
           return this.text(`${method} ${endpoint}`);
-        }
+        },
       });
 
       const logMgr = Log.createLogManager(TestBuilder, {
         threshold: 'info',
         showLevel: false,
-        showTimestamp: false
+        showTimestamp: false,
       });
 
       expect(logMgr.threshold).toBe(3); // info level for std logger
@@ -81,7 +81,7 @@ describe('Log.createLogManager', () => {
       const ProjectBuilder = extendBuilder({
         metric(name: string, value: number) {
           return this.text(name).text(': ').text(value.toString());
-        }
+        },
       });
 
       const logMgr = Log.createLogManager(ProjectBuilder, { threshold: 'info' });
