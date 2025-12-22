@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0-alpha.3] - 2025-12-22
+
+- feat: add inverted boolean support and extensible option system
+
+- Add inverted() method to BooleanOption for --no- style flags
+- BaseOption class designed for subclassing custom option types
+- Support for custom parsers like @epdoc/daterange integration
+
 ## [1.1.0-alpha.2] - 2025-12-22
 
 - feat: update dependencies to latest logger and msgbuilder versions
