@@ -149,14 +149,14 @@ log.info.h1('Process completed').ewt(processMark);
 
 ## Extending MsgBuilder
 
-You can easily extend the MsgBuilder with custom methods using the `extendBuilder()` helper. This eliminates the complexity of manual inheritance and factory setup.
+You can easily extend the MsgBuilder Console with custom methods using the `extender()` helper. This eliminates the complexity of manual inheritance and factory setup.
 
 ### Basic Extension
 
 ```ts
-import { extendBuilder } from '@epdoc/msgbuilder';
+import { Console } from '@epdoc/msgbuilder';
 
-const MyBuilder = extendBuilder({
+const MyBuilder = Console.extender({
   apiCall(method: string, endpoint: string) {
     return this.label(method).text(' ').text(endpoint);
   },
@@ -179,7 +179,7 @@ log.info.metric('Response Time', 245, 'ms').emit();
 
 ```ts
 // For API logging
-const ApiBuilder = extendBuilder({
+const ApiBuilder = Console.extender({
   request(method: string, url: string, status?: number) {
     let builder = this.text(method).text(' ').text(url);
     if (status) {
@@ -195,7 +195,7 @@ const ApiBuilder = extendBuilder({
 });
 
 // For file operations
-const FileBuilder = extendBuilder({
+const FileBuilder = Console.extender({
   fileOp(operation: string, path: string, size?: number) {
     let builder = this.action(operation).text(' ').path(path);
     if (size) {
@@ -216,7 +216,7 @@ log.info.fileOp('copied', '/path/to/file.txt', 2048).emit();
 The extended builder maintains full type safety for your custom methods:
 
 ```ts
-const TypedBuilder = extendBuilder({
+const TypedBuilder = Console.extender({
   status(level: 'success' | 'warning' | 'error', message: string) {
     return this.text(`[${level.toUpperCase()}]`).text(` ${message}`);
   }
@@ -245,6 +245,8 @@ It manages message parts, indentation, conditional logic, and structured data, a
 A message builder for creating styled console messages.
 
 This class extends `AbstractMsgBuilder` to provide a fluent interface for building complex, styled log messages. It supports various formatting options, including headers, labels, values, and error messages.
+
+We've shown you above how you can call `Console.extender` to extend the `ConsoleMsgBuilder` with even more methods.
 
 ### `IEmitter`
 

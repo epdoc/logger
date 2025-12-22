@@ -6,4 +6,4 @@ export * from './types.ts';
 export { Console };
 
 // Extension helpers
-export { extendBuilder, type ExtendedBuilder } from './extensions.ts';
+export { type ExtendedBuilder, extender as extendBuilder } from './console/extender.ts';

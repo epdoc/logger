@@ -1,19 +1,19 @@
+import * as MsgBuilder from '@epdoc/msgbuilder';
 import { assertEquals } from '@std/assert';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
-import * as MsgBuilder from '../src/mod.ts';
 import { TestEmitter } from '../src/emitter.ts';
 
-describe('MsgBuilder.extendBuilder', () => {
+describe('Console.extender', () => {
   describe('basic functionality', () => {
     test('should create extended builder with custom methods', () => {
-      const ExtendedBuilder = MsgBuilder.extendBuilder({
+      const ExtendedBuilder = MsgBuilder.Console.extender({
         apiCall(method: string, endpoint: string) {
           return this.label(method).text(' ').text(endpoint);
         },
         metric(name: string, value: number) {
           return this.text(name).text(': ').text(value.toString());
-        }
+        },
       });
 
       const emitter = new TestEmitter();
@@ -32,10 +32,10 @@ describe('MsgBuilder.extendBuilder', () => {
     });
 
     test('should allow method chaining with custom methods', () => {
-      const ExtendedBuilder = MsgBuilder.extendBuilder({
+      const ExtendedBuilder = MsgBuilder.Console.extender({
         status(level: 'success' | 'error') {
           return this.text(`[${level.toUpperCase()}]`);
-        }
+        },
       });
 
       const emitter = new TestEmitter();
@@ -53,10 +53,10 @@ describe('MsgBuilder.extendBuilder', () => {
     });
 
     test('should preserve this context in custom methods', () => {
-      const ExtendedBuilder = MsgBuilder.extendBuilder({
+      const ExtendedBuilder = MsgBuilder.Console.extender({
         customLabel(text: string) {
           return this.label('CUSTOM').text(': ').text(text);
-        }
+        },
       });
 
       const emitter = new TestEmitter();
@@ -70,7 +70,7 @@ describe('MsgBuilder.extendBuilder', () => {
 
   describe('edge cases', () => {
     test('should handle empty extensions object', () => {
-      const EmptyBuilder = MsgBuilder.extendBuilder({});
+      const EmptyBuilder = MsgBuilder.Console.extender({});
       const emitter = new TestEmitter();
       const builder = new EmptyBuilder(emitter);
 
@@ -81,10 +81,10 @@ describe('MsgBuilder.extendBuilder', () => {
 
   describe('demonstrates usage patterns', () => {
     test('shows basic extension pattern', () => {
-      const SimpleBuilder = MsgBuilder.extendBuilder({
+      const SimpleBuilder = MsgBuilder.Console.extender({
         apiCall(method: string, endpoint: string) {
           return this.text(`${method} ${endpoint}`);
-        }
+        },
       });
 
       const emitter = new TestEmitter();

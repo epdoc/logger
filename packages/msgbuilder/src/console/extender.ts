@@ -1,19 +1,15 @@
-/**
- * @file MsgBuilder extension helper
- * @description Makes it easy to extend Console.Builder with custom methods
- * @module
- */
-
-import * as Console from './console/mod.ts';
-import type { IEmitter } from './types.ts';
+import type { IEmitter } from '../types.ts';
+import { ConsoleMsgBuilder } from './builder.ts';
 
 /**
  * Type for extension methods that can be added to Console.Builder
  */
 // deno-lint-ignore no-explicit-any
-type ExtensionMethod = (this: Console.Builder, ...args: any[]) => Console.Builder;
+type ExtenderMethod = (this: ConsoleMsgBuilder, ...args: any[]) => ConsoleMsgBuilder;
 
 /**
+ * MsgBuilder extension helper, makes it easy to extend Console.Builder with custom methods
+ *
  * Creates an extended Console.Builder class with custom methods.
  * Handles the complex factory and inheritance patterns internally.
  *
@@ -22,7 +18,7 @@ type ExtensionMethod = (this: Console.Builder, ...args: any[]) => Console.Builde
  *
  * @example
  * ```typescript
- * const MyBuilder = extendBuilder({
+ * const MyBuilder = Console.extender({
  *   apiCall(method: string, url: string) {
  *     return this.label(method).text(' ').underline.text(url);
  *   },
@@ -37,10 +33,10 @@ type ExtensionMethod = (this: Console.Builder, ...args: any[]) => Console.Builde
  * logger.info.apiCall('GET', '/api/users').emit();
  * ```
  */
-export function extendBuilder<T extends Record<string, ExtensionMethod>>(
+export function extender<T extends Record<string, ExtenderMethod>>(
   extensions: T,
-): new (emitter: IEmitter) => Console.Builder & T {
-  class ExtendedBuilder extends Console.Builder {
+): new (emitter: IEmitter) => ConsoleMsgBuilder & T {
+  class ExtendedBuilder extends ConsoleMsgBuilder {
     constructor(emitter: IEmitter) {
       super(emitter);
       // Bind extension methods to this instance
@@ -58,4 +54,4 @@ export function extendBuilder<T extends Record<string, ExtensionMethod>>(
 /**
  * Type helper to infer the extended builder type
  */
-export type ExtendedBuilder<T extends Record<string, ExtensionMethod>> = Console.Builder & T;
+export type ExtendedBuilder<T extends Record<string, ExtenderMethod>> = ConsoleMsgBuilder & T;
