@@ -29,7 +29,7 @@
     "lineWidth": 120
   },
   "imports": {
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^1.1.0-alpha.3",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^1.1.0-alpha.5",
     "@epdoc/logger": "jsr:@epdoc/logger@^1003.1.0-alpha.2",
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.0-alpha.3",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.2"
