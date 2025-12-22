@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0-alpha.5] - 2025-12-22
+
+- Fixed option export
+
 ## [1.1.0-alpha.4] - 2025-12-22
 
 - Fixed option export
