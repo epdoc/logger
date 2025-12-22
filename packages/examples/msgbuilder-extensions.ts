@@ -1,9 +1,8 @@
 /**
  * @file Example demonstrating MsgBuilder extensions
- * @description Shows current complex way vs proposed simple way to extend Console.Builder
+ * @description Shows current complex way vs simple way using extendBuilder helper
  */
 
-import * as Log from '@epdoc/logger';
 import { Console } from '@epdoc/msgbuilder';
 
 // ===== CURRENT WAY (Complex - like finsync) =====
@@ -11,142 +10,132 @@ import { Console } from '@epdoc/msgbuilder';
 class CustomMsgBuilder extends Console.Builder {
   // Custom methods for app-specific logging
   apiCall(method: string, endpoint: string): this {
-    return this.label(method).text(' ').underline.text(endpoint);
+    return this.label(method).text(' ').text(endpoint);
   }
-  
+
   metric(name: string, value: number, unit?: string): this {
-    return this.cyan.text(name).text(': ').bold.white.text(value.toString()).gray.text(unit || '');
+    return this.text(name).text(': ').value(value.toString()).text(unit || '');
   }
-  
+
   status(status: 'success' | 'error' | 'pending'): this {
-    const colors = { success: 'green', error: 'red', pending: 'yellow' } as const;
-    return (this as any)[colors[status]].text(`[${status.toUpperCase()}]`);
-  }
-}
-
-// Complex factory setup required
-const msgBuilderFactory = (emitter: any): CustomMsgBuilder => {
-  return new CustomMsgBuilder(emitter);
-};
-
-// Complex logger manager setup
-const complexLogMgr: Log.Mgr<CustomMsgBuilder> = new Log.Mgr<CustomMsgBuilder>();
-complexLogMgr.msgBuilderFactory = msgBuilderFactory;
-complexLogMgr.init();
-complexLogMgr.threshold = 'info';
-
-type ComplexLogger = Log.Std.Logger<CustomMsgBuilder>;
-
-// ===== PROPOSED WAY (Simple - what we want) =====
-
-// This would be the helper function in @epdoc/msgbuilder
-function extendBuilder<T extends Record<string, Function>>(
-  extensions: T
-): new (emitter: any) => Console.Builder & T {
-  class ExtendedBuilder extends Console.Builder {
-    constructor(emitter: any) {
-      super(emitter);
-      // Bind extension methods to this instance
-      Object.entries(extensions).forEach(([name, method]) => {
-        (this as any)[name] = method.bind(this);
-      });
+    const text = `[${status.toUpperCase()}]`;
+    switch (status) {
+      case 'success':
+        return this.success(text);
+      case 'error':
+        return this.error(text);
+      case 'pending':
+        return this.warn(text);
     }
   }
-  return ExtendedBuilder as any;
 }
+
+// ===== SIMPLE WAY (Using extendBuilder helper) =====
 
 // Simple extension definition
-const SimpleBuilder = extendBuilder({
-  apiCall(this: Console.Builder, method: string, endpoint: string) {
-    return this.label(method).text(' ').underline.text(endpoint);
+const SimpleBuilder = Console.extender({
+  apiCall(method: string, endpoint: string) {
+    return this.label(method).text(' ').text(endpoint);
   },
-  
-  metric(this: Console.Builder, name: string, value: number, unit?: string) {
-    return this.cyan.text(name).text(': ').bold.white.text(value.toString()).gray.text(unit || '');
+
+  metric(name: string, value: number, unit?: string) {
+    return this.text(name).text(': ').value(value.toString()).text(unit || '');
   },
-  
-  status(this: Console.Builder, status: 'success' | 'error' | 'pending') {
-    const colors = { success: 'green', error: 'red', pending: 'yellow' } as const;
-    return (this as any)[colors[status]].text(`[${status.toUpperCase()}]`);
-  }
+
+  status(status: 'success' | 'error' | 'pending') {
+    const text = `[${status.toUpperCase()}]`;
+    switch (status) {
+      case 'success':
+        return this.success(text);
+      case 'error':
+        return this.error(text);
+      case 'pending':
+        return this.warn(text);
+    }
+  },
 });
-
-// Simple logger manager setup (proposed helper)
-function createLogManager<T extends Console.Builder>(
-  BuilderClass: new (emitter: any) => T,
-  options: { threshold?: string } = {}
-): Log.Mgr<T> {
-  const mgr = new Log.Mgr<T>();
-  mgr.msgBuilderFactory = (emitter: any) => new BuilderClass(emitter);
-  mgr.init();
-  if (options.threshold) mgr.threshold = options.threshold as any;
-  return mgr;
-}
-
-const simpleLogMgr = createLogManager(SimpleBuilder, { threshold: 'info' });
-type SimpleLogger = Log.Std.Logger<InstanceType<typeof SimpleBuilder>>;
 
 // ===== DEMO USAGE =====
 
 function demoComplexWay() {
   console.log('\n=== Current Complex Way ===');
-  const logger = complexLogMgr.getLogger<ComplexLogger>();
-  
-  // These work but required lots of setup
-  logger.info.apiCall('GET', '/api/users').emit();
-  logger.info.status('success').text(' Request completed').emit();
-  logger.info.metric('Response Time', 245, 'ms').emit();
+  const builder = new CustomMsgBuilder();
+
+  // These work but required class inheritance
+  builder.apiCall('GET', '/api/users').emit();
+  builder.status('success').text(' Request completed').emit();
+  builder.metric('Response Time', 245, 'ms').emit();
 }
 
 function demoSimpleWay() {
-  console.log('\n=== Proposed Simple Way ===');
-  const logger = simpleLogMgr.getLogger<SimpleLogger>();
-  
+  console.log('\n=== Simple Way with extendBuilder ===');
+  // deno-lint-ignore no-explicit-any
+  const builder = new SimpleBuilder(undefined as any);
+
   // Same functionality, much easier setup
-  logger.info.apiCall('POST', '/api/data').emit();
-  logger.info.status('pending').text(' Processing request').emit();
-  logger.info.metric('Users', 1337).emit();
+  // deno-lint-ignore no-explicit-any
+  (builder as any).apiCall('POST', '/api/data').emit();
+  // deno-lint-ignore no-explicit-any
+  (builder as any).status('pending').text(' Processing request').emit();
+  // deno-lint-ignore no-explicit-any
+  (builder as any).metric('Users', 1337).emit();
 }
 
-function demoRealWorldExample() {
-  console.log('\n=== Real World: Projects That Could Benefit ===');
-  
+function demoRealWorldExamples() {
+  console.log('\n=== Real World: Project-Specific Builders ===');
+
   // turl could have:
-  const TurlBuilder = extendBuilder({
-    url(this: Console.Builder, url: string) {
-      return this.underline.blue.text(url);
+  const TurlBuilder = Console.extender({
+    downloadUrl(url: string) {
+      return this.text('URL: ').url(url);
     },
-    download(this: Console.Builder, progress: number, total: number) {
-      const percent = Math.round((progress / total) * 100);
-      return this.cyan.text(`[${progress}/${total}]`).gray.text(` ${percent}%`);
-    }
+    progress(current: number, total: number) {
+      const percent = Math.round((current / total) * 100);
+      return this.text(`[${current}/${total}] ${percent}%`);
+    },
   });
-  
+
   // bikelog could have:
-  const BikelogBuilder = extendBuilder({
-    year(this: Console.Builder, year: number) {
-      return this.bold.magenta.text(year.toString());
+  const BikelogBuilder = Console.extender({
+    blogYear(year: number) {
+      return this.h2(year.toString());
     },
-    pages(this: Console.Builder, count: number, type: string) {
-      return this.green.text(count.toString()).gray.text(` ${type} pages`);
-    }
+    pageCount(count: number, type: string) {
+      return this.value(count.toString()).text(` ${type} pages`);
+    },
   });
-  
+
   // routergen could have:
-  const RoutergenBuilder = extendBuilder({
-    device(this: Console.Builder, name: string, ip: string) {
-      return this.cyan.text(name).gray.text(' (').yellow.text(ip).gray.text(')');
+  const RoutergenBuilder = Console.extender({
+    networkDevice(name: string, ip: string) {
+      return this.text(name).text(' (').text(ip).text(')');
     },
-    config(this: Console.Builder, section: string) {
-      return this.bold.blue.text(`[${section}]`);
-    }
+    configSection(section: string) {
+      return this.h3(`[${section}]`);
+    },
   });
-  
-  console.log('These projects could easily add custom methods with the helper!');
+
+  // Demo usage
+  // deno-lint-ignore no-explicit-any
+  const turlBuilder = new TurlBuilder(undefined as any);
+  // deno-lint-ignore no-explicit-any
+  (turlBuilder as any).downloadUrl('https://example.com/file.zip').emit();
+
+  // deno-lint-ignore no-explicit-any
+  const bikelogBuilder = new BikelogBuilder(undefined as any);
+  // deno-lint-ignore no-explicit-any
+  (bikelogBuilder as any).blogYear(2024).text(' - ').pageCount(150, 'blog').emit();
+
+  // deno-lint-ignore no-explicit-any
+  const routergenBuilder = new RoutergenBuilder(undefined as any);
+  // deno-lint-ignore no-explicit-any
+  (routergenBuilder as any).networkDevice('Router', '192.168.1.1').emit();
+
+  console.log('\n✨ Projects can easily add custom methods with extendBuilder!');
 }
 
 if (import.meta.main) {
   demoComplexWay();
   demoSimpleWay();
-  demoRealWorldExample();
+  demoRealWorldExamples();
 }

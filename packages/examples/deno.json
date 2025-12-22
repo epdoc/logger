@@ -34,6 +34,6 @@
     "$level": "../loglevels/src/mod.ts",
     "$msgbuilder": "../msgbuilder/src/mod.ts",
     "$logdy": "../logdy/src/mod.ts",
-    "@epdoc/type": "jsr:@epdoc/type@^1.1.17"
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.2"
   }
 }

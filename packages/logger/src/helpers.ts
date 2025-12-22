@@ -6,7 +6,7 @@
 
 import type { Console } from '@epdoc/msgbuilder';
 import type { IEmitter } from '@epdoc/msgbuilder';
-import { Mgr } from './logmgr.ts';
+import { LogMgr } from './logmgr.ts';
 
 /**
  * Options for creating a log manager
@@ -14,7 +14,7 @@ import { Mgr } from './logmgr.ts';
 export interface LogManagerOptions {
   threshold?: 'spam' | 'trace' | 'debug' | 'info' | 'warn' | 'error';
   showLevel?: boolean;
-  showTimestamp?: 'elapsed' | 'time' | boolean;
+  showTimestamp?: 'elapsed' | 'local' | 'utc' | boolean;
   showData?: boolean;
 }
 
@@ -39,8 +39,8 @@ export interface LogManagerOptions {
 export function createLogManager<T extends Console.Builder>(
   BuilderClass?: new (emitter: IEmitter) => T,
   options: LogManagerOptions = {}
-): Mgr<T> {
-  const mgr = new Mgr<T>();
+): LogMgr<T> {
+  const mgr = new LogMgr<T>();
   
   // Set up custom builder factory if provided
   if (BuilderClass) {
@@ -60,7 +60,11 @@ export function createLogManager<T extends Console.Builder>(
   }
   
   if (options.showTimestamp !== undefined) {
-    mgr.show.timestamp = options.showTimestamp;
+    if (typeof options.showTimestamp === 'boolean') {
+      mgr.show.timestamp = options.showTimestamp ? 'local' : undefined;
+    } else {
+      mgr.show.timestamp = options.showTimestamp;
+    }
   }
   
   if (options.showData !== undefined) {

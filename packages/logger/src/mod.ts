@@ -18,6 +18,3 @@ export type {
 
 // Helper functions
 export { createLogManager, type LogManagerOptions } from './helpers.ts';
-
-// Helper functions
-export { createLogManager, type LogManagerOptions } from './helpers.ts';

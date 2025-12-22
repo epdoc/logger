@@ -44,7 +44,7 @@
     "$logger": "./src/loggers/mod.ts",
     "$transport": "./src/transports/mod.ts",
     "$level": "jsr:@epdoc/loglevels@^0.0.7",
-    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.0.13",
+    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.0-alpha.2",
     "@std/expect": "jsr:@std/expect@^1.0.17",
     "@std/fmt": "jsr:@std/fmt@^1.0.8",
     "@std/fmt/colors": "jsr:@std/fmt@^1.0.8/colors",
