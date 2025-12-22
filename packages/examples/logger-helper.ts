@@ -1,6 +1,6 @@
 /**
  * @file Logger helper example
- * @description Demonstrates the new createLogManager helper for simplified setup
+ * @description Demonstrates the createLogManager helper for simplified setup
  */
 
 import * as Log from '@epdoc/logger';
@@ -14,7 +14,12 @@ const basicLogMgr = Log.createLogManager(undefined, {
   showTimestamp: 'elapsed',
 });
 
-const basicLogger = basicLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
+// Declare our types
+// This indicates which Logger and MsgBuilder API we are using.
+type MsgBuilder = Console.Builder;
+type Logger = Log.Std.Logger<MsgBuilder>;
+
+const basicLogger = basicLogMgr.getLogger<Logger>();
 basicLogger.info.h1('Basic Logger').text(' - Simple setup').emit();
 
 // Example 2: Custom builder with project-specific methods

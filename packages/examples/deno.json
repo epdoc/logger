@@ -29,11 +29,9 @@
     "lineWidth": 120
   },
   "imports": {
-    "$cliapp": "../cliapp/src/mod.ts",
-    "$logger": "../logger/src/mod.ts",
-    "$level": "../loglevels/src/mod.ts",
-    "$msgbuilder": "../msgbuilder/src/mod.ts",
-    "$logdy": "../logdy/src/mod.ts",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^1.1.0-alpha.3",
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.1.0-alpha.2",
+    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.0-alpha.3",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.2"
   }
 }

@@ -38,6 +38,7 @@ The easiest way to get started is with the `createLogManager` helper:
 
 ```typescript
 import * as Log from '@epdoc/logger';
+import { Console } from '@epdoc/msgbuilder';
 
 // Basic setup
 const logMgr = Log.createLogManager(undefined, {
@@ -46,8 +47,35 @@ const logMgr = Log.createLogManager(undefined, {
   showTimestamp: 'elapsed'
 });
 
-const logger = logMgr.getLogger();
+const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
 logger.info.h1('Hello').text(' World!').emit();
+```
+
+## Complete Integration Guide
+
+For complete setup patterns including custom message builders and CLI integration:
+
+- **[GETTING_STARTED.md](../../GETTING_STARTED.md)** - Complete ecosystem guide with logger + msgbuilder + cliapp
+- **[CONFIGURATION.md](../../CONFIGURATION.md)** - Advanced configuration options  
+- **[Examples](../examples/)** - Working code examples
+
+**Key Pattern**: Define your types once per project, then use simple patterns everywhere:
+
+```typescript
+// 1. Set up custom builder (once per project)
+const AppBuilder = Console.extender({
+  apiCall(method: string, endpoint: string) {
+    return this.text('[API] ').text(method).text(' ').text(endpoint);
+  }
+});
+
+// 2. Create type alias (once per project)  
+type AppLogger = Log.Std.Logger<InstanceType<typeof AppBuilder>>;
+
+// 3. Use everywhere
+const logger = logMgr.getLogger<AppLogger>();
+logger.info.apiCall('GET', '/users').emit();
+```
 ```
 
 ## Custom Builder Setup

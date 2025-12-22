@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@epdoc/cliapp@^1.1.0-alpha.3": "1.1.0-alpha.3",
     "jsr:@epdoc/datetime@^2.0.13": "2.0.13",
     "jsr:@epdoc/duration@~0.3.6": "0.3.6",
     "jsr:@epdoc/logger@^1003.1.0-alpha.2": "1003.1.0-alpha.2",
@@ -9,6 +10,7 @@
     "jsr:@epdoc/string@~0.1.15": "0.1.15",
     "jsr:@epdoc/type@^1.2.2": "1.2.2",
     "jsr:@std/assert@1": "1.0.6",
+    "jsr:@std/assert@^1.0.14": "1.0.16",
     "jsr:@std/assert@^1.0.15": "1.0.16",
     "jsr:@std/assert@^1.0.16": "1.0.16",
     "jsr:@std/assert@^1.0.6": "1.0.6",
@@ -18,10 +20,12 @@
     "jsr:@std/data-structures@^1.0.9": "1.0.9",
     "jsr:@std/encoding@^1.0.10": "1.0.10",
     "jsr:@std/expect@*": "1.0.4",
+    "jsr:@std/expect@^1.0.17": "1.0.17",
     "jsr:@std/fmt@^1.0.8": "1.0.8",
     "jsr:@std/fs@*": "1.0.11",
     "jsr:@std/fs@^1.0.19": "1.0.20",
     "jsr:@std/fs@^1.0.4": "1.0.11",
+    "jsr:@std/internal@^1.0.10": "1.0.12",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/internal@^1.0.4": "1.0.4",
     "jsr:@std/io@0.225": "0.225.2",
@@ -36,6 +40,14 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
+    "@epdoc/cliapp@1.1.0-alpha.3": {
+      "integrity": "b3dfda0aed69d1db5e4aafeb0d7e80175e13994738fb8895f30ffa6de26614fd",
+      "dependencies": [
+        "jsr:@epdoc/type",
+        "jsr:@std/fmt",
+        "npm:commander"
+      ]
+    },
     "@epdoc/datetime@2.0.13": {
       "integrity": "75dd48f8033b71b028bc70f20cfbbef5995144032db775c45214178875aa5cb2",
       "dependencies": [
@@ -112,6 +124,13 @@
       "dependencies": [
         "jsr:@std/assert@^1.0.6",
         "jsr:@std/internal@^1.0.4"
+      ]
+    },
+    "@std/expect@1.0.17": {
+      "integrity": "316b47dd65c33e3151344eb3267bf42efba17d1415425f07ed96185d67fc04d9",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.14",
+        "jsr:@std/internal@^1.0.10"
       ]
     },
     "@std/fmt@1.0.8": {
@@ -278,6 +297,9 @@
       },
       "packages/examples": {
         "dependencies": [
+          "jsr:@epdoc/cliapp@^1.1.0-alpha.3",
+          "jsr:@epdoc/logger@^1003.1.0-alpha.2",
+          "jsr:@epdoc/msgbuilder@~0.1.0-alpha.3",
           "jsr:@epdoc/type@^1.2.2"
         ]
       },
