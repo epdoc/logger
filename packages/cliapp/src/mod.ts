@@ -1,4 +1,5 @@
 export { Command } from './command.ts';
+export * as Ctx from './context/mod.ts';
 export * as Declarative from './declarative/mod.ts';
 export { run } from './run.ts';
 export * from './types.ts';

@@ -7,6 +7,7 @@ A CLI helper application using [@epdoc/logger](https://github.com/epdoc/logger) 
 `cliapp` captures common code needed across multiple command line applications that use [@epdoc/logger](https://github.com/epdoc/logger). Key features include:
 
 - **Declarative Command API:** New simplified API for defining commands with automatic type inference and minimal boilerplate.
+- **Enhanced Context Base Class:** `BaseContext` eliminates generics complexity while maintaining type safety.
 - **Extensible Option System:** Built-in option types (string, number, boolean, date, path, array) with support for custom option types through subclassing.
 - **Inverted Boolean Flags:** Support for `--no-` style flags that invert boolean values.
 - **Command Parsing:** Extends the [commanderjs](https://www.npmjs.com/package/commander) Command object.
@@ -29,88 +30,128 @@ deno add jsr:@epdoc/cliapp
 
 ## Quick Start (Declarative API)
 
-The declarative API eliminates most boilerplate and provides full type safety:
+The fastest way to get started is with `BaseContext` and the declarative API:
 
-### Single Command App
-
+### Minimal Setup
 ```typescript
+import * as Log from '@epdoc/logger';
+import { Console } from '@epdoc/msgbuilder';
 import * as CliApp from '@epdoc/cliapp';
-import { MyContext } from './context.ts';
+import pkg from './deno.json' with { type: 'json' };
 
-const app = CliApp.defineRootCommand({
+// 1. Define types once
+type MsgBuilder = Console.Builder;
+type Logger = Log.Std.Logger<MsgBuilder>;
+
+// 2. Create context
+class AppContext extends CliApp.BaseContext<MsgBuilder, Logger> {
+  constructor() {
+    super(pkg);
+    this.setupLogging();
+  }
+
+  protected setupLogging() {
+    this.logMgr = Log.createLogManager(undefined, { threshold: 'info' });
+    this.log = this.logMgr.getLogger<Logger>();
+  }
+}
+
+// 3. Define your app
+const app = CliApp.Declarative.defineRootCommand({
   name: 'my-tool',
   description: 'A simple CLI tool',
   options: {
-    input: CliApp.option.path('--input <file>', 'Input file').required(),
-    format: CliApp.option.string('--format <type>', 'Output format').choices(['json', 'csv']).default('json')
+    input: CliApp.Declarative.Option.Path('--input <file>', 'Input file').required(),
+    format: CliApp.Declarative.Option.String('--format <type>', 'Output format')
+      .choices(['json', 'csv']).default('json')
   },
-  async action(opts, ctx) {
+  async action(opts, ctx: AppContext) {
     // opts is fully typed: { input: string, format: 'json' | 'csv' }
     ctx.log.info.text(`Processing ${opts.input} as ${opts.format}`).emit();
     // Your business logic here
   }
 });
 
-await CliApp.createApp(app, () => new MyContext());
+// 4. Run it
+await CliApp.Declarative.createApp(app, () => new AppContext());
+```
+
+### With Custom Logging Methods
+```typescript
+// Add custom msgbuilder for richer logging
+const AppBuilder = Console.extender({
+  fileOp(op: string, path: string) {
+    return this.text(`📁 ${op} `).path(path);
+  }
+});
+
+type MsgBuilder = InstanceType<typeof AppBuilder>;
+type Logger = Log.Std.Logger<MsgBuilder>;
+
+class AppContext extends CliApp.BaseContext<MsgBuilder, Logger> {
+  constructor() {
+    super(pkg);
+    this.setupLogging();
+  }
+
+  protected setupLogging() {
+    this.logMgr = Log.createLogManager(AppBuilder, { threshold: 'info' });
+    this.log = this.logMgr.getLogger<Logger>();
+  }
+}
+
+// Now you can use custom methods
+async action(opts, ctx: AppContext) {
+  ctx.log.info.fileOp('PROCESS', opts.input).emit(); // Custom method!
+}
 ```
 
 ### Multi-Command App
 
 ```typescript
-import * as CliApp from '@epdoc/cliapp';
-import { MyContext } from './context.ts';
-
-const fetchCmd = CliApp.defineCommand({
+const fetchCmd = CliApp.Declarative.defineCommand({
   name: 'fetch',
   description: 'Fetch data from source',
   options: {
-    since: CliApp.option.date('--since <date>', 'Fetch since date'),
-    limit: CliApp.option.number('--limit <n>', 'Max items').default(100)
+    since: CliApp.Declarative.Option.Date('--since <date>', 'Fetch data since this date'),
+    limit: CliApp.Declarative.Option.Number('--limit <n>', 'Maximum items to fetch').default(100)
   },
-  async action(opts, ctx) {
+  async action(opts, ctx: AppContext) {
     // opts is fully typed: { since: Date, limit: number }
-    await ctx.app.fetch(opts);
+    ctx.log.info.h1('Fetching Data')
+      .label('Since:').value(opts.since?.toISOString() || 'beginning')
+      .label('Limit:').value(opts.limit)
+      .emit();
   }
 });
 
-const exportCmd = CliApp.defineCommand({
-  name: 'export',
-  description: 'Export processed data',
-  options: {
-    output: CliApp.option.path('--output <dir>', 'Output directory').default('./output')
-  },
-  async action(opts, ctx) {
-    await ctx.app.export(opts);
-  }
-});
-
-const app = CliApp.defineRootCommand({
-  name: 'data-tool',
+const app = CliApp.Declarative.defineRootCommand({
+  name: 'data-processor',
   description: 'Process and export data',
   globalOptions: {
-    profile: CliApp.option.string('--profile <name>', 'Profile to use').default('default')
+    profile: CliApp.Declarative.Option.String('--profile <name>', 'Profile to use').default('default')
   },
-  subcommands: [fetchCmd, exportCmd]
+  subcommands: [fetchCmd]
 });
 
-await CliApp.createApp(app, () => new MyContext());
+await CliApp.Declarative.createApp(app, () => new AppContext());
 ```
 
 ### Available Option Types
 
 ```typescript
-CliApp.option.string('--name <value>', 'String option')
-CliApp.option.number('--count <n>', 'Number option')  
-CliApp.option.boolean('--flag', 'Boolean flag')
-CliApp.option.date('--since <date>', 'Date option')
-CliApp.option.path('--output <path>', 'File/directory path')
-CliApp.option.array('--items <list>', 'Comma-separated array')
+CliApp.Declarative.Option.String('--name <value>', 'String option')
+CliApp.Declarative.Option.Number('--count <n>', 'Number option')  
+CliApp.Declarative.Option.Boolean('--flag', 'Boolean flag')
+CliApp.Declarative.Option.Date('--since <date>', 'Date option')
+CliApp.Declarative.Option.Path('--output <path>', 'File/directory path')
+CliApp.Declarative.Option.Array('--items <list>', 'Comma-separated array')
 
 // Boolean options support inversion for --no- style flags:
-CliApp.option.boolean('--no-online', 'Disable online mode').inverted()
+CliApp.Declarative.Option.Boolean('--no-online', 'Disable online mode').inverted()
 
 // All options support chaining:
-CliApp.option.string('--format <type>', 'Format')
+CliApp.Declarative.Option.String('--format <type>', 'Format')
   .choices(['json', 'csv', 'xml'])
   .default('json')
   .required()

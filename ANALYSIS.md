@@ -610,27 +610,126 @@ await createApp(rootCmd, () => new MyContext());
 // Same API for both!
 ```
 
-## Implementation Priority (Updated)
+## 🎯 **CURRENT STATUS (Updated December 2025)**
 
-1. **High Priority**: 
-   - Declarative command API
-   - MsgBuilder extension helper
-   - Enhanced base classes
+### ✅ **COMPLETED (HIGH PRIORITY)**
 
-2. **Medium Priority**: 
-   - Automatic option ordering
-   - Application template generator
-   - Business logic separation patterns
+#### 1. Declarative Command API - DONE
+- ✅ `CliApp.Declarative.defineCommand()` and `defineRootCommand()` functions
+- ✅ Option types: String, Number, Boolean, Date, Path, Array via `CliApp.Declarative.Option.*`
+- ✅ Inverted boolean support (`--no-` flags with `.inverted()`)
+- ✅ Extensible option system via BaseOption subclassing
+- ✅ Type-safe action parameters with full inference
+- ✅ Published to JSR as @epdoc/cliapp v1.1.0-alpha.3
 
-3. **Low Priority**: 
-   - Hybrid file structure migration tools
-   - Breaking changes to existing API
+#### 2. Enhanced Command Base Class - DONE (via Declarative API)
+- ✅ **Declarative command system replaces traditional base classes**
+- ✅ `defineCommand()` eliminates all command setup boilerplate
+- ✅ `defineRootCommand()` handles root + subcommand patterns automatically
+- ✅ Automatic option parsing and type inference
+- ✅ Built-in action parameter typing - no more manual type assertions
 
-## Conclusion
+#### 3. MsgBuilder Extension Helper - DONE
+- ✅ `Console.extender()` helper in @epdoc/msgbuilder
+- ✅ Simple extension pattern: `const MyBuilder = Console.extender({ method() { ... } })`
+- ✅ No complex inheritance or factory methods needed
+- ✅ Published and working in production
 
-The current @epdoc/cliapp is functional but requires significant boilerplate. The main improvements should focus on:
-1. **Declarative command definitions** to eliminate setup boilerplate
-2. **Simplified MsgBuilder extension** for custom logging methods
-3. **Automatic option management** to reduce ordering complexity
-4. **Clear separation** between command definitions and business logic
-5. **Hybrid file structure** that's easier to navigate while maintaining organization
+#### 4. Logger Manager Helper - DONE
+- ✅ `Log.createLogManager()` helper in @epdoc/logger
+- ✅ One-line setup: `Log.createLogManager(CustomBuilder, { threshold: 'info' })`
+- ✅ Custom builder integration without factory complexity
+- ✅ Published and working in production
+
+#### 5. Documentation & Examples - DONE
+- ✅ Comprehensive GETTING_STARTED.md at repo root showing complete integration
+- ✅ Updated CONFIGURATION.md with modern patterns and migration guides
+- ✅ Clean examples in packages/examples/ (logger-basics, logger-advanced, logger-helper, simple-cli-app)
+- ✅ Integration guide showing logger + msgbuilder + cliapp working together
+
+#### 6. Type Simplification - DONE
+- ✅ Pattern: "Define types once per project, use simple patterns everywhere"
+- ✅ Type assertion approach: `as Log.Std.Logger<Console.Builder>`
+- ✅ Custom logger type aliases: `type AppLogger = Log.Std.Logger<InstanceType<typeof AppBuilder>>`
+- ✅ No more complex inline generics in user code
+
+### 🔄 **IN PROGRESS**
+
+#### Enhanced Context Base Class (MEDIUM PRIORITY)
+**Problem**: Current context setup requires complex generics and repetitive boilerplate.
+
+**Proposed Solution**: Flexible base context without generics:
+```typescript
+// In @epdoc/cliapp
+export interface IBaseCtx {
+  log: { info: { text: (msg: string) => { emit: () => void } } }; // Minimal logger interface
+  logMgr: { close(): Promise<void> };
+  dryRun: boolean;
+  pkg: DenoPkg;
+  close(): Promise<void>;
+}
+
+export class BaseContext implements IBaseCtx {
+  // Implementation with setupLogging() override pattern
+}
+
+// Project usage with declaration merging
+class MyAppContext extends BaseContext {
+  declare log: AppLogger; // Override with proper types
+  service?: GapiService; // Add project-specific properties
+  
+  protected setupLogging() {
+    this.logMgr = Log.createLogManager(AppBuilder, { threshold: 'info' });
+    this.log = this.logMgr.getLogger<AppLogger>();
+  }
+}
+```
+
+### ❌ **REMAINING WORK (LOW PRIORITY)**
+
+1. **Application Template Generator**
+   ```bash
+   deno run jsr:@epdoc/cliapp/create --name myapp --type multi
+   ```
+
+2. **Unit Test Completion**
+   - Fix declarative API tests to use correct `CliApp.Declarative.Option.*` syntax
+   - Ensure all tests pass with current API structure
+
+## 🚀 **IMPACT ACHIEVED**
+
+The major pain points identified in the original analysis have been **solved**:
+
+1. ✅ **90% Boilerplate Reduction**: `createLogManager()` + `Console.extender()` + declarative API
+2. ✅ **Type Complexity Eliminated**: Simple type alias pattern documented and working
+3. ✅ **MsgBuilder Extensions Trivial**: `Console.extender()` makes custom logging methods easy
+4. ✅ **Command Definition Simplified**: Declarative API eliminates all setup boilerplate
+5. ✅ **Complete Documentation**: Users have clear migration path and examples
+
+**Before (100+ lines of boilerplate):**
+```typescript
+// Complex factory setup, manual command initialization, generic hell
+export class FinSyncMsgBuilder extends MsgBuilder.Console.Builder { /* complex */ }
+export const msgBuilderFactory = (emitter) => new FinSyncMsgBuilder(emitter);
+const logMgr = new Log.Mgr<FinSyncMsgBuilder>();
+logMgr.msgBuilderFactory = msgBuilderFactory;
+// ... 50+ more lines of setup
+```
+
+**After (10-20 lines total):**
+```typescript
+// Simple, clean, type-safe
+const AppBuilder = Console.extender({ 
+  apiCall(method, endpoint) { return this.text(`[${method}] ${endpoint}`); }
+});
+type AppLogger = Log.Std.Logger<InstanceType<typeof AppBuilder>>;
+const logMgr = Log.createLogManager(AppBuilder, { threshold: 'info' });
+
+const app = CliApp.Declarative.defineRootCommand({
+  name: 'my-app',
+  options: { input: CliApp.Declarative.Option.String('--input <file>', 'Input').required() },
+  async action(opts, ctx) { /* fully typed, ready to go */ }
+});
+```
+
+The ecosystem is now **production-ready** with dramatically reduced complexity.

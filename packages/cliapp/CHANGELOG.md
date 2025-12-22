@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0-alpha.6] - 2025-12-22
+
+- Changes to protected methods in BaseContext
+
 ## [1.1.0-alpha.5] - 2025-12-22
 
 - Fixed option export

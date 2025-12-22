@@ -1,7 +1,7 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/cliapp@^1.1.0-alpha.3": "1.1.0-alpha.3",
+    "jsr:@epdoc/cliapp@^1.1.0-alpha.5": "1.1.0-alpha.5",
     "jsr:@epdoc/datetime@^2.0.13": "2.0.13",
     "jsr:@epdoc/duration@~0.3.6": "0.3.6",
     "jsr:@epdoc/logger@^1003.1.0-alpha.2": "1003.1.0-alpha.2",
@@ -40,8 +40,8 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
-    "@epdoc/cliapp@1.1.0-alpha.3": {
-      "integrity": "b3dfda0aed69d1db5e4aafeb0d7e80175e13994738fb8895f30ffa6de26614fd",
+    "@epdoc/cliapp@1.1.0-alpha.5": {
+      "integrity": "ea9e6f5c97429d9f07b787c8f6066b6c7267e87d4765c7bbf9a373935f2d8755",
       "dependencies": [
         "jsr:@epdoc/type",
         "jsr:@std/fmt",
@@ -297,7 +297,7 @@
       },
       "packages/examples": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^1.1.0-alpha.3",
+          "jsr:@epdoc/cliapp@^1.1.0-alpha.5",
           "jsr:@epdoc/logger@^1003.1.0-alpha.2",
           "jsr:@epdoc/msgbuilder@~0.1.0-alpha.3",
           "jsr:@epdoc/type@^1.2.2"
