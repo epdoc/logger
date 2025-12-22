@@ -15,3 +15,9 @@ export type {
   ILogMgrSettings as IMgrSettings,
   TimestampFormatType,
 } from './types.ts';
+
+// Helper functions
+export { createLogManager, type LogManagerOptions } from './helpers.ts';
+
+// Helper functions
+export { createLogManager, type LogManagerOptions } from './helpers.ts';
