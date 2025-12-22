@@ -52,14 +52,14 @@ logger.info.h1('Hello').text(' World!').emit();
 
 ## Custom Builder Setup
 
-For projects needing custom logging methods, combine with `extendBuilder`:
+For projects needing custom logging methods, combine with `Console.extender`:
 
 ```typescript
-import { extendBuilder } from '@epdoc/msgbuilder';
+import { Console } from '@epdoc/msgbuilder';
 import * as Log from '@epdoc/logger';
 
 // Create custom builder with project-specific methods
-const ProjectBuilder = extendBuilder({
+const ProjectBuilder = Console.extender({
   apiCall(method: string, endpoint: string) {
     return this.text(`[API] ${method} ${endpoint}`);
   },
@@ -105,7 +105,7 @@ interface LogManagerOptions {
 
 ## Migration Benefits
 
-**Before** (complex factory setup):
+**Before** (complex factory setup) [v1003.1.*]:
 ```typescript
 // Old way - lots of boilerplate
 const msgBuilderFactory = (emitter) => new CustomMsgBuilder(emitter);
@@ -116,7 +116,7 @@ logMgr.threshold = 'info';
 logMgr.show.level = true;
 ```
 
-**After** (simple helper):
+**After** (simple helper) [v1003.1.*]:
 ```typescript
 // New way - one line
 const logMgr = Log.createLogManager(CustomBuilder, { 

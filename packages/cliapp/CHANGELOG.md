@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0-alpha.2] - 2025-12-22
+
+- feat: update dependencies to latest logger and msgbuilder versions
+
+- Update @epdoc/logger to 1003.1.0-alpha.2 (includes createLogManager helper)
+- Update @epdoc/msgbuilder to 0.1.0-alpha.3 (includes Console.extender)
+- Maintain existing declarative API functionality
+- Ready for ecosystem integration with new helpers
+
 ## [Unreleased]
 
 ### Added

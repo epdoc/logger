@@ -4,7 +4,6 @@
  * @module
  */
 
-import type * as Log from '@epdoc/logger';
 import { Command } from './command.ts';
 import type { DenoPkg, ICtx, Logger, MsgBuilder, Opts } from './types.ts';
 import { configureLogging } from './utils.ts';
@@ -13,18 +12,18 @@ import { configureLogging } from './utils.ts';
  * Option definition helpers
  */
 export const option = {
-  string: (flags: string, description: string) => new StringOption(flags, description),
-  number: (flags: string, description: string) => new NumberOption(flags, description),
-  boolean: (flags: string, description: string) => new BooleanOption(flags, description),
-  date: (flags: string, description: string) => new DateOption(flags, description),
-  path: (flags: string, description: string) => new PathOption(flags, description),
-  array: (flags: string, description: string) => new ArrayOption(flags, description),
+  string: (flags: string, description: string): StringOption => new StringOption(flags, description),
+  number: (flags: string, description: string): NumberOption => new NumberOption(flags, description),
+  boolean: (flags: string, description: string): BooleanOption => new BooleanOption(flags, description),
+  date: (flags: string, description: string): DateOption => new DateOption(flags, description),
+  path: (flags: string, description: string): PathOption => new PathOption(flags, description),
+  array: (flags: string, description: string): ArrayOption => new ArrayOption(flags, description),
 };
 
 /**
  * Base option class
  */
-abstract class BaseOption<T = any> {
+abstract class BaseOption<T = unknown> {
   constructor(
     public flags: string,
     public description: string,
@@ -107,7 +106,7 @@ class ArrayOption extends BaseOption<string[]> {
 /**
  * Command definition types
  */
-export interface CommandDefinition<TOptions extends Record<string, BaseOption> = {}> {
+export interface CommandDefinition<TOptions extends Record<string, BaseOption> = Record<PropertyKey, never>> {
   name: string;
   description: string;
   options?: TOptions;
@@ -115,15 +114,15 @@ export interface CommandDefinition<TOptions extends Record<string, BaseOption> =
 }
 
 export interface RootCommandDefinition<
-  TOptions extends Record<string, BaseOption> = {},
-  TGlobalOptions extends Record<string, BaseOption> = {}
+  TOptions extends Record<string, BaseOption> = Record<PropertyKey, never>,
+  TGlobalOptions extends Record<string, BaseOption> = Record<PropertyKey, never>
 > {
   name: string;
   description: string;
   options?: TOptions;
   globalOptions?: TGlobalOptions;
   action?: (opts: InferredOptions<TOptions & TGlobalOptions>, ctx: ICtx) => Promise<void>;
-  subcommands?: DeclarativeCommand<any>[];
+  subcommands?: DeclarativeCommand<Record<PropertyKey, never>>[];
 }
 
 /**
@@ -136,10 +135,10 @@ export type InferredOptions<T extends Record<string, BaseOption>> = {
 /**
  * Declarative command wrapper
  */
-export class DeclarativeCommand<TOptions extends Record<string, BaseOption> = {}> {
+export class DeclarativeCommand<TOptions extends Record<string, BaseOption> = Record<PropertyKey, never>> {
   constructor(public definition: CommandDefinition<TOptions>) {}
 
-  async build<M extends MsgBuilder, L extends Logger<M>>(
+  build<M extends MsgBuilder, L extends Logger<M>>(
     ctx: ICtx<M, L>,
     pkg?: DenoPkg
   ): Promise<Command<M, L>> {
@@ -149,7 +148,7 @@ export class DeclarativeCommand<TOptions extends Record<string, BaseOption> = {}
 
     // Add options
     if (this.definition.options) {
-      for (const [key, optionDef] of Object.entries(this.definition.options)) {
+      for (const [_key, optionDef] of Object.entries(this.definition.options)) {
         const commanderOption = cmd.createOption(optionDef.flags, optionDef.description);
         
         if (optionDef.getDefault() !== undefined) {
@@ -174,7 +173,7 @@ export class DeclarativeCommand<TOptions extends Record<string, BaseOption> = {}
     }
 
     // Set up action
-    cmd.action(async (rawOpts: any) => {
+    cmd.action(async (rawOpts: unknown) => {
       const typedOpts = this.parseOptions(rawOpts);
       await this.definition.action(typedOpts, ctx);
     });
@@ -182,11 +181,11 @@ export class DeclarativeCommand<TOptions extends Record<string, BaseOption> = {}
     return cmd;
   }
 
-  private parseOptions(rawOpts: any): InferredOptions<TOptions> {
-    const parsed: any = {};
+  private parseOptions(rawOpts: unknown): InferredOptions<TOptions> {
+    const parsed: unknown = Record<PropertyKey, never>;
     
     if (this.definition.options) {
-      for (const [key, optionDef] of Object.entries(this.definition.options)) {
+      for (const [_key, optionDef] of Object.entries(this.definition.options)) {
         const rawValue = rawOpts[key];
         if (rawValue !== undefined) {
           parsed[key] = optionDef instanceof StringOption ? rawValue : optionDef.parse(rawValue);
@@ -204,12 +203,12 @@ export class DeclarativeCommand<TOptions extends Record<string, BaseOption> = {}
  * Root command wrapper
  */
 export class DeclarativeRootCommand<
-  TOptions extends Record<string, BaseOption> = {},
-  TGlobalOptions extends Record<string, BaseOption> = {}
+  TOptions extends Record<string, BaseOption> = Record<PropertyKey, never>,
+  TGlobalOptions extends Record<string, BaseOption> = Record<PropertyKey, never>
 > {
   constructor(public definition: RootCommandDefinition<TOptions, TGlobalOptions>) {}
 
-  async build<M extends MsgBuilder, L extends Logger<M>>(
+  build<M extends MsgBuilder, L extends Logger<M>>(
     ctx: ICtx<M, L>,
     pkg?: DenoPkg
   ): Promise<Command<M, L>> {
@@ -219,14 +218,14 @@ export class DeclarativeRootCommand<
     // Add subcommands first
     if (this.definition.subcommands) {
       for (const subCmd of this.definition.subcommands) {
-        const builtSubCmd = await subCmd.build(ctx, pkg);
+        const builtSubCmd = subCmd.build(ctx, pkg);
         cmd.addCommand(builtSubCmd);
       }
     }
 
     // Add global options (apply to all subcommands)
     if (this.definition.globalOptions) {
-      for (const [key, optionDef] of Object.entries(this.definition.globalOptions)) {
+      for (const [_key, optionDef] of Object.entries(this.definition.globalOptions)) {
         const commanderOption = cmd.createOption(optionDef.flags, optionDef.description);
         
         if (optionDef.getDefault() !== undefined) {
@@ -251,7 +250,7 @@ export class DeclarativeRootCommand<
 
     // Add root-specific options
     if (this.definition.options) {
-      for (const [key, optionDef] of Object.entries(this.definition.options)) {
+      for (const [_key, optionDef] of Object.entries(this.definition.options)) {
         const commanderOption = cmd.createOption(optionDef.flags, optionDef.description);
         
         if (optionDef.getDefault() !== undefined) {
@@ -275,7 +274,7 @@ export class DeclarativeRootCommand<
     }
 
     // Set up preAction hook for logging configuration
-    cmd.hook('preAction', async (command, _actionCommand) => {
+    cmd.hook('preAction', (command, _actionCommand) => {
       const opts = command.opts<Opts>();
       configureLogging(ctx, opts);
     });
@@ -285,7 +284,7 @@ export class DeclarativeRootCommand<
 
     // Set up root action if provided
     if (this.definition.action) {
-      cmd.action(async (rawOpts: any) => {
+      cmd.action(async (rawOpts: unknown) => {
         const typedOpts = this.parseOptions(rawOpts);
         await this.definition.action!(typedOpts, ctx);
       });
@@ -294,12 +293,12 @@ export class DeclarativeRootCommand<
     return cmd;
   }
 
-  private parseOptions(rawOpts: any): InferredOptions<TOptions & TGlobalOptions> {
-    const parsed: any = {};
+  private parseOptions(rawOpts: unknown): InferredOptions<TOptions & TGlobalOptions> {
+    const parsed: unknown = Record<PropertyKey, never>;
     
     // Parse global options
     if (this.definition.globalOptions) {
-      for (const [key, optionDef] of Object.entries(this.definition.globalOptions)) {
+      for (const [_key, optionDef] of Object.entries(this.definition.globalOptions)) {
         const rawValue = rawOpts[key];
         if (rawValue !== undefined) {
           parsed[key] = optionDef instanceof StringOption ? rawValue : optionDef.parse(rawValue);
@@ -311,7 +310,7 @@ export class DeclarativeRootCommand<
 
     // Parse root options
     if (this.definition.options) {
-      for (const [key, optionDef] of Object.entries(this.definition.options)) {
+      for (const [_key, optionDef] of Object.entries(this.definition.options)) {
         const rawValue = rawOpts[key];
         if (rawValue !== undefined) {
           parsed[key] = optionDef instanceof StringOption ? rawValue : optionDef.parse(rawValue);
@@ -335,8 +334,8 @@ export function defineCommand<TOptions extends Record<string, BaseOption>>(
 }
 
 export function defineRootCommand<
-  TOptions extends Record<string, BaseOption> = {},
-  TGlobalOptions extends Record<string, BaseOption> = {}
+  TOptions extends Record<string, BaseOption> = Record<PropertyKey, never>,
+  TGlobalOptions extends Record<string, BaseOption> = Record<PropertyKey, never>
 >(
   definition: RootCommandDefinition<TOptions, TGlobalOptions>
 ): DeclarativeRootCommand<TOptions, TGlobalOptions> {
@@ -347,13 +346,13 @@ export function defineRootCommand<
  * App creation utility
  */
 export async function createApp<M extends MsgBuilder, L extends Logger<M>>(
-  rootCommand: DeclarativeRootCommand<any, any>,
+  rootCommand: DeclarativeRootCommand<Record<PropertyKey, never>, Record<PropertyKey, never>>,
   createContext: () => ICtx<M, L>
 ): Promise<void> {
   const ctx = createContext();
   
   try {
-    const cmd = await rootCommand.build(ctx, ctx.pkg);
+    const cmd = rootCommand.build(ctx, ctx.pkg);
     await cmd.parseAsync();
   } finally {
     await ctx.close();
