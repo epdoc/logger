@@ -1,59 +1,45 @@
 import { Command } from '../command.ts';
-import type { DenoPkg, ICtx, Logger, MsgBuilder, Opts } from '../types.ts';
+import type * as Ctx from '../context/mod.ts';
+import type { DenoPkg, Opts } from '../types.ts';
 import { configureLogging } from '../utils.ts';
 import * as Option from './option/mod.ts';
-import type { InferredOptions, RootCommandDefinition } from './types.ts';
+import type { ParsedOptions, RootCommandDefinition } from './types.ts';
 
 /**
  * Root command wrapper
  */
-export class DeclarativeRootCommand<
-  TOptions extends Record<string, Option.Base> = Record<PropertyKey, never>,
-  TGlobalOptions extends Record<string, Option.Base> = Record<PropertyKey, never>,
-> {
-  constructor(public definition: RootCommandDefinition<TOptions, TGlobalOptions>) {}
+export class DeclarativeRootCommand {
+  definition: RootCommandDefinition;
 
-  build<M extends MsgBuilder, L extends Logger<M>>(
-    ctx: ICtx<M, L>,
-    pkg?: DenoPkg,
-  ): Command<M, L> {
-    const cmd = new Command<M, L>(pkg ?? { name: '', version: '0.0.0', description: '' });
+  constructor(definition: RootCommandDefinition) {
+    this.definition = definition;
+  }
+
+  build(ctx: Ctx.IBase, pkg?: DenoPkg): Command {
+    const cmd = new Command(pkg ?? { name: '', version: '0.0.0', description: '' });
     cmd.init(ctx);
 
+    // Add arguments
+    if (this.definition.arguments) {
+      for (const argDef of this.definition.arguments) {
+        const argName = argDef.variadic
+          ? `<${argDef.name}...>`
+          : argDef.required !== false
+          ? `<${argDef.name}>`
+          : `[${argDef.name}]`;
+        cmd.argument(argName, argDef.description);
+      }
+    }
+
     // Add subcommands first
-    if (this.definition.subcommands) {
-      for (const subCmd of this.definition.subcommands) {
-        const builtSubCmd = subCmd.build(ctx, pkg) as Command<M, L>;
-        cmd.addCommand(builtSubCmd);
+    if (this.definition.commands) {
+      for (const [_name, subCmd] of Object.entries(this.definition.commands)) {
+        const builtSubCmd = subCmd.build?.(ctx, pkg) ?? subCmd.definition;
+        cmd.addCommand(builtSubCmd as Command);
       }
     }
 
-    // Add global options (apply to all subcommands)
-    if (this.definition.globalOptions) {
-      for (const [_key, optionDef] of Object.entries(this.definition.globalOptions)) {
-        const commanderOption = cmd.createOption(optionDef.flags, optionDef.description);
-
-        if (optionDef.getDefault() !== undefined) {
-          commanderOption.default(optionDef.getDefault());
-        }
-
-        if (optionDef.isRequired()) {
-          commanderOption.makeOptionMandatory();
-        }
-
-        if (optionDef.getChoices()) {
-          commanderOption.choices(optionDef.getChoices() as string[]);
-        }
-
-        if (!(optionDef instanceof Option.String)) {
-          commanderOption.argParser((value: string) => optionDef.parse(value));
-        }
-
-        cmd.addOption(commanderOption);
-      }
-    }
-
-    // Add root-specific options
+    // Add root options (available to all subcommands)
     if (this.definition.options) {
       for (const [_key, optionDef] of Object.entries(this.definition.options)) {
         const commanderOption = cmd.createOption(optionDef.flags, optionDef.description);
@@ -89,42 +75,36 @@ export class DeclarativeRootCommand<
 
     // Set up root action if provided
     if (this.definition.action) {
-      cmd.action(async (rawOpts: Record<string, unknown>) => {
-        const typedOpts = this.#parseOptions(rawOpts);
-        await this.definition.action!(typedOpts, ctx);
+      cmd.action(async (...argsAndOpts: unknown[]) => {
+        // Commander.js passes arguments first, then options as last parameter
+        const rawOpts = argsAndOpts.pop() as Record<string, unknown>;
+        const args = argsAndOpts as string[];
+
+        const parsedOpts = this.#parseOptions(rawOpts);
+        await this.definition.action!(ctx, args, parsedOpts);
       });
     }
 
     return cmd;
   }
 
-  #parseOptions(rawOpts: Record<string, unknown>): InferredOptions<TOptions & TGlobalOptions> {
-    const parsed: Record<string, unknown> = {};
-
-    // Parse global options
-    if (this.definition.globalOptions) {
-      for (const [_key, optionDef] of Object.entries(this.definition.globalOptions)) {
-        const rawValue = rawOpts[_key];
-        if (rawValue !== undefined) {
-          parsed[_key] = optionDef instanceof Option.String ? rawValue : optionDef.parse(rawValue as string);
-        } else if (optionDef.getDefault() !== undefined) {
-          parsed[_key] = optionDef.getDefault();
-        }
-      }
-    }
+  #parseOptions(rawOpts: Record<string, unknown>): ParsedOptions {
+    const parsed: ParsedOptions = {};
 
     // Parse root options
     if (this.definition.options) {
-      for (const [_key, optionDef] of Object.entries(this.definition.options)) {
-        const rawValue = rawOpts[_key];
+      for (const [key, optionDef] of Object.entries(this.definition.options)) {
+        const rawValue = rawOpts[key];
         if (rawValue !== undefined) {
-          parsed[_key] = optionDef instanceof Option.String ? rawValue : optionDef.parse(rawValue as string);
+          parsed[key] = optionDef instanceof Option.String
+            ? rawValue as string
+            : optionDef.parse(rawValue as string) as string | number | boolean | string[] | number[];
         } else if (optionDef.getDefault() !== undefined) {
-          parsed[_key] = optionDef.getDefault();
+          parsed[key] = optionDef.getDefault() as string | number | boolean | string[] | number[];
         }
       }
     }
 
-    return parsed as InferredOptions<TOptions & TGlobalOptions>;
+    return parsed;
   }
 }

@@ -6,7 +6,6 @@
  */
 
 import type * as Log from '@epdoc/logger';
-import type { IBaseCtx } from './declarative/types.ts';
 import type { Console } from '@epdoc/msgbuilder';
 
 /**
@@ -41,7 +40,7 @@ export type Logger<M extends MsgBuilder = MsgBuilder> = Log.Std.Logger<M>;
 export interface ICtx<
   M extends MsgBuilder = MsgBuilder,
   L extends Logger<M> = Logger<M>,
-> extends IBaseCtx {
+> {
   log: L;
   logMgr: Log.Mgr<M>;
   dryRun: boolean;

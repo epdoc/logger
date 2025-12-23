@@ -1,33 +1,30 @@
-import type { DenoPkg, ICtx, Logger, MsgBuilder } from '../types.ts';
+import type * as Ctx from '../context/mod.ts';
+import type { DenoPkg } from '../types.ts';
 import { DeclarativeCommand } from './command.ts';
-import type * as Option from './option/mod.ts';
 import { DeclarativeRootCommand } from './root-command.ts';
-import type * as Declarative from './types.ts';
+import type { CommandDefinition, RootCommandDefinition } from './types.ts';
 
 /**
- * Factory functions
+ * Factory functions using separate declaration pattern
  */
-export function defineCommand<TOptions extends Record<string, Option.Base>>(
-  definition: Declarative.CommandDefinition<TOptions>,
-): DeclarativeCommand<TOptions> {
+export function defineCommand(
+  definition: CommandDefinition,
+): DeclarativeCommand {
   return new DeclarativeCommand(definition);
 }
 
-export function defineRootCommand<
-  TOptions extends Record<string, Option.Base> = Record<PropertyKey, never>,
-  TGlobalOptions extends Record<string, Option.Base> = Record<PropertyKey, never>,
->(
-  definition: Declarative.RootCommandDefinition<TOptions, TGlobalOptions>,
-): DeclarativeRootCommand<TOptions, TGlobalOptions> {
+export function defineRootCommand(
+  definition: RootCommandDefinition,
+): DeclarativeRootCommand {
   return new DeclarativeRootCommand(definition);
 }
 
 /**
  * App creation utility
  */
-export async function createApp<M extends MsgBuilder, L extends Logger<M>>(
-  rootCommand: DeclarativeRootCommand<Record<PropertyKey, never>, Record<PropertyKey, never>>,
-  createContext: () => ICtx<M, L>,
+export async function createApp(
+  rootCommand: DeclarativeRootCommand,
+  createContext: () => Ctx.IBase,
 ): Promise<void> {
   const ctx = createContext();
 

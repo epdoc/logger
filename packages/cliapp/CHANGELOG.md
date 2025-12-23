@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0-alpha.7] - 2025-12-22
+
+- added argument parsing support
+
 ## [1.1.0-alpha.6] - 2025-12-22
 
 - Changes to protected methods in BaseContext

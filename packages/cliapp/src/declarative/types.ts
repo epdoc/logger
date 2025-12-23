@@ -1,45 +1,47 @@
-import type { BaseOption } from './option/base.ts';
+import type * as Ctx from '../context/mod.ts';
+import type * as Option from './option/mod.ts';
+
+export type ParseOptionValue = string | number | boolean | string[] | number[];
 
 /**
- * Base context interface that all contexts must implement
+ * Parsed option values from Commander.js
  */
-export interface IBaseCtx {
-  close(): Promise<void>;
-}
+export type ParsedOptions = Record<string, ParseOptionValue>;
 
 /**
- * Command definition types with flexible context
+ * Command argument definition
  */
-export interface CommandDefinition<TOptions extends Record<string, BaseOption> = Record<PropertyKey, never>> {
+export interface ArgumentDefinition {
   name: string;
   description: string;
-  options?: TOptions;
-  action: (opts: InferredOptions<TOptions>, ctx: IBaseCtx) => Promise<void>;
-}
-
-export interface RootCommandDefinition<
-  TOptions extends Record<string, BaseOption> = Record<PropertyKey, never>,
-  TGlobalOptions extends Record<string, BaseOption> = Record<PropertyKey, never>,
-> {
-  name: string;
-  description: string;
-  options?: TOptions;
-  globalOptions?: TGlobalOptions;
-  action?: (opts: InferredOptions<TOptions & TGlobalOptions>, ctx: IBaseCtx) => Promise<void>;
-  subcommands?: DeclarativeCommandInterface<Record<PropertyKey, never>>[];
+  required?: boolean;
+  variadic?: boolean; // for <files...> syntax
 }
 
 /**
- * Type to infer option types from option definitions
+ * Command definition using separate declaration pattern
  */
-export type InferredOptions<T extends Record<string, BaseOption>> = {
-  [K in keyof T]: T[K] extends BaseOption<infer U> ? U : never;
-};
+export interface CommandDefinition {
+  name: string;
+  description: string;
+  arguments?: ArgumentDefinition[];
+  /** options includes root options (merged by Commander.js) */
+  options?: Record<string, Option.Base>;
+  action: (ctx: Ctx.IBase, args: string[], opts: ParsedOptions) => Promise<void>;
+}
+
+/**
+ * Root command definition with rootOptions available to all subcommands
+ * Logger options are added separately via cmd.addLogging()
+ */
+export interface RootCommandDefinition extends CommandDefinition {
+  commands?: Record<string, DeclarativeCommandInterface>;
+}
 
 /**
  * Interface for DeclarativeCommand to avoid circular imports
  */
-export interface DeclarativeCommandInterface<TOptions extends Record<string, BaseOption> = Record<PropertyKey, never>> {
-  definition: CommandDefinition<TOptions>;
-  build(ctx: IBaseCtx, pkg?: unknown): unknown;
+export interface DeclarativeCommandInterface {
+  definition: CommandDefinition;
+  build?(ctx: Ctx.IBase, pkg?: unknown): unknown;
 }

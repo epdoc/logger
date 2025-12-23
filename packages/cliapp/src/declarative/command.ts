@@ -1,21 +1,35 @@
 import { Command } from '../command.ts';
-import type { DenoPkg, ICtx, Logger, MsgBuilder } from '../types.ts';
+import type * as Ctx from '../context/mod.ts';
+import type { DenoPkg } from '../types.ts';
 import * as Option from './option/mod.ts';
-import type { CommandDefinition, InferredOptions } from './types.ts';
+import type { CommandDefinition, ParsedOptions } from './types.ts';
 
 /**
  * Declarative command wrapper
  */
-export class DeclarativeCommand<TOptions extends Record<string, Option.Base> = Record<PropertyKey, never>> {
-  constructor(public definition: CommandDefinition<TOptions>) {}
+export class DeclarativeCommand {
+  definition: CommandDefinition;
 
-  build<M extends MsgBuilder, L extends Logger<M>>(
-    ctx: ICtx<M, L>,
-    pkg?: DenoPkg,
-  ): Command<M, L> {
-    const cmd = new Command<M, L>(pkg!);
+  constructor(definition: CommandDefinition) {
+    this.definition = definition;
+  }
+
+  build(ctx: Ctx.IBase, pkg?: DenoPkg): Command {
+    const cmd = new Command(pkg!);
     cmd.name(this.definition.name);
     cmd.description(this.definition.description);
+
+    // Add arguments
+    if (this.definition.arguments) {
+      for (const argDef of this.definition.arguments) {
+        const argName = argDef.variadic
+          ? `<${argDef.name}...>`
+          : argDef.required !== false
+          ? `<${argDef.name}>`
+          : `[${argDef.name}]`;
+        cmd.argument(argName, argDef.description);
+      }
+    }
 
     // Add options
     if (this.definition.options) {
@@ -43,29 +57,35 @@ export class DeclarativeCommand<TOptions extends Record<string, Option.Base> = R
       }
     }
 
-    // Set up action - ctx is compatible with IBaseCtx since ICtx extends IBaseCtx
-    cmd.action(async (rawOpts: Record<string, unknown>) => {
-      const typedOpts = this.#parseOptions(rawOpts);
-      await this.definition.action(typedOpts, ctx);
+    // Set up action
+    cmd.action(async (...argsAndOpts: unknown[]) => {
+      // Commander.js passes arguments first, then options as last parameter
+      const rawOpts = argsAndOpts.pop() as Record<string, unknown>;
+      const args = argsAndOpts as string[];
+
+      const parsedOpts = this.#parseOptions(rawOpts);
+      await this.definition.action(ctx, args, parsedOpts);
     });
 
     return cmd;
   }
 
-  #parseOptions(rawOpts: Record<string, unknown>): InferredOptions<TOptions> {
-    const parsed: Record<string, unknown> = {};
+  #parseOptions(rawOpts: Record<string, unknown>): ParsedOptions {
+    const parsed: ParsedOptions = {};
 
     if (this.definition.options) {
-      for (const [_key, optionDef] of Object.entries(this.definition.options)) {
-        const rawValue = rawOpts[_key];
+      for (const [key, optionDef] of Object.entries(this.definition.options)) {
+        const rawValue = rawOpts[key];
         if (rawValue !== undefined) {
-          parsed[_key] = optionDef instanceof Option.String ? rawValue : optionDef.parse(rawValue as string);
+          parsed[key] = optionDef instanceof Option.String
+            ? rawValue as string
+            : optionDef.parse(rawValue as string) as string | number | boolean | string[] | number[];
         } else if (optionDef.getDefault() !== undefined) {
-          parsed[_key] = optionDef.getDefault();
+          parsed[key] = optionDef.getDefault() as string | number | boolean | string[] | number[];
         }
       }
     }
 
-    return parsed as InferredOptions<TOptions>;
+    return parsed;
   }
 }
