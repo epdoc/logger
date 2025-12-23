@@ -15,7 +15,7 @@ const basicLogger = basicLogMgr.getLogger() as Log.Std.Logger<Console.Builder>;
 
 basicLogger.info.h1('Basic Logger').text(' - Simple setup').emit();
 basicLogger.warn.text('This is a warning message').emit();
-basicLogger.debug.text('This debug message won\'t show (threshold is info)').emit();
+basicLogger.debug.text("This debug message won't show (threshold is info)").emit();
 
 // Example 2: Using the new createLogManager helper
 console.log('\n=== Example 2: Using createLogManager Helper ===');
@@ -37,7 +37,7 @@ const CustomBuilder = Console.extender({
   apiCall(method: string, endpoint: string) {
     return this.text('[API] ').text(method).text(' ').text(endpoint);
   },
-  
+
   metric(name: string, value: number, unit = '') {
     return this.text('📊 ').text(name).text(': ').text(value.toString()).text(unit);
   },

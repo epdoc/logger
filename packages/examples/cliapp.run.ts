@@ -1,7 +1,7 @@
 /**
  * @file Basic CLI app using BaseContext
  * @description Demonstrates the simplified BaseContext pattern for CLI applications
- * 
+ *
  * Key features demonstrated:
  * - BaseContext extension with custom msgbuilder types
  * - Declarative API with arguments and options
@@ -64,7 +64,7 @@ const processCmd = CliApp.Declarative.defineCommand({
   name: 'process',
   description: 'Process files in a directory',
   arguments: [
-    { name: 'files', description: 'Files to process', variadic: true, required: false }
+    { name: 'files', description: 'Files to process', variadic: true, required: false },
   ],
   options: {
     input: CliApp.Declarative.option.path('--input <dir>', 'Input directory').default('.'),
@@ -110,13 +110,13 @@ const cleanCmd = CliApp.Declarative.defineCommand({
   name: 'clean',
   description: 'Clean temporary files',
   arguments: [
-    { name: 'target', description: 'Target directory to clean', required: false }
+    { name: 'target', description: 'Target directory to clean', required: false },
   ],
   options: {
     dryRun: CliApp.Declarative.option.boolean('--dry-run', 'Show what would be deleted'),
     force: CliApp.Declarative.option.boolean('--force', 'Force deletion without confirmation'),
   },
-  async action(ctx, args, opts) {
+  action(ctx, args, opts) {
     const appCtx = ctx as unknown as AppContext;
     appCtx.dryRun = opts.dryRun as boolean; // Type assertion for ParseOptionValue
 
@@ -142,6 +142,7 @@ const cleanCmd = CliApp.Declarative.defineCommand({
     const message = appCtx.dryRun ? `Would delete ${tempFiles.length} files` : `Deleted ${tempFiles.length} files`;
 
     appCtx.logStatus('success', message);
+    return Promise.resolve();
   },
 });
 
@@ -150,7 +151,7 @@ const app = CliApp.Declarative.defineRootCommand({
   name: 'file-processor',
   description: 'Simple file processing CLI using BaseContext',
   arguments: [
-    { name: 'command', description: 'Command to run (if not using subcommands)', required: false }
+    { name: 'command', description: 'Command to run (if not using subcommands)', required: false },
   ],
   options: {
     config: CliApp.Declarative.option.string('--config <file>', 'Configuration file'),
@@ -160,7 +161,7 @@ const app = CliApp.Declarative.defineRootCommand({
     process: processCmd,
     clean: cleanCmd,
   },
-  async action(ctx, args, opts) {
+  action(ctx, args, opts) {
     const appCtx = ctx as unknown as AppContext;
     if (opts.quiet) {
       appCtx.logMgr.threshold = 'error';
@@ -179,6 +180,7 @@ const app = CliApp.Declarative.defineRootCommand({
     }
 
     appCtx.logStatus('info', 'Ready to process files');
+    return Promise.resolve();
   },
 });
 
