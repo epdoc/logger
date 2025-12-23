@@ -1,315 +1,509 @@
-# cliapp
+# @epdoc/cliapp
 
-A CLI helper application using [@epdoc/logger](https://github.com/epdoc/logger) and [commanderjs](https://www.npmjs.com/package/commander).
+A powerful CLI framework built on [@epdoc/logger](https://github.com/epdoc/logger) and [Commander.js](https://www.npmjs.com/package/commander), designed for building type-safe, maintainable command-line applications.
 
 ## Overview
 
-`cliapp` captures common code needed across multiple command line applications that use [@epdoc/logger](https://github.com/epdoc/logger). Key features include:
+`@epdoc/cliapp` provides a modern approach to CLI development with:
 
-- **Declarative Command API:** New simplified API for defining commands with automatic type inference and minimal boilerplate.
-- **Enhanced Context Base Class:** `BaseContext` eliminates generics complexity while maintaining type safety.
-- **Extensible Option System:** Built-in option types (string, number, boolean, date, path, array) with support for custom option types through subclassing.
-- **Inverted Boolean Flags:** Support for `--no-` style flags that invert boolean values.
-- **Command Parsing:** Extends the [commanderjs](https://www.npmjs.com/package/commander) Command object.
-  - `CliApp.Command` in [command.ts](./src/command.ts) adds standard [@epdoc/logger](https://github.com/epdoc/logger)
-    logging options to the Command object.
-  - The `Commander` object from `commanderjs` is exported as well, allowing you to create custom options (e.g.,
-    `new CliApp.Commander.Option(...)`) without reimporting Commanderjs.
-  - Continue to use the `CliApp.Command` object as you did the `Command` object from Commanderjs.
-  - Apply cli logging options to [@epdoc/logger](https://github.com/epdoc/logger) using
-    [configureLogging](./src/util.ts).
-- **Logging:** Built on top of [@epdoc/logger](https://github.com/epdoc/logger).
-- **Context Management:** The application context is managed in [context.ts](./src/context.ts).
-  - Adapt and extend this object for your own application.
+- **🚀 BaseContext Pattern** - Simplified context management eliminating complex generics
+- **📝 Declarative API** - Clean command definitions with automatic type inference
+- **🎯 Arguments Support** - Full support for command arguments (required, optional, variadic)
+- **⚙️ Rich Option Types** - Built-in types (string, number, boolean, date, path, array) with extensibility
+- **🔧 Custom Message Builders** - Project-specific logging methods with type safety
+- **📊 Structured Logging** - Built on [@epdoc/logger](https://github.com/epdoc/logger) with rich formatting
+- **🏗️ Scalable Architecture** - Patterns for single commands to complex multi-command applications
 
-## Install
+## Installation
 
-```
+```bash
 deno add jsr:@epdoc/cliapp
 ```
 
-## Quick Start (Declarative API)
+## Quick Start
 
-The fastest way to get started is with `BaseContext` and the declarative API:
+### Minimal CLI App
 
-### Minimal Setup
 ```typescript
+import * as CliApp from '@epdoc/cliapp';
 import * as Log from '@epdoc/logger';
 import { Console } from '@epdoc/msgbuilder';
-import * as CliApp from '@epdoc/cliapp';
 import pkg from './deno.json' with { type: 'json' };
 
-// 1. Define types once
+// 1. Define types once per project
 type MsgBuilder = Console.Builder;
 type Logger = Log.Std.Logger<MsgBuilder>;
 
-// 2. Create context
-class AppContext extends CliApp.BaseContext<MsgBuilder, Logger> {
+// 2. Create your context
+class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
   constructor() {
     super(pkg);
-    this.setupLogging();
+    this.setupLogging(); // Must call in constructor
   }
 
-  protected setupLogging() {
+  setupLogging() {
     this.logMgr = Log.createLogManager(undefined, { threshold: 'info' });
     this.log = this.logMgr.getLogger<Logger>();
   }
 }
 
-// 3. Define your app
+// 3. Define your command
 const app = CliApp.Declarative.defineRootCommand({
   name: 'my-tool',
   description: 'A simple CLI tool',
+  arguments: [
+    { name: 'files', description: 'Files to process', variadic: true }
+  ],
   options: {
-    input: CliApp.Declarative.Option.Path('--input <file>', 'Input file').required(),
-    format: CliApp.Declarative.Option.String('--format <type>', 'Output format')
-      .choices(['json', 'csv']).default('json')
+    output: CliApp.Declarative.option.path('--output <dir>', 'Output directory'),
+    verbose: CliApp.Declarative.option.boolean('--verbose', 'Verbose output')
   },
-  async action(opts, ctx: AppContext) {
-    // opts is fully typed: { input: string, format: 'json' | 'csv' }
-    ctx.log.info.text(`Processing ${opts.input} as ${opts.format}`).emit();
-    // Your business logic here
+  async action(ctx, args, opts) {
+    // ctx: AppContext, args: string[], opts: ParsedOptions
+    const appCtx = ctx as unknown as AppContext;
+    
+    appCtx.log.info.h1('Processing Files')
+      .label('Files:').value(args.join(', '))
+      .label('Output:').value(opts.output)
+      .emit();
   }
 });
 
 // 4. Run it
-await CliApp.Declarative.createApp(app, () => new AppContext());
+if (import.meta.main) {
+  await CliApp.Declarative.createApp(app, () => new AppContext());
+}
 ```
 
-### With Custom Logging Methods
+### With Custom Message Builder
+
 ```typescript
-// Add custom msgbuilder for richer logging
+// Define project-specific logging methods
 const AppBuilder = Console.extender({
-  fileOp(op: string, path: string) {
-    return this.text(`📁 ${op} `).path(path);
+  fileOp(operation: string, path: string) {
+    return this.text('📁 ').text(operation).text(' ').path(path);
+  },
+  
+  apiCall(method: string, endpoint: string) {
+    return this.text('🌐 ').text(method).text(' ').url(endpoint);
+  },
+  
+  progress(current: number, total: number) {
+    const percent = Math.round((current / total) * 100);
+    return this.text(`⏳ Progress: ${current}/${total} (${percent}%)`);
   }
 });
 
 type MsgBuilder = InstanceType<typeof AppBuilder>;
 type Logger = Log.Std.Logger<MsgBuilder>;
 
-class AppContext extends CliApp.BaseContext<MsgBuilder, Logger> {
+class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
+  // Add application state
+  processedFiles = 0;
+  
   constructor() {
     super(pkg);
     this.setupLogging();
   }
 
-  protected setupLogging() {
+  setupLogging() {
+    this.logMgr = Log.createLogManager(AppBuilder, { threshold: 'info' });
+    this.log = this.logMgr.getLogger<Logger>();
+  }
+  
+  // Helper methods using custom msgbuilder
+  logFileOperation(op: string, path: string) {
+    this.log.info.fileOp(op, path).emit();
+    this.processedFiles++;
+  }
+}
+```
+
+## Project Organization
+
+### Single Command Application
+
+```
+my-tool/
+├── deno.json
+├── src/
+│   ├── main.ts          # Entry point with command definition
+│   ├── context.ts       # AppContext class
+│   └── types.ts         # Type definitions
+└── README.md
+```
+
+**src/context.ts:**
+```typescript
+import * as CliApp from '@epdoc/cliapp';
+import * as Log from '@epdoc/logger';
+import { Console } from '@epdoc/msgbuilder';
+import pkg from '../deno.json' with { type: 'json' };
+
+const AppBuilder = Console.extender({
+  // Your custom logging methods
+});
+
+export type MsgBuilder = InstanceType<typeof AppBuilder>;
+export type Logger = Log.Std.Logger<MsgBuilder>;
+
+export class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
+  constructor() {
+    super(pkg);
+    this.setupLogging();
+  }
+
+  setupLogging() {
     this.logMgr = Log.createLogManager(AppBuilder, { threshold: 'info' });
     this.log = this.logMgr.getLogger<Logger>();
   }
 }
-
-// Now you can use custom methods
-async action(opts, ctx: AppContext) {
-  ctx.log.info.fileOp('PROCESS', opts.input).emit(); // Custom method!
-}
 ```
 
-### Multi-Command App
+### Multi-Command Application
 
+```
+my-cli/
+├── deno.json
+├── src/
+│   ├── main.ts          # Root command and app runner
+│   ├── context.ts       # Shared AppContext
+│   ├── types.ts         # Shared types
+│   ├── commands/
+│   │   ├── fetch.ts     # Fetch command
+│   │   ├── process.ts   # Process command
+│   │   └── export.ts    # Export command
+│   └── lib/
+│       ├── api.ts       # Business logic
+│       └── utils.ts     # Utilities
+└── README.md
+```
+
+**src/commands/fetch.ts:**
 ```typescript
-const fetchCmd = CliApp.Declarative.defineCommand({
+import * as CliApp from '@epdoc/cliapp';
+import type { AppContext } from '../context.ts';
+
+export const fetchCommand = CliApp.Declarative.defineCommand({
   name: 'fetch',
-  description: 'Fetch data from source',
+  description: 'Fetch data from remote source',
+  arguments: [
+    { name: 'endpoint', description: 'API endpoint to fetch from' }
+  ],
   options: {
-    since: CliApp.Declarative.Option.Date('--since <date>', 'Fetch data since this date'),
-    limit: CliApp.Declarative.Option.Number('--limit <n>', 'Maximum items to fetch').default(100)
+    limit: CliApp.Declarative.option.number('--limit <n>', 'Max items').default(100),
+    format: CliApp.Declarative.option.string('--format <type>', 'Output format')
+      .choices(['json', 'csv']).default('json')
   },
-  async action(opts, ctx: AppContext) {
-    // opts is fully typed: { since: Date, limit: number }
-    ctx.log.info.h1('Fetching Data')
-      .label('Since:').value(opts.since?.toISOString() || 'beginning')
-      .label('Limit:').value(opts.limit)
-      .emit();
+  async action(ctx, args, opts) {
+    const appCtx = ctx as unknown as AppContext;
+    const endpoint = args[0];
+    
+    appCtx.log.info.apiCall('GET', endpoint).emit();
+    // Implementation here
   }
 });
+```
+
+**src/main.ts:**
+```typescript
+import * as CliApp from '@epdoc/cliapp';
+import { AppContext } from './context.ts';
+import { fetchCommand } from './commands/fetch.ts';
+import { processCommand } from './commands/process.ts';
+import { exportCommand } from './commands/export.ts';
 
 const app = CliApp.Declarative.defineRootCommand({
-  name: 'data-processor',
-  description: 'Process and export data',
-  globalOptions: {
-    profile: CliApp.Declarative.Option.String('--profile <name>', 'Profile to use').default('default')
+  name: 'my-cli',
+  description: 'Multi-purpose data processing CLI',
+  options: {
+    config: CliApp.Declarative.option.path('--config <file>', 'Config file'),
+    verbose: CliApp.Declarative.option.boolean('--verbose', 'Verbose output')
   },
-  subcommands: [fetchCmd]
+  commands: {
+    fetch: fetchCommand,
+    process: processCommand,
+    export: exportCommand
+  },
+  async action(ctx, args, opts) {
+    const appCtx = ctx as unknown as AppContext;
+    appCtx.log.info.h1('My CLI Tool').text('Use --help for commands').emit();
+  }
 });
 
-await CliApp.Declarative.createApp(app, () => new AppContext());
+if (import.meta.main) {
+  await CliApp.Declarative.createApp(app, () => new AppContext());
+}
 ```
 
-### Available Option Types
+### Complex Application with Custom Options
 
-```typescript
-CliApp.Declarative.Option.String('--name <value>', 'String option')
-CliApp.Declarative.Option.Number('--count <n>', 'Number option')  
-CliApp.Declarative.Option.Boolean('--flag', 'Boolean flag')
-CliApp.Declarative.Option.Date('--since <date>', 'Date option')
-CliApp.Declarative.Option.Path('--output <path>', 'File/directory path')
-CliApp.Declarative.Option.Array('--items <list>', 'Comma-separated array')
-
-// Boolean options support inversion for --no- style flags:
-CliApp.Declarative.Option.Boolean('--no-online', 'Disable online mode').inverted()
-
-// All options support chaining:
-CliApp.Declarative.Option.String('--format <type>', 'Format')
-  .choices(['json', 'csv', 'xml'])
-  .default('json')
-  .required()
+```
+enterprise-cli/
+├── deno.json
+├── src/
+│   ├── main.ts
+│   ├── context.ts
+│   ├── types.ts
+│   ├── commands/
+│   │   ├── deploy/
+│   │   │   ├── mod.ts        # Deploy root command
+│   │   │   ├── staging.ts    # Deploy to staging
+│   │   │   └── production.ts # Deploy to production
+│   │   └── config/
+│   │       ├── mod.ts        # Config root command
+│   │       ├── get.ts        # Get config
+│   │       └── set.ts        # Set config
+│   ├── options/
+│   │   ├── environment.ts    # Custom environment option
+│   │   └── daterange.ts      # Custom date range option
+│   └── lib/
+│       ├── deployment.ts
+│       └── config.ts
+└── README.md
 ```
 
-### Custom Option Types
-
-You can create custom option types by extending `BaseOption`:
-
+**src/options/environment.ts:**
 ```typescript
-import { Declarative } from '@epdoc/cliapp';
-import { dateRanges, type DateRanges } from '@epdoc/daterange';
+import * as CliApp from '@epdoc/cliapp';
 
-export class DateRangeOption extends Declarative.Option.Base<DateRanges> {
-  parse(value: string): DateRanges {
-    return dateRanges(value);
+type Environment = 'dev' | 'staging' | 'prod';
+
+export class EnvironmentOption extends CliApp.Declarative.Option.Base<Environment> {
+  constructor(flags: string, description: string) {
+    super(flags, description);
+    this.choices(['dev', 'staging', 'prod']);
+  }
+
+  parse(value: string): Environment {
+    if (!['dev', 'staging', 'prod'].includes(value)) {
+      throw new Error(`Invalid environment: ${value}`);
+    }
+    return value as Environment;
   }
 }
-
-// Usage:
-const options = {
-  period: new DateRangeOption('-p, --period <range>', 'Date range to process')
-    .default(dateRanges('last-week'))
-    .required()
-};
-
-// Supports formats like:
-// --period 2025           (entire year)
-// --period 202501         (entire month) 
-// --period 20250101       (entire day)
-// --period 20250101-20250107  (date range)
-// --period 2025,202601-202603 (multiple ranges)
 ```
 
+## API Reference
 
-## Traditional API (Still Supported)
+### Declarative API
 
-The original imperative API remains fully supported for existing projects:
+#### Command Definition
 
-### Basics
+```typescript
+interface CommandDefinition {
+  name: string;
+  description: string;
+  arguments?: ArgumentDefinition[];
+  options?: Record<string, BaseOption>;
+  action: (ctx: Ctx.IBase, args: string[], opts: ParsedOptions) => Promise<void>;
+}
 
-1. Import `CliApp` and `Commander` from the module.
-2. Create your command object: `cmd = new CliApp.Command()`.
-3. Initialize it with `cmd.init(ctx)` to apply output styling and `deno.json` values (`version`, `description`, `name`).
-4. Add your own options using `cmd.option(...)` or by creating a `new Commander.Option(...)` and adding it with
-   `cmd.addOption(...)`.
-5. Use `cmd.addLogging(ctx)` to add standard logging CLI options.
-6. Call `cmd.parseOpts()` to parse command line arguments.
-7. Apply logging CLI options to `@epdoc/logger` using `CliApp.util.configureLogging(ctx, opts)`.
-8. Optionally use the `CliApp.util.run` wrapper to log your application's termination consistently.
+interface ArgumentDefinition {
+  name: string;
+  description: string;
+  required?: boolean;    // Default: true for single args, false for variadic
+  variadic?: boolean;    // Allows multiple values: <files...>
+}
+```
+
+#### Root Command Definition
+
+```typescript
+interface RootCommandDefinition extends CommandDefinition {
+  commands?: Record<string, DeclarativeCommandInterface>;
+}
+```
+
+#### Built-in Option Types
+
+```typescript
+// String options
+CliApp.Declarative.option.string('--name <value>', 'Description')
+  .choices(['a', 'b', 'c'])
+  .default('a')
+  .required()
+
+// Number options  
+CliApp.Declarative.option.number('--count <n>', 'Description')
+  .default(10)
+  .required()
+
+// Boolean flags
+CliApp.Declarative.option.boolean('--flag', 'Description')
+CliApp.Declarative.option.boolean('--no-cache', 'Disable cache').inverted()
+
+// Date options
+CliApp.Declarative.option.date('--since <date>', 'Description')
+  .default(new Date())
+
+// Path options (files/directories)
+CliApp.Declarative.option.path('--output <path>', 'Description')
+  .default('./output')
+
+// Array options (comma-separated)
+CliApp.Declarative.option.array('--tags <list>', 'Description')
+  .default(['default'])
+```
+
+#### Custom Option Types
+
+```typescript
+export class CustomOption extends CliApp.Declarative.Option.Base<CustomType> {
+  parse(value: string): CustomType {
+    // Your parsing logic
+    return parseCustomValue(value);
+  }
+  
+  // Optional: Override validation
+  validate(value: CustomType): boolean {
+    return isValidCustomValue(value);
+  }
+}
+```
+
+### BaseContext Pattern
+
+```typescript
+abstract class BaseContext<M, L> implements Ctx.IBase<M, L> {
+  log!: L;
+  logMgr!: Log.Mgr<M>;
+  dryRun: boolean;
+  pkg: DenoPkg;
+  
+  constructor(pkg?: DenoPkg);
+  abstract setupLogging(): void;  // Must call in constructor
+  async close(): Promise<void>;
+}
+```
+
+**Key Points:**
+- Extend `BaseContext` with your message builder and logger types
+- Call `setupLogging()` in your constructor
+- Use type assertions: `ctx as unknown as AppContext` in actions
+- Add application state and helper methods to your context class
 
 ## Examples
 
-The `packages/examples/` directory contains educational examples:
+See the [examples directory](../examples/) for complete working examples:
 
-### Complete Example (Recommended Starting Point)
-**[complete-example.ts](../examples/complete-example.ts)** - The definitive example showing:
-- ✨ **Custom MsgBuilder** with project-specific logging methods (`apiCall`, `fileOp`, `progress`)
-- 🏗️ **Extended Context** with application state and helper methods  
-- 📋 **Multi-command app** using declarative API with global options
-- 🎯 **Real-world patterns** like progress indicators, file operations, API calls
-- 🔧 **All option types** including inverted booleans and validation
+- **[cliapp.run.ts](../examples/cliapp.run.ts)** - Complete CLI app with BaseContext and declarative API
+- **[logger.basics.run.ts](../examples/logger.basics.run.ts)** - Logger setup patterns
+- **[logger.advanced.run.ts](../examples/logger.advanced.run.ts)** - Advanced logging features
 
-```bash
-# Try the complete example
-deno run -A examples/complete-example.ts fetch --endpoint /users --limit 50
-deno run -A examples/complete-example.ts process --input data.json --validate
+## Migration from Traditional API
+
+The traditional imperative API remains fully supported. You can migrate incrementally:
+
+### 1. Keep Existing Commands
+```typescript
+// Existing traditional API code continues to work
+const cmd = new CliApp.Command(pkg);
+cmd.init(ctx);
+cmd.option('--input <file>', 'Input file');
+cmd.action(async (opts) => { /* ... */ });
 ```
 
-### Other Examples
-- **[declarative.ts](../examples/declarative.ts)** - Simple declarative API patterns
-- **[traditional-api.ts](../examples/traditional-api.ts)** - Original imperative API for legacy projects  
-- **[logger-helper.ts](../examples/logger-helper.ts)** - Using the `createLogManager` helper
+### 2. Add New Commands with Declarative API
+```typescript
+// New commands can use declarative API
+const newCmd = CliApp.Declarative.defineCommand({
+  name: 'new-feature',
+  options: { input: CliApp.Declarative.option.path('--input <file>') },
+  action: async (ctx, args, opts) => { /* ... */ }
+});
+```
 
-### Migration Guide
-Projects using the traditional API can migrate incrementally:
-1. **Keep existing setup** - Traditional API remains fully supported
-2. **Try declarative commands** - Add new commands using the declarative API
-3. **Extend msgbuilder** - Add custom logging methods with `Console.extender`
-4. **Use createLogManager** - Simplify logger setup (optional)
+### 3. Adopt BaseContext Pattern
+```typescript
+// Replace complex factory patterns with BaseContext
+class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
+  constructor() { super(pkg); this.setupLogging(); }
+  setupLogging() { /* simple setup */ }
+}
+```
 
-```ts
-import * as Log from '@epdoc/logger';
-import { Console } from '@epdoc/msgbuilder'
-import pkg from '../deno.json' with { type: 'json' };
-// Import both CliApp and the Commander object
-import * as CliApp from '@epdoc/cliapp';
+## Best Practices
 
-// deno run -A examples/basic.ts -t
+### 1. Project Structure
+- **Single command**: Keep simple with main.ts and context.ts
+- **Multi-command**: Organize commands in separate files/directories
+- **Complex apps**: Use nested command structure with shared types
 
-type M = Console.Builder;
-type L = Log.Std.Logger<M>;
+### 2. Type Safety
+- Define types once per project (`MsgBuilder`, `Logger`)
+- Use separate declaration pattern for options
+- Leverage TypeScript's type inference in actions
 
-const logMgr: Log.Mgr<M> = new Log.Mgr<M>().init();
-logMgr.threshold = 'info';
+### 3. Custom Message Builders
+- Add domain-specific logging methods (`fileOp`, `apiCall`, `progress`)
+- Keep methods focused and reusable
+- Use semantic naming that matches your domain
 
-// The basic context, which you can extend as needed for your own app
-const ctx: CliApp.ICtx<M, L> = {
-  log: logMgr.getLogger<L>(),
-  logMgr: logMgr,
-  pkg: pkg,
-  dryRun: false,
-  close: (): Promise<void> => {
-    return Promise.resolve();
-  },
-};
-
-// We're adding a purge option, for demonstration purposes
-type CliOpts = CliApp.Opts & { purge?: boolean };
-
-class Cli {
-  run(ctx: CliApp.ICtx<M, L>): Promise<void> {
-    const command = new CliApp.Command(pkg);
-    command.init(ctx);
-
-    // Add a custom option using the exported Commander.Option
-    const purgeOption = new CliApp.Commander.Option('-p --purge', 'Purge old data').default(false);
-    command.addOption(purgeOption);
-
-    command.addLogging(ctx);
-    const opts = command.parseOpts() as CliOpts;
-
-    CliApp.util.configureLogging(ctx, opts);
-    ctx.log.info.h1('Running').label('Purge mode:').value(opts.purge).emit();
-    return Promise.resolve();
+### 4. Error Handling
+```typescript
+async action(ctx, args, opts) {
+  const appCtx = ctx as unknown as AppContext;
+  
+  try {
+    // Your logic here
+    appCtx.log.info.text('Success!').emit();
+  } catch (error) {
+    appCtx.log.error.text(`Failed: ${error.message}`).emit();
+    Deno.exit(1);
   }
 }
-
-const app = new Cli();
-
-// Our utility run method
-await CliApp.util.run(ctx, () => app.run(ctx));
 ```
 
-## Development
+### 5. Testing
+```typescript
+// Create test context
+const testCtx = new AppContext();
+testCtx.logMgr.threshold = 'error'; // Suppress logs in tests
 
-1. Install [Deno](https://deno.land/).
-2. Clone the repository:
+// Test command actions directly
+await command.definition.action(testCtx, ['arg1'], { option1: 'value' });
+```
 
-   ```sh
-   git clone <@epdoc/cliapp>
-   cd cliapp
-   ```
+## Advanced Features
 
-Customize the template as needed for your project requirements.
+### Custom Validation
+```typescript
+const options = {
+  port: CliApp.Declarative.option.number('--port <n>', 'Port number')
+    .default(3000)
+    .validate((value) => value > 0 && value < 65536)
+};
+```
+
+### Environment Variable Integration
+```typescript
+const options = {
+  apiKey: CliApp.Declarative.option.string('--api-key <key>', 'API key')
+    .default(Deno.env.get('API_KEY') || '')
+    .required()
+};
+```
+
+### Configuration File Support
+```typescript
+async action(ctx, args, opts) {
+  const appCtx = ctx as unknown as AppContext;
+  
+  if (opts.config) {
+    const config = JSON.parse(await Deno.readTextFile(opts.config));
+    // Merge config with options
+  }
+}
+```
 
 ## Contributing
 
-For contributing or modifying the project:
-
-1. Fork the repository.
-2. Create a new branch for your changes.
-3. Submit your changes via a pull request.
+1. Fork the repository
+2. Create a feature branch
+3. Add tests for new functionality
+4. Submit a pull request
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
-
-## Support
-
-If you encounter any issues or have questions, please open an issue in the repository.
+MIT License - see [LICENSE](LICENSE) file for details.

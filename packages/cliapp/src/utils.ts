@@ -1,8 +1,7 @@
 /**
- * @file Provides utility functions for the CLI application.
- * @description This module includes functions for configuring logging based on command-line
- * options, running the application with standardized error handling and signal management, and
- * parsing comma-separated string values.
+ * @file CLI application utility functions
+ * @description Provides essential utilities for CLI applications including logging configuration,
+ * application lifecycle management, and command-line argument parsing helpers.
  * @module
  */
 
@@ -15,12 +14,27 @@ const REG = {
 };
 
 /**
- * Configures logging settings based on parsed command-line options. This function adjusts the log
- * level threshold and output format (e.g., showing timestamps or package names) based on flags like
- * `--log`, `--verbose`, `--debug`, and `--log_show`.
- *
- * @param {Ctx.ICtx} ctx - The application context, containing the logger manager.
- * @param {Opts} opts - The parsed command-line options.
+ * Configures logging settings based on command-line options
+ * 
+ * Processes standard logging options (--log, --verbose, --debug, etc.) and applies
+ * them to the logger manager. Handles log level conflicts and configures output
+ * formatting based on --log_show options.
+ * 
+ * @param ctx - Application context containing the logger manager
+ * @param opts - Parsed command-line options from Commander.js
+ * 
+ * @throws {ISilentError} When conflicting log level options are provided
+ * 
+ * @example
+ * ```typescript
+ * const opts = await cmd.parseOpts();
+ * configureLogging(ctx, opts);
+ * 
+ * // Now logger respects CLI options:
+ * // --verbose sets threshold to 'verbose'
+ * // --log_show level,elapsed shows level and timing
+ * // --showall shows all available log components
+ * ```
  */
 export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Logger<M>>(
   ctx: ICtx<M, L>,
@@ -117,16 +131,37 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
 }
 
 /**
- * Splits a comma-separated string into an array of strings.
- * This is a simple utility function for parsing list-based command-line arguments.
- *
- * @param {string} val - The comma-separated string.
- * @returns {string[]} An array of strings.
+ * Parses comma-separated string values into an array
+ * 
+ * Simple utility function for parsing list-based command-line arguments.
+ * Used internally by Commander.js option parsers for array-type options.
+ * 
+ * @param val - Comma-separated string value
+ * @returns Array of trimmed string values
+ * 
+ * @example
+ * ```typescript
+ * commaList('a,b,c') // ['a', 'b', 'c']
+ * commaList('level,elapsed,package') // ['level', 'elapsed', 'package']
+ * ```
  */
 export function commaList(val: string): string[] {
   return val.split(',');
 }
 
+/**
+ * Error class for silent failures that should not display stack traces
+ * 
+ * Used for expected errors like validation failures or user input errors
+ * where showing a stack trace would be confusing rather than helpful.
+ * 
+ * @example
+ * ```typescript
+ * if (!isValidInput(userInput)) {
+ *   throw new SilentError('Invalid input format');
+ * }
+ * ```
+ */
 export class SilentError extends Error {
   silent = true;
   constructor(message: string) {

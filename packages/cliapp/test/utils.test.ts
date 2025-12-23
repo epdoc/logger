@@ -18,6 +18,7 @@ const createTestContext = (): CliApp.ICtx<M, L> & { dryRun?: boolean; test?: boo
   log: logMgr.getLogger<L>(),
   logMgr: logMgr,
   dryRun: true, // Assuming test mode for context
+  pkg: { name: 'test', version: '1.0.0', description: 'Test package' },
   close: () => {
     return Promise.resolve();
   },

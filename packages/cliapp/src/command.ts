@@ -1,3 +1,10 @@
+/**
+ * @file Enhanced CLI Command class extending Commander.js
+ * @description Provides a CLI command class that integrates with @epdoc/logger,
+ * adds standardized logging options, and manages application context.
+ * @module
+ */
+
 import * as _ from '@epdoc/type';
 import * as colors from '@std/fmt/colors';
 import * as Commander from 'commander';
@@ -6,15 +13,43 @@ import type { DenoPkg, ICtx, Logger, MsgBuilder, Opts } from './types.ts';
 import { commaList } from './utils.ts';
 
 /**
- * Represents a CLI command, extending `Commander.Command` to add custom functionality.
- * This class integrates logging, context management, and standardized options for building CLI applications.
+ * Enhanced CLI command class extending Commander.Command
+ * 
+ * Integrates logging, context management, and standardized options for building
+ * robust CLI applications. Provides automatic integration with @epdoc/logger
+ * and consistent option handling across commands.
+ * 
+ * @template M - Message builder type extending MsgBuilder
+ * @template L - Logger type extending Logger<M>
+ * 
+ * @example
+ * ```typescript
+ * const cmd = new Command(pkg);
+ * cmd.init(ctx);
+ * cmd.option('--input <file>', 'Input file');
+ * cmd.addLogging(ctx);
+ * 
+ * cmd.action(async (opts) => {
+ *   console.log('Processing:', opts.input);
+ * });
+ * 
+ * await cmd.parseAsync();
+ * ```
  */
 export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Logger<M>> extends Commander.Command {
+  /** Package metadata from deno.json */
   pkg: DenoPkg;
 
   /**
-   * Creates an instance of Command.
-   * @param {Ctx.ICtx} ctx - The context object, which includes package metadata used to set the command name.
+   * Creates a new Command instance
+   * 
+   * @param pkg - Package metadata containing name, version, and description
+   * 
+   * @example
+   * ```typescript
+   * import pkg from './deno.json' with { type: 'json' };
+   * const cmd = new Command(pkg);
+   * ```
    */
   constructor(pkg: DenoPkg) {
     super(pkg.name);
@@ -22,11 +57,21 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
   }
 
   /**
-   * Initializes the command with basic options, descriptions, and help/output configurations.
-   * It sets the version and description from the context's package metadata.
-   *
-   * @param {Ctx.ICtx} ctx - The context object containing package metadata.
-   * @returns {this} The current instance of the command, allowing for method chaining.
+   * Initializes the command with package metadata and standard configuration
+   * 
+   * Sets up version, description, help formatting, and error handling based on
+   * the package metadata and application context. Should be called before
+   * adding options or defining actions.
+   * 
+   * @param ctx - Application context for configuration
+   * @returns This command instance for method chaining
+   * 
+   * @example
+   * ```typescript
+   * const cmd = new Command(pkg);
+   * cmd.init(ctx);
+   * // Now ready to add options and actions
+   * ```
    */
   init(_ctx: ICtx<M, L>): this {
     if (this.pkg.version) {
@@ -40,11 +85,27 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
   }
 
   /**
-   * Adds a standard set of logging-related options to the command.
-   * These options allow users to control log levels, verbosity, and the format of log output.
-   *
-   * @param {Ctx.ICtx} ctx - The context object, used to access logger configurations.
-   * @returns {this} The current instance of the command, allowing for method chaining.
+   * Adds standard logging options to the command
+   * 
+   * Provides a comprehensive set of logging-related CLI options that integrate
+   * with @epdoc/logger, allowing users to control log levels, output formatting,
+   * and verbosity. These options are automatically processed by configureLogging().
+   * 
+   * @param ctx - Application context containing logger configuration
+   * @returns This command instance for method chaining
+   * 
+   * @example
+   * ```typescript
+   * cmd.addLogging(ctx);
+   * // Adds options: --log, --log_show, -A/--showall, -V/--verbose, 
+   * //               -D/--debug, -T/--trace, -S/--spam
+   * 
+   * // Usage examples:
+   * // my-app --log debug
+   * // my-app --log_show level,elapsed,package
+   * // my-app -A  (show all log components)
+   * // my-app -V  (verbose mode)
+   * ```
    */
   addLogging(ctx: ICtx<M, L>): this {
     const options: Commander.Option[] = [
@@ -76,10 +137,29 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
   }
 
   /**
-   * Adds a `--dry-run` option to the command.
-   * This is a common pattern in CLI tools to simulate execution without making actual changes.
-   *
-   * @returns {this} The current instance of the command, allowing for method chaining.
+   * Adds a dry-run option to the command
+   * 
+   * Provides the standard --dry-run/-n option that allows users to preview
+   * what the command would do without making actual changes. This is a common
+   * pattern in CLI tools for safe operation testing.
+   * 
+   * @returns This command instance for method chaining
+   * 
+   * @example
+   * ```typescript
+   * cmd.addDryRun();
+   * 
+   * // Usage: my-app --dry-run
+   * // Usage: my-app -n
+   * 
+   * cmd.action(async (opts) => {
+   *   if (opts.dryRun) {
+   *     console.log('Would delete file:', filename);
+   *   } else {
+   *     await Deno.remove(filename);
+   *   }
+   * });
+   * ```
    */
   addDryRun(): this {
     const option: Commander.Option = new Commander.Option(
@@ -91,10 +171,26 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
   }
 
   /**
-   * Adds a `--recursive` option to the command, allowing for recursive processing of files and directories.
-   * The option can optionally accept a depth level.
-   *
-   * @returns {this} The current instance of the command, allowing for method chaining.
+   * Adds a recursive processing option to the command
+   * 
+   * Provides the --recursive/-R option for commands that need to process
+   * files and directories recursively. Optionally accepts a depth parameter
+   * to limit recursion levels.
+   * 
+   * @returns This command instance for method chaining
+   * 
+   * @example
+   * ```typescript
+   * cmd.addRecursion();
+   * 
+   * // Usage: my-app --recursive
+   * // Usage: my-app -R 3  (limit to 3 levels deep)
+   * 
+   * cmd.action(async (opts) => {
+   *   const depth = opts.recursive || 1;
+   *   await processDirectory('.', depth);
+   * });
+   * ```
    */
   addRecursion(): this {
     const option: Commander.Option = new Commander.Option(
@@ -108,10 +204,28 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
   }
 
   /**
-   * Adds a `files` argument to the command, allowing it to accept a list of file paths.
-   * This is useful for commands that operate on a set of files.
-   *
-   * @returns {this} The current instance of the command, allowing for method chaining.
+   * Adds a files argument to the command
+   * 
+   * Provides a variadic <files...> argument that accepts multiple file paths.
+   * Useful for commands that operate on a set of input files. Supports glob
+   * patterns for file selection.
+   * 
+   * @returns This command instance for method chaining
+   * 
+   * @example
+   * ```typescript
+   * cmd.addFiles();
+   * 
+   * // Usage: my-app file1.txt file2.txt
+   * // Usage: my-app *.txt
+   * // Usage: my-app src/**\/*.ts
+   * 
+   * cmd.action(async (files, opts) => {
+   *   for (const file of files) {
+   *     await processFile(file);
+   *   }
+   * });
+   * ```
    */
   addFiles(): this {
     const argument: Commander.Argument = new Commander.Argument(
@@ -123,10 +237,24 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
   }
 
   /**
-   * Parses command-line options from `Deno.args`.
-   * This method integrates with Deno's runtime to capture and parse arguments passed to the script.
-   *
-   * @returns {Opts} The parsed command-line options as a `CliOpts` object.
+   * Parses command-line options from Deno.args
+   * 
+   * Integrates with Deno's runtime to capture and parse command-line arguments.
+   * This method should be called after all options and arguments have been
+   * defined but before accessing the parsed values.
+   * 
+   * @returns Promise resolving to parsed command-line options
+   * 
+   * @example
+   * ```typescript
+   * const cmd = new Command(pkg);
+   * cmd.init(ctx);
+   * cmd.option('--input <file>', 'Input file');
+   * cmd.addLogging(ctx);
+   * 
+   * const opts = await cmd.parseOpts();
+   * console.log('Input file:', opts.input);
+   * ```
    */
   async parseOpts(): Promise<Opts> {
     await super.parseAsync(['xx', 'yy', ...Deno.args]);
