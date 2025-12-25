@@ -1,12 +1,30 @@
 # @epdoc/msgbuilder
 
+> **📚 Complete Documentation**: This package is part of the [@epdoc/logger ecosystem](../../README.md). For comprehensive guides, tutorials, and integration examples, see the [root documentation](../../README.md).
+
 This module provides a fluent, chainable interface for creating structured, stylable log messages.
+
+## Quick Links to Complete Documentation
+
+- **[🚀 Getting Started Guide](../../GETTING_STARTED.md)** - Complete tutorial including custom message builders
+- **[🎯 Demo Project](../../packages/demo/)** - Complete CLI app with custom message builder examples
+- **[💡 Examples Collection](../../packages/examples/)** - Focused message builder examples
+- **[🏗️ Architecture Overview](../../ARCHITECTURE.md)** - Technical architecture and message builder patterns
+- **[⚙️ Configuration Guide](../../CONFIGURATION.md)** - Advanced message builder configuration
+- **[📝 Core Logger](../../packages/logger/README.md)** - Integration with logging system
+- **[💻 CLI Framework](../../packages/cliapp/README.md)** - Use with CLI applications
+
+## Package-Specific Features
+
+This package provides message formatting with:
 
 ## Installation
 
 ```sh
 deno add @epdoc/msgbuilder
 ```
+
+> **💡 Ecosystem Integration**: This package is designed to work with [@epdoc/logger](../logger/) for logging and [@epdoc/cliapp](../cliapp/) for CLI applications. See the [complete ecosystem guide](../../GETTING_STARTED.md) for integrated usage patterns.
 
 ## Usage
 

@@ -1,10 +1,22 @@
 # @epdoc/cliapp
 
+> **📚 Complete Documentation**: This package is part of the [@epdoc/logger ecosystem](../../README.md). For comprehensive guides, tutorials, and integration examples, see the [root documentation](../../README.md).
+
 A CLI framework built on [@epdoc/logger](https://github.com/epdoc/logger) and [Commander.js](https://www.npmjs.com/package/commander), designed for building type-safe, maintainable command-line applications.
 
-## Overview
+## Quick Links to Complete Documentation
 
-`@epdoc/cliapp` provides a structured approach to CLI development with:
+- **[🚀 Getting Started Guide](../../GETTING_STARTED.md)** - Complete ecosystem tutorial including CLI integration
+- **[🎯 Demo Project](../../packages/demo/)** - Complete working CLI app with custom message builders
+- **[💡 Examples Collection](../../packages/examples/)** - Focused CLI and logging examples
+- **[🏗️ Architecture Overview](../../ARCHITECTURE.md)** - Technical patterns and ContextBundle usage
+- **[⚙️ Configuration Guide](../../CONFIGURATION.md)** - Advanced logging configuration for CLI apps
+- **[📝 Core Logger](../../packages/logger/README.md)** - Logging functionality
+- **[🎨 Message Builders](../../packages/msgbuilder/README.md)** - Rich formatting for CLI output
+
+## Package-Specific Features
+
+This package provides CLI application framework with:
 
 - **🚀 BaseContext Pattern** - Simplified context setup with structured logging integration
 - **🏗️ Structured Commands** - Class-based command architecture with `Cmd.Sub` and `Cmd.Root`
@@ -19,6 +31,8 @@ A CLI framework built on [@epdoc/logger](https://github.com/epdoc/logger) and [C
 ```bash
 deno add jsr:@epdoc/cliapp
 ```
+
+> **💡 Ecosystem Integration**: This package is designed to work with [@epdoc/logger](../logger/) and [@epdoc/msgbuilder](../msgbuilder/) for complete CLI application development. See the [complete ecosystem guide](../../GETTING_STARTED.md) for integrated usage patterns.
 
 ## Quick Start
 
@@ -94,171 +108,14 @@ if (import.meta.main) {
 
 ### With Custom Message Builder
 
-Now let's break this down into steps, with more explanation.
+For a complete example of using custom message builders with real-world CLI functionality, see the **[Demo Project](../demo/README.md)**.
 
-#### 1. Optionally extend our `MsgBuilder.Console.Builder` with additional methods
-
-`src/context/msgbuilder.ts`:
-
-```typescript
-import { Console } from '@epdoc/msgbuilder';
-
-// Define project-specific logging methods
-const CustomBuilder = Console.extender({
-  fileOp(operation: string, path: string) {
-    return this.text('📁 ').text(operation).text(' ').path(path);
-  },
-  
-  apiCall(method: string, endpoint: string) {
-    return this.text('🌐 ').text(method).text(' ').url(endpoint);
-  },
-  
-  progress(current: number, total: number) {
-    const percent = Math.round((current / total) * 100);
-    return this.text(`⏳ Progress: ${current}/${total} (${percent}%)`);
-  }
-});
-```
-
-#### 2. Declare your types and context
-
-- If you are not extending the `MsgBuilder.Console.Builder`, you can write `type MsgBuilder = Console.Builder` instead.
-- We define `AppBundle` so we can pass all the generic definitions in one go to the commands we create.
-- If you are not using a custom message builder (`AppBuilder`), call `Log.createLogManager( Console.Builder )`.
-- The method `setupLogging` must be implemented as a separate method.
-
-
-`src/context/context.ts`:
-
-```typescript
-import { CustomBuilder } from './msgbuilder.ts'
-import * as CliApp from '@epdoc/cliapp';
-import * as Log from '@epdoc/logger';
-
-type MsgBuilder = InstanceType<typeof AppBuilder>;
-type Logger = Log.Std.Logger<MsgBuilder>;
-
-// Bundle context types together
-type AppBundle = CliApp.Cmd.ContextBundle<AppContext, MsgBuilder, Logger>;
-
-class Context extends CliApp.Ctx.Base<MsgBuilder, Logger> {
-  // Add application state [example]
-  processedFiles = 0;
-  
-  constructor() {
-    super(pkg);
-    this.setupLogging();
-  }
-
-  setupLogging() {
-    this.logMgr = Log.createLogManager(CustomBuilder, { threshold: 'info' });
-    this.log = this.logMgr.getLogger<Logger>();
-  }
-  
-  // Helper methods using custom msgbuilder [example]
-  logFileOperation(op: string, path: string) {
-    this.log.info.fileOp(op, path).emit();
-    this.processedFiles++;
-  }
-}
-```
-
-#### 3. Export your context
-
-`src/context/mod.ts`:
-
-```ts
-export * from './context.ts'
-export * from './msgbuilder.ts`
-```
-
-#### 4. Implement a sub command
-
-`src/cmd/process.ts`
-```typescript
-import * as CliApp from '@epdoc/cliapp';
-import * as Ctx from './context/mod.ts';
-
-// Define the options type for your executeAction callback
-type ProcessOptions = {
-  verbose: boolean;
-}
-
-class ProcessCmd extends CliApp.Cmd.Sub<Ctx.AppBundle, ProcessOptions> {
-  constructor(ctx: Ctx.Context) {
-    super(ctx, 'process', 'Process files');
-  }
-
-  protected override addArguments(): void {
-    this.cmd.argument('[files...]', 'Files to process');
-  }
-
-  protected override addOptions(): void {
-    this.cmd.option('--verbose', 'Verbose output');
-  }
-
-  protected override async executeAction(args: string[], opts: ProcessOptions): Promise<void> {
-    for (const file of args) {
-      this.ctx.logFileOperation('PROCESS', file);
-    }
-    this.ctx.log.info.progress(this.ctx.processedFiles, args.length).emit();
-  }
-}
-```
-
-#### 5. Root Command
-
-`src/cmd/root.ts`
-
-```typescript
-import * as CliApp from '@epdoc/cliapp';
-import * as Ctx from './context/mod.ts';
-
-// These are options in addition to the standard CliApp log level options
-interface AppOptions {
-  verbose?: boolean;
-  output?: string;
-}
-
-class AppRootCmd extends CliApp.Cmd.Root<Ctx.AppBundle, AppOptions> {
-  constructor(ctx: Ctx.Context) {
-    super(ctx, ctx.pkg);
-  }
-
-  protected override addArguments(): void {
-    this.cmd.argument('[files...]', 'Files to process');
-  }
-
-  protected override addOptions(): void {
-    this.cmd
-      .option('--output <dir>', 'Output directory')
-      .option('--verbose', 'Verbose output');
-  }
-
-  protected override executeAction(args: string[], opts: AppOptions): Promise<void> {
-    this.ctx.log.info.h1('Processing Files')
-      .label('Files:').value(args.join(', '))
-      .label('Output:').value(opts.output || 'default')
-      .emit();
-    return Promise.resolve();
-  }
-}
-```
-
-#### 6. Run it
-`main.ts`
-
-```typescript
-import { Ctx, Cmd } from './src/mod.ts';
-
-if (import.meta.main) {
-  const ctx = new Ctx.Context();
-  const rootCmd = new Cmd.Root(ctx);
-  const cmd = await rootCmd.init();
-  await cmd.parseAsync();
-}
-
-```
+The demo showcases:
+- Custom message builder with `fileOp()` methods
+- File system operations with rich logging
+- Multiple subcommands (`list`, `process`)
+- Integration with `@epdoc/fs` for file handling
+- Proper ContextBundle usage patterns
 
 ## Project Organization
 

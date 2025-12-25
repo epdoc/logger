@@ -1,54 +1,93 @@
 # @epdoc/logger
 
-A comprehensive TypeScript logging library designed for modern server applications and CLI applications where output to the console or other transports is important. It features a pluggable architecture, rich message formatting, and context-aware logging.
+A comprehensive TypeScript logging ecosystem for modern applications, featuring structured message formatting, flexible transports, and CLI application integration.
 
-## Features
+## 🚀 Quick Start Options
 
-*   **Pluggable Transports:** Output logs to the console, files, or other destinations.
-*   **Rich Message Formatting:** Use a fluent API to create structured and colorful log messages.
-*   **Context-Aware Logging:** Easily add and track context such as request IDs.
-*   **Hierarchical Loggers:** Create child loggers that inherit settings from their parents, for example to handle new HTTP requests.
-*   **TypeScript Native:** Built with TypeScript for strong typing.
+**Prefer examples?** Jump straight to working code:
+- **[Demo Project](./packages/demo/)** - Complete CLI app with custom message builders and file operations
+- **[Examples Collection](./packages/examples/)** - Focused examples for specific use cases
+- **Run examples**: `cd packages/examples && ./run.sh`
 
-## Packages
+**Prefer tutorials?** Follow the step-by-step guide:
+- **[Getting Started Guide](./GETTING_STARTED.md)** - Complete tutorial from basics to advanced patterns
 
-This repository is a monorepo containing the following published and public packages:
+## Installation
 
-*   **[@epdoc/logger](./packages/logger/README.md):** The core logging library.
-*   **[@epdoc/msgbuilder](./packages/msgbuilder/README.md):** A powerful message formatting library.
-*   **[@epdoc/loglevels](./packages/loglevels/README.md):** Manages log levels and their properties.
-*   **[@epdoc/cliapp](./packages/cliapp/README.md):** A library for creating command-line applications with integrated logging.
-*   **[examples](./packages/examples/README.md):** A collection of examples demonstrating how to use the logging library.
+```bash
+deno add @epdoc/logger @epdoc/msgbuilder @epdoc/cliapp
+```
 
-### In Development
+```typescript
+import * as Log from '@epdoc/logger';
+import { Console } from '@epdoc/msgbuilder';
 
-The following packages are in early development and should be ignored:
+const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
+const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
 
-*   **[@epdoc/logdy](./packages/logdy/README.md):** A transport for the [Logdy](https://logdy.dev/) log management tool.
-*   **[@epdoc/logjava](./packages/logjava/README.md):** Supports loglevels as per Java's Log4j.
+logger.info.h1('Hello World').emit();
+```
+
+## Ecosystem Packages
+
+| Package | Purpose | Status |
+|---------|---------|---------|
+| **[@epdoc/logger](./packages/logger/)** | Core logging with transports | ✅ Stable |
+| **[@epdoc/msgbuilder](./packages/msgbuilder/)** | Structured message formatting | ✅ Stable |
+| **[@epdoc/cliapp](./packages/cliapp/)** | CLI application framework | ✅ Stable |
+| **[@epdoc/loglevels](./packages/loglevels/)** | Log level management | ✅ Stable |
+| **[examples](./packages/examples/)** | Working examples and tutorials | ✅ Reference |
+| **[demo](./packages/demo/)** | Complete CLI app showcase | ✅ Reference |
+| [@epdoc/logdy](./packages/logdy/) | Logdy transport | 🚧 Development |
+| [@epdoc/logjava](./packages/logjava/) | Java-style log levels | 🚧 Development |
 
 ## Documentation
 
-For detailed documentation, please refer to the following files in the [`./docs`](./docs) directory:
+| Document | Purpose |
+|----------|---------|
+| **[GETTING_STARTED.md](./GETTING_STARTED.md)** | Complete tutorial from basics to advanced patterns |
+| **[ARCHITECTURE.md](./ARCHITECTURE.md)** | Technical architecture and design patterns |
+| **[CONFIGURATION.md](./CONFIGURATION.md)** | Advanced configuration options |
 
-*   **[GETTING_STARTED.md](./docs/GETTING_STARTED.md):** A guide to getting started with the logging library.
-*   **[ARCHITECTURE.md](./docs/ARCHITECTURE.md):** An overview of the library's architecture and components.
-*   **[CONFIGURATION.md](./docs/CONFIGURATION.md):** Detailed information on configuring the logger.
+## Key Features
 
-Each package also contains its own `README.md` file with more specific information.
+- **🎯 Type-Safe Logging** - Full TypeScript support with generic constraints
+- **🎨 Rich Formatting** - Chainable message builders with colors and styling
+- **🔌 Flexible Transports** - Console, file, buffer, and custom outputs
+- **📊 Performance Timing** - Built-in operation timing with `mark()` and `ewt()`
+- **🏗️ CLI Integration** - Complete framework for command-line applications
+- **🎭 Context Tracking** - Request IDs, session tracking, hierarchical loggers
+- **🧪 Testing Support** - Buffer transport for programmatic log inspection
 
-## Getting Started
+## Use Cases
 
-To get started, please see the [GETTING_STARTED.md](./docs/GETTING_STARTED.md) guide.
+### Simple Application Logging
+```typescript
+const logger = Log.createLogManager().getLogger();
+logger.info.text('Application started').emit();
+```
 
-## Development Tooling
+### CLI Applications
+```typescript
+class MyApp extends CliApp.Cmd.Root<AppBundle, AppOptions> {
+  // Structured CLI with integrated logging
+}
+```
 
-Historically, the `@epdoc/launchgen` utility has been used to generate `launch.json` files for debugging within this repository.
+### Custom Message Builders
+```typescript
+const AppBuilder = Console.extender({
+  apiCall(method: string, endpoint: string) {
+    return this.text(`[API] ${method} ${endpoint}`);
+  }
+});
+```
 
-## AI Development
+## Development
 
-This project has used AI for parts of it's development. The [GEMINI.md](./GEMINI.md) file contains project-specific instructions for AI models to follow when working on this project. We also use a more global GEMINI_GLOBAL.md file that is not currently published but that contains the bulk of our AI instructions.
+This project uses AI-assisted development. See [AI.md](./AI
+.md) for AI development guidelines.
 
 ## License
 
-This project is licensed under the [MIT License](./LICENSE).
+MIT License - see [LICENSE](./LICENSE) file for details.

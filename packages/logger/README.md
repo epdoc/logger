@@ -1,18 +1,30 @@
 # @epdoc/logger
 
-A logging module supporting built-in and custom transports, webserver response middleware, message
-and data syntax with color console output, chainable methods for recording log events, many of which
-can be chained to create richer output with more columns of data.
+> **📚 Complete Documentation**: This package is part of the [@epdoc/logger ecosystem](../../README.md). For comprehensive guides, tutorials, and integration examples, see the [root documentation](../../README.md).
 
-## Features
+A logging module supporting built-in and custom transports, with chainable message building and rich formatting options.
+
+## Quick Links to Complete Documentation
+
+- **[🚀 Getting Started Guide](../../GETTING_STARTED.md)** - Complete ecosystem tutorial
+- **[🎯 Demo Project](../../packages/demo/)** - Complete working CLI app example
+- **[💡 Examples Collection](../../packages/examples/)** - Focused usage examples
+- **[🏗️ Architecture Overview](../../ARCHITECTURE.md)** - Technical deep-dive  
+- **[⚙️ Configuration Guide](../../CONFIGURATION.md)** - Advanced configuration
+- **[💻 CLI Integration](../../packages/cliapp/README.md)** - Build CLI apps with logging
+- **[🎨 Message Formatting](../../packages/msgbuilder/README.md)** - Rich message builders
+
+## Package-Specific Features
+
+This package provides the core logging functionality with:
 
 - **Fluent API**: Chainable message building with rich formatting options
-- **Multiple Log Levels**: Standard (`error`, `warn`, `info`, `verbose`, `debug`, `trace`, `spam`) and CLI-specific levels
+- **Multiple Log Levels**: Standard (`error`, `warn`, `info`, `verbose`, `debug`, `trace`, `spam`) with the ability to be customized.
 - **Hierarchical Indentation**: Built-in `indent()`, `outdent()`, `nodent()` methods for structured, nested logging output
 - **Performance Timing**: Built-in `mark()` and `ewt()` (Emit With Time) for measuring operation durations
 - **Flexible Transports**: Console, file, buffer (for testing), and custom transport support
 - **Hierarchical Loggers**: Root and child loggers with inherited context and indentation
-- **Conditional Logging**: Build messages only when conditions are met
+- **Conditional Logging**: Build messages only when inline conditions are met
 - **Middleware Support**: Express and Oak middleware for request tracking
 - **Contextual Logging**: Session IDs, request IDs, and package namespacing
 - **Multiple Output Formats**: Console text, JSON, and JSON array formats
@@ -24,11 +36,13 @@ can be chained to create richer output with more columns of data.
 **Version 1000.0.0 indicates a major rewrite that is incompatible with prior versions of this module**
 
 
-# Install
+## Installation
 
 ```bash
 deno add @epdoc/logger
 ```
+
+> **💡 Ecosystem Integration**: This package works best when combined with [@epdoc/msgbuilder](../msgbuilder/) for rich formatting and [@epdoc/cliapp](../cliapp/) for CLI applications. See the [complete ecosystem guide](../../GETTING_STARTED.md) for integrated usage patterns.
 
 # Quick Start
 
@@ -55,9 +69,10 @@ logger.info.h1('Hello').text(' World!').emit();
 
 For complete setup patterns including custom message builders and CLI integration:
 
-- **[GETTING_STARTED.md](../../GETTING_STARTED.md)** - Complete ecosystem guide with logger + msgbuilder + cliapp
-- **[CONFIGURATION.md](../../CONFIGURATION.md)** - Advanced configuration options  
-- **[Examples](../examples/)** - Working code examples
+- **[🚀 Getting Started Guide](../../GETTING_STARTED.md)** - Complete ecosystem tutorial with logger + msgbuilder + cliapp
+- **[⚙️ Configuration Guide](../../CONFIGURATION.md)** - Advanced configuration options  
+- **[💡 Examples](../examples/)** - Working code examples
+- **[🏗️ Architecture](../../ARCHITECTURE.md)** - Technical architecture overview
 
 **Key Pattern**: Define your types once per project, then use simple patterns everywhere:
 
@@ -76,7 +91,7 @@ type AppLogger = Log.Std.Logger<InstanceType<typeof AppBuilder>>;
 const logger = logMgr.getLogger<AppLogger>();
 logger.info.apiCall('GET', '/users').emit();
 ```
-```
+
 
 ## Custom Builder Setup
 

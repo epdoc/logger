@@ -2,6 +2,15 @@
 
 This guide shows you how to use the complete @epdoc/logger ecosystem: **logger**, **msgbuilder**, and **cliapp** packages working together.
 
+## 🚀 Learning Paths
+
+**Prefer examples?** Jump straight to working code:
+- **[Demo Project](./packages/demo/)** - Complete CLI app with custom message builders, file operations, and subcommands
+- **[Examples Collection](./packages/examples/)** - Focused examples for specific patterns
+- **Run examples**: `cd packages/examples && ./run.sh`
+
+**Prefer step-by-step?** Continue with this tutorial below.
+
 ## Quick Start
 
 ### 1. Basic Logger Setup

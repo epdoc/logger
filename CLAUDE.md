@@ -4,59 +4,52 @@ This document provides essential context for Claude Code when working on the @ep
 
 ## Project Overview
 
-@epdoc/logger is a TypeScript logging library with pluggable MessageBuilder formatting, multi-transport output, and context-aware logging for server applications. It uses a unique architecture with LogMgr, Logger, Emitter, MsgBuilder, and Transport components.
+@epdoc/logger is a comprehensive TypeScript logging ecosystem with pluggable MessageBuilder formatting, multi-transport output, and CLI application integration.
 
-**Important**: This repository has comprehensive documentation. See [GEMINI.md](./GEMINI.md) for detailed guidance on:
-- Which documentation files to reference for specific tasks
-- Architecture and component relationships
-- Configuration and setup patterns
-- Code examples and usage patterns
+## Essential Reference
 
-## Quick Architecture Overview
+**Important**: This repository has comprehensive AI guidance. See [AI.md](./AI.md) for detailed information on:
+- Complete project architecture and component relationships
+- Documentation structure and when to use each file
+- Current development patterns (createLogManager, ContextBundle, BufferTransport)
+- Task-specific guidance for setup, advanced implementation, and troubleshooting
+- Code patterns and examples
+- Package-specific documentation locations
 
-The library uses this component flow:
+## Quick Architecture
+
 ```
 Logger → LevelEmitter → Emitter → MsgBuilder → Transport
 ```
 
-### Core Classes
-- **LogMgr**: Central manager for loggers and transports
-- **Logger**: User interface for logging
-- **MsgBuilder**: String formatting and message construction
-- **Transport**: Output destinations (Console, File, etc.)
+Core classes: LogMgr, Logger, MsgBuilder, Transport, ContextBundle
 
-### Packages in this Monorepo
-- `logger` - Core logging framework
-- `msgbuilder` - Message formatting
-- `loglevels` - Log level management
-- (other related packages)
+## Development Setup
 
-## Development Patterns
+### Testing
+- Use Deno `-A` option for permissions
+- Run from package directory: `deno test -A`
+- BufferTransport available for programmatic log inspection
 
-### Basic Usage Pattern
-```typescript
-const logMgr = new Log.Mgr<M>();
-const logger = logMgr.getLogger<L>();
-logger.info.text('Hello World!').emit();
-```
-
-### For Detailed Information
-Always refer to [GEMINI.md](./GEMINI.md) which provides:
-- Task-specific guidance (setup, advanced implementation, troubleshooting)
-- Complete documentation file reference
-- When to use which documentation
-- Current development context
-
-## Testing
-- Use Deno `-A` option for read, write, sys, and env permissions
-- Run tests from package directory: `deno test -A`
-
-## Publishing
-- Published to JSR as `jsr:@epdoc/logger` (and related packages)
+### Publishing
+- Published to JSR as `jsr:@epdoc/logger` and related packages
 - Follow standard Deno publishing workflow
 
+## Key Patterns (See <AI.md> for details)
+
+### Recommended Setup
+```typescript
+const logMgr = Log.createLogManager(AppBuilder, { threshold: 'info' });
+const logger = logMgr.getLogger<AppLogger>();
+```
+
+### ContextBundle for Complex Apps
+```typescript
+type AppBundle = CliApp.Cmd.ContextBundle<AppContext, AppBuilder, AppLogger>;
+```
+
 ## Important Notes
-- When working on this project, **always consult [GEMINI.md](./GEMINI.md)** for task-specific documentation guidance
-- Check [PROGRESS.md](./PROGRESS.md) if it exists for current development status
-- Check [ISSUES.md](./ISSUES.md) for known issues
-- Review individual package README files in `./packages/` for package-specific details
+- **Always consult <AI.md>** for comprehensive guidance
+- Use current patterns (createLogManager, ContextBundle)
+- Demo project can be copied as it uses published JSR packages
+- All packages have back-references to root documentation
