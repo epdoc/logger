@@ -323,8 +323,8 @@
       },
       "packages/examples": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^1.1.0-alpha.7",
-          "jsr:@epdoc/logger@^1003.1.0-alpha.2",
+          "jsr:@epdoc/cliapp@^1.1.0-alpha.13",
+          "jsr:@epdoc/logger@^1003.1.0-alpha.4",
           "jsr:@epdoc/msgbuilder@~0.1.0-alpha.3",
           "jsr:@epdoc/type@^1.2.2"
         ]
