@@ -8,7 +8,8 @@ export class ProcessCmd extends CliApp.Cmd.Sub<Ctx.AppBundle, App.ProcessOpts> {
   }
 
   protected override addOptions(): void {
-    this.cmd.option('--verbose', 'Verbose output');
+    this.cmd.option('--more', 'Show more info');
+    this.cmd.option('--name <string>', 'Provide a name');
   }
 
   protected override async executeAction(

@@ -64,7 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1003.0.3] - 2025-11-13
 
-- Update dependencies and fix transport but not outputting response time
+- Update dependencies and fix transport for not outputting response time
 
 ## [1003.0.2] - 2025-11-07
 
