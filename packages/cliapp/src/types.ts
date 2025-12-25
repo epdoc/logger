@@ -10,7 +10,7 @@ import type { Console } from '@epdoc/msgbuilder';
 
 /**
  * Package metadata structure from deno.json
- * 
+ *
  * @example
  * ```typescript
  * import pkg from './deno.json' with { type: 'json' };
@@ -39,7 +39,7 @@ export type DenoPkg = {
 
 /**
  * Base message builder type for CLI applications
- * 
+ *
  * All custom message builders should extend Console.Builder to ensure
  * compatibility with the CLI framework's logging system.
  */
@@ -47,9 +47,9 @@ export type MsgBuilder = Console.Builder;
 
 /**
  * Generic logger type that works with custom message builders
- * 
+ *
  * @template M - Message builder type extending MsgBuilder
- * 
+ *
  * @example
  * ```typescript
  * type MyLogger = Logger<MyCustomBuilder>;
@@ -59,13 +59,13 @@ export type Logger<M extends MsgBuilder = MsgBuilder> = Log.Std.Logger<M>;
 
 /**
  * Application context interface for CLI applications
- * 
+ *
  * Provides the core structure that all CLI contexts must implement,
  * including logging capabilities, package metadata, and lifecycle management.
- * 
+ *
  * @template M - Message builder type
  * @template L - Logger type
- * 
+ *
  * @example
  * ```typescript
  * class AppContext implements ICtx<MyBuilder, MyLogger> {
@@ -73,7 +73,7 @@ export type Logger<M extends MsgBuilder = MsgBuilder> = Log.Std.Logger<M>;
  *   logMgr: Log.Mgr<MyBuilder>;
  *   dryRun = false;
  *   pkg: DenoPkg;
- *   
+ *
  *   async close() {
  *     await this.logMgr.close();
  *   }
@@ -98,10 +98,10 @@ export interface ICtx<
 
 /**
  * Standard command-line options structure
- * 
+ *
  * Defines the common CLI options that are automatically added by the framework,
  * including logging configuration and operational flags.
- * 
+ *
  * @example
  * ```typescript
  * function configureApp(opts: Opts) {
@@ -137,10 +137,10 @@ export type Opts = Partial<{
 
 /**
  * Error interface for silent failures
- * 
+ *
  * Used to indicate errors that should not display stack traces
  * or verbose error information to the user.
- * 
+ *
  * @example
  * ```typescript
  * const error = new Error('Validation failed') as ISilentError;

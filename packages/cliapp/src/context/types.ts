@@ -11,14 +11,14 @@ import type { DenoPkg } from '../types.ts';
 
 /**
  * Base context interface for CLI applications
- * 
+ *
  * Defines the minimal contract that all CLI contexts must implement.
  * Provides logging capabilities, package metadata, operational flags,
  * and lifecycle management.
- * 
+ *
  * @template M - Message builder type extending Console.Builder
  * @template L - Logger type extending Log.IEmitter
- * 
+ *
  * @example
  * ```typescript
  * // Traditional implementation
@@ -27,24 +27,24 @@ import type { DenoPkg } from '../types.ts';
  *   logMgr: Log.Mgr<MyBuilder>;
  *   dryRun = false;
  *   pkg: DenoPkg;
- *   
+ *
  *   constructor(pkg: DenoPkg) {
  *     this.pkg = pkg;
  *     // Setup logging...
  *   }
- *   
+ *
  *   async close() {
  *     await this.logMgr.close();
  *   }
  * }
- * 
+ *
  * // BaseContext implementation (recommended)
  * class AppContext extends BaseContext<MyBuilder, MyLogger> {
  *   constructor() {
  *     super(pkg);
  *     this.setupLogging();
  *   }
- *   
+ *
  *   setupLogging() {
  *     this.logMgr = Log.createLogManager(MyBuilder, { threshold: 'info' });
  *     this.log = this.logMgr.getLogger<MyLogger>();

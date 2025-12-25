@@ -14,25 +14,25 @@ import { commaList } from './utils.ts';
 
 /**
  * Enhanced CLI command class extending Commander.Command
- * 
+ *
  * Integrates logging, context management, and standardized options for building
  * robust CLI applications. Provides automatic integration with @epdoc/logger
  * and consistent option handling across commands.
- * 
+ *
  * @template M - Message builder type extending MsgBuilder
  * @template L - Logger type extending Logger<M>
- * 
+ *
  * @example
  * ```typescript
  * const cmd = new Command(pkg);
  * cmd.init(ctx);
  * cmd.option('--input <file>', 'Input file');
  * cmd.addLogging(ctx);
- * 
+ *
  * cmd.action(async (opts) => {
  *   console.log('Processing:', opts.input);
  * });
- * 
+ *
  * await cmd.parseAsync();
  * ```
  */
@@ -42,9 +42,9 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
 
   /**
    * Creates a new Command instance
-   * 
+   *
    * @param pkg - Package metadata containing name, version, and description
-   * 
+   *
    * @example
    * ```typescript
    * import pkg from './deno.json' with { type: 'json' };
@@ -58,14 +58,14 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
 
   /**
    * Initializes the command with package metadata and standard configuration
-   * 
+   *
    * Sets up version, description, help formatting, and error handling based on
    * the package metadata and application context. Should be called before
    * adding options or defining actions.
-   * 
+   *
    * @param ctx - Application context for configuration
    * @returns This command instance for method chaining
-   * 
+   *
    * @example
    * ```typescript
    * const cmd = new Command(pkg);
@@ -86,20 +86,20 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
 
   /**
    * Adds standard logging options to the command
-   * 
+   *
    * Provides a comprehensive set of logging-related CLI options that integrate
    * with @epdoc/logger, allowing users to control log levels, output formatting,
    * and verbosity. These options are automatically processed by configureLogging().
-   * 
+   *
    * @param ctx - Application context containing logger configuration
    * @returns This command instance for method chaining
-   * 
+   *
    * @example
    * ```typescript
    * cmd.addLogging(ctx);
-   * // Adds options: --log, --log_show, -A/--showall, -V/--verbose, 
+   * // Adds options: --log, --log_show, -A/--showall, -V/--verbose,
    * //               -D/--debug, -T/--trace, -S/--spam
-   * 
+   *
    * // Usage examples:
    * // my-app --log debug
    * // my-app --log_show level,elapsed,package
@@ -138,20 +138,20 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
 
   /**
    * Adds a dry-run option to the command
-   * 
+   *
    * Provides the standard --dry-run/-n option that allows users to preview
    * what the command would do without making actual changes. This is a common
    * pattern in CLI tools for safe operation testing.
-   * 
+   *
    * @returns This command instance for method chaining
-   * 
+   *
    * @example
    * ```typescript
    * cmd.addDryRun();
-   * 
+   *
    * // Usage: my-app --dry-run
    * // Usage: my-app -n
-   * 
+   *
    * cmd.action(async (opts) => {
    *   if (opts.dryRun) {
    *     console.log('Would delete file:', filename);
@@ -172,20 +172,20 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
 
   /**
    * Adds a recursive processing option to the command
-   * 
+   *
    * Provides the --recursive/-R option for commands that need to process
    * files and directories recursively. Optionally accepts a depth parameter
    * to limit recursion levels.
-   * 
+   *
    * @returns This command instance for method chaining
-   * 
+   *
    * @example
    * ```typescript
    * cmd.addRecursion();
-   * 
+   *
    * // Usage: my-app --recursive
    * // Usage: my-app -R 3  (limit to 3 levels deep)
-   * 
+   *
    * cmd.action(async (opts) => {
    *   const depth = opts.recursive || 1;
    *   await processDirectory('.', depth);
@@ -205,21 +205,21 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
 
   /**
    * Adds a files argument to the command
-   * 
+   *
    * Provides a variadic <files...> argument that accepts multiple file paths.
    * Useful for commands that operate on a set of input files. Supports glob
    * patterns for file selection.
-   * 
+   *
    * @returns This command instance for method chaining
-   * 
+   *
    * @example
    * ```typescript
    * cmd.addFiles();
-   * 
+   *
    * // Usage: my-app file1.txt file2.txt
    * // Usage: my-app *.txt
    * // Usage: my-app src/**\/*.ts
-   * 
+   *
    * cmd.action(async (files, opts) => {
    *   for (const file of files) {
    *     await processFile(file);
@@ -238,20 +238,20 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
 
   /**
    * Parses command-line options from Deno.args
-   * 
+   *
    * Integrates with Deno's runtime to capture and parse command-line arguments.
    * This method should be called after all options and arguments have been
    * defined but before accessing the parsed values.
-   * 
+   *
    * @returns Promise resolving to parsed command-line options
-   * 
+   *
    * @example
    * ```typescript
    * const cmd = new Command(pkg);
    * cmd.init(ctx);
    * cmd.option('--input <file>', 'Input file');
    * cmd.addLogging(ctx);
-   * 
+   *
    * const opts = await cmd.parseOpts();
    * console.log('Input file:', opts.input);
    * ```

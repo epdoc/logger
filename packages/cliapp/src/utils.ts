@@ -15,21 +15,21 @@ const REG = {
 
 /**
  * Configures logging settings based on command-line options
- * 
+ *
  * Processes standard logging options (--log, --verbose, --debug, etc.) and applies
  * them to the logger manager. Handles log level conflicts and configures output
  * formatting based on --log_show options.
- * 
+ *
  * @param ctx - Application context containing the logger manager
  * @param opts - Parsed command-line options from Commander.js
- * 
+ *
  * @throws {ISilentError} When conflicting log level options are provided
- * 
+ *
  * @example
  * ```typescript
  * const opts = await cmd.parseOpts();
  * configureLogging(ctx, opts);
- * 
+ *
  * // Now logger respects CLI options:
  * // --verbose sets threshold to 'verbose'
  * // --log_show level,elapsed shows level and timing
@@ -132,13 +132,13 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
 
 /**
  * Parses comma-separated string values into an array
- * 
+ *
  * Simple utility function for parsing list-based command-line arguments.
  * Used internally by Commander.js option parsers for array-type options.
- * 
+ *
  * @param val - Comma-separated string value
  * @returns Array of trimmed string values
- * 
+ *
  * @example
  * ```typescript
  * commaList('a,b,c') // ['a', 'b', 'c']
@@ -151,10 +151,10 @@ export function commaList(val: string): string[] {
 
 /**
  * Error class for silent failures that should not display stack traces
- * 
+ *
  * Used for expected errors like validation failures or user input errors
  * where showing a stack trace would be confusing rather than helpful.
- * 
+ *
  * @example
  * ```typescript
  * if (!isValidInput(userInput)) {

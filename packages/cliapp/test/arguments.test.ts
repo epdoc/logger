@@ -1,102 +1,168 @@
 /**
- * @file Unit tests for command arguments functionality
+ * @file Unit tests for command arguments functionality using Cmd.Sub and Cmd.Root
  */
 
 import * as CliApp from '@epdoc/cliapp';
+import * as Log from '@epdoc/logger';
+import type { Console } from '@epdoc/msgbuilder';
 import { assertEquals, assertExists } from '@std/assert';
 
-Deno.test('Arguments - Required argument', () => {
-  const definition: CliApp.Declarative.CommandDefinition = {
-    name: 'test',
-    description: 'Test command',
-    arguments: [
-      { name: 'file', description: 'Input file', required: true },
-    ],
-    action: (_ctx, args, _opts) => {
-      assertEquals(args.length, 1);
-      assertEquals(args[0], 'test.txt');
-      return Promise.resolve();
-    },
-  };
+// Test context
+class TestContext extends CliApp.Ctx.Base<Console.Builder, Log.Std.Logger<Console.Builder>> {
+  setupLogging() {
+    this.logMgr = Log.createLogManager(undefined, { threshold: 'info' });
+    this.log = this.logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+  }
+}
 
-  const cmd = new CliApp.Declarative.Command(definition);
+interface TestOptions {
+  verbose?: boolean;
+}
+
+Deno.test('Arguments - Required argument', async () => {
+  class TestCmd extends CliApp.Cmd.Sub<TestContext, TestOptions> {
+    receivedArgs: string[] = [];
+
+    constructor(ctx: TestContext) {
+      super(ctx, 'test', 'Test command');
+    }
+
+    protected override addArguments(): void {
+      this.cmd.argument('<file>', 'Input file');
+    }
+
+    protected override executeAction(args: string[], _opts: TestOptions, _cmd: CliApp.Command): Promise<void> {
+      this.receivedArgs = args;
+      return Promise.resolve();
+    }
+  }
+
+  const pkg = { name: 'test', version: '1.0.0', description: 'Test' };
+  const ctx = new TestContext(pkg);
+  const testCmd = new TestCmd(ctx);
+  const cmd = await testCmd.init();
+
   assertExists(cmd);
-  assertEquals(cmd.definition.arguments?.length, 1);
-  assertEquals(cmd.definition.arguments?.[0]?.name, 'file');
+  // Simulate execution with args
+  await testCmd['executeAction']!(['test.txt'], {}, cmd);
+  assertEquals(testCmd.receivedArgs, ['test.txt']);
 });
 
-Deno.test('Arguments - Optional argument', () => {
-  const definition: CliApp.Declarative.CommandDefinition = {
-    name: 'test',
-    description: 'Test command',
-    arguments: [
-      { name: 'file', description: 'Input file', required: false },
-    ],
-    action: (_ctx, _args, _opts) => {
-      // Args can be empty for optional arguments
-      return Promise.resolve();
-    },
-  };
+Deno.test('Arguments - Optional argument', async () => {
+  class TestCmd extends CliApp.Cmd.Sub<TestContext, TestOptions> {
+    receivedArgs: string[] = [];
 
-  const cmd = new CliApp.Declarative.Command(definition);
+    constructor(ctx: TestContext) {
+      super(ctx, 'test', 'Test command');
+    }
+
+    protected override addArguments(): void {
+      this.cmd.argument('[file]', 'Input file');
+    }
+
+    protected override executeAction(args: string[], _opts: TestOptions, _cmd: CliApp.Command): Promise<void> {
+      this.receivedArgs = args;
+      return Promise.resolve();
+    }
+  }
+
+  const pkg = { name: 'test', version: '1.0.0', description: 'Test' };
+  const ctx = new TestContext(pkg);
+  const testCmd = new TestCmd(ctx);
+  const cmd = await testCmd.init();
+
   assertExists(cmd);
-  assertEquals(cmd.definition.arguments?.length, 1);
-  assertEquals(cmd.definition.arguments?.[0]?.required, false);
+  // Test with no args (optional)
+  await testCmd['executeAction']!([], {}, cmd);
+  assertEquals(testCmd.receivedArgs, []);
 });
 
-Deno.test('Arguments - Variadic argument', () => {
-  const definition: CliApp.Declarative.CommandDefinition = {
-    name: 'test',
-    description: 'Test command',
-    arguments: [
-      { name: 'files', description: 'Input files', variadic: true },
-    ],
-    action: (_ctx, args, _opts) => {
-      // Can handle multiple files
-      assertExists(args);
-      return Promise.resolve();
-    },
-  };
+Deno.test('Arguments - Variadic argument', async () => {
+  class TestCmd extends CliApp.Cmd.Sub<TestContext, TestOptions> {
+    receivedArgs: string[] = [];
 
-  const cmd = new CliApp.Declarative.Command(definition);
+    constructor(ctx: TestContext) {
+      super(ctx, 'test', 'Test command');
+    }
+
+    protected override addArguments(): void {
+      this.cmd.argument('[files...]', 'Input files');
+    }
+
+    protected override executeAction(args: string[], _opts: TestOptions, _cmd: CliApp.Command): Promise<void> {
+      this.receivedArgs = args;
+      return Promise.resolve();
+    }
+  }
+
+  const pkg = { name: 'test', version: '1.0.0', description: 'Test' };
+  const ctx = new TestContext(pkg);
+  const testCmd = new TestCmd(ctx);
+  const cmd = await testCmd.init();
+
   assertExists(cmd);
-  assertEquals(cmd.definition.arguments?.length, 1);
-  assertEquals(cmd.definition.arguments?.[0]?.variadic, true);
+  // Test with multiple files
+  await testCmd['executeAction']!(['file1.txt', 'file2.txt', 'file3.txt'], {}, cmd);
+  assertEquals(testCmd.receivedArgs, ['file1.txt', 'file2.txt', 'file3.txt']);
 });
 
-Deno.test('Arguments - Multiple arguments', () => {
-  const definition: CliApp.Declarative.CommandDefinition = {
-    name: 'test',
-    description: 'Test command',
-    arguments: [
-      { name: 'input', description: 'Input file', required: true },
-      { name: 'output', description: 'Output file', required: false },
-    ],
-    action: (_ctx, args, _opts) => {
-      assertExists(args);
-      return Promise.resolve();
-    },
-  };
+Deno.test('Arguments - Multiple arguments', async () => {
+  class TestCmd extends CliApp.Cmd.Sub<TestContext, TestOptions> {
+    receivedArgs: string[] = [];
 
-  const cmd = new CliApp.Declarative.Command(definition);
+    constructor(ctx: TestContext) {
+      super(ctx, 'test', 'Test command');
+    }
+
+    protected override addArguments(): void {
+      this.cmd
+        .argument('<input>', 'Input file')
+        .argument('[output]', 'Output file');
+    }
+
+    protected override executeAction(args: string[], _opts: TestOptions, _cmd: CliApp.Command): Promise<void> {
+      this.receivedArgs = args;
+      return Promise.resolve();
+    }
+  }
+
+  const pkg = { name: 'test', version: '1.0.0', description: 'Test' };
+  const ctx = new TestContext(pkg);
+  const testCmd = new TestCmd(ctx);
+  const cmd = await testCmd.init();
+
   assertExists(cmd);
-  assertEquals(cmd.definition.arguments?.length, 2);
+  // Test with both arguments
+  await testCmd['executeAction']!(['input.txt', 'output.txt'], {}, cmd);
+  assertEquals(testCmd.receivedArgs, ['input.txt', 'output.txt']);
 });
 
-Deno.test('Arguments - Root command with arguments', () => {
-  const definition: CliApp.Declarative.RootCommandDefinition = {
-    name: 'test',
-    description: 'Test root command',
-    arguments: [
-      { name: 'command', description: 'Command to run' },
-    ],
-    action: (_ctx, args, _opts) => {
-      assertExists(args);
-      return Promise.resolve();
-    },
-  };
+Deno.test('Arguments - Root command with arguments', async () => {
+  class TestRootCmd extends CliApp.Cmd.Root<TestContext, TestOptions> {
+    receivedArgs: string[] = [];
 
-  const rootCmd = new CliApp.Declarative.RootCommand(definition);
-  assertExists(rootCmd);
-  assertEquals(rootCmd.definition.arguments?.length, 1);
+    constructor(ctx: TestContext) {
+      const pkg = { name: 'test', version: '1.0.0', description: 'Test root' };
+      super(ctx, pkg);
+    }
+
+    protected override addArguments(): void {
+      this.cmd.argument('[command]', 'Command to run');
+    }
+
+    protected override executeAction(args: string[], _opts: TestOptions, _cmd: CliApp.Command): Promise<void> {
+      this.receivedArgs = args;
+      return Promise.resolve();
+    }
+  }
+
+  const pkg = { name: 'test', version: '1.0.0', description: 'Test' };
+  const ctx = new TestContext(pkg);
+  const rootCmd = new TestRootCmd(ctx);
+  const cmd = await rootCmd.init();
+
+  assertExists(cmd);
+  // Test root command with argument
+  await rootCmd['executeAction']!(['subcommand'], {}, cmd);
+  assertEquals(rootCmd.receivedArgs, ['subcommand']);
 });

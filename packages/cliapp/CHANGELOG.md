@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0-alpha.9] - 2025-12-25
+
+- API evolution, removing declarative, adding base cmd syntax
+
 ## [1.1.0-alpha.8] - 2025-12-23
 
 - Updated documentation and jsdoc

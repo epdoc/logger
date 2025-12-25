@@ -10,19 +10,19 @@ import type { ICtx, Logger, MsgBuilder } from './types.ts';
 
 /**
  * Runs a CLI application with standardized lifecycle management
- * 
+ *
  * Provides a complete application wrapper that handles:
  * - SIGINT (Ctrl-C) signal handling for graceful shutdown
  * - Error handling with appropriate logging and exit codes
  * - Resource cleanup via ctx.close()
  * - Performance timing and reporting
  * - Stack trace management based on log level
- * 
+ *
  * This function never returns - it always calls Deno.exit() with appropriate exit codes.
- * 
+ *
  * @param ctx - Application context for logging and resource management
  * @param appFn - Main application function to execute
- * 
+ *
  * @example
  * ```typescript
  * // Traditional API usage
@@ -30,14 +30,14 @@ import type { ICtx, Logger, MsgBuilder } from './types.ts';
  *   const cmd = new Command(pkg);
  *   cmd.init(ctx);
  *   cmd.addLogging(ctx);
- *   
+ *
  *   const opts = await cmd.parseOpts();
  *   configureLogging(ctx, opts);
- *   
+ *
  *   // Your application logic here
  *   await processFiles(opts.files);
  * });
- * 
+ *
  * // The run function handles:
  * // - Ctrl-C interruption (exit code 0)
  * // - Application errors (exit code 1)

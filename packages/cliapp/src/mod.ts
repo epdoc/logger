@@ -1,7 +1,7 @@
 /**
  * @file Main module exports for @epdoc/cliapp
- * @description Entry point for the CLI application framework, providing both traditional
- * imperative API and modern declarative API for building command-line applications.
+ * @description Entry point for the CLI application framework, providing command and context
+ * functionality for building command-line applications.
  * @module
  */
 
@@ -9,8 +9,8 @@
 export { Command } from './command.ts';
 export * as Ctx from './context/mod.ts';
 
-// Modern declarative API (recommended)
-export * as Declarative from './declarative/mod.ts';
+// Structured command base classes
+export * as Cmd from './cmd/mod.ts';
 
 // Application lifecycle management
 export { run } from './run.ts';
