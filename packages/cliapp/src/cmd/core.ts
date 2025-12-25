@@ -4,23 +4,32 @@ import type * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
 
 /**
+ * Type bundle for context, message builder, and logger types
+ */
+export type ContextBundle<
+  Context,
+  MsgBuilder,
+  Logger
+> = {
+  Context: Context;
+  MsgBuilder: MsgBuilder;
+  Logger: Logger;
+};
+
+/**
  * Abstract base class with common command setup functionality
  *
- * @template Context - Context type extending CliApp.Ctx.IBase
+ * @template Bundle - Bundled context types
  * @template TOptions - Command options type for the action
- * @template MsgBuilder - Message builder type extending Console.Builder
- * @template Logger - Logger type extending Log.IEmitter
  */
 export abstract class BaseCmdCore<
-  Context extends Ctx.IBase<MsgBuilder, Logger>,
-  TOptions = unknown,
-  MsgBuilder extends Console.Builder = Console.Builder,
-  Logger extends Log.IEmitter = Log.IEmitter,
+  Bundle extends ContextBundle<unknown, unknown, unknown>,
+  TOptions = unknown
 > {
   protected cmd!: Command; // Definite assignment assertion - subclasses will set this
-  protected ctx: Context;
+  protected ctx: Bundle['Context'];
 
-  constructor(ctx: Context) {
+  constructor(ctx: Bundle['Context']) {
     this.ctx = ctx;
     // Subclasses will set this.cmd in their constructor
   }
@@ -69,7 +78,10 @@ export abstract class BaseCmdCore<
       this.cmd.action(async (...argsAndOpts: unknown[]) => {
         const cmd = argsAndOpts.pop() as Command;
         const opts = argsAndOpts.pop() as TOptions;
-        const args = argsAndOpts as string[];
+        const rawArgs = argsAndOpts as string[];
+        
+        // Flatten args to handle Commander.js variadic argument nesting
+        const args = rawArgs.flat();
 
         await this.executeAction!(args, opts, cmd);
       });

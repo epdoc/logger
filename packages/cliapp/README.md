@@ -22,7 +22,7 @@ deno add jsr:@epdoc/cliapp
 
 ## Quick Start
 
-### Minimal CLI App
+### [Minimal CLI App](../examples/minimal.run.ts)
 
 ```typescript
 import * as CliApp from '@epdoc/cliapp';
@@ -31,11 +31,19 @@ import { Console } from '@epdoc/msgbuilder';
 import pkg from './deno.json' with { type: 'json' };
 
 // 1. Define types once per project
-// If NOT extending Console.Builder, use: type MsgBuilder = Console.Builder;
 type MsgBuilder = Console.Builder;
 type Logger = Log.Std.Logger<MsgBuilder>;
 
-// 2. Create your context
+// 2. Bundle context types together
+type AppBundle = CliApp.Cmd.ContextBundle<AppContext, MsgBuilder, Logger>;
+
+// 3. Define options interface
+interface AppOptions {
+  verbose?: boolean;
+  output?: string;
+}
+
+// 4. Create your context
 class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
   constructor() {
     super(pkg);
@@ -50,8 +58,8 @@ class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
   }
 }
 
-// 3. Define your root command
-class AppRootCmd extends CliApp.Cmd.Root<AppContext, { verbose?: boolean }> {
+// 5. Define your root command
+class AppRootCmd extends CliApp.Cmd.Root<AppBundle, AppOptions> {
   constructor(ctx: AppContext) {
     super(ctx, ctx.pkg);
   }
@@ -66,15 +74,16 @@ class AppRootCmd extends CliApp.Cmd.Root<AppContext, { verbose?: boolean }> {
       .option('--verbose', 'Verbose output');
   }
 
-  protected override async executeAction(args: string[], opts: { verbose?: boolean; output?: string }): Promise<void> {
+  protected override executeAction(args: string[], opts: AppOptions): Promise<void> {
     this.ctx.log.info.h1('Processing Files')
       .label('Files:').value(args.join(', '))
       .label('Output:').value(opts.output || 'default')
       .emit();
+    return Promise.resolve();
   }
 }
 
-// 4. Run it
+// 6. Run it
 if (import.meta.main) {
   const ctx = new AppContext();
   const rootCmd = new AppRootCmd(ctx);
@@ -85,9 +94,17 @@ if (import.meta.main) {
 
 ### With Custom Message Builder
 
+Now let's break this down into steps, with more explanation.
+
+#### 1. Optionally extend our `MsgBuilder.Console.Builder` with additional methods
+
+`src/context/msgbuilder.ts`:
+
 ```typescript
+import { Console } from '@epdoc/msgbuilder';
+
 // Define project-specific logging methods
-const AppBuilder = Console.extender({
+const CustomBuilder = Console.extender({
   fileOp(operation: string, path: string) {
     return this.text('📁 ').text(operation).text(' ').path(path);
   },
@@ -101,12 +118,31 @@ const AppBuilder = Console.extender({
     return this.text(`⏳ Progress: ${current}/${total} (${percent}%)`);
   }
 });
+```
+
+#### 2. Declare your types and context
+
+- If you are not extending the `MsgBuilder.Console.Builder`, you can write `type MsgBuilder = Console.Builder` instead.
+- We define `AppBundle` so we can pass all the generic definitions in one go to the commands we create.
+- If you are not using a custom message builder (`AppBuilder`), call `Log.createLogManager( Console.Builder )`.
+- The method `setupLogging` must be implemented as a separate method.
+
+
+`src/context/context.ts`:
+
+```typescript
+import { CustomBuilder } from './msgbuilder.ts'
+import * as CliApp from '@epdoc/cliapp';
+import * as Log from '@epdoc/logger';
 
 type MsgBuilder = InstanceType<typeof AppBuilder>;
 type Logger = Log.Std.Logger<MsgBuilder>;
 
-class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
-  // Add application state
+// Bundle context types together
+type AppBundle = CliApp.Cmd.ContextBundle<AppContext, MsgBuilder, Logger>;
+
+class Context extends CliApp.Ctx.Base<MsgBuilder, Logger> {
+  // Add application state [example]
   processedFiles = 0;
   
   constructor() {
@@ -115,20 +151,41 @@ class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
   }
 
   setupLogging() {
-    this.logMgr = Log.createLogManager(AppBuilder, { threshold: 'info' });
+    this.logMgr = Log.createLogManager(CustomBuilder, { threshold: 'info' });
     this.log = this.logMgr.getLogger<Logger>();
   }
   
-  // Helper methods using custom msgbuilder
+  // Helper methods using custom msgbuilder [example]
   logFileOperation(op: string, path: string) {
     this.log.info.fileOp(op, path).emit();
     this.processedFiles++;
   }
 }
+```
 
-// Use explicit type parameters for custom message builders
-class ProcessCmd extends CliApp.Cmd.Sub<AppContext, ProcessOptions, MsgBuilder, Logger> {
-  constructor(ctx: AppContext) {
+#### 3. Export your context
+
+`src/context/mod.ts`:
+
+```ts
+export * from './context.ts'
+export * from './msgbuilder.ts`
+```
+
+#### 4. Implement a sub command
+
+`src/cmd/process.ts`
+```typescript
+import * as CliApp from '@epdoc/cliapp';
+import * as Ctx from './context/mod.ts';
+
+// Define the options type for your executeAction callback
+type ProcessOptions = {
+  verbose: boolean;
+}
+
+class ProcessCmd extends CliApp.Cmd.Sub<Ctx.AppBundle, ProcessOptions> {
+  constructor(ctx: Ctx.Context) {
     super(ctx, 'process', 'Process files');
   }
 
@@ -149,6 +206,60 @@ class ProcessCmd extends CliApp.Cmd.Sub<AppContext, ProcessOptions, MsgBuilder, 
 }
 ```
 
+#### 5. Root Command
+
+`src/cmd/root.ts`
+
+```typescript
+import * as CliApp from '@epdoc/cliapp';
+import * as Ctx from './context/mod.ts';
+
+// These are options in addition to the standard CliApp log level options
+interface AppOptions {
+  verbose?: boolean;
+  output?: string;
+}
+
+class AppRootCmd extends CliApp.Cmd.Root<Ctx.AppBundle, AppOptions> {
+  constructor(ctx: Ctx.Context) {
+    super(ctx, ctx.pkg);
+  }
+
+  protected override addArguments(): void {
+    this.cmd.argument('[files...]', 'Files to process');
+  }
+
+  protected override addOptions(): void {
+    this.cmd
+      .option('--output <dir>', 'Output directory')
+      .option('--verbose', 'Verbose output');
+  }
+
+  protected override executeAction(args: string[], opts: AppOptions): Promise<void> {
+    this.ctx.log.info.h1('Processing Files')
+      .label('Files:').value(args.join(', '))
+      .label('Output:').value(opts.output || 'default')
+      .emit();
+    return Promise.resolve();
+  }
+}
+```
+
+#### 6. Run it
+`main.ts`
+
+```typescript
+import { Ctx, Cmd } from './src/mod.ts';
+
+if (import.meta.main) {
+  const ctx = new Ctx.Context();
+  const rootCmd = new Cmd.Root(ctx);
+  const cmd = await rootCmd.init();
+  await cmd.parseAsync();
+}
+
+```
+
 ## Project Organization
 
 ### Single Command Application
@@ -166,14 +277,14 @@ my-tool/
 **main.ts:**
 ```typescript
 import * as CliApp from '@epdoc/cliapp';
-import { AppContext } from './src/context.ts';
+import { AppContext, AppBundle } from './src/context.ts';
 
 interface MyOptions {
   output?: string;
   verbose?: boolean;
 }
 
-class MyToolCmd extends CliApp.Cmd.Root<AppContext, MyOptions> {
+class MyToolCmd extends CliApp.Cmd.Root<AppBundle, MyOptions> {
   constructor(ctx: AppContext) {
     super(ctx, ctx.pkg);
   }
@@ -226,6 +337,9 @@ export class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
     this.log = this.logMgr.getLogger<Logger>();
   }
 }
+
+// Export the bundled type for use in commands
+export type AppBundle = CliApp.Cmd.ContextBundle<AppContext, MsgBuilder, Logger>;
 ```
 
 ### Multi-Command Application
@@ -233,11 +347,12 @@ export class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
 ```
 my-cli/
 ├── deno.json
-├── main.ts             # Root command and app runner
+├── main.ts             # Minimal run wrapper
 ├── src/
 │   ├── context.ts      # Shared AppContext
 │   ├── types.ts        # Shared types
-│   ├── commands/
+│   ├── cmd/
+│   │   ├── root.ts    # Fetch command
 │   │   ├── fetch.ts    # Fetch command
 │   │   ├── process.ts  # Process command
 │   │   └── export.ts   # Export command
@@ -250,14 +365,14 @@ my-cli/
 **src/commands/fetch.ts:**
 ```typescript
 import * as CliApp from '@epdoc/cliapp';
-import type { AppContext } from '../context.ts';
+import type { AppContext, AppBundle } from '../context.ts';
 
 interface FetchOptions {
   limit?: number;
   format?: string;
 }
 
-export class FetchCmd extends CliApp.Cmd.Sub<AppContext, FetchOptions> {
+export class FetchCmd extends CliApp.Cmd.Sub<AppBundle, FetchOptions> {
   constructor(ctx: AppContext) {
     super(ctx, 'fetch', 'Fetch data from remote source');
   }
@@ -285,7 +400,7 @@ export class FetchCmd extends CliApp.Cmd.Sub<AppContext, FetchOptions> {
 **main.ts:**
 ```typescript
 import * as CliApp from '@epdoc/cliapp';
-import { AppContext } from './src/context.ts';
+import { AppContext, AppBundle } from './src/context.ts';
 import { FetchCmd } from './src/commands/fetch.ts';
 import { ProcessCmd } from './src/commands/process.ts';
 import { ExportCmd } from './src/commands/export.ts';
@@ -295,7 +410,7 @@ interface RootOptions {
   verbose?: boolean;
 }
 
-class MyCliRoot extends CliApp.Cmd.Root<AppContext, RootOptions> {
+class MyCliRoot extends CliApp.Cmd.Root<AppBundle, RootOptions> {
   constructor(ctx: AppContext) {
     super(ctx, ctx.pkg);
   }
@@ -338,7 +453,7 @@ enterprise-cli/
 │   ├── main.ts
 │   ├── context.ts
 │   ├── types.ts
-│   ├── commands/
+│   ├── cmd/
 │   │   ├── deploy/
 │   │   │   ├── mod.ts        # Deploy root command
 │   │   │   ├── staging.ts    # Deploy to staging
@@ -385,8 +500,8 @@ export class EnvironmentOption extends CliApp.Declarative.Option.Base<Environmen
 
 ```typescript
 // For subcommands
-abstract class BaseCmd<Context, TOptions, MsgBuilder, Logger> {
-  constructor(ctx: Context, name: string, description: string, aliases?: string[]);
+abstract class BaseCmd<Bundle extends ContextBundle<unknown, unknown, unknown>, TOptions = unknown> {
+  constructor(ctx: Bundle['Context'], name: string, description: string, aliases?: string[]);
   
   // Override these methods as needed
   protected addArguments(): void;
@@ -399,8 +514,8 @@ abstract class BaseCmd<Context, TOptions, MsgBuilder, Logger> {
 }
 
 // For root commands
-class BaseRootCmd<Context, TOptions, MsgBuilder, Logger> {
-  constructor(ctx: Context, pkg: DenoPkg);
+class BaseRootCmd<Bundle extends ContextBundle<unknown, unknown, unknown>, TOptions = unknown> {
+  constructor(ctx: Bundle['Context'], pkg: DenoPkg);
   
   // Override these methods as needed
   protected addArguments(): void;
@@ -412,6 +527,13 @@ class BaseRootCmd<Context, TOptions, MsgBuilder, Logger> {
   // Call this to initialize the command
   async init(): Promise<Command>;
 }
+
+// ContextBundle type for bundling context, message builder, and logger types
+type ContextBundle<Context, MsgBuilder, Logger> = {
+  Context: Context;
+  MsgBuilder: MsgBuilder;
+  Logger: Logger;
+};
 ```
 
 #### Command Setup Order
@@ -471,7 +593,7 @@ abstract class BaseContext<M, L> implements Ctx.IBase<M, L> {
 **Key Points:**
 - Extend `BaseContext` with your message builder and logger types
 - Call `setupLogging()` in your constructor
-- Use type assertions: `ctx as unknown as AppContext` in actions
+- Bundle types with `ContextBundle<Context, MsgBuilder, Logger>` for cleaner command signatures
 - Add application state and helper methods to your context class
 
 ## Examples
@@ -493,6 +615,7 @@ Run all examples with: `./examples/run.sh`
 
 ### 2. Type Safety
 - Define types once per project (`MsgBuilder`, `Logger`)
+- Bundle types together with `ContextBundle<Context, MsgBuilder, Logger>`
 - Use separate declaration pattern for options
 - Leverage TypeScript's type inference in actions
 
@@ -523,6 +646,12 @@ testCtx.logMgr.threshold = 'error'; // Suppress logs in tests
 // Test command actions directly
 const cmd = new MyCmd(testCtx);
 await cmd['executeAction'](['arg1'], { option1: 'value' }, mockCommand);
+
+// Or create a test bundle type
+type TestBundle = CliApp.Cmd.ContextBundle<AppContext, MsgBuilder, Logger>;
+class TestCmd extends CliApp.Cmd.Sub<TestBundle, TestOptions> {
+  // Test implementation
+}
 ```
 
 ## Advanced Features
@@ -532,7 +661,7 @@ await cmd['executeAction'](['arg1'], { option1: 'value' }, mockCommand);
 Commands can perform async operations during initialization:
 
 ```typescript
-class DataCmd extends CliApp.Cmd.Sub<AppContext, DataOptions> {
+class DataCmd extends CliApp.Cmd.Sub<AppBundle, DataOptions> {
   private config!: Config;
 
   constructor(ctx: AppContext) {

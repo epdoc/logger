@@ -15,12 +15,18 @@ class TestContext extends CliApp.Ctx.Base<Console.Builder, Log.Std.Logger<Consol
   }
 }
 
+type TestBundle = CliApp.Cmd.ContextBundle<
+  TestContext,
+  Console.Builder,
+  Log.Std.Logger<Console.Builder>
+>;
+
 interface TestOptions {
   verbose?: boolean;
 }
 
 Deno.test('Arguments - Required argument', async () => {
-  class TestCmd extends CliApp.Cmd.Sub<TestContext, TestOptions> {
+  class TestCmd extends CliApp.Cmd.Sub<TestBundle, TestOptions> {
     receivedArgs: string[] = [];
 
     constructor(ctx: TestContext) {
@@ -49,7 +55,7 @@ Deno.test('Arguments - Required argument', async () => {
 });
 
 Deno.test('Arguments - Optional argument', async () => {
-  class TestCmd extends CliApp.Cmd.Sub<TestContext, TestOptions> {
+  class TestCmd extends CliApp.Cmd.Sub<TestBundle, TestOptions> {
     receivedArgs: string[] = [];
 
     constructor(ctx: TestContext) {
@@ -78,7 +84,7 @@ Deno.test('Arguments - Optional argument', async () => {
 });
 
 Deno.test('Arguments - Variadic argument', async () => {
-  class TestCmd extends CliApp.Cmd.Sub<TestContext, TestOptions> {
+  class TestCmd extends CliApp.Cmd.Sub<TestBundle, TestOptions> {
     receivedArgs: string[] = [];
 
     constructor(ctx: TestContext) {
@@ -107,7 +113,7 @@ Deno.test('Arguments - Variadic argument', async () => {
 });
 
 Deno.test('Arguments - Multiple arguments', async () => {
-  class TestCmd extends CliApp.Cmd.Sub<TestContext, TestOptions> {
+  class TestCmd extends CliApp.Cmd.Sub<TestBundle, TestOptions> {
     receivedArgs: string[] = [];
 
     constructor(ctx: TestContext) {
@@ -138,7 +144,7 @@ Deno.test('Arguments - Multiple arguments', async () => {
 });
 
 Deno.test('Arguments - Root command with arguments', async () => {
-  class TestRootCmd extends CliApp.Cmd.Root<TestContext, TestOptions> {
+  class TestRootCmd extends CliApp.Cmd.Root<TestBundle, TestOptions> {
     receivedArgs: string[] = [];
 
     constructor(ctx: TestContext) {

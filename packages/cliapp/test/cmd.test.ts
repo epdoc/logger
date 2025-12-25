@@ -27,8 +27,14 @@ interface TestOptions {
   output?: string;
 }
 
+type TestBundle = CliApp.Cmd.ContextBundle<
+  TestContext,
+  Console.Builder,
+  Log.Std.Logger<Console.Builder>
+>;
+
 // Test subcommand implementation
-class TestSubCmd extends Cmd.Sub<TestContext, TestOptions> {
+class TestSubCmd extends Cmd.Sub<TestBundle, TestOptions> {
   public addArgumentsCalled = false;
   public addOptionsCalled = false;
   public addExtrasCalled = false;
@@ -69,7 +75,7 @@ class TestSubCmd extends Cmd.Sub<TestContext, TestOptions> {
 }
 
 // Test root command implementation
-class TestRootCmd extends Cmd.Root<TestContext, TestOptions> {
+class TestRootCmd extends Cmd.Root<TestBundle, TestOptions> {
   public addArgumentsCalled = false;
   public addOptionsCalled = false;
   public addCommandsCalled = false;
@@ -205,7 +211,7 @@ Deno.test('BaseCmd (Sub) - optional methods work when not overridden', async () 
   const ctx = new TestContext(pkg);
 
   // Create a minimal subcommand that only implements required executeAction
-  class MinimalSubCmd extends Cmd.Sub<TestContext, TestOptions> {
+  class MinimalSubCmd extends Cmd.Sub<TestBundle, TestOptions> {
     constructor(ctx: TestContext) {
       super(ctx, 'minimal', 'Minimal test command');
     }

@@ -13,6 +13,7 @@
     "./packages/msgbuilder",
     "./packages/logger",
     "./packages/cliapp",
+    "./packages/demo",
     "./packages/examples"
   ],
   "fmt": {

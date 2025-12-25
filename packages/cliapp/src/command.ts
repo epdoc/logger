@@ -107,7 +107,7 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
    * // my-app -V  (verbose mode)
    * ```
    */
-  addLogging(ctx: ICtx<M, L>): this {
+  addLogging(ctx: { logMgr: { logLevels: { names: string[] } } }): this {
     const options: Commander.Option[] = [
       new Commander.Option('--log <level>', 'Set the threshold log output level.')
         .choices(ctx.logMgr.logLevels.names)

@@ -2,24 +2,20 @@ import { Command } from '../command.ts';
 import type * as Ctx from '../context/mod.ts';
 import type * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
-import { BaseCmdCore } from './core.ts';
+import { BaseCmdCore, type ContextBundle } from './core.ts';
 
 /**
  * Generic base class for CLI subcommands with structured setup
  *
- * @template Context - Context type extending Ctx.IBase
+ * @template Bundle - Bundled context types
  * @template TOptions - Command options type for the action
- * @template MsgBuilder - Message builder type extending Console.Builder
- * @template Logger - Logger type extending Log.IEmitter
  */
 export abstract class BaseCmd<
-  Context extends Ctx.IBase<MsgBuilder, Logger>,
-  TOptions = unknown,
-  MsgBuilder extends Console.Builder = Console.Builder,
-  Logger extends Log.IEmitter = Log.IEmitter,
-> extends BaseCmdCore<Context, TOptions, MsgBuilder, Logger> {
+  Bundle extends ContextBundle<unknown, unknown, unknown>,
+  TOptions = unknown
+> extends BaseCmdCore<Bundle, TOptions> {
   constructor(
-    ctx: Context,
+    ctx: Bundle['Context'],
     name: string,
     description: string,
     aliases?: string[],
