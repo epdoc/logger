@@ -1,9 +1,7 @@
-import type * as Log from '@epdoc/logger';
-import type { Console } from '@epdoc/msgbuilder';
 import { Command } from '../command.ts';
-import type * as Ctx from '../context/mod.ts';
 import type { DenoPkg, ICtx } from '../types.ts';
-import { BaseCmdCore, type ContextBundle } from './core.ts';
+import { BaseCmdCore } from './core.ts';
+import type { ContextBundle } from './types.ts';
 
 /**
  * Generic base class for CLI root commands with structured setup
@@ -13,7 +11,7 @@ import { BaseCmdCore, type ContextBundle } from './core.ts';
  */
 export class BaseRootCmd<
   Bundle extends ContextBundle<unknown, unknown, unknown>,
-  TOptions = unknown
+  TOptions = unknown,
 > extends BaseCmdCore<Bundle, TOptions> {
   constructor(
     ctx: Bundle['Context'],

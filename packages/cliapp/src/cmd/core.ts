@@ -1,20 +1,5 @@
 import type { Command } from '../command.ts';
-import type * as Ctx from '../context/mod.ts';
-import type * as Log from '@epdoc/logger';
-import type { Console } from '@epdoc/msgbuilder';
-
-/**
- * Type bundle for context, message builder, and logger types
- */
-export type ContextBundle<
-  Context,
-  MsgBuilder,
-  Logger
-> = {
-  Context: Context;
-  MsgBuilder: MsgBuilder;
-  Logger: Logger;
-};
+import type { ContextBundle } from './types.ts';
 
 /**
  * Abstract base class with common command setup functionality
@@ -24,7 +9,7 @@ export type ContextBundle<
  */
 export abstract class BaseCmdCore<
   Bundle extends ContextBundle<unknown, unknown, unknown>,
-  TOptions = unknown
+  TOptions = unknown,
 > {
   protected cmd!: Command; // Definite assignment assertion - subclasses will set this
   protected ctx: Bundle['Context'];
@@ -79,7 +64,7 @@ export abstract class BaseCmdCore<
         const cmd = argsAndOpts.pop() as Command;
         const opts = argsAndOpts.pop() as TOptions;
         const rawArgs = argsAndOpts as string[];
-        
+
         // Flatten args to handle Commander.js variadic argument nesting
         const args = rawArgs.flat();
 

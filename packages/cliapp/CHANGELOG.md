@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0-alpha.11] - 2025-12-25
+
+- Improve ContextBundle documentation and fix addLogging type constraints
+
+- Move ContextBundle type to dedicated types.ts with comprehensive documentation
+- Fix addLogging() to work with custom message builders by relaxing type constraints
+- Add automatic argument flattening in base command class for variadic arguments
+- Remove unused imports and fix all lint errors
+- Enhance structured command API with better type safety
+
 ## [1.1.0-alpha.10] - 2025-12-25
 
 - fixes to get demo running
