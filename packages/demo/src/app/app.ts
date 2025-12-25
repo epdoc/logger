@@ -14,7 +14,7 @@ export class AppMain {
       this.ctx.log.info.text('No files specified').emit();
       return;
     }
-    
+
     for (const file of files) {
       const fs = new FS.Spec(file);
       const fsItem = await fs.resolvedType();

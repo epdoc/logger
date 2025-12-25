@@ -9,7 +9,8 @@
   "license": "MIT",
   "tasks": {
     "lint": "deno lint",
-    "check": "deno check deno.json main.ts src test"
+    "check": "deno check deno.json main.ts src test",
+    "test": "deno test --allow-all"
   },
   "exports": "./mod.ts",
   "lint": {
