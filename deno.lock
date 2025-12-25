@@ -305,7 +305,9 @@
       },
       "packages/demo": {
         "dependencies": [
+          "jsr:@epdoc/cliapp@^1.1.0-alpha.11",
           "jsr:@epdoc/fs@^1.2.12",
+          "jsr:@epdoc/logger@^1003.1.0-alpha.4",
           "jsr:@epdoc/msgbuilder@~0.1.0-alpha.3",
           "jsr:@epdoc/type@^1.2.2",
           "jsr:@std/assert@^1.0.16"

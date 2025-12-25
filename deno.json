@@ -6,7 +6,8 @@
   "license": "MIT",
   "tasks": {
     "lint": "deno lint packages deno.json launch.config.json",
-    "check": "deno check packages"
+    "check": "deno check packages",
+    "test:demo": "cd packages/demo && deno test --allow-all"
   },
   "workspace": [
     "./packages/loglevels",
