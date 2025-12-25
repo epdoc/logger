@@ -10,7 +10,7 @@ can be chained to create richer output with more columns of data.
 - **Multiple Log Levels**: Standard (`error`, `warn`, `info`, `verbose`, `debug`, `trace`, `spam`) and CLI-specific levels
 - **Hierarchical Indentation**: Built-in `indent()`, `outdent()`, `nodent()` methods for structured, nested logging output
 - **Performance Timing**: Built-in `mark()` and `ewt()` (Emit With Time) for measuring operation durations
-- **Flexible Transports**: Console, file, and custom transport support
+- **Flexible Transports**: Console, file, buffer (for testing), and custom transport support
 - **Hierarchical Loggers**: Root and child loggers with inherited context and indentation
 - **Conditional Logging**: Build messages only when conditions are met
 - **Middleware Support**: Express and Oak middleware for request tracking
@@ -225,6 +225,7 @@ None of the existing loggers that I could find supported the following requireme
   ID.
 - hierarchical indentation for structured logging output
 - custom transports:
+  - **Buffer transport** for testing and programmatic log inspection
   - A [logdy](https://logdy.dev/) transport is in development
   - external transports requires open and close support, or equivalent.
 - JSON, JSON array and console text output all supported

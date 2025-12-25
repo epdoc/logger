@@ -1,4 +1,5 @@
 export * as Base from './base/mod.ts';
+export * as Buffer from './buffer/mod.ts';
 export * as Console from './console/mod.ts';
 export * from './consts.ts';
 export * as File from './file/mod.ts';
