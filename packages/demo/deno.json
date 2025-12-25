@@ -1,0 +1,40 @@
+{
+  "name": "@epdoc/demo",
+  "version": "0.0.2",
+  "description": "Demo CliApp demo project",
+  "author": {
+    "name": "James Pravetz",
+    "email": "jpravetz@epdoc.com"
+  },
+  "license": "MIT",
+  "tasks": {
+    "lint": "deno lint",
+    "check": "deno check deno.json main.ts src test"
+  },
+  "exports": "./mod.ts",
+  "lint": {
+    "include": [
+      "src",
+      "test",
+      "main.ts",
+      "deno.json"
+    ]
+  },
+  "fmt": {
+    "include": [
+      "src",
+      "test",
+      "main.ts",
+      "deno.json"
+    ],
+    "singleQuote": true,
+    "lineWidth": 120
+  },
+  "imports": {
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^1.1.0-alpha.8",
+    "@epdoc/fs": "jsr:@epdoc/fs@^1.2.12",
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.1.0-alpha.2",
+    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.0-alpha.3",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.2"
+  }
+}
