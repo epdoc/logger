@@ -37,6 +37,13 @@ const AppBuilder = Console.extender({
 type MsgBuilder = InstanceType<typeof AppBuilder>;
 type Logger = Log.Std.Logger<MsgBuilder>;
 
+// 3. Bundle context types together to reduce generic verbosity
+type AppBundle = {
+  Context: AppContext;
+  MsgBuilder: MsgBuilder;
+  Logger: Logger;
+};
+
 // 3. Extend BaseContext with your specific types
 class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
   // Add project-specific properties
@@ -81,9 +88,8 @@ interface RootOptions {
 }
 
 // 5. Define commands using structured command classes
-// NOTE: The four generics here are verbose - this is a known limitation
-// that could be improved with a bundled context type in future versions
-class ProcessCmd extends CliApp.Cmd.Sub<AppContext, ProcessOptions, MsgBuilder, Logger> {
+// Much cleaner with bundled context type!
+class ProcessCmd extends CliApp.Cmd.Sub<AppBundle, ProcessOptions> {
   constructor(ctx: AppContext) {
     super(ctx, 'process', 'Process files in a directory');
   }
@@ -133,7 +139,7 @@ class ProcessCmd extends CliApp.Cmd.Sub<AppContext, ProcessOptions, MsgBuilder, 
   }
 }
 
-class CleanCmd extends CliApp.Cmd.Sub<AppContext, CleanOptions, MsgBuilder, Logger> {
+class CleanCmd extends CliApp.Cmd.Sub<AppBundle, CleanOptions> {
   constructor(ctx: AppContext) {
     super(ctx, 'clean', 'Clean temporary files');
   }
@@ -148,7 +154,7 @@ class CleanCmd extends CliApp.Cmd.Sub<AppContext, CleanOptions, MsgBuilder, Logg
       .option('--force', 'Force deletion without confirmation');
   }
 
-  protected override async executeAction(args: string[], opts: CleanOptions): Promise<void> {
+  protected override executeAction(args: string[], opts: CleanOptions): Promise<void> {
     this.ctx.dryRun = opts.dryRun || false;
 
     const targetDir = args[0] || '.';
@@ -172,11 +178,12 @@ class CleanCmd extends CliApp.Cmd.Sub<AppContext, CleanOptions, MsgBuilder, Logg
 
     const message = this.ctx.dryRun ? `Would delete ${tempFiles.length} files` : `Deleted ${tempFiles.length} files`;
     this.ctx.logStatus('success', message);
+    return Promise.resolve();
   }
 }
 
 // 6. Create root command with subcommands
-class FileProcessorRoot extends CliApp.Cmd.Root<AppContext, RootOptions, MsgBuilder, Logger> {
+class FileProcessorRoot extends CliApp.Cmd.Root<AppBundle, RootOptions> {
   constructor(ctx: AppContext) {
     super(ctx, pkg);
   }
@@ -200,10 +207,13 @@ class FileProcessorRoot extends CliApp.Cmd.Root<AppContext, RootOptions, MsgBuil
   }
 
   protected override addExtras(): void {
-    this.cmd.addHelpText('after', '\nExamples:\n  $ file-processor process *.txt --verbose\n  $ file-processor clean --dry-run');
+    this.cmd.addHelpText(
+      'after',
+      '\nExamples:\n  $ file-processor process *.txt --verbose\n  $ file-processor clean --dry-run',
+    );
   }
 
-  protected override async executeAction(args: string[], opts: RootOptions): Promise<void> {
+  protected override executeAction(args: string[], opts: RootOptions): Promise<void> {
     if (opts.quiet) {
       this.ctx.logMgr.threshold = 'error';
     }
@@ -221,6 +231,7 @@ class FileProcessorRoot extends CliApp.Cmd.Root<AppContext, RootOptions, MsgBuil
     }
 
     this.ctx.logStatus('info', 'Ready to process files');
+    return Promise.resolve();
   }
 }
 

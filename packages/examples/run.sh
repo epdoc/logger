@@ -37,8 +37,8 @@ if [ -f "cliapp.run.ts" ]; then
 fi
 
 # Run other examples with basic execution
-for f in *.ts; do
-  if [ -f "$f" ] && [ "$f" != "cliapp.run.ts" ]; then
+for f in *.run.ts; do
+  if [ -f "$f" ] && [ "$f" != "cliapp.run.ts" ] && [ "$f" != "minimal.run.ts" ]; then
     echo ""
     echo "======================================================================"
     echo "Running example: $f"
@@ -46,6 +46,21 @@ for f in *.ts; do
     deno run -A "$f"
   fi
 done
+
+# Run minimal.run.ts with help and example usage
+if [ -f "minimal.run.ts" ]; then
+  echo ""
+  echo "======================================================================"
+  echo "Running minimal.run.ts example"
+  echo "======================================================================"
+  echo ""
+  echo ">>> minimal.run.ts --help"
+  deno run -A minimal.run.ts --help
+  
+  echo ""
+  echo ">>> minimal.run.ts file1.txt file2.txt --output /tmp --verbose"
+  deno run -A minimal.run.ts file1.txt file2.txt --output /tmp --verbose
+fi
 
 echo ""
 echo "======================================================================"
