@@ -9,6 +9,7 @@ import * as _ from '@epdoc/type';
 import * as colors from '@std/fmt/colors';
 import * as Commander from 'commander';
 import { config } from './config.ts';
+import { FluentOptionBuilder } from './option.ts';
 import type { DenoPkg, ICtx, Logger, MsgBuilder, Opts } from './types.ts';
 import { commaList } from './utils.ts';
 
@@ -259,5 +260,52 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
   async parseOpts(): Promise<Opts> {
     await super.parseAsync(['xx', 'yy', ...Deno.args]);
     return this.opts() as Opts;
+  }
+
+  /**
+   * Create a fluent option builder for advanced option configuration
+   *
+   * Provides a fluent API for building complex options with validation,
+   * defaults, and parsing. Similar to the MsgBuilder pattern.
+   *
+   * @param flags - Option flags (e.g., '-l, --lines <num>')
+   * @param description - Option description for help text
+   * @returns FluentOptionBuilder for method chaining
+   *
+   * @example
+   * ```typescript
+   * this.cmd
+   *   .fluentOption('-l --lines [num]', 'Number of lines')
+   *   .default(10)
+   *   .argParser(_.asInt)
+   *   .done()
+   *   .fluentOption('--format <type>', 'Output format')
+   *   .choices(['json', 'yaml', 'table'])
+   *   .default('table')
+   *   .done();
+   * ```
+   */
+  fluentOption(flags: string, description: string): FluentOptionBuilder<this> {
+    return new FluentOptionBuilder(this, flags, description);
+  }
+
+  /**
+   * Shorthand alias for fluentOption()
+   *
+   * @param flags - Option flags (e.g., '-l, --lines <num>')
+   * @param description - Option description for help text
+   * @returns FluentOptionBuilder for method chaining
+   *
+   * @example
+   * ```typescript
+   * this.cmd
+   *   .opt('-l --lines [num]', 'Number of lines')
+   *   .default(10)
+   *   .argParser(_.asInt)
+   *   .done();
+   * ```
+   */
+  opt(flags: string, description: string): FluentOptionBuilder<this> {
+    return this.fluentOption(flags, description);
   }
 }

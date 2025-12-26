@@ -7,6 +7,7 @@
 
 // Core command and context functionality
 export { Command } from './command.ts';
+export { FluentOptionBuilder } from './option.ts';
 export * as Ctx from './context/mod.ts';
 
 // Structured command base classes
