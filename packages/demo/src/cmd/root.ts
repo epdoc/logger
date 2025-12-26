@@ -7,6 +7,7 @@ import { ProcessCmd } from './process.ts';
 interface AppOptions {
   verbose?: boolean;
   output?: string;
+  format?: string;
 }
 
 export class RootCmd extends CliApp.Cmd.Root<Ctx.AppBundle, AppOptions> {
@@ -17,7 +18,12 @@ export class RootCmd extends CliApp.Cmd.Root<Ctx.AppBundle, AppOptions> {
   protected override addOptions(): void {
     this.cmd
       .addLogging(this.ctx)
-      .option('--output <dir>', 'Output directory');
+      .option('--output <dir>', 'Output directory')
+      .addOption(
+        new CliApp.Commander.Option('--format <type>', 'Output format')
+          .choices(['json', 'yaml', 'table'])
+          .default('table'),
+      );
   }
 
   protected override addExtras(): void {
