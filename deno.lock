@@ -2,6 +2,7 @@
   "version": "5",
   "specifiers": {
     "jsr:@epdoc/cliapp@^1.1.0": "1.1.0",
+    "jsr:@epdoc/cliapp@^1.1.2": "1.1.2",
     "jsr:@epdoc/datetime@^2.0.13": "2.0.13",
     "jsr:@epdoc/duration@~0.3.6": "0.3.6",
     "jsr:@epdoc/fs@^1.2.12": "1.2.12",
@@ -44,6 +45,14 @@
   "jsr": {
     "@epdoc/cliapp@1.1.0": {
       "integrity": "8223c3a5352c5554835b71b984a869248bed333b185683750789015904fa0bf1",
+      "dependencies": [
+        "jsr:@epdoc/type",
+        "jsr:@std/fmt",
+        "npm:commander"
+      ]
+    },
+    "@epdoc/cliapp@1.1.2": {
+      "integrity": "abd49349850ce207a312bb93136442a904c073b1b923a94371afb0e305195d81",
       "dependencies": [
         "jsr:@epdoc/type",
         "jsr:@std/fmt",
@@ -313,7 +322,7 @@
       },
       "packages/demo": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^1.1.0",
+          "jsr:@epdoc/cliapp@^1.1.2",
           "jsr:@epdoc/fs@^1.2.12",
           "jsr:@epdoc/logger@^1003.1.0",
           "jsr:@epdoc/msgbuilder@~0.1.0-alpha.3",
