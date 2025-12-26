@@ -1,9 +1,9 @@
-import { describe, it } from '@std/testing/bdd';
-import { assertEquals, assertExists } from '@std/assert';
 import * as _ from '@epdoc/type';
+import { assertEquals, assertExists } from '@std/assert';
+import { describe, it } from '@std/testing/bdd';
+import pkg from '../deno.json' with { type: 'json' };
 import { Command } from '../src/command.ts';
 import { FluentOptionBuilder } from '../src/option.ts';
-import pkg from '../deno.json' with { type: 'json' };
 
 describe('FluentOptionBuilder', () => {
   it('should create fluent option with choices and default', () => {
@@ -13,7 +13,7 @@ describe('FluentOptionBuilder', () => {
       .opt('--format <type>', 'Output format')
       .choices(['json', 'yaml', 'table'])
       .default('table')
-      .done();
+      .emit();
 
     assertEquals(result, cmd);
 
@@ -30,7 +30,7 @@ describe('FluentOptionBuilder', () => {
       .opt('-l --lines [num]', 'Number of lines')
       .default(10)
       .argParser(_.asInt)
-      .done();
+      .emit();
 
     assertEquals(result, cmd);
 
@@ -47,10 +47,10 @@ describe('FluentOptionBuilder', () => {
       .opt('--format <type>', 'Output format')
       .choices(['json', 'yaml'])
       .default('json')
-      .done()
+      .emit()
       .opt('-v --verbose', 'Verbose output')
       .default(false)
-      .done();
+      .emit();
 
     assertEquals(result, cmd);
 
@@ -66,11 +66,11 @@ describe('FluentOptionBuilder', () => {
       .opt('--token <token>', 'API token')
       .env('API_TOKEN')
       .required()
-      .done()
+      .emit()
       .opt('--debug', 'Debug mode')
       .conflicts(['quiet'])
       .hideHelp()
-      .done();
+      .emit();
 
     assertEquals(result, cmd);
   });
@@ -81,7 +81,7 @@ describe('FluentOptionBuilder', () => {
     const result = cmd
       .fluentOption('--test <value>', 'Test option')
       .default('test')
-      .done();
+      .emit();
 
     assertEquals(result, cmd);
 
@@ -98,6 +98,6 @@ describe('FluentOptionBuilder', () => {
     assertEquals(builder instanceof FluentOptionBuilder, true);
     assertEquals(typeof builder.choices, 'function');
     assertEquals(typeof builder.default, 'function');
-    assertEquals(typeof builder.done, 'function');
+    assertEquals(typeof builder.emit, 'function');
   });
 });

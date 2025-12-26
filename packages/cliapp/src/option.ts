@@ -129,7 +129,7 @@ export class FluentOptionBuilder<T> {
    *
    * @returns The original command instance
    */
-  done(): T {
+  emit(): T {
     (this.#command as Command).addOption(this.#option);
     return this.#command;
   }

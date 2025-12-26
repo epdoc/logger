@@ -21,7 +21,7 @@ This package provides CLI application framework with:
 - **🚀 BaseContext Pattern** - Simplified context setup with structured logging integration
 - **🏗️ Structured Commands** - Class-based command architecture with `Cmd.Sub` and `Cmd.Root`
 - **🎯 Arguments Support** - Full support for command arguments (required, optional, variadic)
-- **⚙️ Rich Options** - Built-in Commander.js option handling with type safety
+- **⚙️ Options Support** - Built-in Commander.js option handling with type safety and fluent API
 - **🔧 Custom Message Builders** - Project-specific logging methods with type safety
 - **📊 Structured Logging** - Built on [@epdoc/logger](https://github.com/epdoc/logger) with rich formatting
 - **🏗️ Scalable Architecture** - Patterns for single commands to complex multi-command applications
@@ -85,10 +85,11 @@ class AppRootCmd extends CliApp.Cmd.Root<AppBundle, AppOptions> {
   protected override addOptions(): void {
     this.cmd
       .option('--output <dir>', 'Output directory')
-      .option('--verbose', 'Verbose output');
+      .option('--verbose', 'Verbose output')
+      // Fluent option API for complex options
+      .fluentOption('--format <type>', 'Output format')
+        .choices(['json', 'yaml', 'csv']).default('json').emit();
   }
-
-  protected override executeAction(args: string[], opts: AppOptions): Promise<void> {
     this.ctx.log.info.h1('Processing Files')
       .label('Files:').value(args.join(', '))
       .label('Output:').value(opts.output || 'default')
@@ -405,7 +406,7 @@ Commands follow a structured setup sequence:
 
 #### Option Definition
 
-Use Commander.js syntax for options:
+Use Commander.js syntax for options, including the new fluent API:
 
 ```typescript
 protected override addOptions(): void {
@@ -413,9 +414,13 @@ protected override addOptions(): void {
     .option('-v, --verbose', 'Verbose output')
     .option('--output <path>', 'Output file path', 'default.txt')
     .option('--count <n>', 'Number of items', '10')
+    // Traditional Commander.js approach
     .addOption(new CliApp.Commander.Option('--format <type>', 'Output format')
       .choices(['json', 'yaml', 'csv'])
-      .default('json'));
+      .default('json'))
+    // New fluent API approach
+    .fluentOption('--env <name>', 'Environment')
+      .choices(['dev', 'staging', 'prod']).default('dev').required().done();
 }
 ```
 

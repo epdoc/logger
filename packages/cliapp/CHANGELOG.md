@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.2] - 2025-12-26
+
+- Changed Fluent Options "done" to "emit"
+
 ## [1.1.1] - 2025-12-26
 
 - COMMIT_MSG
