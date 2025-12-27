@@ -212,13 +212,18 @@ log.outdent(2); // Back to root level
 log.info.text('Operation complete').emit();
 ```
 
+## Color Output
+
+When you setup a transport, you tell the transport whether to use color or not. Of our bundled transports, only the `Console` Transport supports color and by default it will appear with color output.
+
+You can force color on or off (where supported by a transport) by setting the color property of 
+
 # Documentation
 
-- [Getting Started](./docs/GETTING-STARTED.md)
-- [Configuration](./docs/CONFIGURATION.md)
-- [Architecture](./docs/ARCHITECTURE.md)
-- [Message Builder](./docs/MSGBUILDER.md)
-- [Middleware](./docs/MIDDLEWARE.md)
+- [Getting Started](./GETTING-STARTED.md)
+- [Configuration](./CONFIGURATION.md)
+- [Architecture](./ARCHITECTURE.md)
+- [Message Builder](./MSGBUILDER.md)
 - [Oak Middleware](./docs/OAK.md)
 
 Check out our [example implementations](./packages/examples).
