@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/demo",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Demo CliApp demo project",
   "author": {
     "name": "James Pravetz",
@@ -32,8 +32,8 @@
     "lineWidth": 120
   },
   "imports": {
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^1.1.5",
-    "@epdoc/fs": "jsr:@epdoc/fs@^1.2.12",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^1.1.6",
+    "@epdoc/fs": "jsr:@epdoc/fs@^1.2.13",
     "@epdoc/logger": "jsr:@epdoc/logger@^1003.1.3",
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.0-alpha.5",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.2",

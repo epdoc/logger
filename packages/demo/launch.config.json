@@ -38,7 +38,7 @@
         "scripts": [
           "",
           "--help",
-          "--no-color list *.ts"
+          "--no-color list deno.json"
         ]
       }
     }
