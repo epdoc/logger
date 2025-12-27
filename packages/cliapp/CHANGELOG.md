@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.7] - 2025-12-27
+
+- Updated dependencies
+
 ## [1.1.6] - 2025-12-27
 
 - Fixed bug in color option processsing
