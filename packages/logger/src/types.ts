@@ -1,5 +1,5 @@
-import type * as Level from '$level';
 import type { HrMilliseconds } from '@epdoc/duration';
+import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { TimestampFormat } from './consts.ts';
 
@@ -71,6 +71,8 @@ export type EmitterShowOpts = {
   time?: boolean;
   /** The separater to show between package names (defaults to '.', which is set in the class LogMgr) */
   pkgSep?: string;
+  /** If set to false, will suppress color in any Transports that support color by default (eg. Console). */
+  color?: boolean;
 };
 
 /**

@@ -51,7 +51,7 @@ export class ConsoleTransport extends Base.Transport {
    * @returns {boolean} `true` if color is enabled, otherwise `false`.
    */
   get useColor(): boolean {
-    return this._color;
+    return this._color === true && this._show.color !== false;
   }
 
   /**
@@ -86,7 +86,7 @@ export class ConsoleTransport extends Base.Transport {
     }
     const show = this._show;
     const logLevels = this._logMgr.logLevels;
-    const color = this._color;
+    const color = (this._color === true && this._show.color !== false) ? true : false;
 
     const entry: TransportEntry = Object.assign(
       {

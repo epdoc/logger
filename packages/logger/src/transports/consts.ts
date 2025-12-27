@@ -1,5 +1,5 @@
-import type * as Level from '$level';
 import type * as Logger from '$logger';
+import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 
 /**

@@ -1,6 +1,6 @@
-import type * as Level from '$level';
 import type * as Log from '$log';
 import type * as Transport from '$transport';
+import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 
 /**

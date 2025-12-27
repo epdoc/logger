@@ -1,4 +1,4 @@
-import * as Level from '$level';
+import * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import * as colors from '@std/fmt/colors';
 import { LogMgr } from '../../logmgr.ts';

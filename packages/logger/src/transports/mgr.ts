@@ -1,5 +1,5 @@
-import type * as Level from '$level';
 import type * as Log from '$log';
+import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { assert } from '@std/assert';
 import type { LogMgr } from '../logmgr.ts';

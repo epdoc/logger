@@ -1,11 +1,11 @@
-import type * as Level from '$level';
+import type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from '$log';
 import { dateEx } from '@epdoc/datetime';
 import { duration } from '@epdoc/duration';
+import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { _ } from '@epdoc/type';
 import { isTimestampFormat } from '../../consts.ts';
 import type { LogMgr } from '../../logmgr.ts';
-import type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from '../../types.ts';
 import type { BaseOptions } from './types.ts';
 
 /**

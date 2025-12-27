@@ -4,8 +4,8 @@
  * @module
  */
 
-import type { Console } from '@epdoc/msgbuilder';
-import type { IEmitter } from '@epdoc/msgbuilder';
+import type { Console, IEmitter } from '@epdoc/msgbuilder';
+import { _ } from '@epdoc/type';
 import { LogMgr } from './logmgr.ts';
 
 /**
@@ -16,6 +16,7 @@ export interface LogManagerOptions {
   showLevel?: boolean;
   showTimestamp?: 'elapsed' | 'local' | 'utc' | boolean;
   showData?: boolean;
+  color?: boolean;
 }
 
 /**
@@ -55,20 +56,24 @@ export function createLogManager<T extends Console.Builder>(
     mgr.threshold = options.threshold;
   }
 
-  if (options.showLevel !== undefined) {
+  if (_.isBoolean(options.showLevel)) {
     mgr.show.level = options.showLevel;
   }
 
   if (options.showTimestamp !== undefined) {
-    if (typeof options.showTimestamp === 'boolean') {
+    if (_.isBoolean(options.showTimestamp)) {
       mgr.show.timestamp = options.showTimestamp ? 'local' : undefined;
     } else {
       mgr.show.timestamp = options.showTimestamp;
     }
   }
 
-  if (options.showData !== undefined) {
+  if (_.isBoolean(options.showData)) {
     mgr.show.data = options.showData;
+  }
+
+  if (_.isBoolean(options.color)) {
+    mgr.show.color = options.color;
   }
 
   return mgr;

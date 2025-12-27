@@ -1,4 +1,4 @@
-import type * as Level from '$level';
+import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { Integer } from '@epdoc/type';
 import type { LogMgr } from '../../logmgr.ts';
