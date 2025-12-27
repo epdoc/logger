@@ -119,6 +119,8 @@ export type Opts = Partial<{
   log: string;
   /** Array of log components to display (e.g., 'level', 'timestamp') */
   log_show: string[];
+  /** Display color output */
+  color: boolean;
   /** Show all available log components */
   showall: boolean;
   /** Enable verbose output */

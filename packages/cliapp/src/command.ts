@@ -125,6 +125,7 @@ export class Command<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Lo
           ' or the equivalent ' +
           colors.green('-A'),
       ).argParser(commaList),
+      new Commander.Option('--no-color', 'Do not show color in output'),
       new Commander.Option('-A --showall', 'Shortcut for ' + colors.green('--log_show all')),
       new Commander.Option('-V --verbose', 'Shortcut for ' + colors.green('--log verbose')),
       new Commander.Option('-D --debug', 'Shortcut for ' + colors.green('--log debug')),

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.3] - 2025-12-27
+
+- Added show.color option
+
 ## [1.1.2] - 2025-12-26
 
 - Changed Fluent Options "done" to "emit"
