@@ -1,0 +1,46 @@
+{
+  "$schema": "https://raw.githubusercontent.com/epdoc/tools/master/packages/launchgen/schemas/v2/launch.schema.json",
+  "launch": {
+    "groups": {
+      "test": {
+        "name": "Tests",
+        "console": "internalConsole",
+        "includes": [
+          "**/*.test.ts"
+        ],
+        "runtimeArgs": [
+          "test",
+          "-A",
+          "--inspect-brk"
+        ]
+      },
+      "run": {
+        "name": "Runnable",
+        "console": "internalConsole",
+        "includes": [
+          "**/*.run.ts"
+        ],
+        "runtimeArgs": [
+          "run",
+          "-A",
+          "--inspect-brk"
+        ]
+      },
+      ".": {
+        "name": "main",
+        "console": "internalConsole",
+        "program": "./main.ts",
+        "runtimeArgs": [
+          "run",
+          "-A",
+          "--inspect-brk"
+        ],
+        "scripts": [
+          "",
+          "--help",
+          "--no-color list *.ts"
+        ]
+      }
+    }
+  }
+}

@@ -12,7 +12,7 @@
     "check": "deno check deno.json main.ts src test",
     "test": "deno test --allow-all"
   },
-  "exports": "./mod.ts",
+  "exports": "./main.ts",
   "lint": {
     "include": [
       "src",
@@ -32,7 +32,7 @@
     "lineWidth": 120
   },
   "imports": {
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^1.1.2",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^1.1.5",
     "@epdoc/fs": "jsr:@epdoc/fs@^1.2.12",
     "@epdoc/logger": "jsr:@epdoc/logger@^1003.1.3",
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.0-alpha.5",

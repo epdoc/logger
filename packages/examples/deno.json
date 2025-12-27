@@ -12,7 +12,7 @@
     "check": "deno check *.ts",
     "examples": "./run.sh"
   },
-  "exports": "./simple.ts",
+  "exports": [],
   "lint": {
     "include": [
       "deno.json",
