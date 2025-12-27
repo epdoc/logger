@@ -1,11 +1,14 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@epdoc/cliapp@^1.1.2": "1.1.2",
     "jsr:@epdoc/datetime@^2.0.13": "2.0.13",
     "jsr:@epdoc/duration@~0.3.6": "0.3.6",
     "jsr:@epdoc/fs@^1.2.12": "1.2.12",
+    "jsr:@epdoc/logger@^1003.1.0": "1003.1.3",
     "jsr:@epdoc/logger@^1003.1.3": "1003.1.3",
     "jsr:@epdoc/loglevels@^0.0.7": "0.0.7",
+    "jsr:@epdoc/msgbuilder@~0.1.0-alpha.3": "0.1.0-alpha.5",
     "jsr:@epdoc/msgbuilder@~0.1.0-alpha.5": "0.1.0-alpha.5",
     "jsr:@epdoc/string@~0.1.15": "0.1.15",
     "jsr:@epdoc/type@^1.2.2": "1.2.2",
@@ -41,6 +44,14 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
+    "@epdoc/cliapp@1.1.2": {
+      "integrity": "abd49349850ce207a312bb93136442a904c073b1b923a94371afb0e305195d81",
+      "dependencies": [
+        "jsr:@epdoc/type",
+        "jsr:@std/fmt",
+        "npm:commander"
+      ]
+    },
     "@epdoc/datetime@2.0.13": {
       "integrity": "75dd48f8033b71b028bc70f20cfbbef5995144032db775c45214178875aa5cb2",
       "dependencies": [
@@ -315,8 +326,8 @@
       "packages/examples": {
         "dependencies": [
           "jsr:@epdoc/cliapp@^1.1.2",
-          "jsr:@epdoc/logger@^1003.1.0",
-          "jsr:@epdoc/msgbuilder@~0.1.0-alpha.3",
+          "jsr:@epdoc/logger@^1003.1.3",
+          "jsr:@epdoc/msgbuilder@~0.1.0-alpha.5",
           "jsr:@epdoc/type@^1.2.2"
         ]
       },
