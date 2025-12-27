@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.4] - 2025-12-27
+
+- Updated @epdoc/logger dependency
+
 ## [1.1.3] - 2025-12-27
 
 - Added show.color option

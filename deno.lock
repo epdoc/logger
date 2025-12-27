@@ -1,13 +1,11 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/cliapp@^1.1.2": "1.1.2",
     "jsr:@epdoc/datetime@^2.0.13": "2.0.13",
     "jsr:@epdoc/duration@~0.3.6": "0.3.6",
     "jsr:@epdoc/fs@^1.2.12": "1.2.12",
-    "jsr:@epdoc/logger@^1003.1.0": "1003.1.0",
+    "jsr:@epdoc/logger@^1003.1.3": "1003.1.3",
     "jsr:@epdoc/loglevels@^0.0.7": "0.0.7",
-    "jsr:@epdoc/msgbuilder@~0.1.0-alpha.3": "0.1.0-alpha.3",
     "jsr:@epdoc/msgbuilder@~0.1.0-alpha.5": "0.1.0-alpha.5",
     "jsr:@epdoc/string@~0.1.15": "0.1.15",
     "jsr:@epdoc/type@^1.2.2": "1.2.2",
@@ -43,14 +41,6 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
-    "@epdoc/cliapp@1.1.2": {
-      "integrity": "abd49349850ce207a312bb93136442a904c073b1b923a94371afb0e305195d81",
-      "dependencies": [
-        "jsr:@epdoc/type",
-        "jsr:@std/fmt",
-        "npm:commander"
-      ]
-    },
     "@epdoc/datetime@2.0.13": {
       "integrity": "75dd48f8033b71b028bc70f20cfbbef5995144032db775c45214178875aa5cb2",
       "dependencies": [
@@ -74,8 +64,8 @@
         "jsr:@std/path@^1.1.3"
       ]
     },
-    "@epdoc/logger@1003.1.0": {
-      "integrity": "66650f0a3c0e53e2fee4d89054e6e1c07a6d62b24c885410a65a994b1908c86d",
+    "@epdoc/logger@1003.1.3": {
+      "integrity": "6f576cf643c22e91c95aa7b8c3c7e6d415210119a961d2ca67cc843c59d06d67",
       "dependencies": [
         "jsr:@epdoc/datetime",
         "jsr:@epdoc/duration",
@@ -87,14 +77,6 @@
     },
     "@epdoc/loglevels@0.0.7": {
       "integrity": "763ee892613eeac955aebfa2b5818b0088ffe1b3e8c9fc5b54032dcb9f24ac21"
-    },
-    "@epdoc/msgbuilder@0.1.0-alpha.3": {
-      "integrity": "af8bd0301f7370b75f6d8b50d5d2bd50d0828a69ffa36ae8b3c14fc9f269a043",
-      "dependencies": [
-        "jsr:@epdoc/string",
-        "jsr:@epdoc/type",
-        "jsr:@std/fmt"
-      ]
     },
     "@epdoc/msgbuilder@0.1.0-alpha.5": {
       "integrity": "f237c17d67074b499c488cd13c617692adfe184c29238ac6a749ad868c3597e1",
@@ -311,8 +293,8 @@
     "members": {
       "packages/cliapp": {
         "dependencies": [
-          "jsr:@epdoc/logger@^1003.1.0-alpha.4",
-          "jsr:@epdoc/msgbuilder@~0.1.0-alpha.3",
+          "jsr:@epdoc/logger@^1003.1.3",
+          "jsr:@epdoc/msgbuilder@~0.1.0-alpha.5",
           "jsr:@epdoc/type@^1.2.2",
           "jsr:@std/assert@^1.0.16",
           "jsr:@std/fmt@^1.0.8",
