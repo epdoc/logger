@@ -1,14 +1,6 @@
 {
+  "$schema": "https://raw.githubusercontent.com/epdoc/tools/master/packages/launchgen/schemas/v2/launch.schema.json",
   "launch": {
-    "port": 9229,
-    "console": "internalConsole",
-    "excludes": [
-      "node_modules/**",
-      ".git/**",
-      "**/.*",
-      "**/.*/**"
-    ],
-    "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
     "groups": {
       "test": {
         "name": "Tests",
@@ -34,7 +26,6 @@
           "--inspect-brk"
         ]
       }
-    },
-    "$schema": "https://raw.githubusercontent.com/epdoc/tools/master/packages/launchgen/schemas/v2/launch.schema.json"
+    }
   }
 }

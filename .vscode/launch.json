@@ -4,7 +4,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "logdy: test/transport.test.ts",
+      "name": "demo: test/commands.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -15,10 +15,79 @@
         "test",
         "-A",
         "--inspect-brk",
-        "${workspaceFolder}/packages/logdy/test/transport.test.ts"
+        "${workspaceFolder}/packages/demo/test/commands.test.ts"
       ],
       "presentation": {
-        "group": "logdy"
+        "group": "demo"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "demo: main",
+      "program": "${workspaceFolder}/packages/demo/./main.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "run",
+        "-A",
+        "--inspect-brk"
+      ],
+      "args": [],
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "presentation": {
+        "group": "demo"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "demo: main --help",
+      "program": "${workspaceFolder}/packages/demo/./main.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "run",
+        "-A",
+        "--inspect-brk"
+      ],
+      "args": [
+        "--help"
+      ],
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "presentation": {
+        "group": "demo"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "demo: main --no-color list *.ts",
+      "program": "${workspaceFolder}/packages/demo/./main.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "run",
+        "-A",
+        "--inspect-brk"
+      ],
+      "args": [
+        "--no-color",
+        "list",
+        "*.ts"
+      ],
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "presentation": {
+        "group": "demo"
       }
     },
     {
@@ -104,6 +173,26 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "logger: test/transports/buffer.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/packages/logger/test/transports/buffer.test.ts"
+      ],
+      "presentation": {
+        "group": "logger"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "logger: test/message.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
@@ -156,6 +245,26 @@
         "-A",
         "--inspect-brk",
         "${workspaceFolder}/packages/logger/test/levels1.test.ts"
+      ],
+      "presentation": {
+        "group": "logger"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "logger: test/indent.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/packages/logger/test/indent.test.ts"
       ],
       "presentation": {
         "group": "logger"
@@ -224,6 +333,26 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "logger: test/helpers.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/packages/logger/test/helpers.test.ts"
+      ],
+      "presentation": {
+        "group": "logger"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "logger: test/cli.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
@@ -264,7 +393,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "examples: simple.run.ts",
+      "name": "examples: logger.advanced.run.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -276,7 +405,7 @@
         "-A",
         "--inspect-brk"
       ],
-      "program": "${workspaceFolder}/packages/examples/simple.run.ts",
+      "program": "${workspaceFolder}/packages/examples/logger.advanced.run.ts",
       "presentation": {
         "group": "examples"
       }
@@ -284,7 +413,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "examples: extend-mgr.run.ts",
+      "name": "examples: logger.basics.run.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -296,7 +425,7 @@
         "-A",
         "--inspect-brk"
       ],
-      "program": "${workspaceFolder}/packages/examples/extend-mgr.run.ts",
+      "program": "${workspaceFolder}/packages/examples/logger.basics.run.ts",
       "presentation": {
         "group": "examples"
       }
@@ -304,7 +433,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "examples: cliapp-basic.run.ts",
+      "name": "examples: cliapp.run.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -316,7 +445,7 @@
         "-A",
         "--inspect-brk"
       ],
-      "program": "${workspaceFolder}/packages/examples/cliapp-basic.run.ts",
+      "program": "${workspaceFolder}/packages/examples/cliapp.run.ts",
       "presentation": {
         "group": "examples"
       }
@@ -324,7 +453,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "examples: settings-mgr.run.ts",
+      "name": "examples: logger.helper.run.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -336,7 +465,7 @@
         "-A",
         "--inspect-brk"
       ],
-      "program": "${workspaceFolder}/packages/examples/settings-mgr.run.ts",
+      "program": "${workspaceFolder}/packages/examples/logger.helper.run.ts",
       "presentation": {
         "group": "examples"
       }
@@ -344,7 +473,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "examples: cliapp-context.run.ts",
+      "name": "examples: custom.msgbuilder.run.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -356,7 +485,7 @@
         "-A",
         "--inspect-brk"
       ],
-      "program": "${workspaceFolder}/packages/examples/cliapp-context.run.ts",
+      "program": "${workspaceFolder}/packages/examples/custom.msgbuilder.run.ts",
       "presentation": {
         "group": "examples"
       }
@@ -364,7 +493,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "examples: complex-type-issue.run.ts",
+      "name": "examples: minimal.run.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -376,7 +505,7 @@
         "-A",
         "--inspect-brk"
       ],
-      "program": "${workspaceFolder}/packages/examples/complex-type-issue.run.ts",
+      "program": "${workspaceFolder}/packages/examples/minimal.run.ts",
       "presentation": {
         "group": "examples"
       }
@@ -384,7 +513,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "examples: cli.run.ts",
+      "name": "msgbuilder: test/extender.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -392,113 +521,13 @@
         "LAUNCHGEN": "true"
       },
       "runtimeArgs": [
-        "run",
+        "test",
         "-A",
-        "--inspect-brk"
+        "--inspect-brk",
+        "${workspaceFolder}/packages/msgbuilder/test/extender.test.ts"
       ],
-      "program": "${workspaceFolder}/packages/examples/cli.run.ts",
       "presentation": {
-        "group": "examples"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "examples: mgr-by-settings.run.ts",
-      "cwd": "${workspaceFolder}",
-      "attachSimplePort": 9229,
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "env": {
-        "LAUNCHGEN": "true"
-      },
-      "runtimeArgs": [
-        "run",
-        "-A",
-        "--inspect-brk"
-      ],
-      "program": "${workspaceFolder}/packages/examples/mgr-by-settings.run.ts",
-      "presentation": {
-        "group": "examples"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "examples: app-by-settings.run.ts",
-      "cwd": "${workspaceFolder}",
-      "attachSimplePort": 9229,
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "env": {
-        "LAUNCHGEN": "true"
-      },
-      "runtimeArgs": [
-        "run",
-        "-A",
-        "--inspect-brk"
-      ],
-      "program": "${workspaceFolder}/packages/examples/app-by-settings.run.ts",
-      "presentation": {
-        "group": "examples"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "examples: wrapper.run.ts",
-      "cwd": "${workspaceFolder}",
-      "attachSimplePort": 9229,
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "env": {
-        "LAUNCHGEN": "true"
-      },
-      "runtimeArgs": [
-        "run",
-        "-A",
-        "--inspect-brk"
-      ],
-      "program": "${workspaceFolder}/packages/examples/wrapper.run.ts",
-      "presentation": {
-        "group": "examples"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "examples: logdy.run.ts",
-      "cwd": "${workspaceFolder}",
-      "attachSimplePort": 9229,
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "env": {
-        "LAUNCHGEN": "true"
-      },
-      "runtimeArgs": [
-        "run",
-        "-A",
-        "--inspect-brk"
-      ],
-      "program": "${workspaceFolder}/packages/examples/logdy.run.ts",
-      "presentation": {
-        "group": "examples"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "examples: threshold.run.ts",
-      "cwd": "${workspaceFolder}",
-      "attachSimplePort": 9229,
-      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
-      "env": {
-        "LAUNCHGEN": "true"
-      },
-      "runtimeArgs": [
-        "run",
-        "-A",
-        "--inspect-brk"
-      ],
-      "program": "${workspaceFolder}/packages/examples/threshold.run.ts",
-      "presentation": {
-        "group": "examples"
+        "group": "msgbuilder"
       }
     },
     {
@@ -524,6 +553,26 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "cliapp: test/arguments.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/packages/cliapp/test/arguments.test.ts"
+      ],
+      "presentation": {
+        "group": "cliapp"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "cliapp: test/utils.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
@@ -536,6 +585,26 @@
         "-A",
         "--inspect-brk",
         "${workspaceFolder}/packages/cliapp/test/utils.test.ts"
+      ],
+      "presentation": {
+        "group": "cliapp"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "cliapp: test/cmd.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/packages/cliapp/test/cmd.test.ts"
       ],
       "presentation": {
         "group": "cliapp"
@@ -564,7 +633,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "logjava: test/basic.test.ts",
+      "name": "cliapp: test/context.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
       "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
@@ -575,10 +644,30 @@
         "test",
         "-A",
         "--inspect-brk",
-        "${workspaceFolder}/packages/logjava/test/basic.test.ts"
+        "${workspaceFolder}/packages/cliapp/test/context.test.ts"
       ],
       "presentation": {
-        "group": "logjava"
+        "group": "cliapp"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "cliapp: test/option.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/packages/cliapp/test/option.test.ts"
+      ],
+      "presentation": {
+        "group": "cliapp"
       }
     }
   ]

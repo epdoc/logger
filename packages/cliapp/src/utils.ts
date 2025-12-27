@@ -85,10 +85,7 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
     show.level = true;
     show.reqId = true;
     show.time = true;
-    ctx.logMgr.show = show;
-    return;
-  }
-  if (opts.log_show) {
+  } else if (opts.log_show) {
     if (_.isNonEmptyArray(opts.log_show)) {
       for (const prefix of opts.log_show) {
         const m = prefix.match(REG.levelType);
@@ -122,16 +119,16 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
           show.time = true;
         }
       }
-      ctx.logMgr.show = show;
-      return;
+    } else {
+      show.level = true;
+      show.timestamp = Log.TimestampFormat.ELAPSED;
+      show.pkg = true;
+      show.reqId = true;
+      show.time = true;
     }
-    ctx.logMgr.show = {
-      level: true,
-      timestamp: Log.TimestampFormat.ELAPSED,
-      pkg: true,
-      reqId: true,
-      time: true,
-    };
+  }
+  if (!_.isEmpty(show)) {
+    ctx.logMgr.show = show;
   }
 }
 
