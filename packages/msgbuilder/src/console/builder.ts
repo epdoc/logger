@@ -220,6 +220,10 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    *
    * @param {unknown} error - The error object or value to be logged.
    * @param {IConsoleErrOpts} [opts={}] - Options for formatting the error message.
+   * @param {boolean} [opts.code=false] - Whether to include the error code if available.
+   * @param {boolean} [opts.cause=true] - Whether to include the error cause if available.
+   * @param {boolean} [opts.path=true] - Whether to include the error path if available.
+   * @param {boolean} [opts.stack=false] - Whether to include the stack trace (overrides emitter stackEnabled setting when true).
    * @returns {this} The current instance for method chaining.
    */
   public err(error: unknown, opts: IConsoleErrOpts = {}): this {
