@@ -68,7 +68,7 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "demo: main --no-color list *.ts",
+      "name": "demo: main --no-color list deno.json",
       "program": "${workspaceFolder}/packages/demo/./main.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
@@ -81,7 +81,7 @@
       "args": [
         "--no-color",
         "list",
-        "*.ts"
+        "deno.json"
       ],
       "env": {
         "LAUNCHGEN": "true"

@@ -97,7 +97,7 @@ export class ConsoleTransport extends Base.Transport {
 
     if (msg.msg instanceof MsgBuilder.Abstract) {
       const target = this._format === 'text' ? 'console' : this._format as MsgBuilder.EmitterTarget;
-      entry.msg = msg.msg.format({ color: this._color, target });
+      entry.msg = msg.msg.format({ color: color, target });
     } else if (_.isString(msg.msg)) {
       entry.msg = msg.msg;
     } else {
