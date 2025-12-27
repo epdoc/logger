@@ -106,7 +106,7 @@ export class TransportMgr {
   /**
    * Adds a new transport to the manager.
    *
-   * @param {AbstractTransport<any>} transport - The transport instance to add.
+   * @param {AbstractTransport} transport - The transport instance to add.
    */
   add(transport: AbstractTransport) {
     this._bRunning = false;
@@ -117,7 +117,7 @@ export class TransportMgr {
   /**
    * Removes a transport from the manager.
    *
-   * @param {AbstractTransport<any>} transport - The transport instance to remove.
+   * @param {AbstractTransport} transport - The transport instance to remove.
    * @returns {Promise<void>} A promise that resolves when the transport is removed.
    */
   async remove(transport: AbstractTransport): Promise<void> {

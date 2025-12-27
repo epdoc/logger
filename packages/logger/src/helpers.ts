@@ -10,6 +10,7 @@ import { LogMgr } from './logmgr.ts';
 
 /**
  * Options for creating a log manager
+ * @experimental This API is experimental and may change in future versions.
  */
 export interface LogManagerOptions {
   threshold?: 'spam' | 'trace' | 'debug' | 'info' | 'warn' | 'error';
@@ -23,6 +24,7 @@ export interface LogManagerOptions {
  * Creates a log manager with an optional custom builder class.
  * Handles the complex factory setup internally.
  *
+ * @experimental This API is experimental and may change in future versions.
  * @param BuilderClass - Optional custom builder class (defaults to Console.Builder)
  * @param options - Configuration options for the logger
  * @returns Configured log manager ready to use
