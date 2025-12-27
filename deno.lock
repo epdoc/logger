@@ -5,10 +5,8 @@
     "jsr:@epdoc/datetime@^2.0.13": "2.0.13",
     "jsr:@epdoc/duration@~0.3.6": "0.3.6",
     "jsr:@epdoc/fs@^1.2.12": "1.2.12",
-    "jsr:@epdoc/logger@^1003.1.0": "1003.1.3",
     "jsr:@epdoc/logger@^1003.1.3": "1003.1.3",
     "jsr:@epdoc/loglevels@^0.0.7": "0.0.7",
-    "jsr:@epdoc/msgbuilder@~0.1.0-alpha.3": "0.1.0-alpha.5",
     "jsr:@epdoc/msgbuilder@~0.1.0-alpha.5": "0.1.0-alpha.5",
     "jsr:@epdoc/string@~0.1.15": "0.1.15",
     "jsr:@epdoc/type@^1.2.2": "1.2.2",
@@ -317,8 +315,8 @@
         "dependencies": [
           "jsr:@epdoc/cliapp@^1.1.2",
           "jsr:@epdoc/fs@^1.2.12",
-          "jsr:@epdoc/logger@^1003.1.0",
-          "jsr:@epdoc/msgbuilder@~0.1.0-alpha.3",
+          "jsr:@epdoc/logger@^1003.1.3",
+          "jsr:@epdoc/msgbuilder@~0.1.0-alpha.5",
           "jsr:@epdoc/type@^1.2.2",
           "jsr:@std/assert@^1.0.16"
         ]

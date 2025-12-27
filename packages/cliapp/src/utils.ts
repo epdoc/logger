@@ -65,8 +65,6 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
     ctx.logMgr.threshold = opts.log;
   } else if (opts.verbose) {
     ctx.logMgr.threshold = 'verbose';
-  } else if (opts.color) {
-    ctx.logMgr.threshold = 'verbose';
   } else if (opts.debug) {
     ctx.logMgr.threshold = 'debug';
   } else if (opts.trace) {
@@ -76,6 +74,11 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
   }
 
   const show: Log.EmitterShowOpts = {};
+
+  if (_.isBoolean(opts.color)) {
+    show.color = opts.color;
+  }
+
   if (opts.showall) {
     show.timestamp = Log.TimestampFormat.ELAPSED;
     show.pkg = true;

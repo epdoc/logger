@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.5] - 2025-12-27
+
+- Fixed bug in color option processsing
+
 ## [1.1.4] - 2025-12-27
 
 - Updated @epdoc/logger dependency
