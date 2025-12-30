@@ -6,23 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - Refactor CliApp.run for robust lifecycle management and signal coordination
 
-## [1.1.7] - 2025-12-27
-
-- Updated dependencies
-
 ## [1.1.6] - 2025-12-27
-
-- Fixed bug in color option processsing
-
-## [1.1.5] - 2025-12-27
-
-- Fixed bug in color option processsing
-
-## [1.1.4] - 2025-12-27
-
-- Updated @epdoc/logger dependency
-
-## [1.1.3] - 2025-12-27
 
 - Added show.color option
 
@@ -30,19 +14,11 @@ All notable changes to this project will be documented in this file.
 
 - Changed Fluent Options "done" to "emit"
 
-## [1.1.1] - 2025-12-26
-
-- COMMIT_MSG
-
 ## [1.1.0] - 2025-12-25
 
 - Declare release
 
 ## [1.1.0-alpha.13] - 2025-12-25
-
-- updated dependencies
-
-## [1.1.0-alpha.12] - 2025-12-25
 
 - updated dependencies
 
