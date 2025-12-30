@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.8] - 2025-12-30
+
+- Refactor CliApp.run for robust lifecycle management and signal coordination
+
 ## [1.1.7] - 2025-12-27
 
 - Updated dependencies

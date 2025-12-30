@@ -50,19 +50,25 @@ export async function run<M extends MsgBuilder = MsgBuilder, L extends Logger<M>
   appFn: () => Promise<unknown>,
 ): Promise<void> {
   const t0 = performance.now();
+  let exitCode = 0;
+  let isClosing = false;
+  let interrupted = false;
 
-  const sigintHandler = () => {
-    ctx.close().then(() => {
-      ctx.log.info
-        .h1('Application')
-        .label('Interrupted')
-        .ewt(performance.now() - t0);
-      Deno.exit(0);
-    });
+  const sigintHandler = async () => {
+    if (isClosing) return;
+    isClosing = true;
+    interrupted = true;
+
+    try {
+      await ctx.close();
+      ctx.log.info.h1('Application').label('Interrupted').ewt(performance.now() - t0);
+    } catch (err) {
+      ctx.log.error.label('Error during interrupt cleanup').err(_.asError(err));
+    }
+    Deno.exit(0);
   };
   Deno.addSignalListener('SIGINT', sigintHandler);
 
-  let exitCode = 0;
   try {
     await appFn();
   } catch (error) {
@@ -81,22 +87,24 @@ export async function run<M extends MsgBuilder = MsgBuilder, L extends Logger<M>
         ctx.log.info.text('Rerun with --log debug to view stack trace');
       }
     }
-  }
-
-  try {
-    await ctx.close();
-  } catch (closeError) {
-    if (exitCode === 0) {
-      exitCode = 1;
+  } finally {
+    if (!isClosing) {
+      isClosing = true;
+      try {
+        await ctx.close();
+        if (exitCode === 0) {
+          ctx.log.info.h1('Application').label('done').ewt(performance.now() - t0);
+          ctx.log.nodent();
+        }
+      } catch (closeError) {
+        ctx.log.error.label('Error during cleanup').err(_.asError(closeError));
+        exitCode = 1;
+      }
     }
-    ctx.log.error.label('Error during cleanup').err(_.asError(closeError));
-  }
 
-  if (exitCode === 0) {
-    ctx.log.info.h1('Application').label('done').ewt(performance.now() - t0);
-    ctx.log.nodent();
+    Deno.removeSignalListener('SIGINT', sigintHandler);
+    if (!interrupted) {
+      Deno.exit(exitCode);
+    }
   }
-
-  Deno.removeSignalListener('SIGINT', sigintHandler);
-  Deno.exit(exitCode);
 }
