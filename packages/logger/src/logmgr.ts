@@ -7,6 +7,7 @@ import * as Transport from '$transport';
 import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { Emitter } from './emitter.ts';
+import { isStrictEmitterShowOpts } from './guards.ts';
 
 /**
  * Central logging manager that coordinates loggers, transports, and message builders.
@@ -80,6 +81,9 @@ export class LogMgr<
   constructor(opts: Log.ILogMgrSettings = {}) {
     // this.transportMgr = new Transport.Mgr<M>(this);
     if (opts.show) {
+      if (!isStrictEmitterShowOpts(opts.show)) {
+        throw new Error('Invalid show options');
+      }
       this._show = Object.assign(this._show, opts.show);
     }
     // this._logLevels = this._loggerFactories.createLevels();
@@ -206,6 +210,9 @@ export class LogMgr<
    * @returns {this} The instance of LogMgr.
    */
   public set show(opts: Log.EmitterShowOpts) {
+    if (!isStrictEmitterShowOpts(opts)) {
+      throw new Error('Invalid show options');
+    }
     this._show = opts;
     this.transportMgr.show(opts);
   }

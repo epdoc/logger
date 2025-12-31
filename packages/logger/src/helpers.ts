@@ -38,6 +38,7 @@ export interface LogManagerOptions {
  * // With standard builder
  * const logMgr = createLogManager(undefined, { threshold: 'debug' });
  * ```
+ * @deprecated
  */
 export function createLogManager<T extends Console.Builder>(
   BuilderClass?: new (emitter: IEmitter) => T,
