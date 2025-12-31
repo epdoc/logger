@@ -52,7 +52,10 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
    * @param {LogMgr<M>} logMgr - The central log manager responsible for message
    * processing and transport coordination.
    * @param {Logger.IGetChildParams} [params] - Optional parameters used for
-   * initializing a child logger with specific context (e.g., `sid`, `reqId`).
+   * initializing a child logger with specific context.
+   * @param {string} [params.sid] - A session identifier, often tied to a user.
+   * @param {string} [params.reqId] - A unique identifier for a request or operation.
+   * @param {string} [params.pkg] - A namespace, such as a class or module name.
    */
   constructor(logMgr: LogMgr<M>, params?: IGetChildParams) {
     this._logMgr = logMgr;
@@ -72,6 +75,9 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
    *
    * @param {IGetChildParams} [params] - Additional parameters to apply to
    * the new child logger.
+   * @param {string} [params.sid] - A session identifier, often tied to a user.
+   * @param {string} [params.reqId] - A unique identifier for a request or operation.
+   * @param {string} [params.pkg] - A namespace, such as a class or module name.
    * @returns {this} A new logger instance configured as a child of the current one.
    *
    * @example
