@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.11] - 2026-01-04
+
+- Updated msgbuilder and logger dependencies
+
 ## [1.1.10] - 2026-01-04
 
 - Implement type inference to simplify generics from BaseContext<M,L> to BaseContext<L>
