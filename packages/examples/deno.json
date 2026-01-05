@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logger-examples",
-  "version": "0.0.1-alpha.12",
+  "version": "0.0.1-alpha.13",
   "description": "Logging module with chainable formatting, middleware mixins and extendable transports",
   "author": {
     "name": "James Pravetz",
@@ -28,9 +28,10 @@
     "lineWidth": 120
   },
   "imports": {
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^1.1.9",
-    "@epdoc/logger": "jsr:@epdoc/logger@^1003.1.7",
-    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.0-alpha.6",
+    "@epdoc/cliapp": "file:../cliapp/src/mod.ts",
+    "@epdoc/logger": "file:../logger/src/mod.ts",
+    "@epdoc/loglevels": "file:../loglevels/src/mod.ts",
+    "@epdoc/msgbuilder": "file:../msgbuilder/src/mod.ts",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.4"
   }
 }
