@@ -5,5 +5,7 @@ export { ConsoleEmitter, TestEmitter } from './emitter.ts';
 export * from './types.ts';
 export { Console };
 
-// Extension helpers
+/**
+ * @deprecated Use direct class extension instead: `class MyBuilder extends Console.Console.Builder { }`
+ */
 export { type ExtendedBuilder, extender as extendBuilder } from './console/extender.ts';

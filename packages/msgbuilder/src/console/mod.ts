@@ -7,5 +7,8 @@ export { ConsoleMsgBuilder as Builder };
 
 // Re-export types with their desired aliases
 export { consoleStyleFormatters as styleFormatters, createConsoleMsgBuilder, createMsgBuilder } from './const.ts';
+/**
+ * @deprecated Use direct class extension instead: `class MyBuilder extends Builder { }`
+ */
 export { extender } from './extender.ts';
 export type { IConsoleErrOpts as IErrOpts, IConsoleMsgBuilder as IConsole };
