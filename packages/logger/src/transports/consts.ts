@@ -12,6 +12,8 @@ export const OutputFormat = {
   JSON: 'json',
   /** A format where each log entry is an element in a JSON array. */
   JSON_ARRAY: 'jsonArray',
+  /** OpenTelemetry Protocol JSON format for automatic OTLP export via Deno. */
+  OTLP: 'otlp',
 } as const;
 
 /**

@@ -45,7 +45,7 @@ import { isStrictEmitterShowOpts } from './guards.ts';
  */
 export class LogMgr<
   M extends MsgBuilder.Abstract = MsgBuilder.Console.Builder,
-> {
+> implements Transport.ILogMgrTransportContext {
   protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
   protected _logLevels: Level.IBasic | undefined;
@@ -61,7 +61,7 @@ export class LogMgr<
    * A queue of log messages waiting for a transport to come online.
    */
   protected _queue: Log.Entry[] = [];
-  readonly transportMgr: Transport.Mgr = new Transport.Mgr(this as unknown as LogMgr<MsgBuilder.Abstract>);
+  readonly transportMgr: Transport.Mgr = new Transport.Mgr(this);
   protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.createMsgBuilder;
   protected _loggerFactories: Logger.IFactoryMethods<M, Logger.IEmitter> = Logger.Std.factoryMethods;
   protected _loggerCount: Map<string, number> = new Map();
@@ -247,7 +247,7 @@ export class LogMgr<
       this._rootLogger = this._loggerFactories.createLogger(this, params);
     }
     if (!this.transportMgr.transports.length) {
-      const transport = new Transport.Console.Transport(this as unknown as LogMgr<MsgBuilder.Abstract>, {
+      const transport = new Transport.Console.Transport(this, {
         show: this._show,
       });
       this.transportMgr.add(transport);

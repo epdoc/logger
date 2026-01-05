@@ -16,5 +16,7 @@ export type {
   TimestampFormatType,
 } from './types.ts';
 
-// Helper functions
+/**
+ * @deprecated Use explicit LogMgr construction instead. See migration guide.
+ */
 export { createLogManager, type LogManagerOptions } from './helpers.ts';

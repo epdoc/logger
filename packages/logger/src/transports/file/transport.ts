@@ -1,8 +1,7 @@
 import type * as Level from '@epdoc/loglevels';
-import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { Integer } from '@epdoc/type';
-import type { LogMgr } from '../../logmgr.ts';
 import * as Console from '../console/mod.ts';
+import type { ILogMgrTransportContext } from '../types.ts';
 import type { FileLogMode, FileOptions } from './types.ts';
 
 const BUFSIZE = 4096;
@@ -35,7 +34,7 @@ export class FileTransport extends Console.Transport {
 
   /**
    * Creates an instance of the `File` transport.
-   * @param {LogMgr<MsgBuilder.Abstract>} logMgr - The log manager instance.
+   * @param {ILogMgrTransportContext} logMgr - The log manager context.
    * @param {FileOptions} opts - Configuration options for the transport.
    * @param opts.filepath - Path to the log file
    * @param opts.mode - File logging mode ('a' for append, 'w' for write, 'x' for create new)
@@ -45,7 +44,7 @@ export class FileTransport extends Console.Transport {
    * @param opts.threshold - Minimum log level for this transport
    * @param opts.flushThreshold - Log level that triggers immediate flush
    */
-  constructor(logMgr: LogMgr<MsgBuilder.Abstract>, opts: FileOptions) {
+  constructor(logMgr: ILogMgrTransportContext, opts: FileOptions) {
     super(logMgr, opts);
     this.filepath = opts.filepath;
     this.mode = opts.mode ?? 'a';

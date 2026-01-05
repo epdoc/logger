@@ -1,7 +1,10 @@
 import type * as Log from '$log';
-import type * as Transport from '$transport';
 import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
+
+export interface ITransportEmitter {
+  emit(msg: Log.Entry): void;
+}
 
 /**
  * Lightweight emitter that captures logger context and directly emits to the transport manager.
@@ -35,7 +38,7 @@ import type * as MsgBuilder from '@epdoc/msgbuilder';
  */
 export class Emitter implements MsgBuilder.IEmitter {
   private readonly _level: Level.Name;
-  private readonly _transportMgr: Transport.Mgr;
+  private readonly _transportMgr: ITransportEmitter;
   private readonly _sid?: string;
   private readonly _reqId?: string;
   private readonly _pkg?: string;
@@ -58,7 +61,7 @@ export class Emitter implements MsgBuilder.IEmitter {
    */
   constructor(
     level: Level.Name,
-    transportMgr: Transport.Mgr,
+    transportMgr: ITransportEmitter,
     context: {
       sid?: string;
       reqId?: string;

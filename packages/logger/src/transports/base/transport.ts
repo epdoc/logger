@@ -2,10 +2,9 @@ import type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from
 import { dateEx } from '@epdoc/datetime';
 import { duration } from '@epdoc/duration';
 import type * as Level from '@epdoc/loglevels';
-import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { _ } from '@epdoc/type';
 import { isTimestampFormat } from '../../consts.ts';
-import type { LogMgr } from '../../logmgr.ts';
+import type { ILogMgrTransportContext } from '../types.ts';
 import type { BaseOptions } from './types.ts';
 
 /**
@@ -25,7 +24,7 @@ import type { BaseOptions } from './types.ts';
 export abstract class AbstractTransport {
   /** A string identifier for the transport type (e.g., 'console', 'file'). */
   public readonly type: string = 'basic';
-  protected _logMgr: LogMgr<MsgBuilder.Abstract>;
+  protected _logMgr: ILogMgrTransportContext;
   protected _bReady = false;
   protected _opts: BaseOptions;
   protected _level: Level.Value;
@@ -36,11 +35,11 @@ export abstract class AbstractTransport {
   /**
    * Initializes a new transport instance.
    *
-   * @param {LogMgr<MsgBuilder.Abstract>} logMgr - The central log manager.
+   * @param {ILogMgrTransportContext} logMgr - The central log manager context.
    * @param {BaseOptions} [opts={}] - Configuration options for the transport.
    * @param opts.show - Overrides default visibility settings for log metadata
    */
-  constructor(logMgr: LogMgr<MsgBuilder.Abstract>, opts: BaseOptions = {}) {
+  constructor(logMgr: ILogMgrTransportContext, opts: BaseOptions = {}) {
     this._logMgr = logMgr;
     this._opts = opts;
     this._level = logMgr.logLevels.asValue('info');

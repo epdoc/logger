@@ -1,12 +1,12 @@
 import type { Entry } from '$log';
+import { DateEx } from '@epdoc/datetime';
 import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { StringEx } from '@epdoc/string';
 import { _, type Integer } from '@epdoc/type';
-import type { LogMgr } from '../../logmgr.ts';
 import * as Base from '../base/mod.ts';
 import { OutputFormat } from '../consts.ts';
-import type { OutputFormatType, TransportEntry } from '../types.ts';
+import type { ILogMgrTransportContext, OutputFormatType, TransportEntry } from '../types.ts';
 import { consoleStyleFormatters } from './consts.ts';
 import type * as Console from './types.ts';
 
@@ -30,14 +30,14 @@ export class ConsoleTransport extends Base.Transport {
 
   /**
    * Creates an instance of the `Console` transport.
-   * @param {LogMgr<MsgBuilder.Abstract>} logMgr - The log manager instance.
+   * @param {ILogMgrTransportContext} logMgr - The log manager context.
    * @param {Options} [opts={}] - Configuration options for the transport.
    * @param opts.format - Output format ('text', 'json', or 'json-array')
    * @param opts.color - Whether to use colors in output (defaults to true)
    * @param opts.threshold - Minimum log level for this transport
    * @param opts.flushThreshold - Log level that triggers immediate flush
    */
-  constructor(logMgr: LogMgr<MsgBuilder.Abstract>, opts: Console.Options = {}) {
+  constructor(logMgr: ILogMgrTransportContext, opts: Console.Options = {}) {
     super(logMgr, opts);
     if (opts.format) {
       this._format = opts.format;
@@ -85,7 +85,7 @@ export class ConsoleTransport extends Base.Transport {
       return;
     }
     const show = this._show;
-    const logLevels = this._logMgr.logLevels;
+    const _logLevels = this._logMgr.logLevels;
     const color = (this._color === true && this._show.color !== false) ? true : false;
 
     const entry: TransportEntry = Object.assign(
@@ -110,64 +110,151 @@ export class ConsoleTransport extends Base.Transport {
       this.output(JSON.stringify(entry), levelValue);
     } else if (this._format === 'jsonArray') {
       // Output as JSON Array
-      const parts: (string | null | object | number)[] = [];
-      if (entry.timestamp) {
-        parts.push(color ? logLevels.applyColors(entry.timestamp, msg.level) : entry.timestamp);
-      } else {
-        parts.push(null);
-      }
-      parts.push(entry.level ? this.styledLevel(entry.level, show.level) : null);
-      parts.push(entry.pkg ?? null);
-      parts.push(entry.sid ?? null);
-      parts.push(entry.reqId ?? null);
-      parts.push(entry.msg ?? null);
-      parts.push(entry.time ?? null);
-      parts.push(entry.data ?? null);
-      this.output(JSON.stringify(parts), levelValue);
+      const text = this.formatJsonArrayEntry(entry, msg);
+      this.output(text, levelValue);
+    } else if (this._format === 'otlp') {
+      // Output as OpenTelemetry Protocol JSON (for Deno OTEL auto-export)
+      const otlpEntry = this.formatOtlpEntry(entry, msg);
+      this.output(JSON.stringify(otlpEntry), levelValue);
     } else {
-      // Output as string (eg. console, file transports)
-      const parts: string[] = [];
-      if (_.isString(entry.timestamp) && show.timestamp) {
-        parts.push(color ? logLevels.applyColors(entry.timestamp, msg.level) : entry.timestamp);
-      }
-
-      if (show.level && entry.level) {
-        parts.push(this.styledLevel(entry.level, show.level));
-      }
-
-      if (show.pkg && _.isNonEmptyString(entry.pkg)) {
-        parts.push(this._styledString(entry.pkg, false, '_package'));
-      }
-
-      if (show.sid && _.isNonEmptyString(entry.sid)) {
-        parts.push(this._styledString(entry.sid, false, '_sid'));
-      }
-
-      if (show.reqId && _.isNonEmptyString(entry.reqId)) {
-        parts.push(this._styledString(entry.reqId, false, '_reqId'));
-      }
-
-      if (entry.msg) {
-        parts.push(entry.msg);
-      }
-      if (show.time && _.isNumber(entry.time) && entry.time) {
-        // Format duration with appropriate precision
-        let digits = 3;
-        if (entry.time > 100) {
-          digits = 0;
-        } else if (entry.time > 10) {
-          digits = 1;
-        } else if (entry.time > 1) {
-          digits = 2;
-        }
-        parts.push(this._styledString(`(${entry.time.toFixed(digits)} ms)`, false, '_elapsed'));
-      }
-
-      if (!_.isNullOrUndefined(msg.data) && show.data) {
-        parts.push(JSON.stringify(msg.data));
-      }
-      this.output(parts.join(' '), levelValue);
+      const text = this.formatTextEntry(entry, msg);
+      this.output(text, levelValue);
     }
+  }
+
+  formatTextEntry(entry: TransportEntry, msg: Entry): string {
+    const parts: string[] = [];
+    if (_.isString(entry.timestamp) && this._show.timestamp) {
+      parts.push(entry.timestamp);
+    }
+
+    if (this._show.level && entry.level) {
+      parts.push(this.styledLevel(entry.level, this._show.level));
+    }
+
+    if (this._show.pkg && _.isNonEmptyString(entry.pkg)) {
+      parts.push(this._styledString(entry.pkg, false, '_package'));
+    }
+
+    if (this._show.sid && _.isNonEmptyString(entry.sid)) {
+      parts.push(this._styledString(entry.sid, false, '_sid'));
+    }
+
+    if (this._show.reqId && _.isNonEmptyString(entry.reqId)) {
+      parts.push(this._styledString(entry.reqId, false, '_reqId'));
+    }
+
+    if (entry.msg) {
+      parts.push(entry.msg);
+    }
+    if (this._show.time && _.isNumber(entry.time) && entry.time) {
+      // Format duration with appropriate precision
+      let digits = 3;
+      if (entry.time > 100) {
+        digits = 0;
+      } else if (entry.time > 10) {
+        digits = 1;
+      } else if (entry.time > 1) {
+        digits = 2;
+      }
+      parts.push(this._styledString(`(${entry.time.toFixed(digits)} ms)`, false, '_elapsed'));
+    }
+
+    if (!_.isNullOrUndefined(msg.data) && this._show.data) {
+      parts.push(JSON.stringify(msg.data));
+    }
+    return parts.join(' ');
+  }
+
+  formatJsonArrayEntry(entry: TransportEntry, msg: Entry): string {
+    const logLevels = this._logMgr.logLevels;
+    const color = (this._color === true && this._show.color !== false) ? true : false;
+    const parts: (string | null | object | number)[] = [];
+    if (_.isString(entry.timestamp) && this._show.timestamp) {
+      parts.push(color ? logLevels.applyColors(entry.timestamp, msg.level) : entry.timestamp);
+    } else {
+      parts.push(null);
+    }
+    parts.push(entry.level ? this.styledLevel(entry.level, this._show.level) : null);
+    parts.push(entry.pkg ?? null);
+    parts.push(entry.sid ?? null);
+    parts.push(entry.reqId ?? null);
+    parts.push(entry.msg ?? null);
+    parts.push(entry.time ?? null);
+    parts.push(entry.data ?? null);
+    return JSON.stringify(parts);
+  }
+
+  /**
+   * Formats a log entry as OpenTelemetry Protocol JSON.
+   * This format is automatically exported as OTLP by Deno when OTEL_DENO=true.
+   *
+   * @param entry - The transport entry to format
+   * @param msg - The original log entry
+   * @returns OTLP-compatible log record
+   */
+  formatOtlpEntry(entry: TransportEntry, msg: Entry): Record<string, unknown> {
+    const attributes: Record<string, unknown> = {};
+
+    // Use proper OTEL semantic conventions where they exist
+    if (entry.pkg) {
+      // Use service.namespace for service/package identification
+      attributes['service.namespace'] = entry.pkg;
+    }
+
+    // Custom attributes with epdoc namespace
+    if (entry.reqId) attributes['epdoc.request_id'] = entry.reqId;
+    if (entry.sid) attributes['epdoc.session_id'] = entry.sid;
+    if (entry.time) attributes['epdoc.operation_duration_ms'] = entry.time;
+
+    // Include structured data with app-specific prefix
+    if (entry.data && _.isObject(entry.data)) {
+      Object.assign(attributes, this.flattenOtlpData(entry.data, 'app'));
+    }
+
+    return {
+      timestamp: new DateEx(entry.timestamp).toISOLocalString(),
+      level: entry.level?.toUpperCase() || 'INFO',
+      message: msg || '',
+      attributes: Object.keys(attributes).length > 0 ? attributes : undefined,
+    };
+  }
+
+  /**
+   * Flattens nested data objects for OTLP attributes.
+   * @private
+   */
+  private flattenOtlpData(data: unknown, prefix = 'data'): Record<string, unknown> {
+    const result: Record<string, unknown> = {};
+
+    if (_.isObject(data) && !_.isArray(data)) {
+      for (const [key, value] of Object.entries(data)) {
+        const attrKey = `${prefix}.${key}`;
+        if (ConsoleTransport.#isPrimitive(value)) {
+          result[attrKey] = value;
+        } else if (_.isArray(value)) {
+          result[attrKey] = JSON.stringify(value);
+        } else {
+          Object.assign(result, this.flattenOtlpData(value, attrKey));
+        }
+      }
+    } else {
+      result[prefix] = ConsoleTransport.#isPrimitive(data) ? data : JSON.stringify(data);
+    }
+
+    return result;
+  }
+
+  /**
+   * Checks if a value is a primitive type suitable for OTLP attributes.
+   * @private
+   */
+  static #isPrimitive(value: unknown): value is string | number | boolean | null | undefined {
+    return value === null ||
+      value === undefined ||
+      typeof value === 'string' ||
+      typeof value === 'number' ||
+      typeof value === 'boolean';
   }
 
   /**

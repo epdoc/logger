@@ -1,16 +1,9 @@
-/**
- * @file Buffer transport for in-memory log capture
- *
- * This transport is primarily designed for testing scenarios where you need
- * to capture and inspect log output programmatically.
- */
-
 import type { Entry } from '$log';
 import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { _ } from '@epdoc/type';
-import type { LogMgr } from '../../logmgr.ts';
 import * as Base from '../base/mod.ts';
+import type { ILogMgrTransportContext } from '../types.ts';
 import type { IBufferEntry, IBufferTransportOptions } from './types.ts';
 
 /**
@@ -34,7 +27,7 @@ export class BufferTransport extends Base.Transport {
   private entries: IBufferEntry[] = [];
   private maxEntries: number;
 
-  constructor(logMgr: LogMgr<MsgBuilder.Abstract>, opts: IBufferTransportOptions = {}) {
+  constructor(logMgr: ILogMgrTransportContext, opts: IBufferTransportOptions = {}) {
     super(logMgr, opts);
     this.maxEntries = opts.maxEntries ?? 1000;
     this._bReady = true;

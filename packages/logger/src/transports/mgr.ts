@@ -1,17 +1,17 @@
 import type * as Log from '$log';
 import type * as Level from '@epdoc/loglevels';
-import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { assert } from '@std/assert';
-import type { LogMgr } from '../logmgr.ts';
 import type { AbstractTransport } from './base/transport.ts';
 import { ConsoleTransport } from './console/transport.ts';
+import type { ILogMgrTransportContext } from './types.ts';
+
 /**
  * Manages a collection of log transports, handling the distribution of log
  * entries to each registered transport.
  */
 export class TransportMgr {
   protected _bRunning = false;
-  protected _logMgr: LogMgr<MsgBuilder.Abstract>;
+  protected _logMgr: ILogMgrTransportContext;
   /**
    * An array of registered transport instances.
    */
@@ -19,9 +19,9 @@ export class TransportMgr {
 
   /**
    * Creates an instance of the `TransportMgr`.
-   * @param {LogMgr<MsgBuilder.Abstract>} logMgr - The log manager instance.
+   * @param {ILogMgrTransportContext} logMgr - The log manager context.
    */
-  constructor(logMgr: LogMgr<MsgBuilder.Abstract>) {
+  constructor(logMgr: ILogMgrTransportContext) {
     this._logMgr = logMgr;
   }
 
@@ -106,7 +106,7 @@ export class TransportMgr {
   /**
    * Adds a new transport to the manager.
    *
-   * @param {AbstractTransport} transport - The transport instance to add.
+   * @param {AbstractTransport<M>} transport - The transport instance to add.
    */
   add(transport: AbstractTransport) {
     this._bRunning = false;
@@ -117,7 +117,7 @@ export class TransportMgr {
   /**
    * Removes a transport from the manager.
    *
-   * @param {AbstractTransport} transport - The transport instance to remove.
+   * @param {AbstractTransport<M>} transport - The transport instance to remove.
    * @returns {Promise<void>} A promise that resolves when the transport is removed.
    */
   async remove(transport: AbstractTransport): Promise<void> {

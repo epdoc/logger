@@ -1,12 +1,11 @@
 import * as Log from '@epdoc/logger';
-import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { Console } from '@epdoc/msgbuilder';
 import { assertEquals, assertStringIncludes, assertThrows } from '@std/assert';
 import { BufferTransport } from '../../src/transports/buffer/transport.ts';
 
 Deno.test('BufferTransport - basic functionality', () => {
   const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
-  const bufferTransport = new BufferTransport(logMgr as unknown as Log.Mgr<MsgBuilder.Abstract>);
+  const bufferTransport = new BufferTransport(logMgr);
   logMgr.addTransport(bufferTransport);
 
   const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
@@ -24,7 +23,7 @@ Deno.test('BufferTransport - basic functionality', () => {
 
 Deno.test('BufferTransport - maxEntries limit', () => {
   const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
-  const bufferTransport = new BufferTransport(logMgr as unknown as Log.Mgr<MsgBuilder.Abstract>, { maxEntries: 3 });
+  const bufferTransport = new BufferTransport(logMgr, { maxEntries: 3 });
   logMgr.addTransport(bufferTransport);
 
   const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
@@ -44,7 +43,7 @@ Deno.test('BufferTransport - maxEntries limit', () => {
 
 Deno.test('BufferTransport - utility methods', () => {
   const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
-  const bufferTransport = new BufferTransport(logMgr as unknown as Log.Mgr<MsgBuilder.Abstract>);
+  const bufferTransport = new BufferTransport(logMgr);
   logMgr.addTransport(bufferTransport);
 
   const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
@@ -67,7 +66,7 @@ Deno.test('BufferTransport - utility methods', () => {
 
 Deno.test('BufferTransport - assertion methods', () => {
   const logMgr = Log.createLogManager<Console.Builder>(Console.Builder, { threshold: 'info' });
-  const bufferTransport = new BufferTransport(logMgr as unknown as Log.Mgr<MsgBuilder.Abstract>);
+  const bufferTransport = new BufferTransport(logMgr);
   logMgr.addTransport(bufferTransport);
 
   const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
@@ -103,7 +102,7 @@ Deno.test('BufferTransport - assertion methods', () => {
 
 Deno.test('BufferTransport - clear functionality', () => {
   const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
-  const bufferTransport = new BufferTransport(logMgr as unknown as Log.Mgr<MsgBuilder.Abstract>);
+  const bufferTransport = new BufferTransport(logMgr);
   logMgr.addTransport(bufferTransport);
 
   const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;

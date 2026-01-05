@@ -1,5 +1,18 @@
 import type { HrMilliseconds } from '@epdoc/duration';
+import type * as Level from '@epdoc/loglevels';
+import type { EmitterShowOpts } from '../types.ts';
 import type { OutputFormat } from './consts.ts';
+
+/**
+ * Interface defining the context from LogMgr that transports need access to.
+ * This allows transports to be decoupled from the generic LogMgr<M>.
+ */
+export interface ILogMgrTransportContext {
+  readonly logLevels: Level.IBasic;
+  readonly threshold: Level.Value;
+  readonly show: EmitterShowOpts;
+  readonly startTime: Date;
+}
 
 /**
  * A type representing the allowed values for transport output formatting.
