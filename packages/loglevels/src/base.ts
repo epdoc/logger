@@ -1,5 +1,5 @@
 import type { Integer } from '@epdoc/type';
-import { isLogLevelDef } from './guards.ts';
+import { isLogLevelSpec, isLogLevelsSet } from './guards.ts';
 import type * as Level from './types.ts';
 
 /**
@@ -19,7 +19,7 @@ import type * as Level from './types.ts';
  */
 export class LogLevels implements Level.IBasic {
   $$id: string;
-  protected _levelDef: Level.LogLevelsDef;
+  protected _levelDef: Level.LogLevelMap;
   protected _increasing = false;
   protected _levelValues: Level.Value[];
   readonly defaultLevelName: Level.Name;
@@ -28,11 +28,14 @@ export class LogLevels implements Level.IBasic {
   /**
    * Creates an instance of `LogLevels`.
    *
-   * @param {Level.LogLevelsDef} levelDef - An object defining the custom log levels.
+   * @param {Level.LogLevelMap} levelDef - An object defining the custom log levels.
    */
-  constructor(levelDef: Level.LogLevelsDef, id: string = 'LogLevels') {
-    const _levelDef: Level.LogLevelsDef = levelDef as Level.LogLevelsDef;
-    this.$$id = id;
+  constructor(levelDef: Level.LogLevelsSet, requireSeverityNumber = false) {
+    if (!isLogLevelsSet(levelDef, requireSeverityNumber)) {
+      throw new Error('Invalid LogLevelsSet definition');
+    }
+    const _levelDef = levelDef.levels;
+    this.$$id = levelDef.id;
 
     // Convert all keys to uppercase for case-insensitive lookups.
     this._levelDef = Object.fromEntries(
@@ -64,7 +67,7 @@ export class LogLevels implements Level.IBasic {
    */
   #findLevel(what: 'default' | 'lowest' | 'warn' | 'flush'): Level.Name | undefined {
     const level = Object.keys(this._levelDef).find(
-      (key) => (this._levelDef[key] as Level.LogLevelDef)[what] === true,
+      (key) => (this._levelDef[key] as Level.LogLevelSpec)[what] === true,
     );
     return level;
   }
@@ -79,7 +82,7 @@ export class LogLevels implements Level.IBasic {
   /**
    * @inheritdoc
    */
-  get levelDefs(): Level.LogLevelsDef {
+  get levelDefs(): Level.LogLevelMap {
     return this._levelDef;
   }
 
@@ -87,7 +90,7 @@ export class LogLevels implements Level.IBasic {
    * @inheritdoc
    */
   asValue(level: Level.Name | Level.Value): Level.Value {
-    if (typeof level === 'string' && isLogLevelDef(this._levelDef[level.toUpperCase()])) {
+    if (typeof level === 'string' && isLogLevelSpec(this._levelDef[level.toUpperCase()])) {
       return this._levelDef[level.toUpperCase()].val as Level.Value;
     }
     if (typeof level === 'number' && this._levelValues.includes(level)) {
@@ -104,7 +107,7 @@ export class LogLevels implements Level.IBasic {
       return level.toUpperCase() as Level.Name;
     }
     const result: Level.Name = Object.keys(this._levelDef).find((key) => {
-      return isLogLevelDef(this._levelDef[key]) && this._levelDef[key].val === level;
+      return isLogLevelSpec(this._levelDef[key]) && this._levelDef[key].val === level;
     }) as Level.Name;
     if (result) {
       return result;
@@ -134,7 +137,7 @@ export class LogLevels implements Level.IBasic {
    */
   meetsFlushThreshold(level: Level.Value | Level.Name): boolean {
     const levelName = this.asName(level);
-    return isLogLevelDef(this._levelDef[levelName]) && this._levelDef[levelName].flush === true;
+    return isLogLevelSpec(this._levelDef[levelName]) && this._levelDef[levelName].flush === true;
   }
 
   /**
@@ -159,7 +162,7 @@ export class LogLevels implements Level.IBasic {
    * @inheritdoc
    */
   applyColors(msg: string, level: Level.Name): string {
-    if (isLogLevelDef(this._levelDef[level])) {
+    if (isLogLevelSpec(this._levelDef[level])) {
       const colorFn = this._levelDef[level].fmtFn;
       if (colorFn) {
         return colorFn(msg);

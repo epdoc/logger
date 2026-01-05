@@ -1,5 +1,5 @@
 import type { Integer } from '@epdoc/type';
-import type { LogLevelsDef, Name, Value } from './types.ts';
+import type { LogLevelMap, Name, Value } from './types.ts';
 
 /**
  * Defines the core contract for a log level management system.
@@ -38,7 +38,7 @@ export interface IBasic {
   /**
    * The raw definition object that configures all log levels.
    */
-  readonly levelDefs: LogLevelsDef;
+  readonly levelDefs: LogLevelMap;
 
   /**
    * Converts a log level name or numeric value to its corresponding numeric value.

@@ -33,10 +33,8 @@ export type Value = Integer;
 /**
  * Defines the complete configuration for a single log level.
  */
-export type LogLevelDef = {
-  /**
-   * The numeric value of the log level. This determines its priority.
-   */
+export type LogLevelSpec = {
+  /** The numeric value of the log level. This determines its priority. */
   val: Value;
   /**
    * An optional function to apply custom styling or formatting to messages
@@ -79,10 +77,14 @@ export type LogLevelDef = {
  * Defines a complete set of log levels for a logger instance.
  *
  * @remarks
- * The keys are the log level {@link Name|names} (e.g., 'ERROR'), and the values
- * are their corresponding {@link LogLevelDef|definitions}.
+ * The keys in levels are the log level {@link Name|names} (e.g., 'ERROR'), and the values are their
+ * corresponding {@link LogLevelSpec|definitions}.
  */
-export type LogLevelsDef = Record<Name, LogLevelDef>;
+export type LogLevelsSet = {
+  id: string;
+  levels: LogLevelMap;
+};
+export type LogLevelMap = Record<Name, LogLevelSpec>;
 
 /**
  * Defines the signature for a factory function that creates a log level
