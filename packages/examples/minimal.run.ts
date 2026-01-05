@@ -7,8 +7,21 @@ import pkg from '../cliapp/deno.json' with { type: 'json' };
 type MsgBuilder = Console.Builder;
 type Logger = Log.Std.Logger<MsgBuilder>;
 
-// 2. Bundle context types together
-type AppBundle = CliApp.Cmd.ContextBundle<AppContext, MsgBuilder, Logger>;
+// 2. Create your context
+class AppContext extends CliApp.Ctx.Base<Logger> {
+  constructor() {
+    super(pkg);
+    this.setupLogging(); // Must call in constructor
+  }
+
+  setupLogging() {
+    this.logMgr = new Log.Mgr<Console.Builder>();
+    this.logMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
+    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.threshold = 'info';
+    this.log = this.logMgr.getLogger<Logger>();
+  }
+}
 
 // 3. Define options interface
 interface AppOptions {
@@ -16,23 +29,8 @@ interface AppOptions {
   output?: string;
 }
 
-// 4. Create your context
-class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
-  constructor() {
-    super(pkg);
-    this.setupLogging(); // Must call in constructor
-  }
-
-  setupLogging() {
-    // For standard Console.Builder, you can use either:
-    this.logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
-    // or: this.logMgr = Log.createLogManager(undefined, { threshold: 'info' });
-    this.log = this.logMgr.getLogger<Logger>();
-  }
-}
-
-// 5. Define your root command
-class AppRootCmd extends CliApp.Cmd.Root<AppBundle, AppOptions> {
+// 4. Define your root command
+class AppRootCmd extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<AppContext>, AppOptions> {
   constructor(ctx: AppContext) {
     super(ctx, ctx.pkg);
   }
@@ -59,7 +57,7 @@ class AppRootCmd extends CliApp.Cmd.Root<AppBundle, AppOptions> {
   }
 }
 
-// 6. Run it
+// 5. Run it
 if (import.meta.main) {
   const ctx = new AppContext();
   const rootCmd = new AppRootCmd(ctx);

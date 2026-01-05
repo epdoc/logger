@@ -18,36 +18,29 @@ import { Console } from '@epdoc/msgbuilder';
 import pkg from '../cliapp/deno.json' with { type: 'json' };
 
 // 1. Define custom msgbuilder with project-specific methods
-const AppBuilder = Console.extender({
+class AppBuilder extends Console.Builder {
+  constructor(emitter: Log.IEmitter) {
+    super(emitter as any);
+  }
+
   fileOp(operation: string, path: string) {
     return this.text('📁 ').text(operation).text(' ').path(path);
-  },
+  }
 
   status(type: 'success' | 'error' | 'info') {
     const icons = { success: '✅', error: '❌', info: 'ℹ️' };
     return this.text(icons[type]).text(' ');
-  },
-});
+  }
+}
 
 // 2. Define types once per project
-// If NOT extending Console.Builder, use:
-//   type MsgBuilder = Console.Builder;
-//   type Logger = Log.Std.Logger<MsgBuilder>;
-// And in setupLogging(), use: Log.createLogManager(Console.Builder, { threshold: 'info' });
-type MsgBuilder = InstanceType<typeof AppBuilder>;
-type Logger = Log.Std.Logger<MsgBuilder>;
-
-// 3. Bundle context types together to reduce generic verbosity
-type AppBundle = {
-  Context: AppContext;
-  MsgBuilder: MsgBuilder;
-  Logger: Logger;
-};
+type Logger = Log.Std.Logger<AppBuilder>;
 
 // 3. Extend BaseContext with your specific types
-class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
+class AppContext extends CliApp.Ctx.Base<Logger> {
   // Add project-specific properties
   processedFiles = 0;
+  override dryRun = false;
 
   constructor() {
     super(pkg);
@@ -55,7 +48,10 @@ class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
   }
 
   setupLogging() {
-    this.logMgr = Log.createLogManager(AppBuilder, { threshold: 'info' });
+    this.logMgr = new Log.Mgr<AppBuilder>();
+    this.logMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter as any);
+    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.threshold = 'info';
     this.log = this.logMgr.getLogger<Logger>();
   }
 
@@ -88,8 +84,7 @@ interface RootOptions {
 }
 
 // 5. Define commands using structured command classes
-// Much cleaner with bundled context type!
-class ProcessCmd extends CliApp.Cmd.Sub<AppBundle, ProcessOptions> {
+class ProcessCmd extends CliApp.Cmd.Sub<CliApp.Cmd.ContextBundle<AppContext>, ProcessOptions> {
   constructor(ctx: AppContext) {
     super(ctx, 'process', 'Process files in a directory');
   }
@@ -139,7 +134,7 @@ class ProcessCmd extends CliApp.Cmd.Sub<AppBundle, ProcessOptions> {
   }
 }
 
-class CleanCmd extends CliApp.Cmd.Sub<AppBundle, CleanOptions> {
+class CleanCmd extends CliApp.Cmd.Sub<CliApp.Cmd.ContextBundle<AppContext>, CleanOptions> {
   constructor(ctx: AppContext) {
     super(ctx, 'clean', 'Clean temporary files');
   }
@@ -183,7 +178,7 @@ class CleanCmd extends CliApp.Cmd.Sub<AppBundle, CleanOptions> {
 }
 
 // 6. Create root command with subcommands
-class FileProcessorRoot extends CliApp.Cmd.Root<AppBundle, RootOptions> {
+class FileProcessorRoot extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<AppContext>, RootOptions> {
   constructor(ctx: AppContext) {
     super(ctx, pkg);
   }

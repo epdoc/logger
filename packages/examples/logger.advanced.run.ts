@@ -9,10 +9,13 @@ import { Console } from '@epdoc/msgbuilder';
 // Example 1: Performance tracking with marks
 console.log('=== Example 1: Performance Tracking ===');
 
-const perfLogMgr = Log.createLogManager(undefined, {
-  threshold: 'info',
-  showTimestamp: 'elapsed',
-});
+const perfLogMgr = new Log.Mgr<Console.Builder>();
+perfLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
+perfLogMgr.init(Log.Std.factoryMethods);
+perfLogMgr.threshold = 'info';
+perfLogMgr.show = {
+  timestamp: 'elapsed',
+};
 const perfLogger = perfLogMgr.getLogger() as Log.Std.Logger<Console.Builder>;
 
 const mark = perfLogger.mark();
@@ -37,22 +40,29 @@ structuredLogger.info.h1('User Registration')
 // Example 3: Request tracking
 console.log('\n=== Example 3: Request Tracking ===');
 
-const RequestBuilder = Console.extender({
+class RequestBuilder extends Console.Builder {
+  constructor(emitter: Log.IEmitter) {
+    super(emitter as any);
+  }
+
   request(method: string, path: string, status: number) {
     const statusText = status < 400 ? '✓' : status < 500 ? '⚠' : '✗';
     return this.text('[REQ] ').text(method).text(' ').text(path)
       .text(' → ').text(status.toString()).text(' ').text(statusText);
-  },
+  }
 
   database(query: string, duration: number) {
     return this.text('[DB] ').text(query).text(' ')
       .text(`(${duration}ms)`);
-  },
-});
+  }
+}
 
-type Logger = Log.Std.Logger<InstanceType<typeof RequestBuilder>>;
+type Logger = Log.Std.Logger<RequestBuilder>;
 
-const requestLogMgr = Log.createLogManager(RequestBuilder, { threshold: 'info' });
+const requestLogMgr = new Log.Mgr<RequestBuilder>();
+requestLogMgr.msgBuilderFactory = (emitter) => new RequestBuilder(emitter as any);
+requestLogMgr.init(Log.Std.factoryMethods);
+requestLogMgr.threshold = 'info';
 const requestLogger = requestLogMgr.getLogger<Logger>();
 
 // Simulate request logging
@@ -63,10 +73,13 @@ requestLogger.warn.request('POST', '/api/login', 401).emit();
 // Example 4: Different threshold levels in action
 console.log('\n=== Example 4: Threshold Levels ===');
 
-const thresholdLogMgr = Log.createLogManager(undefined, {
-  threshold: 'warn',
-  showLevel: true,
-});
+const thresholdLogMgr = new Log.Mgr<Console.Builder>();
+thresholdLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
+thresholdLogMgr.init(Log.Std.factoryMethods);
+thresholdLogMgr.threshold = 'warn';
+thresholdLogMgr.show = {
+  level: true,
+};
 const thresholdLogger = thresholdLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 
 thresholdLogger.debug.text('Debug message (hidden)').emit();
@@ -77,10 +90,13 @@ thresholdLogger.error.text('Error message (visible)').emit();
 // Example 5: Package and request ID tracking
 console.log('\n=== Example 5: Context Tracking ===');
 
-const contextLogMgr = Log.createLogManager(undefined, {
-  threshold: 'info',
-  showLevel: true,
-});
+const contextLogMgr = new Log.Mgr<Console.Builder>();
+contextLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
+contextLogMgr.init(Log.Std.factoryMethods);
+contextLogMgr.threshold = 'info';
+contextLogMgr.show = {
+  level: true,
+};
 
 const contextLogger = contextLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 contextLogger.reqId = 'req-67890';

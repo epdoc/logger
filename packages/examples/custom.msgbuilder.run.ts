@@ -4,32 +4,32 @@ import { Console } from '@epdoc/msgbuilder';
 import pkg from '../cliapp/deno.json' with { type: 'json' };
 
 // Define project-specific logging methods
-const AppBuilder = Console.extender({
+class AppBuilder extends Console.Builder {
+  constructor(emitter: Log.IEmitter) {
+    super(emitter as any);
+  }
+
   fileOp(operation: string, path: string) {
     return this.text('📁 ').text(operation).text(' ').path(path);
-  },
+  }
 
   apiCall(method: string, endpoint: string) {
     return this.text('🌐 ').text(method).text(' ').url(endpoint);
-  },
+  }
 
   progress(current: number, total: number) {
     const percent = Math.round((current / total) * 100);
     return this.text(`⏳ Progress: ${current}/${total} (${percent}%)`);
-  },
-});
+  }
+}
 
-type MsgBuilder = InstanceType<typeof AppBuilder>;
-type Logger = Log.Std.Logger<MsgBuilder>;
-
-// Bundle context types together
-type AppBundle = CliApp.Cmd.ContextBundle<AppContext, MsgBuilder, Logger>;
+type Logger = Log.Std.Logger<AppBuilder>;
 
 interface ProcessOptions {
   verbose?: boolean;
 }
 
-class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
+class AppContext extends CliApp.Ctx.Base<Logger> {
   // Add application state
   processedFiles = 0;
 
@@ -39,7 +39,10 @@ class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
   }
 
   setupLogging() {
-    this.logMgr = Log.createLogManager(AppBuilder, { threshold: 'info' });
+    this.logMgr = new Log.Mgr<AppBuilder>();
+    this.logMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter as any);
+    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.threshold = 'info';
     this.log = this.logMgr.getLogger<Logger>();
   }
 
@@ -51,7 +54,7 @@ class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
 }
 
 // Use the bundled type for commands
-class ProcessCmd extends CliApp.Cmd.Sub<AppBundle, ProcessOptions> {
+class ProcessCmd extends CliApp.Cmd.Sub<CliApp.Cmd.ContextBundle<AppContext>, ProcessOptions> {
   constructor(ctx: AppContext) {
     super(ctx, 'process', 'Process files');
   }
@@ -73,7 +76,7 @@ class ProcessCmd extends CliApp.Cmd.Sub<AppBundle, ProcessOptions> {
   }
 }
 
-class AppRootCmd extends CliApp.Cmd.Root<AppBundle, { verbose?: boolean }> {
+class AppRootCmd extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<AppContext>, { verbose?: boolean }> {
   constructor(ctx: AppContext) {
     super(ctx, ctx.pkg);
   }

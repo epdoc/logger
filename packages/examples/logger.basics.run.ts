@@ -9,7 +9,9 @@ import { Console } from '@epdoc/msgbuilder';
 // Example 1: Simple logger setup
 console.log('=== Example 1: Basic Logger Setup ===');
 
-const basicLogMgr = new Log.Mgr<Console.Builder>().init();
+const basicLogMgr = new Log.Mgr<Console.Builder>();
+basicLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
+basicLogMgr.init(Log.Std.factoryMethods);
 basicLogMgr.threshold = 'info';
 const basicLogger = basicLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 
@@ -20,8 +22,9 @@ basicLogger.debug.text("This debug message won't show (threshold is info)").emit
 // Example 2: Setting show options
 console.log('\n=== Example 2: Logger and setting show options ===');
 
-const helperLogMgr = new Log.Mgr<Console.Builder>().init();
-// logMgr.msgBuilderFactory = (emitter: IEmitter) => new Console(emitter);
+const helperLogMgr = new Log.Mgr<Console.Builder>();
+helperLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
+helperLogMgr.init(Log.Std.factoryMethods);
 helperLogMgr.threshold = 'debug';
 helperLogMgr.show = {
   level: true,
@@ -35,19 +38,25 @@ helperLogger.debug.text('Debug messages now visible').emit();
 // Example 3: Custom message builder
 console.log('\n=== Example 3: Custom Message Builder ===');
 
-const CustomBuilder = Console.extender({
+class CustomBuilder extends Console.Builder {
+  constructor(emitter: Log.IEmitter) {
+    super(emitter as any);
+  }
+
   apiCall(method: string, endpoint: string) {
     return this.text('[API] ').text(method).text(' ').text(endpoint);
-  },
+  }
 
   metric(name: string, value: number, unit = '') {
     return this.text('📊 ').text(name).text(': ').text(value.toString()).text(unit);
-  },
-});
+  }
+}
 
-type CustomLogger = Log.Std.Logger<InstanceType<typeof CustomBuilder>>;
+type CustomLogger = Log.Std.Logger<CustomBuilder>;
 
-const customLogMgr = new Log.Mgr<Log.Std.Logger<CustomBuilder>>().init();
+const customLogMgr = new Log.Mgr<CustomBuilder>();
+customLogMgr.msgBuilderFactory = (emitter) => new CustomBuilder(emitter as any);
+customLogMgr.init(Log.Std.factoryMethods);
 customLogMgr.threshold = 'info';
 const customLogger = customLogMgr.getLogger<CustomLogger>();
 
@@ -62,7 +71,9 @@ const stdLogger = basicLogMgr.getLogger() as Log.Std.Logger<Console.Builder>;
 stdLogger.info.text('Standard logger - full featured').emit();
 
 // CLI logger (simplified for command-line tools)
-const cliLogMgr = new Log.Mgr<Log.Cli.Logger<Console.Builder>>().init();
+const cliLogMgr = new Log.Mgr<Console.Builder>();
+cliLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any); // Assuming Console.Builder is used for CliLogger
+cliLogMgr.init(Log.Cli.factoryMethods); // Use Cli factory methods
 cliLogMgr.threshold = 'info';
 const cliLogger = cliLogMgr.getLogger() as Log.Cli.Logger<Console.Builder>;
 cliLogger.info.text('CLI logger - streamlined for CLI apps').emit();
@@ -70,7 +81,9 @@ cliLogger.info.text('CLI logger - streamlined for CLI apps').emit();
 // Example 5: Logger configuration
 console.log('\n=== Example 5: Logger Configuration ===');
 
-const configuredLogMgr = new Log.Mgr<Log.Std.Logger<Console.Builder>>().init();
+const configuredLogMgr = new Log.Mgr<Console.Builder>();
+configuredLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
+configuredLogMgr.init(Log.Std.factoryMethods);
 configuredLogMgr.threshold = 'debug';
 configuredLogMgr.show = {
   level: true,
@@ -87,7 +100,6 @@ configuredLogger.info.h1('Configured Logger')
 configuredLogger.debug.text('Debug message is now visible').emit();
 
 console.log('\n=== Summary ===');
-console.log('✨ Use Log.createLogManager() for simple setup');
 console.log('🎯 Extend Console.Builder for custom logging methods');
 console.log('📊 Choose between Std.Logger (full) and Cli.Logger (streamlined)');
 console.log('⚙️ Configure threshold, timestamps, and display options');
