@@ -119,12 +119,18 @@ describe('levels with severityNumber (current behavior)', () => {
     // Test that `asValue` and `asName` operate on `val`, not `severityNumber`
     assertEquals(logLevels.asValue('emergency'), 0);
     assertEquals(logLevels.asName(0), 'EMERGENCY');
+    assertEquals(logLevels.asSeverityNumber('emergency'), 1);
+    assertEquals(logLevels.asSeverityNumber(0), 1);
 
     assertEquals(logLevels.asValue('info'), 6);
     assertEquals(logLevels.asName(6), 'INFO');
+    assertEquals(logLevels.asSeverityNumber('info'), 7);
+    assertEquals(logLevels.asSeverityNumber(6), 7);
 
     assertEquals(logLevels.asValue('trace'), 8);
     assertEquals(logLevels.asName(8), 'TRACE');
+    assertEquals(logLevels.asSeverityNumber('trace'), 9);
+    assertEquals(logLevels.asSeverityNumber(8), 9);
 
     // Test that lookups for `severityNumber` values fail or return incorrect results
     // asName(1) should not return 'EMERGENCY' because it looks for `val`
@@ -134,6 +140,11 @@ describe('levels with severityNumber (current behavior)', () => {
       () => logLevels.asName(9),
       Error,
       'Cannot get log level: no name for level: 9',
+    );
+    assertThrows(
+      () => logLevels.asSeverityNumber('fatal'),
+      Error,
+      'Cannot get log level: no name for level: fatal',
     );
   });
 

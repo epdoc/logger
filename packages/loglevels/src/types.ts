@@ -31,6 +31,11 @@ export type Name = string;
 export type Value = Integer;
 
 /**
+ * Represents the OTLP numeric value associated with a log level. This is an integer between 0 and 24.
+ */
+export type SeverityNumber = Integer;
+
+/**
  * Defines the complete configuration for a single log level.
  */
 export type LogLevelSpec = {
@@ -70,7 +75,7 @@ export type LogLevelSpec = {
   /** An icon that can be displayed in place of the log level string. */
   icon?: string;
   /** OTLP severityNumber mapping */
-  severityNumber?: Integer;
+  severityNumber?: SeverityNumber;
 };
 
 /**

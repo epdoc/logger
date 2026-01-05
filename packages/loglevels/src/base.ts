@@ -102,6 +102,22 @@ export class LogLevels implements Level.IBasic {
   /**
    * @inheritdoc
    */
+  asSeverityNumber(level: Level.Name | Level.Value): Level.SeverityNumber {
+    if (typeof level === 'string' && isLogLevelSpec(this._levelDef[level.toUpperCase()])) {
+      return this._levelDef[level.toUpperCase()].severityNumber as Level.SeverityNumber;
+    }
+    const def = Object.values(this._levelDef).find((def) => {
+      return isLogLevelSpec(def, true) && def.val === level;
+    });
+    if (def) {
+      return def.severityNumber!;
+    }
+    throw new Error(`Cannot get log level: no name for level: ${level}`);
+  }
+
+  /**
+   * @inheritdoc
+   */
   asName(level: Level.Value | Level.Name): Level.Name {
     if (typeof level === 'string' && level.toUpperCase() in this._levelDef) {
       return level.toUpperCase() as Level.Name;
