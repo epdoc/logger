@@ -4,11 +4,11 @@ import type { ContextBundle } from './types.ts';
 /**
  * Abstract base class with common command setup functionality
  *
- * @template Bundle - Bundled context types
+ * @template Bundle - Bundled context types (extracted from Context)
  * @template TOptions - Command options type for the action
  */
 export abstract class BaseCmdCore<
-  Bundle extends ContextBundle<unknown, unknown, unknown>,
+  Bundle extends ContextBundle<{ log: unknown }>,
   TOptions = unknown,
 > {
   protected cmd!: Command; // Definite assignment assertion - subclasses will set this

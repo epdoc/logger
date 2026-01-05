@@ -4,22 +4,28 @@
 
 import * as CliApp from '@epdoc/cliapp';
 import * as Log from '@epdoc/logger';
-import type { Console } from '@epdoc/msgbuilder';
+import * as Console from '@epdoc/msgbuilder';
 import { assertEquals, assertExists } from '@std/assert';
 
-// Test context
-class TestContext extends CliApp.Ctx.Base<Console.Builder, Log.Std.Logger<Console.Builder>> {
+type M = Console.Console.Builder;
+type L = Log.Std.Logger<M>;
+
+class TestContext extends CliApp.Ctx.Base<L> {
+  constructor(pkg?: CliApp.DenoPkg) {
+    super(pkg);
+    this.setupLogging();
+  }
+
   setupLogging() {
-    this.logMgr = Log.createLogManager(undefined, { threshold: 'info' });
-    this.log = this.logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+    this.logMgr = new Log.Mgr<M>();
+    this.logMgr.msgBuilderFactory = Console.Console.createMsgBuilder;
+    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.threshold = 'info';
+    this.log = this.logMgr.getLogger<L>();
   }
 }
 
-type TestBundle = CliApp.Cmd.ContextBundle<
-  TestContext,
-  Console.Builder,
-  Log.Std.Logger<Console.Builder>
->;
+type TestBundle = CliApp.Cmd.ContextBundle<TestContext>;
 
 interface TestOptions {
   verbose?: boolean;

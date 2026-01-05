@@ -4,20 +4,28 @@
 
 import * as CliApp from '@epdoc/cliapp';
 import * as Log from '@epdoc/logger';
-import type { Console } from '@epdoc/msgbuilder';
+import * as Console from '@epdoc/msgbuilder';
 import { assertEquals, assertExists, assertInstanceOf } from '@std/assert';
 
 const Ctx = CliApp.Ctx;
 const Cmd = CliApp.Cmd;
 
-type M = Console.Builder;
+type M = Console.Console.Builder;
 type L = Log.Std.Logger<M>;
 
 // Test context implementation
-class TestContext extends Ctx.Base<M, L> {
+class TestContext extends Ctx.Base<L> {
+  constructor(pkg?: CliApp.DenoPkg) {
+    super(pkg);
+    this.setupLogging();
+  }
+
   setupLogging() {
-    this.logMgr = Log.createLogManager(undefined, { threshold: 'info' });
-    this.log = this.logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+    this.logMgr = new Log.Mgr<M>();
+    this.logMgr.msgBuilderFactory = Console.Console.createMsgBuilder;
+    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.threshold = 'info';
+    this.log = this.logMgr.getLogger<L>();
   }
 }
 
@@ -27,11 +35,7 @@ interface TestOptions {
   output?: string;
 }
 
-type TestBundle = CliApp.Cmd.ContextBundle<
-  TestContext,
-  Console.Builder,
-  Log.Std.Logger<Console.Builder>
->;
+type TestBundle = CliApp.Cmd.ContextBundle<TestContext>;
 
 // Test subcommand implementation
 class TestSubCmd extends Cmd.Sub<TestBundle, TestOptions> {

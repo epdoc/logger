@@ -4,22 +4,29 @@
 
 import * as CliApp from '@epdoc/cliapp';
 import * as Log from '@epdoc/logger';
-import { Console } from '@epdoc/msgbuilder';
+import * as MsgBuilder from '@epdoc/msgbuilder';
 import { assertEquals, assertExists } from '@std/assert';
 
 const Ctx = CliApp.Ctx;
 
-type M = Console.Builder;
+type M = MsgBuilder.Console.Builder;
 type L = Log.Std.Logger<M>;
 
 // Test implementation of BaseContext
-class TestContext extends Ctx.Base<M, L> {
+class TestContext extends Ctx.Base<L> {
   setupLoggingCalled = false;
+
+  constructor(pkg?: CliApp.DenoPkg) {
+    super(pkg);
+  }
 
   public setupLogging() {
     this.setupLoggingCalled = true;
-    this.logMgr = Log.createLogManager(undefined, { threshold: 'info' });
-    this.log = this.logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+    this.logMgr = new Log.Mgr<M>();
+    this.logMgr.msgBuilderFactory = MsgBuilder.Console.createMsgBuilder;
+    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.threshold = 'info';
+    this.log = this.logMgr.getLogger<L>();
   }
 
   // Public method to test setupLogging
@@ -28,24 +35,25 @@ class TestContext extends Ctx.Base<M, L> {
   }
 }
 
-// Test implementation with custom builder
-const CustomBuilder = Console.extender({
+class CustomBuilder extends MsgBuilder.Console.Builder {
   testMethod(msg: string) {
     return this.text('[TEST] ').text(msg);
-  },
-});
+  }
+}
 
-type CustomMsgBuilder = InstanceType<typeof CustomBuilder>;
-type CustomLogger = Log.Std.Logger<CustomMsgBuilder>;
+type CustomLogger = Log.Std.Logger<CustomBuilder>;
 
-class CustomTestContext extends CliApp.Ctx.Base<CustomMsgBuilder, CustomLogger> {
+class CustomTestContext extends CliApp.Ctx.Base<CustomLogger> {
   constructor() {
     super();
     this.setupLogging();
   }
 
   public setupLogging() {
-    this.logMgr = Log.createLogManager(CustomBuilder, { threshold: 'debug' });
+    this.logMgr = new Log.Mgr<CustomBuilder>();
+    this.logMgr.msgBuilderFactory = (emitter) => new CustomBuilder(emitter);
+    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.threshold = 'debug';
     this.log = this.logMgr.getLogger<CustomLogger>();
   }
 }

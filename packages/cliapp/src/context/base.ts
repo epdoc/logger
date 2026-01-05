@@ -1,5 +1,5 @@
 import type * as Log from '@epdoc/logger';
-import type { Console } from '@epdoc/msgbuilder';
+import type * as Console from '@epdoc/msgbuilder';
 import type { DenoPkg } from '../types.ts';
 import type * as Ctx from './types.ts';
 
@@ -10,27 +10,35 @@ import type * as Ctx from './types.ts';
  * and loggers. Subclasses must implement setupLogging() and call it in their constructor
  * to ensure the context is fully initialized.
  *
+ * @template L - Logger type (MsgBuilder is automatically extracted)
+ *
  * @example
  * ```typescript
- * class AppContext extends BaseContext<MyMsgBuilder, MyLogger> {
+ * class AppBuilder extends Console.Builder {
+ *   fileOp(path: string) { return this.text(path); }
+ * }
+ * type Logger = Log.Std.Logger<AppBuilder>;
+ *
+ * class AppContext extends BaseContext<Logger> {
  *   constructor() {
  *     super(pkg);
  *     this.setupLogging(); // Must call in constructor
  *   }
  *
  *   setupLogging() {
- *     this.logMgr = Log.createLogManager(MyBuilder, { threshold: 'info' });
- *     this.log = this.logMgr.getLogger<MyLogger>();
+ *     this.logMgr = new Log.Mgr<AppBuilder>();
+ *     this.logMgr.msgBuilderFactory = AppBuilder.createMsgBuilder;
+ *     this.logMgr.init(Log.Std.factoryMethods);
+ *     this.logMgr.threshold = 'info';
+ *     this.log = this.logMgr.getLogger<Logger>();
  *   }
  * }
  * ```
  */
-export abstract class BaseContext<
-  M extends Console.Builder = Console.Builder,
-  L extends Log.IEmitter = Log.Std.Logger<M>,
-> implements Ctx.IBase<M, L> {
+export abstract class BaseContext<L extends Log.IEmitter = Log.Std.Logger<Console.Console.Builder>>
+  implements Ctx.IBase<L> {
   log!: L; // Will be set in setupLogging
-  logMgr!: Log.Mgr<M>;
+  logMgr!: Log.Mgr<Ctx.ExtractMsgBuilder<L>>;
   dryRun = false;
   pkg: DenoPkg;
 

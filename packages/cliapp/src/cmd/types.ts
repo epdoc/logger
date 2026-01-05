@@ -1,76 +1,53 @@
 /**
  * @file Type definitions for the structured command system
  *
- * This file contains type definitions that enable the bundled context pattern,
+ * This file contains type definitions that enable automatic type extraction,
  * which simplifies generic type management in CLI applications.
  */
 
+import type { ExtractMsgBuilder } from '../context/types.ts';
+
 /**
- * A type bundle that groups together the three core types needed for CLI commands:
- * Context, MsgBuilder, and Logger.
+ * A type bundle that automatically extracts MsgBuilder and Logger types from Context.
  *
- * This pattern reduces the number of generic parameters from 4 to 2 in command classes,
- * making the API much cleaner and easier to use.
+ * This pattern reduces the number of generic parameters in command classes,
+ * making the API much cleaner and easier to use by inferring types from the context.
  *
- * @template Context - The application context type (extends some base context)
- * @template MsgBuilder - The message builder type (e.g., Console.Builder or extended version)
- * @template Logger - The logger type (typically Log.Std.Logger<MsgBuilder>)
+ * @template Ctx - The application context type (must have a 'log' property)
  *
- * @example Basic usage with standard types
+ * @example Basic usage
  * ```typescript
- * type AppBundle = ContextBundle<
- *   AppContext,
- *   Console.Builder,
- *   Log.Std.Logger<Console.Builder>
- * >;
+ * class AppBuilder extends Console.Builder {
+ *   fileOp(path: string) { return this.text(path); }
+ * }
+ * type Logger = Log.Std.Logger<AppBuilder>;
  *
- * class MyCmd extends CliApp.Cmd.Sub<AppBundle, MyOptions> {
- *   // Command implementation
+ * class AppContext extends CliApp.Ctx.Base<Logger> { }
+ *
+ * // ContextBundle automatically extracts types
+ * type AppBundle = ContextBundle<AppContext>;
+ * // Expands to: { Context: AppContext; MsgBuilder: AppBuilder; Logger: Logger }
+ *
+ * class MyCmd extends CliApp.Cmd.Sub<AppContext, MyOptions> {
+ *   // Can access this.ctx.log.info.fileOp('/path').emit()
  * }
  * ```
  *
- * @example Usage with custom message builder
+ * @example Before (verbose - 3 type parameters)
  * ```typescript
- * const CustomBuilder = Console.extender({
- *   fileOp(path: string) { return this.text('📁 ').path(path); }
- * });
- *
- * type CustomBundle = ContextBundle<
- *   AppContext,
- *   InstanceType<typeof CustomBuilder>,
- *   Log.Std.Logger<InstanceType<typeof CustomBuilder>>
- * >;
- *
- * class MyCmd extends CliApp.Cmd.Sub<CustomBundle, MyOptions> {
- *   // Can use this.ctx.log.info.fileOp('/path/to/file').emit()
- * }
+ * type OldBundle = ContextBundle<AppContext, AppBuilder, Logger>;
  * ```
  *
- * @example Without ContextBundle (verbose)
+ * @example After (simple - 1 type parameter, rest inferred)
  * ```typescript
- * // Old way - 4 generic parameters
- * class MyCmd extends CliApp.Cmd.Sub<AppContext, MyOptions, MsgBuilder, Logger> {
- *   // Same functionality but more verbose type signature
- * }
- * ```
- *
- * @example With ContextBundle (clean)
- * ```typescript
- * // New way - 2 generic parameters
- * class MyCmd extends CliApp.Cmd.Sub<AppBundle, MyOptions> {
- *   // Much cleaner and easier to read
- * }
+ * type NewBundle = ContextBundle<AppContext>;
  * ```
  */
-export type ContextBundle<
-  Context,
-  MsgBuilder,
-  Logger,
-> = {
+export type ContextBundle<Ctx extends { log: unknown }> = {
   /** The application context type */
-  Context: Context;
-  /** The message builder type used for logging */
-  MsgBuilder: MsgBuilder;
-  /** The logger type that uses the message builder */
-  Logger: Logger;
+  Context: Ctx;
+  /** The message builder type extracted from the logger */
+  MsgBuilder: ExtractMsgBuilder<Ctx['log']>;
+  /** The logger type extracted from the context */
+  Logger: Ctx['log'];
 };

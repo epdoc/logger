@@ -5,11 +5,11 @@ import type { ContextBundle } from './types.ts';
 /**
  * Generic base class for CLI subcommands with structured setup
  *
- * @template Bundle - Bundled context types
+ * @template Bundle - Bundled context types (extracted from Context)
  * @template TOptions - Command options type for the action
  */
 export abstract class BaseCmd<
-  Bundle extends ContextBundle<unknown, unknown, unknown>,
+  Bundle extends ContextBundle<{ log: unknown }>,
   TOptions = unknown,
 > extends BaseCmdCore<Bundle, TOptions> {
   constructor(
