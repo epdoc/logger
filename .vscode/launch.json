@@ -433,6 +433,26 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "examples: logger.otlp.run.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "run",
+        "-A",
+        "--inspect-brk"
+      ],
+      "program": "${workspaceFolder}/packages/examples/logger.otlp.run.ts",
+      "presentation": {
+        "group": "examples"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "examples: cliapp.run.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
