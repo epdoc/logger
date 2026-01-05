@@ -15,7 +15,7 @@ import { BareLogger } from './logger.ts';
  * special flags like `flush` (for immediate output) and `lowest` (the lowest
  * priority level).
  */
-const bareLogLevelDefs: Level.LogLevelsDef = {
+const bareLogLevelDefs: Level.LogLevelMap = {
   warn: { val: 2, fmtFn: colors.yellow, warn: true },
   info: { val: 3, fmtFn: colors.green, default: true },
 } as const;

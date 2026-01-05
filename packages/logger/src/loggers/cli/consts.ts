@@ -15,17 +15,20 @@ import { CliLogger } from './logger.ts';
  * flags like `flush` (for immediate output), `default` (the default level),
  * and `lowest` (the lowest priority level).
  */
-const cliLogLevelDefs: Level.LogLevelsDef = {
-  error: { val: 0, fmtFn: colors.red, flush: true, icon: '✗' },
-  warn: { val: 1, fmtFn: colors.yellow, warn: true, icon: '⚠' },
-  help: { val: 2, fmtFn: colors.cyan, icon: '?' },
-  data: { val: 3, fmtFn: colors.gray, icon: '≡' },
-  info: { val: 4, fmtFn: colors.green, default: true, icon: 'ℹ' },
-  debug: { val: 5, fmtFn: colors.blue, icon: '⚙' },
-  prompt: { val: 6, fmtFn: colors.gray, icon: '»' },
-  verbose: { val: 7, fmtFn: colors.cyan, icon: '…' },
-  input: { val: 8, fmtFn: colors.gray, icon: '⌨' },
-  silly: { val: 9, fmtFn: colors.magenta, lowest: true, icon: '☺' },
+const cliLogLevelsSet: Level.LogLevelsSet = {
+  id: 'cli',
+  levels: {
+    error: { val: 0, severityNumber: 17, fmtFn: colors.red, flush: true, icon: '✗' },
+    warn: { val: 1, severityNumber: 13, fmtFn: colors.yellow, warn: true, icon: '⚠' },
+    help: { val: 2, severityNumber: 11, fmtFn: colors.cyan, icon: '?' },
+    data: { val: 3, severityNumber: 10, fmtFn: colors.gray, icon: '≡' },
+    info: { val: 4, severityNumber: 9, fmtFn: colors.green, default: true, icon: 'ℹ' },
+    debug: { val: 5, severityNumber: 5, fmtFn: colors.blue, icon: '⚙' },
+    prompt: { val: 6, severityNumber: 4, fmtFn: colors.gray, icon: '»' },
+    verbose: { val: 7, severityNumber: 3, fmtFn: colors.cyan, icon: '…' },
+    input: { val: 8, severityNumber: 2, fmtFn: colors.gray, icon: '⌨' },
+    silly: { val: 9, severityNumber: 1, fmtFn: colors.magenta, lowest: true, icon: '☺' },
+  },
 } as const;
 
 export const cliFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, CliLogger<MsgBuilder.Abstract>> = {
@@ -47,12 +50,12 @@ export const cliFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, CliLogger<M
    * @returns {Level.IBasic} A new `LogLevels` instance for CLI logging.
    */
   createLevels: () => {
-    return new Level.LogLevels(cliLogLevelDefs, 'cli');
+    return new Level.LogLevels(cliLogLevelsSet);
   },
   /**
    * An array containing the names of all CLI log levels.
    */
   logLevelNames: () => {
-    return Object.keys(cliLogLevelDefs);
+    return Object.keys(cliLogLevelsSet);
   },
 };

@@ -1,5 +1,4 @@
 import type { Entry } from '$log';
-import { DateEx } from '@epdoc/datetime';
 import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { StringEx } from '@epdoc/string';
@@ -112,10 +111,11 @@ export class ConsoleTransport extends Base.Transport {
       // Output as JSON Array
       const text = this.formatJsonArrayEntry(entry, msg);
       this.output(text, levelValue);
-    } else if (this._format === 'otlp') {
-      // Output as OpenTelemetry Protocol JSON (for Deno OTEL auto-export)
-      const otlpEntry = this.formatOtlpEntry(entry, msg);
-      this.output(JSON.stringify(otlpEntry), levelValue);
+      // } else if (this._format === 'otlp') {
+      //   // Output as OpenTelemetry Protocol JSON (for Deno OTEL auto-export)
+      //   const otlpEntry = this.formatOtlpEntry(entry, msg);
+      //   const asStr = JSON.stringify(otlpEntry);
+      //   this.output(asStr, levelValue);
     } else {
       const text = this.formatTextEntry(entry, msg);
       this.output(text, levelValue);
@@ -183,78 +183,6 @@ export class ConsoleTransport extends Base.Transport {
     parts.push(entry.time ?? null);
     parts.push(entry.data ?? null);
     return JSON.stringify(parts);
-  }
-
-  /**
-   * Formats a log entry as OpenTelemetry Protocol JSON.
-   * This format is automatically exported as OTLP by Deno when OTEL_DENO=true.
-   *
-   * @param entry - The transport entry to format
-   * @param msg - The original log entry
-   * @returns OTLP-compatible log record
-   */
-  formatOtlpEntry(entry: TransportEntry, msg: Entry): Record<string, unknown> {
-    const attributes: Record<string, unknown> = {};
-
-    // Use proper OTEL semantic conventions where they exist
-    if (entry.pkg) {
-      // Use service.namespace for service/package identification
-      attributes['service.namespace'] = entry.pkg;
-    }
-
-    // Custom attributes with epdoc namespace
-    if (entry.reqId) attributes['epdoc.request_id'] = entry.reqId;
-    if (entry.sid) attributes['epdoc.session_id'] = entry.sid;
-    if (entry.time) attributes['epdoc.operation_duration_ms'] = entry.time;
-
-    // Include structured data with app-specific prefix
-    if (entry.data && _.isObject(entry.data)) {
-      Object.assign(attributes, this.flattenOtlpData(entry.data, 'app'));
-    }
-
-    return {
-      timestamp: new DateEx(entry.timestamp).toISOLocalString(),
-      level: entry.level?.toUpperCase() || 'INFO',
-      message: msg || '',
-      attributes: Object.keys(attributes).length > 0 ? attributes : undefined,
-    };
-  }
-
-  /**
-   * Flattens nested data objects for OTLP attributes.
-   * @private
-   */
-  private flattenOtlpData(data: unknown, prefix = 'data'): Record<string, unknown> {
-    const result: Record<string, unknown> = {};
-
-    if (_.isObject(data) && !_.isArray(data)) {
-      for (const [key, value] of Object.entries(data)) {
-        const attrKey = `${prefix}.${key}`;
-        if (ConsoleTransport.#isPrimitive(value)) {
-          result[attrKey] = value;
-        } else if (_.isArray(value)) {
-          result[attrKey] = JSON.stringify(value);
-        } else {
-          Object.assign(result, this.flattenOtlpData(value, attrKey));
-        }
-      }
-    } else {
-      result[prefix] = ConsoleTransport.#isPrimitive(data) ? data : JSON.stringify(data);
-    }
-
-    return result;
-  }
-
-  /**
-   * Checks if a value is a primitive type suitable for OTLP attributes.
-   * @private
-   */
-  static #isPrimitive(value: unknown): value is string | number | boolean | null | undefined {
-    return value === null ||
-      value === undefined ||
-      typeof value === 'string' ||
-      typeof value === 'number' ||
-      typeof value === 'boolean';
   }
 
   /**

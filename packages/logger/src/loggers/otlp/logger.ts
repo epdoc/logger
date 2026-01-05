@@ -1,21 +1,19 @@
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { LogMgr } from '../../logmgr.ts';
-import * as Otlp from '../otlp/mod.ts';
+import * as Min from '../min/mod.ts';
 import type * as Logger from '../types.ts';
 
 /**
  * Implements a logger with a standard set of log levels.
  *
  * @remarks
- * This logger provides the following common log levels:
- * - `critital`: For critical, non-recoverable issues.
- * - `error`: For critical, usually non-recoverable issues.
+ * This logger provides the following common log levels that are basic to OTLP:
+ * - `fatal`: For critical, non-recoverable issues.
+ * - `error`: For critical, possibly non-recoverable issues.
  * - `warn`: For potential problems that don't halt execution.
  * - `info`: For general informational messages.
- * - `verbose`: For more detailed information than `info`, often for debugging.
  * - `debug`: For detailed diagnostic information, typically for developers.
  * - `trace`: For fine-grained tracing of program execution.
- * - `spam`: An additional level for very verbose, often temporary, debugging output.
  *
  * This class extends {@link Logger.Indent} to provide indentation capabilities
  * and implements {@link std.IStdLogger} and {@link Logger.IEmitter} for its core
@@ -23,7 +21,7 @@ import type * as Logger from '../types.ts';
  *
  * @template M - The type of message builder used by the logger.
  */
-export class StdLogger<M extends MsgBuilder.Abstract> extends Otlp.Logger<M> implements Logger.IEmitter {
+export class OtlpLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> implements Logger.IEmitter {
   /**
    * Creates a shallow copy of the current `StdLogger` instance.
    * @returns {this} A new `StdLogger` instance with copied properties.
@@ -44,36 +42,20 @@ export class StdLogger<M extends MsgBuilder.Abstract> extends Otlp.Logger<M> imp
    *
    * @returns {M} A message builder configured for the `ERROR` level.
    */
-  public get critical(): M {
-    return this.getIndentedMsgBuilder('CRITICAL');
+  public get fatal(): M {
+    return this.getIndentedMsgBuilder('FATAL');
   }
 
   /**
-   * Provides a message builder for the `VERBOSE` log level.
+   * Provides a message builder for the `TRACE` log level.
    *
    * @remarks
-   * Use this level for more detailed informational messages than `INFO`,
-   * often useful for understanding the steps within a process.
+   * Use this level for fine-grained tracing of program execution, often used
+   * to follow the path of execution through complex logic or function calls.
    *
-   * @returns {M} A message builder configured for the `VERBOSE` level.
+   * @returns {M} A message builder configured for the `TRACE` level.
    */
-  public get verbose(): M {
-    return this.getIndentedMsgBuilder('VERBOSE');
-  }
-
-  /**
-   * Provides a message builder for the `SPAM` log level.
-   *
-   * @remarks
-   * This is an extra verbose level, typically used for very frequent or noisy
-   * debugging output that would normally be commented out in production code.
-   *
-   * @returns {M} A message builder configured for the `SPAM` level.
-   */
-  public get spam(): M {
-    return this.getIndentedMsgBuilder('SPAM');
-  }
-  public get silly(): M {
-    return this.getIndentedMsgBuilder('SILLY');
+  public get trace(): M {
+    return this.getIndentedMsgBuilder('TRACE');
   }
 }

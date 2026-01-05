@@ -4,7 +4,7 @@ import * as colors from '@std/fmt/colors';
 import { LogMgr } from '../../logmgr.ts';
 import type * as Base from '../base/mod.ts';
 import type { IFactoryMethods } from '../factory.ts';
-import { StdLogger } from './logger.ts';
+import { OtlpLogger } from './logger.ts';
 
 /**
  * Defines the standard log levels and their properties.
@@ -15,15 +15,13 @@ import { StdLogger } from './logger.ts';
  * special flags like `flush` (for immediate output) and `lowest` (the lowest
  * priority level).
  */
-const stdLogLevelsSet: Level.LogLevelsSet = {
+const otlpLogLevelsSet: Level.LogLevelsSet = {
   id: 'std',
   levels: {
-    fatal: { val: 0, severityNumber: 22, fmtFn: colors.brightRed, flush: true, icon: '☠' },
-    critical: { val: 0, severityNumber: 21, fmtFn: colors.brightRed, flush: true, icon: '↯' },
+    fatal: { val: 0, severityNumber: 21, fmtFn: colors.brightRed, flush: true, icon: '☠' },
     error: { val: 1, severityNumber: 17, fmtFn: colors.red, flush: true, icon: '✗' },
     warn: { val: 2, severityNumber: 13, fmtFn: colors.yellow, warn: true, icon: '⚠' },
     info: { val: 3, severityNumber: 9, fmtFn: colors.green, default: true, icon: 'ℹ' },
-    verbose: { val: 4, severityNumber: 6, fmtFn: colors.cyan, icon: '…' },
     debug: {
       val: 5,
       severityNumber: 5,
@@ -32,37 +30,19 @@ const stdLogLevelsSet: Level.LogLevelsSet = {
       },
       icon: 'Δ',
     },
-    trace: { val: 6, severityNumber: 4, fmtFn: colors.gray, icon: '↳' },
-    spam: {
-      val: 7,
-      severityNumber: 2,
-      fmtFn: (str: string) => {
-        return colors.dim(colors.gray(str));
-      },
-      lowest: true,
-      icon: '¶',
-    },
-    silly: {
-      val: 7,
-      severityNumber: 1,
-      fmtFn: (str: string) => {
-        return colors.dim(colors.gray(str));
-      },
-      lowest: true,
-      icon: '⁂',
-    },
+    trace: { val: 6, severityNumber: 1, fmtFn: colors.gray, icon: '↳' },
   },
 } as const;
 
-export const stdFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, StdLogger<MsgBuilder.Abstract>> = {
+export const otlpFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, OtlpLogger<MsgBuilder.Abstract>> = {
   createLogger: <M extends MsgBuilder.Abstract>(
     log: LogMgr<M> | Base.IEmitter,
     params?: Base.IGetChildParams,
-  ): StdLogger<M> => {
+  ): OtlpLogger<M> => {
     if (log instanceof LogMgr) {
-      return new StdLogger<M>(log, params);
-    } else if (log instanceof StdLogger) {
-      return log.getChild(params) as StdLogger<M>;
+      return new OtlpLogger<M>(log, params);
+    } else if (log instanceof OtlpLogger) {
+      return log.getChild(params) as OtlpLogger<M>;
     }
     throw new Error('Invalid logger type');
   },
@@ -73,12 +53,12 @@ export const stdFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, StdLogger<M
    * @returns {Level.IBasic} A new `LogLevels` instance for CLI logging.
    */
   createLevels: () => {
-    return new Level.LogLevels(stdLogLevelsSet);
+    return new Level.LogLevels(otlpLogLevelsSet);
   },
   /**
    * An array containing the names of all CLI log levels.
    */
   logLevelNames: () => {
-    return Object.keys(stdLogLevelsSet);
+    return Object.keys(otlpLogLevelsSet);
   },
 };

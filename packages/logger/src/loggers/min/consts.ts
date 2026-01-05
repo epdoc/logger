@@ -15,15 +15,18 @@ import { MinLogger } from './logger.ts';
  * special flags like `flush` (for immediate output) and `lowest` (the lowest
  * priority level).
  */
-const minLogLevelDefs: Level.LogLevelsDef = {
-  error: { val: 1, fmtFn: colors.red, flush: true },
-  warn: { val: 2, fmtFn: colors.yellow, warn: true },
-  info: { val: 3, fmtFn: colors.green, default: true },
-  debug: {
-    val: 5,
-    lowest: true,
-    fmtFn: (str: string) => {
-      return colors.dim(colors.blue(str));
+const minLogLevelsSet: Level.LogLevelsSet = {
+  id: 'min',
+  levels: {
+    error: { val: 1, severityNumber: 17, fmtFn: colors.red, flush: true },
+    warn: { val: 2, severityNumber: 13, fmtFn: colors.yellow, warn: true },
+    info: { val: 3, severityNumber: 9, fmtFn: colors.green, default: true },
+    debug: {
+      val: 5,
+      lowest: true,
+      fmtFn: (str: string) => {
+        return colors.dim(colors.blue(str));
+      },
     },
   },
 } as const;
@@ -47,12 +50,12 @@ export const minFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, MinLogger<M
    * @returns {Level.IBasic} A new `LogLevels` instance for CLI logging.
    */
   createLevels: () => {
-    return new Level.LogLevels(minLogLevelDefs, 'min');
+    return new Level.LogLevels(minLogLevelsSet);
   },
   /**
    * An array containing the names of all CLI log levels.
    */
   logLevelNames: () => {
-    return Object.keys(minLogLevelDefs);
+    return Object.keys(minLogLevelsSet);
   },
 };
