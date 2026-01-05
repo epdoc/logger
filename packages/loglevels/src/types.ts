@@ -71,6 +71,8 @@ export type LogLevelDef = {
   flush?: boolean;
   /** An icon that can be displayed in place of the log level string. */
   icon?: string;
+  /** OTLP severityNumber mapping */
+  severityNumber?: Integer;
 };
 
 /**

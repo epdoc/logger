@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert';
+import { assertEquals, assertThrows } from '@std/assert';
 import * as colors from '@std/fmt/colors';
 import { describe, test } from '@std/testing/bdd';
 import * as Level from '../src/mod.ts';
@@ -91,5 +91,54 @@ describe('levels cli', () => {
     assertEquals(logLevels.applyColors('hello', 'VERBOSE'), set.cyanText + 'hello' + reset.fg);
     assertEquals(logLevels.applyColors('hello', 'INPUT'), set.grayText + 'hello' + reset.fg);
     assertEquals(logLevels.applyColors('hello', 'SILLY'), set.magentaText + 'hello' + reset.fg);
+  });
+});
+
+const SEVERITY_DEFS: Level.LogLevelsDef = {
+  emergency: { val: 0, severityNumber: 1, fmtFn: colors.red, flush: true },
+  alert: { val: 1, severityNumber: 2, fmtFn: colors.red, flush: true },
+  critical: { val: 2, severityNumber: 3, fmtFn: colors.red, flush: true },
+  error: { val: 3, severityNumber: 4, fmtFn: colors.red, flush: true },
+  warn: { val: 4, severityNumber: 5, fmtFn: colors.yellow, warn: true },
+  notice: { val: 5, severityNumber: 6, fmtFn: colors.green },
+  info: { val: 6, severityNumber: 7, fmtFn: colors.green, default: true },
+  debug: { val: 7, severityNumber: 8, fmtFn: colors.blue },
+  trace: { val: 8, severityNumber: 9, fmtFn: colors.cyan, lowest: true },
+} as const;
+
+describe('levels with severityNumber (current behavior)', () => {
+  const logLevels = new Level.LogLevels(SEVERITY_DEFS, 'severityTest');
+
+  test('names and values ignore severityNumber', () => {
+    // Test that `asValue` and `asName` operate on `val`, not `severityNumber`
+    assertEquals(logLevels.asValue('emergency'), 0);
+    assertEquals(logLevels.asName(0), 'EMERGENCY');
+
+    assertEquals(logLevels.asValue('info'), 6);
+    assertEquals(logLevels.asName(6), 'INFO');
+
+    assertEquals(logLevels.asValue('trace'), 8);
+    assertEquals(logLevels.asName(8), 'TRACE');
+
+    // Test that lookups for `severityNumber` values fail or return incorrect results
+    // asName(1) should not return 'EMERGENCY' because it looks for `val`
+    assertEquals(logLevels.asName(1), 'ALERT');
+    // asName for a severityNumber that doesn't match any `val` should fail
+    assertThrows(
+      () => logLevels.asName(9),
+      Error,
+      'Cannot get log level: no name for level: 9',
+    );
+  });
+
+  test('thresholds ignore severityNumber', () => {
+    // Threshold checks should be based on `val`
+    assertEquals(logLevels.meetsThreshold('info', 'info'), true); // 6 vs 6
+    assertEquals(logLevels.meetsThreshold('info', 'debug'), true); // 6 vs 7 (assuming increasing)
+    assertEquals(logLevels.meetsThreshold('debug', 'info'), false); // 7 vs 6
+
+    // A threshold check that would pass with severityNumber but fails with val
+    // 'warn' (val: 4) vs 'notice' (val: 5)
+    assertEquals(logLevels.meetsThreshold('warn', 'notice'), true);
   });
 });

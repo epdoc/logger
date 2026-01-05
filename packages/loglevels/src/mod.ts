@@ -24,6 +24,6 @@
  */
 
 export * from './base.ts';
-export * from './helpers.ts';
+export * from './guards.ts';
 export * from './ibasic.ts';
 export * from './types.ts';

@@ -1,5 +1,5 @@
 import type { Integer } from '@epdoc/type';
-import { isLogLevelDef } from './helpers.ts';
+import { isLogLevelDef } from './guards.ts';
 import type * as Level from './types.ts';
 
 /**
