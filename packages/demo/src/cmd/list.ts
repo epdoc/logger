@@ -2,7 +2,7 @@ import * as CliApp from '@epdoc/cliapp';
 import type { ListOpts } from '../app/mod.ts';
 import type * as Ctx from '../context/mod.ts';
 
-export class ListCmd extends CliApp.Cmd.Sub<Ctx.AppBundle, ListOpts> {
+export class ListCmd extends CliApp.Cmd.Sub<CliApp.Cmd.ContextBundle<Ctx.Context>, ListOpts> {
   constructor(ctx: Ctx.Context) {
     super(ctx, 'list', 'List files');
   }

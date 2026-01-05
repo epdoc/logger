@@ -10,7 +10,7 @@ interface AppOptions {
   format?: string;
 }
 
-export class RootCmd extends CliApp.Cmd.Root<Ctx.AppBundle, AppOptions> {
+export class RootCmd extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<Ctx.Context>, AppOptions> {
   constructor(ctx: Ctx.Context) {
     super(ctx, ctx.pkg);
   }

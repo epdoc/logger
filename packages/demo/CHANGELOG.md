@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.10] - 2026-01-04
+
+- Migrate to new single-generic pattern with direct class extension
+
 ## [0.0.9] - 2025-12-31
 
 - Updated dependencies

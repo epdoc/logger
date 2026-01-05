@@ -4,13 +4,9 @@ import pkg from '../../deno.json' with { type: 'json' };
 import * as App from '../app/mod.ts';
 import { CustomBuilder } from './msgbuilder.ts';
 
-export type MsgBuilder = InstanceType<typeof CustomBuilder>;
-export type Logger = Log.Std.Logger<MsgBuilder>;
+export type Logger = Log.Std.Logger<CustomBuilder>;
 
-// Bundle context types together
-export type AppBundle = CliApp.Cmd.ContextBundle<Context, MsgBuilder, Logger>;
-
-export class Context extends CliApp.Ctx.Base<MsgBuilder, Logger> {
+export class Context extends CliApp.Ctx.Base<Logger> {
   // Add application state [example]
   app: App.Main;
 
@@ -21,7 +17,10 @@ export class Context extends CliApp.Ctx.Base<MsgBuilder, Logger> {
   }
 
   setupLogging() {
-    this.logMgr = Log.createLogManager(CustomBuilder, { threshold: 'info' });
+    this.logMgr = new Log.Mgr<CustomBuilder>();
+    this.logMgr.msgBuilderFactory = (emitter) => new CustomBuilder(emitter);
+    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.threshold = 'info';
     this.log = this.logMgr.getLogger<Logger>();
   }
 }
