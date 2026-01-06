@@ -192,3 +192,7 @@ Grafana Query Response:
   }
 }
 ```
+
+## Transport Lifecycle Management
+
+For all practical purposes, we will open transports when we launch our app. However we need to make sure we can add transports after the app has started, for example because a user says "start/finish sending the logs to influx" via a web or other interface in the application that is using this library. Dynamic add and remove or enable/disable of transports is therefore a feature we should support, with the assumption that the host application will provide the UI for a user to control this. The user may even change the log level for a particular transport, on the fly. We need to research this feature and make sure that we can already support it, or make the changes to support it.

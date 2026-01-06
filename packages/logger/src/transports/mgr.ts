@@ -12,6 +12,7 @@ import type { ILogMgrTransportContext } from './types.ts';
 export class TransportMgr {
   protected _bRunning = false;
   protected _logMgr: ILogMgrTransportContext;
+  protected _queue: Log.Entry[] = [];
   /**
    * An array of registered transport instances.
    */
@@ -83,6 +84,8 @@ export class TransportMgr {
     });
     return Promise.all(jobs).then(() => {
       this._bRunning = true;
+      // Flush any queued messages now that transports are started
+      this.flushQueue();
       return;
     });
   }
@@ -115,6 +118,29 @@ export class TransportMgr {
       this._bRunning = true;
     } else {
       this.transports.unshift(transport);
+    }
+    
+    // Set up ready callback for delayed transports
+    this.setupReadyCallback(transport);
+  }
+
+  /**
+   * Sets up a callback for when a transport becomes ready.
+   * @private
+   */
+  private setupReadyCallback(transport: AbstractTransport): void {
+    // If transport is not ready, set up polling to check when it becomes ready
+    if (!transport.ready) {
+      const checkReady = () => {
+        if (transport.ready) {
+          // Transport became ready, flush queue
+          this.flushQueue();
+        } else {
+          // Check again in 10ms
+          setTimeout(checkReady, 10);
+        }
+      };
+      setTimeout(checkReady, 10);
     }
   }
 
@@ -160,12 +186,39 @@ export class TransportMgr {
 
   /**
    * Emits a log entry to all registered transports.
+   * If not all transports are ready, queues the message.
    *
    * @param {Log.Entry} msg - The log entry to emit.
    */
   emit(msg: Log.Entry): void {
+    if (this.allReady()) {
+      // All transports ready - emit directly and flush any queued messages
+      this.emitToTransports(msg);
+      this.flushQueue();
+    } else {
+      // Queue the message until all transports are ready
+      this._queue.push(msg);
+    }
+  }
+
+  /**
+   * Emits a message directly to all transports without queuing.
+   * @private
+   */
+  private emitToTransports(msg: Log.Entry): void {
     for (const transport of this.transports) {
       transport.emit(msg);
+    }
+  }
+
+  /**
+   * Flushes all queued messages to transports when they become ready.
+   * @private
+   */
+  private flushQueue(): void {
+    while (this._queue.length > 0 && this.allReady()) {
+      const msg = this._queue.shift()!;
+      this.emitToTransports(msg);
     }
   }
 }

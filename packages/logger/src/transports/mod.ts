@@ -5,5 +5,4 @@ export * from './consts.ts';
 export * as File from './file/mod.ts';
 export * as Influx from './influx/mod.ts';
 export { TransportMgr as Mgr } from './mgr.ts';
-export * as Otlp from './otlp/mod.ts';
 export * from './types.ts';

@@ -30,7 +30,16 @@ export class BufferTransport extends Base.Transport {
   constructor(logMgr: ILogMgrTransportContext, opts: IBufferTransportOptions = {}) {
     super(logMgr, opts);
     this.maxEntries = opts.maxEntries ?? 1000;
-    this._bReady = true;
+    
+    if (opts.delayReady && opts.delayReady > 0) {
+      // Start as not ready, become ready after delay
+      this._bReady = false;
+      setTimeout(() => {
+        this._bReady = true;
+      }, opts.delayReady);
+    } else {
+      this._bReady = true;
+    }
   }
 
   /**
