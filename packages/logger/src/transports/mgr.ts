@@ -120,28 +120,8 @@ export class TransportMgr {
       this.transports.unshift(transport);
     }
 
-    // Set up ready callback for delayed transports
-    this.setupReadyCallback(transport);
-  }
-
-  /**
-   * Sets up a callback for when a transport becomes ready.
-   * @private
-   */
-  private setupReadyCallback(transport: AbstractTransport): void {
-    // If transport is not ready, set up polling to check when it becomes ready
-    if (!transport.ready) {
-      const checkReady = () => {
-        if (transport.ready) {
-          // Transport became ready, flush queue
-          this.flushQueue();
-        } else {
-          // Check again in 10ms
-          setTimeout(checkReady, 10);
-        }
-      };
-      setTimeout(checkReady, 10);
-    }
+    // Set up callback for when transport becomes ready
+    transport.setReadyCallback(() => this.flushQueue());
   }
 
   /**

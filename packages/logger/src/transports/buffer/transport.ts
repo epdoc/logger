@@ -37,6 +37,8 @@ export class BufferTransport extends Base.Transport {
       this._bReady = false;
       setTimeout(() => {
         this._bReady = true;
+        // Notify that we're ready
+        this.onReady();
       }, opts.delayReady);
     } else {
       this._bReady = true;
