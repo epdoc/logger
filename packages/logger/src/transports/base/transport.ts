@@ -24,13 +24,18 @@ import type { BaseOptions } from './types.ts';
 export abstract class AbstractTransport {
   /** A string identifier for the transport type (e.g., 'console', 'file'). */
   public readonly type: string = 'basic';
+  /** Unique identifier for this transport instance. */
+  public readonly id: string;
   protected _logMgr: ILogMgrTransportContext;
   protected _bReady = false;
+  protected _bEnabled = true;
   protected _opts: BaseOptions;
   protected _level: Level.Value;
   protected _threshold: Level.Value;
   protected _flushThreshold: Level.Value;
   protected _show: EmitterShowOpts = { pkgSep: '.' };
+
+  private static _nextId = 1;
 
   /**
    * Initializes a new transport instance.
@@ -46,6 +51,9 @@ export abstract class AbstractTransport {
     this._threshold = logMgr.threshold;
     this._flushThreshold = logMgr.logLevels.asValue('warn');
     this._show = opts.show ?? logMgr.show;
+    
+    // Generate unique ID for this transport instance
+    this.id = `${this.type}-${AbstractTransport._nextId++}`;
   }
 
   /**
@@ -179,13 +187,31 @@ export abstract class AbstractTransport {
   }
 
   /**
+   * Enables or disables the transport.
+   *
+   * @param {boolean} enabled - Whether the transport should be enabled.
+   * @returns {this} The instance for chaining.
+   */
+  setEnabled(enabled: boolean): this {
+    this._bEnabled = enabled;
+    return this;
+  }
+
+  /**
+   * Indicates whether the transport is enabled.
+   */
+  get enabled(): boolean {
+    return this._bEnabled;
+  }
+
+  /**
    * The core method where the transport processes and outputs a log entry.
    * Concrete classes must implement this method.
    *
    * @param {Entry} msg - The log entry to process.
    */
   emit(msg: Entry): void {
-    if (this.msgMeetsThreshold(msg)) {
+    if (this._bEnabled && this.msgMeetsThreshold(msg)) {
       // Implementation-specific logic goes in subclasses.
     }
   }

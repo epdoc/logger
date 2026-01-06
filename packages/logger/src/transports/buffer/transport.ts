@@ -24,6 +24,7 @@ import type { IBufferEntry, IBufferTransportOptions } from './types.ts';
  * ```
  */
 export class BufferTransport extends Base.Transport {
+  public readonly type: string = 'buffer';
   private entries: IBufferEntry[] = [];
   private maxEntries: number;
 
@@ -53,6 +54,10 @@ export class BufferTransport extends Base.Transport {
    * Emits a log entry to the buffer.
    */
   override emit(msg: Entry) {
+    if (!this._bEnabled) {
+      return; // Transport is disabled
+    }
+    
     const levelValue: Level.Value = this._logMgr.logLevels.asValue(msg.level);
     if (!this.meetsThresholdValue(levelValue)) {
       return;
