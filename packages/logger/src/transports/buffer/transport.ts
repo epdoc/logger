@@ -27,21 +27,30 @@ export class BufferTransport extends Base.Transport {
   public readonly type: string = 'buffer';
   private entries: IBufferEntry[] = [];
   private maxEntries: number;
+  private delayReady?: number;
 
   constructor(logMgr: ILogMgrTransportContext, opts: IBufferTransportOptions = {}) {
     super(logMgr, opts);
     this.maxEntries = opts.maxEntries ?? 1000;
+    this.delayReady = opts.delayReady;
+    // Don't set ready here - let setup() handle it
+  }
 
-    if (opts.delayReady && opts.delayReady > 0) {
-      // Start as not ready, become ready after delay
-      this._bReady = false;
-      setTimeout(() => {
-        this._bReady = true;
-        // Notify that we're ready
-        this.onReady();
-      }, opts.delayReady);
+  /**
+   * Initializes the transport with optional delay for testing.
+   */
+  override setup(): Promise<void> {
+    if (this.delayReady && this.delayReady > 0) {
+      // Simulate async setup (e.g., network connection)
+      return new Promise(resolve => {
+        setTimeout(() => {
+          this._bReady = true;
+          resolve();
+        }, this.delayReady);
+      });
     } else {
       this._bReady = true;
+      return Promise.resolve();
     }
   }
 

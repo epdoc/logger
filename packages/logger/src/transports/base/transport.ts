@@ -30,7 +30,6 @@ export abstract class AbstractTransport {
   protected _bReady = false;
   protected _bEnabled = true;
   protected _opts: BaseOptions;
-  protected _readyCallback?: () => void;
   protected _level: Level.Value;
   protected _threshold: Level.Value;
   protected _flushThreshold: Level.Value;
@@ -242,24 +241,6 @@ export abstract class AbstractTransport {
    * Clears any internal state of the transport (e.g., a buffer).
    */
   clear(): void {}
-
-  /**
-   * Called when the transport becomes ready. Triggers flush of queued messages.
-   * @protected
-   */
-  protected onReady(): void {
-    if (this._readyCallback) {
-      this._readyCallback();
-    }
-  }
-
-  /**
-   * Sets a callback to be called when the transport becomes ready.
-   * @internal
-   */
-  setReadyCallback(callback: () => void): void {
-    this._readyCallback = callback;
-  }
 
   /**
    * Indicates if the transport is currently active and operational.

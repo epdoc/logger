@@ -119,9 +119,6 @@ export class TransportMgr {
     } else {
       this.transports.unshift(transport);
     }
-
-    // Set up callback for when transport becomes ready
-    transport.setReadyCallback(() => this.flushQueue());
   }
 
   /**
