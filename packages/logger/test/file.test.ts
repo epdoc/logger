@@ -12,7 +12,7 @@ describe('File Transport', () => {
   test('should write to a file', async () => {
     const logMgr = new Log.Mgr<M>();
     logMgr.show = { level: true, timestamp: 'elapsed' };
-    logMgr.init();
+    logMgr.initLevels();
     const console = new Log.Transport.Console.Transport(logMgr, {});
     logMgr.addTransport(console);
     logMgr.threshold = 'spam';
@@ -27,7 +27,7 @@ describe('File Transport', () => {
     logMgr.addTransport(transport);
     await logMgr.start();
 
-    const log: Log.Std.Logger<M> = logMgr.getLogger<L>();
+    const log: Log.Std.Logger<M> = await logMgr.getLogger<L>();
     log.reqId = '01';
     (log.info as MsgBuilder.Console.Builder).h1('h1(test:)').value('value(std logger)').data({ a: 2 }).emit();
     (log.info as MsgBuilder.Console.Builder).h2('last msg before stop').emit();

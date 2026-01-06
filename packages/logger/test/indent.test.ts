@@ -9,25 +9,25 @@ type L = Log.Std.Logger<M>;
 
 describe('Logger Indentation', () => {
   describe('Indent State Management', () => {
-    it('should start with empty indentation', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should start with empty indentation', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       assertEquals(log.getdent().length, 0);
     });
 
-    it('should support default indent (single space)', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should support default indent (single space)', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.indent();
       assertEquals(log.getdent().length, 1);
       assertEquals(log.getdent()[0], ' ');
     });
 
-    it('should support numeric indent (multiple spaces)', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should support numeric indent (multiple spaces)', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.indent(3);
       assertEquals(log.getdent().length, 3);
@@ -36,18 +36,18 @@ describe('Logger Indentation', () => {
       assertEquals(log.getdent()[2], ' ');
     });
 
-    it('should support string indent', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should support string indent', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.indent('>>');
       assertEquals(log.getdent().length, 1);
       assertEquals(log.getdent()[0], '>>');
     });
 
-    it('should support array indent', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should support array indent', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.indent(['[', 'nested', ']']);
       assertEquals(log.getdent().length, 3);
@@ -56,9 +56,9 @@ describe('Logger Indentation', () => {
       assertEquals(log.getdent()[2], ']');
     });
 
-    it('should accumulate multiple indents', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should accumulate multiple indents', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.indent('level1');
       log.indent(2);
@@ -73,9 +73,9 @@ describe('Logger Indentation', () => {
   });
 
   describe('Outdent Operations', () => {
-    it('should support single outdent', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should support single outdent', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.indent('a');
       log.indent('b');
@@ -88,9 +88,9 @@ describe('Logger Indentation', () => {
       assertEquals(log.getdent()[1], 'b');
     });
 
-    it('should support multiple outdent', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should support multiple outdent', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.indent('a');
       log.indent('b');
@@ -102,9 +102,9 @@ describe('Logger Indentation', () => {
       assertEquals(log.getdent()[0], 'a');
     });
 
-    it('should handle outdent beyond available levels', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should handle outdent beyond available levels', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.indent('a');
       log.indent('b');
@@ -113,9 +113,9 @@ describe('Logger Indentation', () => {
       assertEquals(log.getdent().length, 0);
     });
 
-    it('should handle outdent on empty indentation', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should handle outdent on empty indentation', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.outdent(); // Should not throw
       assertEquals(log.getdent().length, 0);
@@ -123,9 +123,9 @@ describe('Logger Indentation', () => {
   });
 
   describe('Nodent (Reset)', () => {
-    it('should reset all indentation', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should reset all indentation', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.indent('a');
       log.indent('b');
@@ -136,9 +136,9 @@ describe('Logger Indentation', () => {
       assertEquals(log.getdent().length, 0);
     });
 
-    it('should handle nodent on empty indentation', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should handle nodent on empty indentation', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.nodent(); // Should not throw
       assertEquals(log.getdent().length, 0);
@@ -146,9 +146,9 @@ describe('Logger Indentation', () => {
   });
 
   describe('Child Logger Inheritance', () => {
-    it('should inherit parent indentation', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const parentLog = logMgr.getLogger<L>();
+    it('should inherit parent indentation', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const parentLog = await logMgr.getLogger<L>();
 
       parentLog.indent('parent1');
       parentLog.indent('parent2');
@@ -160,9 +160,9 @@ describe('Logger Indentation', () => {
       assertEquals(childLog.getdent()[1], 'parent2');
     });
 
-    it('should maintain independent indentation from parent', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const parentLog = logMgr.getLogger<L>();
+    it('should maintain independent indentation from parent', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const parentLog = await logMgr.getLogger<L>();
 
       parentLog.indent('parent');
       const childLog = parentLog.getChild({ reqId: 'test' });
@@ -182,9 +182,9 @@ describe('Logger Indentation', () => {
   });
 
   describe('Message Indentation Application', () => {
-    it('should apply indentation to string messages', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should apply indentation to string messages', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.indent('>>');
       log.indent('  ');
@@ -215,9 +215,9 @@ describe('Logger Indentation', () => {
       }
     });
 
-    it('should apply indentation to message builder messages', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should apply indentation to message builder messages', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.indent('>>');
       log.indent('  ');
@@ -244,9 +244,9 @@ describe('Logger Indentation', () => {
   });
 
   describe('Bracketing Pattern', () => {
-    it('should support typical bracketing usage pattern', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should support typical bracketing usage pattern', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       // Typical usage: bracket a section of logging
       log.info.text('Starting operation').emit();
@@ -269,9 +269,9 @@ describe('Logger Indentation', () => {
       assertEquals(log.getdent().length, 0);
     });
 
-    it('should support nested bracketing with different markers', () => {
-      const logMgr = new Log.Mgr<M>().init();
-      const log = logMgr.getLogger<L>();
+    it('should support nested bracketing with different markers', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
 
       log.indent('│ '); // Box drawing character
       log.indent('├─'); // Branch

@@ -6,9 +6,9 @@ import * as Log from '../src/mod.ts';
 type M = MsgBuilder.Console.Builder;
 
 describe('Logger Recursion', () => {
-  test('should handle recursive logger creation and usage', () => {
+  test('should handle recursive logger creation and usage', async () => {
     const logMgr = new Log.Mgr<M>();
-    const rootLogger = logMgr.getLogger<Log.Std.Logger<M>>();
+    const rootLogger = await logMgr.getLogger<Log.Std.Logger<M>>();
     logMgr.threshold = 'spam'; // Allow all levels
 
     rootLogger.sid = 'sid1';
@@ -43,9 +43,9 @@ describe('Logger Recursion', () => {
     }
   });
 
-  test('should maintain logger hierarchy correctly', () => {
+  test('should maintain logger hierarchy correctly', async () => {
     const logMgr = new Log.Mgr<M>();
-    const rootLogger = logMgr.getLogger<Log.Std.Logger<M>>();
+    const rootLogger = await logMgr.getLogger<Log.Std.Logger<M>>();
     logMgr.threshold = 'info';
 
     // Test that child loggers maintain proper hierarchy

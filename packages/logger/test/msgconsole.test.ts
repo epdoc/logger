@@ -12,9 +12,8 @@ const logMgr = new Log.Mgr<M>();
 
 describe('MsgBuilder.Console', () => {
   describe('general', () => {
-    test('display applyColors', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('display applyColors', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
       logMgr.threshold = 'info';
 
       const msgBuilder = (log.info as MsgBuilder.Console.Builder).h1('message heading');
@@ -28,9 +27,8 @@ describe('MsgBuilder.Console', () => {
       }
     });
 
-    test('display no colors', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('display no colors', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
       logMgr.threshold = 'info';
 
       const msgBuilder = (log.info as MsgBuilder.Console.Builder).h1('message heading');
@@ -38,9 +36,8 @@ describe('MsgBuilder.Console', () => {
       assertEquals(r2, 'message heading');
     });
 
-    test('display elapsed no color', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('display elapsed no color', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
       logMgr.threshold = 'info';
 
       const msgBuilder = (log.info as MsgBuilder.Console.Builder).h1('message heading');
@@ -48,9 +45,8 @@ describe('MsgBuilder.Console', () => {
       assertEquals(result, 'message heading');
     });
 
-    test('display elapsed applyColor', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('display elapsed applyColor', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
       logMgr.threshold = 'info';
 
       const msgBuilder = (log.info as MsgBuilder.Console.Builder).h1('message heading');
@@ -60,81 +56,80 @@ describe('MsgBuilder.Console', () => {
   });
 
   describe('specific methods', () => {
-    test('h1', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('h1', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).h1('h1').format({ color: true });
       // Test passes if no error thrown
     });
 
-    test('h2', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('h2', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).h2('h2').format({ color: true });
       // Test passes if no error thrown
     });
 
-    test('h3', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('h3', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).h3('h3').format({ color: true });
       // Test passes if no error thrown
     });
 
-    test('action', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('action', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).action('action').format({ color: true });
       // Test passes if no error thrown
     });
 
-    test('label', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('label', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).label('label').format({ color: true });
       // Test passes if no error thrown
     });
 
-    test('highlight', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('highlight', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).highlight('highlight').format({ color: true });
       // Test passes if no error thrown
     });
 
-    test('value', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('value', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).value('value').format({ color: true });
       // Test passes if no error thrown
     });
 
-    test('path', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('path', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).path('path').format({ color: true });
       // Test passes if no error thrown
     });
 
-    test('relative to home', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('relative to home', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const path = os.homedir() + '/test/path';
@@ -142,9 +137,9 @@ describe('MsgBuilder.Console', () => {
       // Test passes if no error thrown
     });
 
-    test('relative to root', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('relative to root', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const path = '/test/path';
@@ -152,45 +147,45 @@ describe('MsgBuilder.Console', () => {
       // Test passes if no error thrown
     });
 
-    test('date', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('date', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).date('date').format({ color: true });
       // Test passes if no error thrown
     });
 
-    test('section', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('section', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).section('SECTION').format({ color: true });
       // Test passes if no error thrown
     });
 
-    test('warn', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('warn', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).warn('warn').format({ color: true });
       // Test passes if no error thrown
     });
 
-    test('error', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('error', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).error('error').format({ color: true });
       // Test passes if no error thrown
     });
 
-    test('strikethru', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('strikethru', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).strikethru('strikethru').format({ color: true });
@@ -199,9 +194,9 @@ describe('MsgBuilder.Console', () => {
   });
 
   describe('err method', () => {
-    test('default minus stack', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('default minus stack', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const err = new Error('test error');
@@ -209,9 +204,9 @@ describe('MsgBuilder.Console', () => {
       // Test passes if no error thrown
     });
 
-    test('default minus stack, cause', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('default minus stack, cause', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const err = new Error('test error');
@@ -221,9 +216,9 @@ describe('MsgBuilder.Console', () => {
       // Test passes if no error thrown
     });
 
-    test('default minus stack, path plus code', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('default minus stack, path plus code', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const err = new Error('test error');
@@ -234,54 +229,54 @@ describe('MsgBuilder.Console', () => {
   });
 
   describe('count method for pluralization', () => {
-    test('singular with one argument: appends nothing', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('singular with one argument: appends nothing', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).count(1).h2('message').format({ color: false });
       // Test passes if no error thrown
     });
 
-    test('plural with one argument: appends "s"', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('plural with one argument: appends "s"', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).count(2).h2('message').format({ color: false });
       // Test passes if no error thrown
     });
 
-    test('zero with one argument: appends "s"', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('zero with one argument: appends "s"', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).count(0).h2('message').format({ color: false });
       // Test passes if no error thrown
     });
 
-    test('singular with two arguments: uses first string', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('singular with two arguments: uses first string', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).count(1).h2('entry', 'entries').format({ color: false });
       // Test passes if no error thrown
     });
 
-    test('plural with two arguments: uses second string', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('plural with two arguments: uses second string', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).count(5).h2('entry', 'entries').format({ color: false });
       // Test passes if no error thrown
     });
 
-    test('only applies to the next method call', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('only applies to the next method call', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).count(10).h2('message').h2('inbox').format({
@@ -290,9 +285,9 @@ describe('MsgBuilder.Console', () => {
       // Test passes if no error thrown
     });
 
-    test('does not pluralize for non-integer counts', () => {
-      const log = logMgr.getLogger<Log.Std.Logger<M>>();
-      logMgr.init();
+    test('does not pluralize for non-integer counts', async () => {
+      const log = await logMgr.getLogger<Log.Std.Logger<M>>();
+      logMgr.initLevels();
       logMgr.threshold = 'info';
 
       const _result = (log.info as MsgBuilder.Console.Builder).count(1.5).h2('message').format({ color: false });

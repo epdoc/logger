@@ -23,6 +23,7 @@ import type * as Console from './types.ts';
  * ```
  */
 export class ConsoleTransport extends Base.Transport {
+  public override readonly type: string = 'console';
   protected _levelWidth: Integer = 5;
   protected _format: OutputFormatType = OutputFormat.TEXT;
   protected _color: boolean = true;

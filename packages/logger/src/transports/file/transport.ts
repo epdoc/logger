@@ -21,6 +21,7 @@ const BUFSIZE = 4096;
  * ```
  */
 export class FileTransport extends Console.Transport {
+  public override readonly type: string = 'file';
   protected _json = false;
   protected filepath: string;
   protected file: Deno.FsFile | undefined;

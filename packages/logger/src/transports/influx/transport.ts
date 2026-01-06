@@ -7,6 +7,7 @@ import type { ILogMgrTransportContext } from '../types.ts';
 import type * as Influx from './types.ts';
 
 export class InfluxTransport extends Console.Transport {
+  public override readonly type: string = 'influx';
   override _opts: Influx.Options;
 
   constructor(logMgr: ILogMgrTransportContext, opts: Influx.Options) {

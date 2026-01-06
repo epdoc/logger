@@ -1,14 +1,16 @@
 import * as Log from '@epdoc/logger';
-import { Console } from '@epdoc/msgbuilder';
+import type { Console } from '@epdoc/msgbuilder';
 import { assertEquals, assertStringIncludes, assertThrows } from '@std/assert';
-import { BufferTransport } from '../../src/transports/buffer/transport.ts';
+import { BufferTransport } from '../src/transports/buffer/transport.ts';
 
-Deno.test('BufferTransport - basic functionality', () => {
-  const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
+Deno.test('BufferTransport - basic functionality', async () => {
+  const logMgr = new Log.Mgr<Console.Builder>();
+  logMgr.initLevels();
+  logMgr.threshold = 'info';
   const bufferTransport = new BufferTransport(logMgr);
-  logMgr.addTransport(bufferTransport);
+  await logMgr.addTransport(bufferTransport);
 
-  const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+  const logger = await logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
 
   // Log some messages
   logger.info.text('Info message').emit();
@@ -17,16 +19,18 @@ Deno.test('BufferTransport - basic functionality', () => {
   // Check entries
   const entries = bufferTransport.getEntries();
   assertEquals(entries.length, 2);
-  assertStringIncludes(entries[0].message, 'Info message');
-  assertStringIncludes(entries[1].message, 'Error message');
+  assertStringIncludes(entries[0].msg!, 'Info message');
+  assertStringIncludes(entries[1].msg!, 'Error message');
 });
 
-Deno.test('BufferTransport - maxEntries limit', () => {
-  const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
+Deno.test('BufferTransport - maxEntries limit', async () => {
+  const logMgr = new Log.Mgr<Console.Builder>();
+  logMgr.initLevels();
+  logMgr.threshold = 'info';
   const bufferTransport = new BufferTransport(logMgr, { maxEntries: 3 });
-  logMgr.addTransport(bufferTransport);
+  await logMgr.addTransport(bufferTransport);
 
-  const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+  const logger = await logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
 
   // Add more messages than the limit
   for (let i = 1; i <= 5; i++) {
@@ -36,17 +40,19 @@ Deno.test('BufferTransport - maxEntries limit', () => {
   // Should only keep the last 3 messages
   const entries = bufferTransport.getEntries();
   assertEquals(entries.length, 3);
-  assertStringIncludes(entries[0].message, 'Message 3');
-  assertStringIncludes(entries[1].message, 'Message 4');
-  assertStringIncludes(entries[2].message, 'Message 5');
+  assertStringIncludes(entries[0].msg!, 'Message 3');
+  assertStringIncludes(entries[1].msg!, 'Message 4');
+  assertStringIncludes(entries[2].msg!, 'Message 5');
 });
 
-Deno.test('BufferTransport - utility methods', () => {
-  const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
+Deno.test('BufferTransport - utility methods', async () => {
+  const logMgr = new Log.Mgr<Console.Builder>();
+  logMgr.initLevels();
+  logMgr.threshold = 'info';
   const bufferTransport = new BufferTransport(logMgr);
-  logMgr.addTransport(bufferTransport);
+  await logMgr.addTransport(bufferTransport);
 
-  const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+  const logger = await logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
 
   logger.info.text('First message').emit();
   logger.error.text('Second message').emit();
@@ -64,12 +70,14 @@ Deno.test('BufferTransport - utility methods', () => {
   assertStringIncludes(messages[1], 'Second message');
 });
 
-Deno.test('BufferTransport - assertion methods', () => {
-  const logMgr = Log.createLogManager<Console.Builder>(Console.Builder, { threshold: 'info' });
+Deno.test('BufferTransport - assertion methods', async () => {
+  const logMgr = new Log.Mgr<Console.Builder>();
+  logMgr.initLevels();
+  logMgr.threshold = 'info';
   const bufferTransport = new BufferTransport(logMgr);
-  logMgr.addTransport(bufferTransport);
+  await logMgr.addTransport(bufferTransport);
 
-  const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+  const logger = await logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
 
   logger.info.text('Test message').emit();
   logger.error.text('Another message').emit();
@@ -100,12 +108,14 @@ Deno.test('BufferTransport - assertion methods', () => {
   );
 });
 
-Deno.test('BufferTransport - clear functionality', () => {
-  const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
+Deno.test('BufferTransport - clear functionality', async () => {
+  const logMgr = new Log.Mgr<Console.Builder>();
+  logMgr.initLevels();
+  logMgr.threshold = 'info';
   const bufferTransport = new BufferTransport(logMgr);
-  logMgr.addTransport(bufferTransport);
+  await logMgr.addTransport(bufferTransport);
 
-  const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+  const logger = await logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
 
   logger.info.text('Test message').emit();
   assertEquals(bufferTransport.getCount(), 1);

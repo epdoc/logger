@@ -51,7 +51,7 @@ export abstract class AbstractTransport {
     this._threshold = logMgr.threshold;
     this._flushThreshold = logMgr.logLevels.asValue('warn');
     this._show = opts.show ?? logMgr.show;
-    
+
     // Generate unique ID for this transport instance
     this.id = `${this.type}-${AbstractTransport._nextId++}`;
   }

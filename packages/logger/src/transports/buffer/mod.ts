@@ -2,5 +2,5 @@
  * @file Buffer transport module exports
  */
 
-export { BufferTransport } from './transport.ts';
-export type { IBufferEntry, IBufferTransportOptions } from './types.ts';
+export { BufferTransport as Transport } from './transport.ts';
+export type { IBufferTransportOptions } from './types.ts';

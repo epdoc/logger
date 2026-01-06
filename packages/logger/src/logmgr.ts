@@ -37,7 +37,7 @@ import { isStrictEmitterShowOpts } from './guards.ts';
  * const logMgr = new Log.Mgr();
  * logMgr.loggerFactory = Log.Cli.factoryMethods;
  * logMgr.msgBuilderFactory = Log.MsgBuilder.Console.createMsgBuilder;
- * logMgr.addTransport(new Log.Transport.File.Transport(logMgr, { filepath: 'app.log' }));
+ * await logMgr.addTransport(new Log.Transport.File.Transport(logMgr, { filepath: 'app.log' }));
  * ```
  *
  * @template M - The message builder type, defaults to Console.Builder
@@ -86,13 +86,7 @@ export class LogMgr<
       }
       this._show = Object.assign(this._show, opts.show);
     }
-    // this._logLevels = this._loggerFactories.createLevels();
   }
-
-  // constructor2(levelsFactory: Level.FactoryMethod = Logger.Std.createLogLevels) {
-  //   this._logLevels = levelsFactory();
-  //   // this._transports = [Transport.factoryMethod<M>(this)];
-  // }
 
   /**
    * Sets the factory used to create message builder instances. Used to override the
@@ -124,7 +118,7 @@ export class LogMgr<
    * @deprecated Use init method
    */
   public set loggerFactory(factories: Logger.IFactoryMethods<M, Logger.IEmitter>) {
-    this.init(factories);
+    this.initLevels(factories);
   }
 
   /**
@@ -153,13 +147,21 @@ export class LogMgr<
    * factories to use. If not provided, the existing factories will be used.
    * @returns {this} The `LogMgr` instance for chaining.
    */
-  public init(factories?: Logger.IFactoryMethods<M, Logger.IEmitter>): this {
+  initLevels(factories?: Logger.IFactoryMethods<M, Logger.IEmitter>): this {
     if (factories) {
       this._loggerFactories = factories;
     }
-    this._logLevels = this._loggerFactories.createLevels();
-    // this._rootLogger = this._loggerFactories.createLogger(this);
+    if (!this._logLevels) {
+      this._logLevels = this._loggerFactories.createLevels();
+    }
     return this;
+  }
+
+  /**
+   * @deprecated Use initLevels() instead.
+   */
+  public get init(): this {
+    return this.initLevels();
   }
 
   /**
@@ -171,7 +173,7 @@ export class LogMgr<
   public set threshold(level: Level.Name | Level.Value) {
     assert(
       this._logLevels,
-      'Methods init() or getLogger() must be called before setting log level threshold.',
+      'Methods initLevels() or getLogger() must be called before setting log level threshold.',
     );
     this._threshold = this.logLevels.asValue(level);
     if (this._rootLogger) {
@@ -226,7 +228,7 @@ export class LogMgr<
    *
    * @remarks
    * On the first call, this method initializes the `LogMgr` with default
-   * factories (if `init()` has not been called), sets up a default console
+   * factories (if `initLevels()` has not been called), sets up a default console
    * transport, and starts the logging queue. Subsequent calls return the
    * existing root logger.
    *
@@ -241,7 +243,7 @@ export class LogMgr<
    * @template L - The expected type of the logger, which must extend `Logger.IEmitter`.
    * @returns {L} The root logger instance.
    */
-  public getLogger<L extends Logger.IEmitter>(params: Logger.IGetChildParams = {}): L {
+  public async getLogger<L extends Logger.IEmitter>(params: Logger.IGetChildParams = {}): Promise<L> {
     if (!this._rootLogger) {
       this._logLevels = this._loggerFactories.createLevels();
       this._rootLogger = this._loggerFactories.createLogger(this, params);
@@ -250,10 +252,10 @@ export class LogMgr<
       const transport = new Transport.Console.Transport(this, {
         show: this._show,
       });
-      this.transportMgr.add(transport);
+      await this.transportMgr.add(transport);
     }
     if (!this.transportMgr.isRunning()) {
-      this.start();
+      await this.start();
     }
     return this._rootLogger as L;
   }
@@ -307,14 +309,16 @@ export class LogMgr<
     return this._t0;
   }
 
-  public addTransport(transport: Transport.Base.Transport): this {
-    this.transportMgr.add(transport);
-    return this;
+  async addTransport(transport: Transport.Base.Transport): Promise<void> {
+    assert(this._logLevels, 'Log Manager must be initialized before adding transports.');
+    if (this.transportMgr.isRunning()) {
+      this.emit({ level: 'warn', msg: 'Log Manager is already running. Normally transports are added before start.' });
+    }
+    await this.transportMgr.add(transport);
   }
 
-  public removeTransport(transport: Transport.Base.Transport): this {
-    this.transportMgr.remove(transport);
-    return this;
+  async removeTransport(transport: Transport.Base.Transport): Promise<void> {
+    await this.transportMgr.remove(transport);
   }
 
   /**
@@ -402,6 +406,9 @@ export class LogMgr<
    * @param {Entry} msg - The log message to emit.
    */
   public emit(msg: Log.Entry): void {
+    if (!msg.timestamp) {
+      msg.timestamp = new Date();
+    }
     if (this.meetsThreshold(msg.level)) {
       if (this.transportMgr.isRunning()) {
         this.transportMgr.emit(msg);
@@ -431,7 +438,7 @@ export class LogMgr<
    * @throws Will throw an error if log levels are not set.
    */
   get logLevels(): Level.IBasic {
-    assert(this._logLevels, 'LogLevels not set for Logger');
+    assert(this._logLevels, 'LogLevels not set for Logger. Call initLevels() first.');
     return this._logLevels as Level.IBasic;
   }
 

@@ -35,6 +35,19 @@ This package provides the core logging functionality with:
 
 **Version 1000.0.0 indicates a major rewrite that is incompatible with prior versions of this module**
 
+### Breaking Changes in v1003.2.0
+
+- **`LogMgr.addTransport()` is now async**: Must be awaited when adding transports
+- **`TransportMgr.add()` is now async**: Internal API change for proper transport initialization
+
+```typescript
+// Before v1003.2.0
+logMgr.addTransport(new FileTransport(logMgr, options));
+
+// v1003.2.0 and later
+await logMgr.addTransport(new FileTransport(logMgr, options));
+```
+
 
 ## Installation
 
@@ -184,6 +197,15 @@ type L = Log.Std.Logger<M>;
 
 // Create a new Log Manager instance.
 const logMgr = new Log.Mgr<M>();
+
+// Initialize the log manager
+logMgr.init();
+
+// Add transports (now async in v1003.2.0+)
+await logMgr.addTransport(new Log.Transport.Console.Transport(logMgr));
+
+// Start the log manager
+await logMgr.start();
 
 // Get a logger instance from the manager.
 const log = logMgr.getLogger<L>();

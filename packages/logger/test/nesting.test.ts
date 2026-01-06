@@ -8,9 +8,9 @@ type M = MsgBuilder.Console.Builder;
 describe('Logger Nesting', () => {
   test('should create a child logger', async () => {
     const logMgr = new Log.Mgr<M>();
-    logMgr.init();
+    logMgr.initLevels();
     await logMgr.start();
-    const rootLogger = logMgr.getLogger<Log.Std.Logger<M>>();
+    const rootLogger = await logMgr.getLogger<Log.Std.Logger<M>>();
     rootLogger.reqId = 'req1';
     rootLogger.pkgs.push('root');
 
@@ -29,9 +29,9 @@ describe('Logger Nesting', () => {
 
   test('should correctly handle multiple levels of nesting', async () => {
     const logMgr = new Log.Mgr<M>();
-    logMgr.init();
+    logMgr.initLevels();
     await logMgr.start();
-    const rootLogger = logMgr.getLogger<Log.Std.Logger<M>>();
+    const rootLogger = await logMgr.getLogger<Log.Std.Logger<M>>();
     rootLogger.reqId = 'req1';
     rootLogger.pkgs.push('root');
 
@@ -52,9 +52,9 @@ describe('Logger Nesting', () => {
 
   test('should overwrite sid in child logger', async () => {
     const logMgr = new Log.Mgr<M>();
-    logMgr.init();
+    logMgr.initLevels();
     await logMgr.start();
-    const rootLogger = logMgr.getLogger<Log.Std.Logger<M>>();
+    const rootLogger = await logMgr.getLogger<Log.Std.Logger<M>>();
     logMgr.threshold = 'info';
 
     rootLogger.sid = 'session1';
@@ -66,11 +66,11 @@ describe('Logger Nesting', () => {
 
   test('should correctly format the output string', async () => {
     const logMgr = new Log.Mgr<M>();
-    logMgr.init();
+    logMgr.initLevels();
     await logMgr.start();
     logMgr.threshold = 'spam'; // Allow all levels
 
-    const rootLogger = logMgr.getLogger<Log.Std.Logger<M>>();
+    const rootLogger = await logMgr.getLogger<Log.Std.Logger<M>>();
     rootLogger.sid = 'session1';
     rootLogger.reqId = 'req1';
     rootLogger.pkgs.push('root');
@@ -86,57 +86,53 @@ describe('Logger Nesting', () => {
     expect(entry).toBeDefined();
   });
 
-  test('should chain pkg names with default and custom separators', async () => {
-    // Test with default separator
-    const logMgr = new Log.Mgr<M>();
-    logMgr.init();
-    await logMgr.start();
-    logMgr.removeTransport(logMgr.transportMgr.transports[0]);
-    const rootLogger = logMgr.getLogger<Log.Std.Logger<M>>({ pkg: 'root' });
-    const childLogger = rootLogger.getChild({ pkg: 'child' });
-    const grandChildLogger = childLogger.getChild({ pkg: 'grandchild' });
+  describe('pkg chain', () => {
+    test('should chain pkg names with default separators', async () => {
+      // Test with default separator
+      const logMgr = new Log.Mgr<M>();
+      logMgr.initLevels();
+      const bufferTransport = new Log.Transport.Buffer.Transport(logMgr);
+      logMgr.addTransport(bufferTransport);
+      await logMgr.start();
+      const bufferTransport2 = new Log.Transport.Buffer.Transport(logMgr);
+      logMgr.addTransport(bufferTransport2);
+      const rootLogger = await logMgr.getLogger<Log.Std.Logger<M>>({ pkg: 'root' });
+      const childLogger = rootLogger.getChild({ pkg: 'child' });
+      const grandChildLogger = childLogger.getChild({ pkg: 'grandchild' });
 
-    let capturedEntry: Log.Entry | undefined;
-    const mockTransport = {
-      emit: (entry: Log.Entry) => {
-        capturedEntry = entry;
-      },
-      getOptions: () => {
-        return {};
-      },
-      meetsThresholdValue: () => {
-        return true;
-      },
-    };
-    logMgr.addTransport(mockTransport as unknown as Log.Transport.Base.Transport);
+      grandChildLogger.info.text('test').emit();
+      const capturedEntries = bufferTransport.getEntries();
+      expect(capturedEntries.length).toBe(2);
+      // First message: warning from LogMgr (no pkg field)
+      expect(capturedEntries[0].pkg).toBeUndefined();
+      expect(capturedEntries[0].msg).toBe(
+        'Log Manager is already running. Normally transports are added before start.',
+      );
+      // Second message: from grandchild logger
+      expect(capturedEntries[1].pkg).toBe('root.child.grandchild');
+      expect(capturedEntries[1].msg).toBe('test');
 
-    (grandChildLogger.info as MsgBuilder.Console.Builder).text('test').emit();
-    expect(capturedEntry?.pkg).toBe('root.child.grandchild');
+      const capturedEntries2 = bufferTransport2.getEntries();
+      expect(capturedEntries2.length).toBe(1);
+      // Only the test message (added after warning was emitted)
+      expect(capturedEntries2[0].msg).toBe('test');
+      expect(capturedEntries2[0].pkg).toBe('root.child.grandchild');
+    });
 
-    // Test with custom separator
-    const logMgr2 = new Log.Mgr<M>({ show: { pkgSep: '->' } });
-    logMgr2.init();
-    await logMgr2.start();
-    logMgr2.removeTransport(logMgr2.transportMgr.transports[0]);
-    const rootLogger2 = logMgr2.getLogger<Log.Std.Logger<M>>({ pkg: 'root' });
-    const childLogger2 = rootLogger2.getChild({ pkg: 'child' });
-    const grandChildLogger2 = childLogger2.getChild({ pkg: 'grandchild' });
+    test('should chain pkg names with custom separators', async () => {
+      // Test with custom separator
+      const logMgr = new Log.Mgr<M>({ show: { pkgSep: '->' } });
+      logMgr.initLevels();
+      const bufferTransport = new Log.Transport.Buffer.Transport(logMgr);
+      logMgr.addTransport(bufferTransport);
+      await logMgr.start();
+      const rootLogger = await logMgr.getLogger<Log.Std.Logger<M>>({ pkg: 'root' });
+      const childLogger = rootLogger.getChild({ pkg: 'child' });
+      const grandChildLogger = childLogger.getChild({ pkg: 'grandchild' });
 
-    let capturedEntry2: Log.Entry | undefined;
-    const mockTransport2 = {
-      emit: (entry: Log.Entry) => {
-        capturedEntry2 = entry;
-      },
-      getOptions: () => {
-        return {};
-      },
-      meetsThresholdValue: () => {
-        return true;
-      },
-    };
-    logMgr2.addTransport(mockTransport2 as unknown as Log.Transport.Base.Transport);
-
-    (grandChildLogger2.info as MsgBuilder.Console.Builder).text('test').emit();
-    expect(capturedEntry2?.pkg).toBe('root->child->grandchild');
+      grandChildLogger.info.text('test').emit();
+      const capturedEntry = bufferTransport.getLastEntry();
+      expect(capturedEntry?.pkg).toBe('root->child->grandchild');
+    });
   });
 });

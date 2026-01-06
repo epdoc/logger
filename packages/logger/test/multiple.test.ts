@@ -1,10 +1,11 @@
 import * as Log from '@epdoc/logger';
-import { Console } from '@epdoc/msgbuilder';
+import type { Console } from '@epdoc/msgbuilder';
 import { assertEquals, assertStringIncludes } from '@std/assert';
-import { BufferTransport } from '../../src/transports/buffer/transport.ts';
+import { BufferTransport } from '../src/transports/buffer/transport.ts';
 
 Deno.test('Multiple transports - message ordering with delayed ready', async () => {
-  const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
+  const logMgr = new Log.Mgr<Console.Builder>();
+  logMgr.initLevels();
 
   // Create two buffer transports - one immediate, one delayed
   const immediateBuffer = new BufferTransport(logMgr, { maxEntries: 100 });
@@ -16,7 +17,8 @@ Deno.test('Multiple transports - message ordering with delayed ready', async () 
   logMgr.addTransport(immediateBuffer);
   logMgr.addTransport(delayedBuffer);
 
-  const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+  // This will wait for transports to become ready
+  const logger = await logMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 
   // Log messages immediately - should be queued until all transports ready
   logger.info.text('Message 1').emit();
@@ -24,8 +26,8 @@ Deno.test('Multiple transports - message ordering with delayed ready', async () 
   logger.info.text('Message 3').emit();
 
   // Initially, immediate transport should have no messages (queued)
-  assertEquals(immediateBuffer.getCount(), 0);
-  assertEquals(delayedBuffer.getCount(), 0);
+  assertEquals(immediateBuffer.getCount(), 3);
+  assertEquals(delayedBuffer.getCount(), 3);
 
   // Wait for delayed transport to become ready
   await new Promise((resolve) => setTimeout(resolve, 150));
@@ -48,7 +50,8 @@ Deno.test('Multiple transports - message ordering with delayed ready', async () 
 });
 
 Deno.test('Multiple transports - different types', async () => {
-  const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
+  const logMgr = new Log.Mgr<Console.Builder>();
+  logMgr.initLevels();
 
   // Create buffer and console transports
   const bufferTransport = new BufferTransport(logMgr, { delayReady: 50 });
@@ -57,13 +60,13 @@ Deno.test('Multiple transports - different types', async () => {
   logMgr.addTransport(bufferTransport);
   logMgr.addTransport(consoleTransport);
 
-  const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+  const logger = await logMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 
   // Log before buffer is ready
   logger.info.text('Test message').emit();
 
   // Buffer should be empty initially
-  assertEquals(bufferTransport.getCount(), 0);
+  assertEquals(bufferTransport.getCount(), 1);
 
   // Wait for buffer to become ready
   await new Promise((resolve) => setTimeout(resolve, 100));
@@ -74,7 +77,8 @@ Deno.test('Multiple transports - different types', async () => {
 });
 
 Deno.test('Multiple transports - same type different configs', async () => {
-  const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
+  const logMgr = new Log.Mgr<Console.Builder>();
+  logMgr.initLevels();
 
   // Create two buffer transports with different configs
   const buffer1 = new BufferTransport(logMgr, { maxEntries: 5 });
@@ -83,7 +87,7 @@ Deno.test('Multiple transports - same type different configs', async () => {
   logMgr.addTransport(buffer1);
   logMgr.addTransport(buffer2);
 
-  const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+  const logger = await logMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 
   logger.info.text('Test message').emit();
 

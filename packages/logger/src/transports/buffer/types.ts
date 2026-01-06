@@ -22,17 +22,3 @@ export interface IBufferTransportOptions extends BaseOptions {
    */
   delayReady?: number;
 }
-
-/**
- * A log entry stored in the buffer
- */
-export interface IBufferEntry {
-  /** The formatted log message */
-  message: string;
-  /** Timestamp when the entry was added */
-  timestamp: Date;
-  /** Log level */
-  level: string;
-  /** Raw log data if available */
-  data?: unknown;
-}

@@ -107,15 +107,16 @@ export class TransportMgr {
   }
 
   /**
-   * Adds a new transport to the manager.
+   * Adds a new transport to the manager. Asynchronous when adding to an already running manager.
    *
    * @param {AbstractTransport<M>} transport - The transport instance to add.
    */
-  add(transport: AbstractTransport) {
+  async add(transport: AbstractTransport): Promise<void> {
     if (this._bRunning) {
       this._bRunning = false;
       this.transports.unshift(transport);
       this._bRunning = true;
+      await transport.setup();
     } else {
       this.transports.unshift(transport);
     }

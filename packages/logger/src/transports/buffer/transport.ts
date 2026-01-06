@@ -1,10 +1,11 @@
 import type { Entry } from '$log';
+import { DateEx } from '@epdoc/datetime';
 import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { _ } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
-import type { ILogMgrTransportContext } from '../types.ts';
-import type { IBufferEntry, IBufferTransportOptions } from './types.ts';
+import type { ILogMgrTransportContext, TransportEntry } from '../types.ts';
+import type { IBufferTransportOptions } from './types.ts';
 
 /**
  * Buffer transport that stores log messages in memory for testing and inspection.
@@ -24,8 +25,8 @@ import type { IBufferEntry, IBufferTransportOptions } from './types.ts';
  * ```
  */
 export class BufferTransport extends Base.Transport {
-  public readonly type: string = 'buffer';
-  private entries: IBufferEntry[] = [];
+  public override readonly type: string = 'buffer';
+  private entries: TransportEntry[] = [];
   private maxEntries: number;
   private delayReady?: number;
 
@@ -42,7 +43,7 @@ export class BufferTransport extends Base.Transport {
   override setup(): Promise<void> {
     if (this.delayReady && this.delayReady > 0) {
       // Simulate async setup (e.g., network connection)
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         setTimeout(() => {
           this._bReady = true;
           resolve();
@@ -68,7 +69,7 @@ export class BufferTransport extends Base.Transport {
     if (!this._bEnabled) {
       return; // Transport is disabled
     }
-    
+
     const levelValue: Level.Value = this._logMgr.logLevels.asValue(msg.level);
     if (!this.meetsThresholdValue(levelValue)) {
       return;
@@ -82,10 +83,14 @@ export class BufferTransport extends Base.Transport {
       message = msg.msg;
     }
 
-    const entry: IBufferEntry = {
-      message,
-      timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date(),
+    const entry: TransportEntry = {
+      timestamp: new DateEx(msg.timestamp ? msg.timestamp : new Date()).toISOLocalString(),
       level: msg.level,
+      msg: message,
+      time: msg.time,
+      pkg: msg.pkg,
+      reqId: msg.reqId,
+      sid: msg.sid,
       data: msg.data,
     };
 
@@ -100,21 +105,21 @@ export class BufferTransport extends Base.Transport {
   /**
    * Get all captured log entries
    */
-  getEntries(): readonly IBufferEntry[] {
+  getEntries(): readonly TransportEntry[] {
     return [...this.entries];
   }
 
   /**
    * Get entries filtered by log level
    */
-  getEntriesByLevel(level: string): readonly IBufferEntry[] {
-    return this.entries.filter((entry) => entry.level.toLowerCase() === level.toLowerCase());
+  getEntriesByLevel(level: string): readonly TransportEntry[] {
+    return this.entries.filter((entry) => entry.level!.toLowerCase() === level.toLowerCase());
   }
 
   /**
    * Get the most recent log entry
    */
-  getLastEntry(): IBufferEntry | undefined {
+  getLastEntry(): TransportEntry | undefined {
     return this.entries[this.entries.length - 1];
   }
 
@@ -122,28 +127,28 @@ export class BufferTransport extends Base.Transport {
    * Get all log messages as strings
    */
   getMessages(): string[] {
-    return this.entries.map((entry) => entry.message);
+    return this.entries.map((entry) => entry.msg || '');
   }
 
   /**
    * Get all log messages joined as a single string
    */
   getAllText(): string {
-    return this.entries.map((entry) => entry.message).join('\n');
+    return this.entries.map((entry) => entry.msg || '').join('\n');
   }
 
   /**
    * Check if any log message contains the specified text
    */
   contains(text: string): boolean {
-    return this.entries.some((entry) => entry.message.includes(text));
+    return this.entries.some((entry) => entry.msg?.includes(text));
   }
 
   /**
    * Check if any log message matches the specified regex
    */
   matches(pattern: RegExp): boolean {
-    return this.entries.some((entry) => pattern.test(entry.message));
+    return this.entries.some((entry) => pattern.test(entry.msg || ''));
   }
 
   /**

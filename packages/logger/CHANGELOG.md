@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1003.2.0] - 2026-01-06
+
+### Added
+- **BREAKING**: `TransportMgr.add()` is now async to properly initialize transports added after startup
+- **BREAKING**: `LogMgr.addTransport()` is now async and returns `Promise<void>`
+- Transport lifecycle management with dynamic addition/removal after startup
+- Enable/disable functionality for individual transports via `setEnabled()` method
+- Unique ID system for transport instances to support multiple transports of same type
+- Overhauled transport queuing system to handle messages sent before transports are ready
+  - Transport message queuing moved from LogMgr to TransportMgr
+- Enhanced BufferTransport with `delayReady` option for testing transport readiness scenarios
+- Enhanced test coverage for multiple transport scenarios and delayed readiness
+
 ## [1003.1.10-alpha.0] - 2026-01-05
 
 - Added loglevel asSeverityNumber support for OTLP.

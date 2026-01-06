@@ -9,9 +9,9 @@ type M = MsgBuilder.Console.Builder;
 const logMgr = new Log.Mgr<M>();
 
 describe('Log.Entity', () => {
-  test('test', () => {
+  test('test', async () => {
     // Get logger first to initialize LogMgr
-    const log: Log.Std.Logger<M> = logMgr.getLogger() as Log.Std.Logger<M>;
+    const log = await logMgr.getLogger<Log.Std.Logger<M>>();
 
     // Now set threshold after initialization
     logMgr.threshold = 'info';

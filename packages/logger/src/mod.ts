@@ -15,8 +15,3 @@ export type {
   ILogMgrSettings as IMgrSettings,
   TimestampFormatType,
 } from './types.ts';
-
-/**
- * @deprecated Use explicit LogMgr construction instead. See migration guide.
- */
-export { createLogManager, type LogManagerOptions } from './helpers.ts';
