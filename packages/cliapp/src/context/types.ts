@@ -45,9 +45,9 @@ export type ExtractMsgBuilder<L> = L extends Log.Std.Logger<infer M> ? M : Conso
  *   setupLogging() {
  *     this.logMgr = new Log.Mgr<AppBuilder>();
  *     this.logMgr.msgBuilderFactory = AppBuilder.createMsgBuilder;
- *     this.logMgr.init(Log.Std.factoryMethods);
+ *     this.logMgr.initLevels(Log.Std.factoryMethods);
  *     this.logMgr.threshold = 'info';
- *     this.log = this.logMgr.getLogger<Logger>();
+ *     this.log = await this.logMgr.getLogger<Logger>();
  *   }
  * }
  * ```

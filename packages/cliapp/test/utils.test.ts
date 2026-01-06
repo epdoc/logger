@@ -10,12 +10,13 @@ Deno.env.set('NO_COLOR', '1');
 type M = MsgBuilder.Console.Builder;
 type L = Log.Std.Logger<M>;
 
-const logMgr: Log.Mgr<M> = new Log.Mgr<M>().init();
+const logMgr: Log.Mgr<M> = new Log.Mgr<M>().initLevels();
 logMgr.threshold = 'info';
+const log: L = await logMgr.getLogger<L>();
 
 // Minimal fake context for testing
 const createTestContext = (): CliApp.ICtx<M, L> & { dryRun?: boolean; test?: boolean } => ({
-  log: logMgr.getLogger<L>(),
+  log: log,
   logMgr: logMgr,
   dryRun: true, // Assuming test mode for context
   pkg: { name: 'test', version: '1.0.0', description: 'Test package' },

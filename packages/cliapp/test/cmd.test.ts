@@ -20,12 +20,12 @@ class TestContext extends Ctx.Base<L> {
     this.setupLogging();
   }
 
-  setupLogging() {
+  async setupLogging() {
     this.logMgr = new Log.Mgr<M>();
     this.logMgr.msgBuilderFactory = Console.Console.createMsgBuilder;
-    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.initLevels(Log.Std.factoryMethods);
     this.logMgr.threshold = 'info';
-    this.log = this.logMgr.getLogger<L>();
+    this.log = await this.logMgr.getLogger<L>();
   }
 }
 

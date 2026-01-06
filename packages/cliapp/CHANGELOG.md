@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.12] - 2026-01-06
+
+- Updated to latest @epdoc/logger changes
+
 ## [1.1.11] - 2026-01-04
 
 - Updated msgbuilder and logger dependencies

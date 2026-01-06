@@ -20,18 +20,18 @@ class TestContext extends Ctx.Base<L> {
     super(pkg);
   }
 
-  public setupLogging() {
+  async setupLogging() {
     this.setupLoggingCalled = true;
     this.logMgr = new Log.Mgr<M>();
     this.logMgr.msgBuilderFactory = MsgBuilder.Console.createMsgBuilder;
-    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.initLevels(Log.Std.factoryMethods);
     this.logMgr.threshold = 'info';
-    this.log = this.logMgr.getLogger<L>();
+    this.log = await this.logMgr.getLogger<L>();
   }
 
   // Public method to test setupLogging
-  public testSetupLogging() {
-    this.setupLogging();
+  async testSetupLogging() {
+    await this.setupLogging();
   }
 }
 
@@ -46,15 +46,14 @@ type CustomLogger = Log.Std.Logger<CustomBuilder>;
 class CustomTestContext extends CliApp.Ctx.Base<CustomLogger> {
   constructor() {
     super();
-    this.setupLogging();
   }
 
-  public setupLogging() {
+  async setupLogging() {
     this.logMgr = new Log.Mgr<CustomBuilder>();
     this.logMgr.msgBuilderFactory = (emitter) => new CustomBuilder(emitter);
-    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.initLevels(Log.Std.factoryMethods);
     this.logMgr.threshold = 'debug';
-    this.log = this.logMgr.getLogger<CustomLogger>();
+    this.log = await this.logMgr.getLogger<CustomLogger>();
   }
 }
 
@@ -77,19 +76,20 @@ Deno.test('BaseContext - Constructor without package parameter', () => {
   assertEquals(ctx.dryRun, false);
 });
 
-Deno.test('BaseContext - setupLogging must be implemented', () => {
+Deno.test('BaseContext - setupLogging must be implemented', async () => {
   const ctx = new TestContext();
 
   // setupLogging should be called by the concrete implementation
-  ctx.setupLogging();
+  await ctx.setupLogging();
   assertEquals(ctx.setupLoggingCalled, true);
   assertExists(ctx.log);
   assertExists(ctx.logMgr);
 });
 
-Deno.test('BaseContext - Custom builder integration', () => {
+Deno.test('BaseContext - Custom builder integration', async () => {
   const ctx = new CustomTestContext();
 
+  await ctx.setupLogging();
   assertExists(ctx.log);
   assertExists(ctx.logMgr);
 
@@ -100,7 +100,7 @@ Deno.test('BaseContext - Custom builder integration', () => {
 
 Deno.test('BaseContext - Close functionality', async () => {
   const ctx = new TestContext();
-  ctx.setupLogging();
+  await ctx.setupLogging();
 
   // Should not throw
   await ctx.close();
@@ -123,9 +123,9 @@ Deno.test('BaseContext - dryRun property', () => {
   assertEquals(ctx.dryRun, true);
 });
 
-Deno.test('BaseContext - IBaseCtx interface compliance', () => {
+Deno.test('BaseContext - IBaseCtx interface compliance', async () => {
   const ctx = new TestContext();
-  ctx.setupLogging();
+  await ctx.setupLogging();
 
   // Test that all required interface properties exist
   assertExists(ctx.log);

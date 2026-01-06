@@ -28,9 +28,9 @@ import type * as Ctx from './types.ts';
  *   setupLogging() {
  *     this.logMgr = new Log.Mgr<AppBuilder>();
  *     this.logMgr.msgBuilderFactory = AppBuilder.createMsgBuilder;
- *     this.logMgr.init(Log.Std.factoryMethods);
+ *     this.logMgr.initLevels(Log.Std.factoryMethods);
  *     this.logMgr.threshold = 'info';
- *     this.log = this.logMgr.getLogger<Logger>();
+ *     this.log = await this.logMgr.getLogger<Logger>();
  *   }
  * }
  * ```
@@ -55,13 +55,13 @@ export abstract class BaseContext<L extends Log.IEmitter = Log.Std.Logger<Consol
    *
    * @example
    * ```typescript
-   * setupLogging() {
+   * async setupLogging() {
    *   this.logMgr = Log.createLogManager(MyBuilder, { threshold: 'info' });
-   *   this.log = this.logMgr.getLogger<MyLogger>();
+   *   this.log = await this.logMgr.getLogger<MyLogger>();
    * }
    * ```
    */
-  abstract setupLogging(): void;
+  abstract setupLogging(): Promise<void>;
 
   async close() {
     await this.logMgr?.close();
