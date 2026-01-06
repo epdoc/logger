@@ -196,29 +196,9 @@ export class TransportMgr {
       this.emitToTransports(msg);
       this.flushQueue();
     } else {
-      // Queue the message, but format MsgBuilder instances to avoid clearing issues
-      const queuedMsg = this.prepareForQueue(msg);
-      this._queue.push(queuedMsg);
+      // Queue the message until all transports are ready
+      this._queue.push(msg);
     }
-  }
-
-  /**
-   * Prepares a message for queuing by formatting MsgBuilder instances.
-   * This prevents issues with MsgBuilder instances being cleared after emit().
-   * @private
-   */
-  private prepareForQueue(msg: Log.Entry): Log.Entry {
-    let processedMsg = msg.msg;
-    
-    // If the message is a MsgBuilder instance, format it now to avoid clearing issues
-    if (processedMsg && typeof processedMsg === 'object' && 'format' in processedMsg) {
-      processedMsg = processedMsg.format({ color: false, target: 'console' });
-    }
-    
-    return {
-      ...msg,
-      msg: processedMsg,
-    };
   }
 
   /**

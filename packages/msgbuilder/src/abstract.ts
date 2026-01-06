@@ -281,7 +281,8 @@ export abstract class AbstractMsgBuilder implements IFormatter {
         elapsed: this._elapsed,
       };
       this._emitter.emit(entry);
-      this.clear();
+      // Don't clear immediately - let the transport format first
+      // this.clear();
       return entry;
     }
     return undefined;
