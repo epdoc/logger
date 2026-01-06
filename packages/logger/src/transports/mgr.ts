@@ -91,7 +91,7 @@ export class TransportMgr {
    * Indicates whether the transport manager is running.
    * @returns {boolean} `true` if running, otherwise `false`.
    */
-  get running(): boolean {
+  isRunning(): boolean {
     return this._bRunning;
   }
 
@@ -109,9 +109,13 @@ export class TransportMgr {
    * @param {AbstractTransport<M>} transport - The transport instance to add.
    */
   add(transport: AbstractTransport) {
-    this._bRunning = false;
-    this.transports.unshift(transport);
-    this._bRunning = true;
+    if (this._bRunning) {
+      this._bRunning = false;
+      this.transports.unshift(transport);
+      this._bRunning = true;
+    } else {
+      this.transports.unshift(transport);
+    }
   }
 
   /**

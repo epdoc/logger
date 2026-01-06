@@ -15,9 +15,12 @@ import { BareLogger } from './logger.ts';
  * special flags like `flush` (for immediate output) and `lowest` (the lowest
  * priority level).
  */
-const bareLogLevelDefs: Level.LogLevelMap = {
-  warn: { val: 2, fmtFn: colors.yellow, warn: true },
-  info: { val: 3, fmtFn: colors.green, default: true },
+const bareLogLevelsSet: Level.LogLevelsSet = {
+  id: 'bare',
+  levels: {
+    warn: { val: 2, severityNumber: 13, fmtFn: colors.yellow, warn: true },
+    info: { val: 3, severityNumber: 9, fmtFn: colors.green, default: true },
+  },
 } as const;
 
 export const bareFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, BareLogger<MsgBuilder.Abstract>> = {
@@ -39,12 +42,12 @@ export const bareFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, BareLogger
    * @returns A new `LogLevels` instance for CLI logging.
    */
   createLevels: () => {
-    return new Level.LogLevels(bareLogLevelDefs, 'bare');
+    return new Level.LogLevels(bareLogLevelsSet);
   },
   /**
    * An array containing the names of all CLI log levels.
    */
   logLevelNames: () => {
-    return Object.keys(bareLogLevelDefs);
+    return Object.keys(bareLogLevelsSet);
   },
 };

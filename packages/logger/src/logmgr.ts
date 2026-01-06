@@ -252,7 +252,7 @@ export class LogMgr<
       });
       this.transportMgr.add(transport);
     }
-    if (!this.transportMgr.running) {
+    if (!this.transportMgr.isRunning()) {
       this.start();
     }
     return this._rootLogger as L;
@@ -403,9 +403,13 @@ export class LogMgr<
    */
   public emit(msg: Log.Entry): void {
     if (this.meetsThreshold(msg.level)) {
-      this.transportMgr.emit(msg);
-      if (this.meetsFlushThreshold(msg.level)) {
-        this.flushQueue();
+      if (this.transportMgr.isRunning()) {
+        this.transportMgr.emit(msg);
+        if (this.meetsFlushThreshold(msg.level)) {
+          this.flushQueue();
+        }
+      } else {
+        this._queue.push(msg);
       }
     }
   }
@@ -458,7 +462,10 @@ export class LogMgr<
     if (!this.logLevels.meetsThresholdValue(levelVal, this._threshold)) {
       return false;
     }
-    return this.transportMgr.meetsAnyThresholdValue(levelVal);
+    if (this.transportMgr.isRunning()) {
+      return this.transportMgr.meetsAnyThresholdValue(levelVal);
+    }
+    return true;
   }
 
   /**

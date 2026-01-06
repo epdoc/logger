@@ -43,7 +43,7 @@
     "$log": "./src/types.ts",
     "$logger": "./src/loggers/mod.ts",
     "$transport": "./src/transports/mod.ts",
-    "@epdoc/loglevels": "jsr:@epdoc/loglevels@^0.0.9",
+    "@epdoc/loglevels": "jsr:@epdoc/loglevels@^0.0.12",
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.0-alpha.7",
     "@opentelemetry/api-logs": "npm:@opentelemetry/api-logs@^0.208.0",
     "@std/expect": "jsr:@std/expect@^1.0.17",
