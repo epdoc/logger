@@ -38,12 +38,12 @@ class AppContext extends CliApp.Ctx.Base<Logger> {
     this.setupLogging();
   }
 
-  setupLogging() {
+  async setupLogging() {
     this.logMgr = new Log.Mgr<AppBuilder>();
     this.logMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter as any);
-    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.initLevels(Log.Std.factoryMethods);
     this.logMgr.threshold = 'info';
-    this.log = this.logMgr.getLogger<Logger>();
+    this.log = await this.logMgr.getLogger<Logger>();
   }
 
   // Helper methods using custom msgbuilder
@@ -96,6 +96,7 @@ class AppRootCmd extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<AppContext>, {
 
 if (import.meta.main) {
   const ctx = new AppContext();
+  await ctx.setupLogging();
   const rootCmd = new AppRootCmd(ctx);
   const cmd = await rootCmd.init();
   await cmd.parseAsync();

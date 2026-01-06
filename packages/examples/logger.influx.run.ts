@@ -13,7 +13,7 @@ const showOpts: Log.EmitterShowOpts = { level: true, timestamp: 'local', data: t
 
 // Create log manager first
 const logMgr = new Log.Mgr<Console.Builder>();
-logMgr.init();
+logMgr.initLevels();
 logMgr.show = showOpts;
 logMgr.emit({ level: 'info', msg: 'Logger initialized (manual emit)', timestamp: new Date() });
 
@@ -33,12 +33,12 @@ const consoleTransport = new Log.Transport.Console.Transport(logMgr, {
 });
 
 // Add the transport to the manager
-logMgr.addTransport(influxTransport);
-logMgr.addTransport(consoleTransport);
+await logMgr.addTransport(influxTransport);
+await logMgr.addTransport(consoleTransport);
 
 // Set threshold and get logger
 logMgr.threshold = 'info';
-const logger = logMgr.getLogger<Log.Std.Logger<Console.Builder>>();
+const logger = await logMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 logger.info.label('Influx Transport:').value(influxTransport).emit();
 logger.info.label('Console Transport:').value(consoleTransport).emit();
 

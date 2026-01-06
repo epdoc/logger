@@ -10,7 +10,7 @@ import { Console } from '@epdoc/msgbuilder';
 console.log('=== Example 1: Basic Usage ===');
 const basicLogMgr = new Log.Mgr<Console.Builder>();
 basicLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
-basicLogMgr.init(Log.Std.factoryMethods);
+basicLogMgr.initLevels(Log.Std.factoryMethods);
 basicLogMgr.threshold = 'info';
 basicLogMgr.show = {
   level: true,
@@ -22,7 +22,7 @@ basicLogMgr.show = {
 type MsgBuilder = Console.Builder;
 type Logger = Log.Std.Logger<MsgBuilder>;
 
-const basicLogger = basicLogMgr.getLogger<Logger>();
+const basicLogger = await basicLogMgr.getLogger<Logger>();
 basicLogger.info.h1('Basic Logger').text(' - Simple setup').emit();
 
 // Example 2: Custom builder with project-specific methods
@@ -49,14 +49,14 @@ class ProjectBuilder extends Console.Builder {
 
 const projectLogMgr = new Log.Mgr<ProjectBuilder>();
 projectLogMgr.msgBuilderFactory = (emitter) => new ProjectBuilder(emitter as any);
-projectLogMgr.init(Log.Std.factoryMethods);
+projectLogMgr.initLevels(Log.Std.factoryMethods);
 projectLogMgr.threshold = 'debug';
 projectLogMgr.show = {
   level: true,
   timestamp: 'local',
 };
 
-const projectLogger = projectLogMgr.getLogger<Log.Std.Logger<ProjectBuilder>>();
+const projectLogger = await projectLogMgr.getLogger<Log.Std.Logger<ProjectBuilder>>();
 
 // Demonstrate custom methods - now with proper typing
 projectLogger.info.apiCall('GET', '/api/users').emit();
@@ -80,9 +80,9 @@ console.log('// const logMgr = new Log.Mgr<ProjectBuilder>(); ...');
 
 const simpleLogMgr = new Log.Mgr<ProjectBuilder>();
 simpleLogMgr.msgBuilderFactory = (emitter) => new ProjectBuilder(emitter as any);
-simpleLogMgr.init(Log.Std.factoryMethods);
+simpleLogMgr.initLevels(Log.Std.factoryMethods);
 simpleLogMgr.threshold = 'info';
-const simpleLogger = simpleLogMgr.getLogger<Log.Std.Logger<ProjectBuilder>>();
+const simpleLogger = await simpleLogMgr.getLogger<Log.Std.Logger<ProjectBuilder>>();
 simpleLogger.info.h1('Migration Complete').text(' - 70% less boilerplate!').emit();
 
 // Example 4: Real-world usage pattern
@@ -112,14 +112,14 @@ class AppBuilder extends Console.Builder {
 
 const appLogMgr = new Log.Mgr<AppBuilder>();
 appLogMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter as any);
-appLogMgr.init(Log.Std.factoryMethods);
+appLogMgr.initLevels(Log.Std.factoryMethods);
 appLogMgr.threshold = 'info';
 appLogMgr.show = {
   level: false,
   timestamp: 'elapsed',
 };
 
-const appLogger = appLogMgr.getLogger<Log.Std.Logger<AppBuilder>>();
+const appLogger = await appLogMgr.getLogger<Log.Std.Logger<AppBuilder>>();
 
 // Now with proper typing - no more type assertions needed!
 appLogger.info.startup('Application').emit();

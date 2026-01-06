@@ -11,12 +11,12 @@ console.log('=== Example 1: Performance Tracking ===');
 
 const perfLogMgr = new Log.Mgr<Console.Builder>();
 perfLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
-perfLogMgr.init(Log.Std.factoryMethods);
+perfLogMgr.initLevels(Log.Std.factoryMethods);
 perfLogMgr.threshold = 'info';
 perfLogMgr.show = {
   timestamp: 'elapsed',
 };
-const perfLogger = perfLogMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+const perfLogger = await perfLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 
 const mark = perfLogger.mark();
 perfLogger.info.text('Starting operation...').emit();
@@ -29,7 +29,7 @@ perfLogger.info.text('Operation completed').ewt(mark); // Shows elapsed time
 // Example 2: Structured logging with labels and values
 console.log('\n=== Example 2: Structured Logging ===');
 
-const structuredLogger = perfLogMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+const structuredLogger = await perfLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 
 structuredLogger.info.h1('User Registration')
   .label('Email:').value('user@example.com')
@@ -61,9 +61,9 @@ type Logger = Log.Std.Logger<RequestBuilder>;
 
 const requestLogMgr = new Log.Mgr<RequestBuilder>();
 requestLogMgr.msgBuilderFactory = (emitter) => new RequestBuilder(emitter as any);
-requestLogMgr.init(Log.Std.factoryMethods);
+requestLogMgr.initLevels(Log.Std.factoryMethods);
 requestLogMgr.threshold = 'info';
-const requestLogger = requestLogMgr.getLogger<Logger>();
+const requestLogger = await requestLogMgr.getLogger<Logger>();
 
 // Simulate request logging
 requestLogger.info.request('GET', '/api/users', 200).emit();
@@ -75,12 +75,12 @@ console.log('\n=== Example 4: Threshold Levels ===');
 
 const thresholdLogMgr = new Log.Mgr<Console.Builder>();
 thresholdLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
-thresholdLogMgr.init(Log.Std.factoryMethods);
+thresholdLogMgr.initLevels(Log.Std.factoryMethods);
 thresholdLogMgr.threshold = 'warn';
 thresholdLogMgr.show = {
   level: true,
 };
-const thresholdLogger = thresholdLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
+const thresholdLogger = await thresholdLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 
 thresholdLogger.debug.text('Debug message (hidden)').emit();
 thresholdLogger.info.text('Info message (hidden)').emit();
@@ -92,13 +92,13 @@ console.log('\n=== Example 5: Context Tracking ===');
 
 const contextLogMgr = new Log.Mgr<Console.Builder>();
 contextLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
-contextLogMgr.init(Log.Std.factoryMethods);
+contextLogMgr.initLevels(Log.Std.factoryMethods);
 contextLogMgr.threshold = 'info';
 contextLogMgr.show = {
   level: true,
 };
 
-const contextLogger = contextLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
+const contextLogger = await contextLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 contextLogger.reqId = 'req-67890';
 contextLogger.pkgs.push('user-service');
 

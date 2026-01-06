@@ -11,9 +11,9 @@ console.log('=== Example 1: Basic Logger Setup ===');
 
 const basicLogMgr = new Log.Mgr<Console.Builder>();
 basicLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
-basicLogMgr.init(Log.Std.factoryMethods);
+basicLogMgr.initLevels(Log.Std.factoryMethods);
 basicLogMgr.threshold = 'info';
-const basicLogger = basicLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
+const basicLogger = await basicLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 
 basicLogger.info.h1('Basic Logger').text(' - Simple setup').emit();
 basicLogger.warn.text('This is a warning message').emit();
@@ -24,14 +24,14 @@ console.log('\n=== Example 2: Logger and setting show options ===');
 
 const helperLogMgr = new Log.Mgr<Console.Builder>();
 helperLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
-helperLogMgr.init(Log.Std.factoryMethods);
+helperLogMgr.initLevels(Log.Std.factoryMethods);
 helperLogMgr.threshold = 'debug';
 helperLogMgr.show = {
   level: true,
   timestamp: 'elapsed',
 };
 
-const helperLogger = helperLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
+const helperLogger = await helperLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 helperLogger.info.text('Created with helper - much simpler!').emit();
 helperLogger.debug.text('Debug messages now visible').emit();
 
@@ -56,9 +56,9 @@ type CustomLogger = Log.Std.Logger<CustomBuilder>;
 
 const customLogMgr = new Log.Mgr<CustomBuilder>();
 customLogMgr.msgBuilderFactory = (emitter) => new CustomBuilder(emitter as any);
-customLogMgr.init(Log.Std.factoryMethods);
+customLogMgr.initLevels(Log.Std.factoryMethods);
 customLogMgr.threshold = 'info';
-const customLogger = customLogMgr.getLogger<CustomLogger>();
+const customLogger = await customLogMgr.getLogger<CustomLogger>();
 
 customLogger.info.apiCall('GET', '/api/users').emit();
 customLogger.info.metric('Response Time', 245, 'ms').emit();
@@ -67,15 +67,15 @@ customLogger.info.metric('Response Time', 245, 'ms').emit();
 console.log('\n=== Example 4: CLI vs Standard Logger ===');
 
 // Standard logger (default) - use type assertion for simplicity
-const stdLogger = basicLogMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+const stdLogger = await basicLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 stdLogger.info.text('Standard logger - full featured').emit();
 
 // CLI logger (simplified for command-line tools)
 const cliLogMgr = new Log.Mgr<Console.Builder>();
 cliLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any); // Assuming Console.Builder is used for CliLogger
-cliLogMgr.init(Log.Cli.factoryMethods); // Use Cli factory methods
+cliLogMgr.initLevels(Log.Cli.factoryMethods); // Use Cli factory methods
 cliLogMgr.threshold = 'info';
-const cliLogger = cliLogMgr.getLogger() as Log.Cli.Logger<Console.Builder>;
+const cliLogger = await cliLogMgr.getLogger<Log.Cli.Logger<Console.Builder>>();
 cliLogger.info.text('CLI logger - streamlined for CLI apps').emit();
 
 // Example 5: Logger configuration
@@ -83,7 +83,7 @@ console.log('\n=== Example 5: Logger Configuration ===');
 
 const configuredLogMgr = new Log.Mgr<Console.Builder>();
 configuredLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
-configuredLogMgr.init(Log.Std.factoryMethods);
+configuredLogMgr.initLevels(Log.Std.factoryMethods);
 configuredLogMgr.threshold = 'debug';
 configuredLogMgr.show = {
   level: true,
@@ -91,7 +91,7 @@ configuredLogMgr.show = {
   data: true,
 };
 
-const configuredLogger = configuredLogMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+const configuredLogger = await configuredLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 configuredLogger.info.h1('Configured Logger')
   .label('Threshold:').value('debug')
   .label('Timestamp:').value('local')
