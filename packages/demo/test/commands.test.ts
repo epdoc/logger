@@ -1,10 +1,11 @@
 import { assertEquals, assertStringIncludes } from '@std/assert';
-import * as Ctx from '../src/context/mod.ts';
 import { ListCmd } from '../src/cmd/list.ts';
 import { ProcessCmd } from '../src/cmd/process.ts';
+import * as Ctx from '../src/context/mod.ts';
 
 Deno.test('ListCmd - processes files correctly', async () => {
   const ctx = new Ctx.Context();
+  await ctx.setupLogging();
   ctx.logMgr.threshold = 'error'; // Suppress logs in tests
   const listCmd = new ListCmd(ctx);
 
@@ -14,6 +15,7 @@ Deno.test('ListCmd - processes files correctly', async () => {
 
 Deno.test('ListCmd - handles empty file list', async () => {
   const ctx = new Ctx.Context();
+  await ctx.setupLogging();
   ctx.logMgr.threshold = 'error'; // Suppress logs in tests
   const listCmd = new ListCmd(ctx);
 
@@ -23,6 +25,7 @@ Deno.test('ListCmd - handles empty file list', async () => {
 
 Deno.test('ListCmd - handles humanize option', async () => {
   const ctx = new Ctx.Context();
+  await ctx.setupLogging();
   ctx.logMgr.threshold = 'error'; // Suppress logs in tests
   const listCmd = new ListCmd(ctx);
 
@@ -32,6 +35,7 @@ Deno.test('ListCmd - handles humanize option', async () => {
 
 Deno.test('ProcessCmd - executes without errors', async () => {
   const ctx = new Ctx.Context();
+  await ctx.setupLogging();
   ctx.logMgr.threshold = 'error'; // Suppress logs in tests
   const processCmd = new ProcessCmd(ctx);
 
@@ -41,6 +45,7 @@ Deno.test('ProcessCmd - executes without errors', async () => {
 
 Deno.test('Commands - can be initialized', async () => {
   const ctx = new Ctx.Context();
+  await ctx.setupLogging();
   ctx.logMgr.threshold = 'error'; // Suppress logs in tests
 
   // Test that commands can be initialized without errors
@@ -57,6 +62,7 @@ Deno.test('Commands - can be initialized', async () => {
 
 Deno.test('Commands - have correct descriptions', async () => {
   const ctx = new Ctx.Context();
+  await ctx.setupLogging();
   ctx.logMgr.threshold = 'error'; // Suppress logs in tests
 
   const listCmd = new ListCmd(ctx);

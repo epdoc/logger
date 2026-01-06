@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.11] - 2026-01-06
+
+- Updated to latest @epdoc/logger changes
+
 ## [0.0.10] - 2026-01-04
 
 - Migrate to new single-generic pattern with direct class extension

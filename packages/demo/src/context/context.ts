@@ -12,15 +12,14 @@ export class Context extends CliApp.Ctx.Base<Logger> {
 
   constructor() {
     super(pkg);
-    this.setupLogging();
     this.app = new App.Main(this);
   }
 
-  setupLogging() {
+  async setupLogging() {
     this.logMgr = new Log.Mgr<CustomBuilder>();
     this.logMgr.msgBuilderFactory = (emitter) => new CustomBuilder(emitter);
-    this.logMgr.init(Log.Std.factoryMethods);
+    this.logMgr.initLevels(Log.Std.factoryMethods);
     this.logMgr.threshold = 'info';
-    this.log = this.logMgr.getLogger<Logger>();
+    this.log = await this.logMgr.getLogger<Logger>();
   }
 }
