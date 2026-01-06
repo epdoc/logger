@@ -79,7 +79,7 @@ export class Emitter implements MsgBuilder.IEmitter {
     this._transportMgr = transportMgr;
     this._sid = context.sid;
     this._reqId = context.reqId;
-    this._pkg = context.pkgs.join(context.pkgSep);
+    this._pkg = context.pkgs.length > 0 ? context.pkgs.join(context.pkgSep) : undefined;
     this._meetsThreshold = thresholds.meetsThreshold;
     this._meetsFlushThreshold = thresholds.meetsFlushThreshold;
     this._flushCallback = flushCallback;
@@ -186,16 +186,6 @@ export class Emitter implements MsgBuilder.IEmitter {
    */
   emit = (data: MsgBuilder.EmitterData): MsgBuilder.EmitterData => {
     if (this._meetsThreshold) {
-      // Format the message immediately to avoid issues with MsgBuilder clearing itself
-      let formattedMsg: string | MsgBuilder.Abstract;
-      if (data.formatter && typeof data.formatter === 'object' && 'format' in data.formatter) {
-        // If we have a formatter, format it now before it gets cleared
-        formattedMsg = data.formatter.format({ color: false, target: 'console' });
-      } else {
-        // Keep the original formatter for backward compatibility
-        formattedMsg = data.formatter as MsgBuilder.Abstract;
-      }
-
       const entry: Log.Entry = {
         level: this._level,
         timestamp: data.timestamp,
@@ -203,7 +193,7 @@ export class Emitter implements MsgBuilder.IEmitter {
         sid: this._sid,
         reqId: this._reqId,
         pkg: this._pkg,
-        msg: formattedMsg,
+        msg: data.formatter,
         data: data.data,
       };
 
