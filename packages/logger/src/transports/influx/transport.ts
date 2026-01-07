@@ -2,17 +2,24 @@ import type { Entry } from '$log';
 import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { _ } from '@epdoc/type';
-import * as Console from '../console/mod.ts';
+import * as Base from '../base/mod.ts';
 import type { ILogMgrTransportContext } from '../types.ts';
 import type * as Influx from './types.ts';
 
-export class InfluxTransport extends Console.Transport {
+export class InfluxTransport extends Base.Transport {
   public override readonly type: string = 'influx';
-  override _opts: Influx.Options;
+  protected _opts: Influx.Options;
+  #buffer: string[] = [];
+  #batchSize = 100;
+  #flushInterval = 5000; // 5 seconds
+  #flushTimer?: number;
+  #isTransmitting = false;
 
   constructor(logMgr: ILogMgrTransportContext, opts: Influx.Options) {
     super(logMgr, opts);
     this._opts = opts;
+    this._bReady = true;
+    this.#startFlushTimer();
   }
 
   override toString(): string {
@@ -56,19 +63,49 @@ export class InfluxTransport extends Console.Transport {
     }
 
     const timestampNs = (entry.timestamp.getTime() * 1_000_000).toString();
-    this.#transmit(tags, fields, timestampNs);
+    const line = this.#formatLineProtocol(tags, fields, timestampNs);
+    this.#addToBuffer(line);
   }
 
-  async #transmit(tags: Map<string, string>, fields: Map<string, unknown>, timestamp: string) {
-    if (!this._opts.host || !this._opts.token) return;
+  override async stop(): Promise<void> {
+    if (this.#flushTimer) {
+      clearInterval(this.#flushTimer);
+      this.#flushTimer = undefined;
+    }
+    await this.#flush();
+  }
 
-    // InfluxDB Line Protocol Endpoint
-    const url = new URL('/api/v2/write', this._opts.host);
-    url.searchParams.append('org', this._opts.org || '');
-    url.searchParams.append('bucket', this._opts.bucket || '');
-    url.searchParams.append('precision', 'ns');
+  #startFlushTimer(): void {
+    this.#flushTimer = setInterval(() => {
+      this.#flush();
+    }, this.#flushInterval);
+  }
 
-    // Construct Line Protocol string: measurement,tag=val field=val timestamp
+  #addToBuffer(line: string): void {
+    this.#buffer.push(line);
+    if (this.#buffer.length >= this.#batchSize) {
+      this.#flush();
+    }
+  }
+
+  async #flush(): Promise<void> {
+    if (this.#buffer.length === 0 || this.#isTransmitting) return;
+    
+    const lines = this.#buffer.splice(0);
+    if (lines.length === 0) return;
+
+    this.#isTransmitting = true;
+    try {
+      await this.#transmitBatch(lines);
+    } catch (err) {
+      // Re-add failed lines to front of buffer for retry
+      this.#buffer.unshift(...lines);
+    } finally {
+      this.#isTransmitting = false;
+    }
+  }
+
+  #formatLineProtocol(tags: Map<string, string>, fields: Map<string, unknown>, timestamp: string): string {
     let line = 'logs';
 
     for (const [k, v] of tags) {
@@ -84,23 +121,48 @@ export class InfluxTransport extends Console.Transport {
     line += fieldEntries.join(',');
 
     line += ` ${timestamp}`;
+    return line;
+  }
 
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Token ${this._opts.token}`,
-          'Content-Type': 'text/plain; charset=utf-8',
-        },
-        body: line,
-      });
+  async #transmitBatch(lines: string[], maxRetries = 3): Promise<void> {
+    if (!this._opts.host || !this._opts.token) return;
 
-      if (response.status !== 204) {
-        console.error(`InfluxDB Write Failed [${response.status}]: ${await response.text()}`);
+    const url = new URL('/api/v2/write', this._opts.host);
+    url.searchParams.append('org', this._opts.org || '');
+    url.searchParams.append('bucket', this._opts.bucket || '');
+    url.searchParams.append('precision', 'ns');
+
+    const body = lines.join('\n');
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Token ${this._opts.token}`,
+            'Content-Type': 'text/plain; charset=utf-8',
+          },
+          body,
+        });
+
+        if (response.status === 204) {
+          return; // Success
+        } else {
+          throw new Error(`InfluxDB Write Failed [${response.status}]: ${await response.text()}`);
+        }
+      } catch (err) {
+        if (attempt === maxRetries) {
+          console.error('InfluxDB Connection Error (final attempt):', err);
+          throw err;
+        }
+        // Exponential backoff
+        await this.#delay(Math.pow(2, attempt) * 1000);
       }
-    } catch (err) {
-      console.error('InfluxDB Connection Error:', err);
     }
+  }
+
+  #delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   #escapeKey(val: string): string {

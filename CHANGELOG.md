@@ -5,6 +5,15 @@ All notable changes to the @epdoc/logger workspace will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-01-07] - InfluxTransport Improvements
+
+### Changed
+- **InfluxTransport**: Fixed inheritance to extend Base.Transport instead of Console.Transport
+- **InfluxTransport**: Added buffering and batching for improved performance (100 messages per batch, 5-second flush interval)
+- **InfluxTransport**: Implemented retry logic with exponential backoff (up to 3 attempts)
+- **InfluxTransport**: Added proper lifecycle management with graceful shutdown and buffer flushing
+- **InfluxTransport**: Kept emit() synchronous while handling async operations in background
+
 ## [2025-09-21] - Logger Ecosystem Decomposition & Logdy Integration
 
 ### Added
