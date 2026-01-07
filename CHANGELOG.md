@@ -5,6 +5,20 @@ All notable changes to the @epdoc/logger workspace will be documented in this fi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2026-01-07] - InfluxTransport Data Structure Improvements
+
+### Changed
+- **InfluxTransport**: Improved tag/field mapping strategy for better Grafana integration
+- **InfluxTransport**: Changed `level` from field to tag and standardized to uppercase for consistency
+- **InfluxTransport**: Renamed `body` field to `message` for clearer semantics
+- **InfluxTransport**: Moved high-cardinality data (`reqId`, `sid`) from tags to fields (`request_id`, `session_id`)
+- **InfluxTransport**: Added configurable service, environment, and hostname tags for better log organization
+- **InfluxTransport**: Changed duration from nanoseconds to milliseconds (`duration_ms`) for better readability
+- **InfluxTransport**: Added automatic hostname detection with fallback to 'unknown'
+
+### Added
+- **InfluxTransport**: New configuration options: `service`, `environment`, `hostname` for enhanced log context
+
 ## [2026-01-07] - InfluxTransport Improvements
 
 ### Changed

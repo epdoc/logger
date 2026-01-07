@@ -8,17 +8,19 @@ import type * as Influx from './types.ts';
 
 export class InfluxTransport extends Base.Transport {
   public override readonly type: string = 'influx';
-  protected _opts: Influx.Options;
+  protected override _opts: Influx.Options;
   #buffer: string[] = [];
   #batchSize = 100;
   #flushInterval = 5000; // 5 seconds
   #flushTimer?: number;
   #isTransmitting = false;
+  #hostname: string;
 
   constructor(logMgr: ILogMgrTransportContext, opts: Influx.Options) {
     super(logMgr, opts);
     this._opts = opts;
     this._bReady = true;
+    this.#hostname = opts.hostname || this.#getHostname();
     this.#startFlushTimer();
   }
 
@@ -31,22 +33,27 @@ export class InfluxTransport extends Base.Transport {
     if (!this.meetsThresholdValue(levelValue)) return;
     if (!entry.timestamp) return;
 
-    // 1. Identify Tags (Metadata for filtering)
+    // 1. Tags (low cardinality, good for filtering)
     const tags = new Map<string, string>();
-    tags.set('severity', entry.level);
-    if (entry.pkg) tags.set('pkg', entry.pkg);
-    if (entry.reqId) tags.set('reqId', entry.reqId);
-    if (entry.sid) tags.set('sid', entry.sid);
+    tags.set('level', entry.level.toUpperCase()); // Standardize to uppercase
+    if (this._opts.service) tags.set('service', this._opts.service);
+    if (this._opts.environment) tags.set('environment', this._opts.environment);
+    tags.set('host', this.#hostname);
+    if (entry.pkg) tags.set('package', entry.pkg);
 
-    // 2. Identify Fields (Actual data values)
+    // 2. Fields (high cardinality data)
     const fields = new Map<string, string | number | boolean>();
 
     // Process the message body
     if (entry.msg instanceof MsgBuilder.Abstract) {
-      fields.set('body', entry.msg.format({ color: false, target: 'json' }));
+      fields.set('message', entry.msg.format({ color: false, target: 'json' }));
     } else if (_.isString(entry.msg)) {
-      fields.set('body', entry.msg);
+      fields.set('message', entry.msg);
     }
+
+    // Move high-cardinality identifiers to fields
+    if (entry.reqId) fields.set('request_id', entry.reqId);
+    if (entry.sid) fields.set('session_id', entry.sid);
 
     // Process extra data attributes
     if (_.isDict(entry.data)) {
@@ -58,8 +65,9 @@ export class InfluxTransport extends Base.Transport {
       }
     }
 
+    // Keep duration in milliseconds (more intuitive than nanoseconds)
     if (_.isDefined(entry.time)) {
-      fields.set('duration_ns', Math.round(entry.time! * 1_000_000));
+      fields.set('duration_ms', entry.time!);
     }
 
     const timestampNs = (entry.timestamp.getTime() * 1_000_000).toString();
@@ -90,7 +98,7 @@ export class InfluxTransport extends Base.Transport {
 
   async #flush(): Promise<void> {
     if (this.#buffer.length === 0 || this.#isTransmitting) return;
-    
+
     const lines = this.#buffer.splice(0);
     if (lines.length === 0) return;
 
@@ -162,7 +170,15 @@ export class InfluxTransport extends Base.Transport {
   }
 
   #delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  #getHostname(): string {
+    try {
+      return Deno.hostname();
+    } catch {
+      return 'unknown';
+    }
   }
 
   #escapeKey(val: string): string {

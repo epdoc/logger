@@ -22,6 +22,8 @@ const influxOpts: Log.Transport.Influx.Options = {
   token: Deno.env.get('INFLUX_ADMIN_TOKEN')!, // xxx
   org: Deno.env.get('INFLUX_ORG')!,
   bucket: Deno.env.get('INFLUX_BUCKET_HAMON')!, // hamon
+  service: 'logger-demo',
+  environment: 'development',
 };
 
 // Create OTLP transport
