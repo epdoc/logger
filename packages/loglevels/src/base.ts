@@ -30,8 +30,8 @@ export class LogLevels implements Level.IBasic {
    *
    * @param {Level.LogLevelMap} levelDef - An object defining the custom log levels.
    */
-  constructor(levelDef: Level.LogLevelsSet, requireSeverityNumber = false) {
-    if (!isLogLevelsSet(levelDef, requireSeverityNumber)) {
+  constructor(levelDef: Level.LogLevelsSet) {
+    if (!isLogLevelsSet(levelDef)) {
       throw new Error('Invalid LogLevelsSet definition');
     }
     const _levelDef = levelDef.levels;
@@ -95,22 +95,6 @@ export class LogLevels implements Level.IBasic {
     }
     if (typeof level === 'number' && this._levelValues.includes(level)) {
       return level as Level.Value;
-    }
-    throw new Error(`Cannot get log level: no name for level: ${level}`);
-  }
-
-  /**
-   * @inheritdoc
-   */
-  asSeverityNumber(level: Level.Name | Level.Value): Level.SeverityNumber {
-    if (typeof level === 'string' && isLogLevelSpec(this._levelDef[level.toUpperCase()])) {
-      return this._levelDef[level.toUpperCase()].severityNumber as Level.SeverityNumber;
-    }
-    const def = Object.values(this._levelDef).find((def) => {
-      return isLogLevelSpec(def, true) && def.val === level;
-    });
-    if (def) {
-      return def.severityNumber!;
     }
     throw new Error(`Cannot get log level: no name for level: ${level}`);
   }

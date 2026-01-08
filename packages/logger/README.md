@@ -22,7 +22,7 @@ This package provides the core logging functionality with:
 - **Multiple Log Levels**: Standard (`error`, `warn`, `info`, `verbose`, `debug`, `trace`, `spam`) with the ability to be customized.
 - **Hierarchical Indentation**: Built-in `indent()`, `outdent()`, `nodent()` methods for structured, nested logging output
 - **Performance Timing**: Built-in `mark()` and `ewt()` (Emit With Time) for measuring operation durations
-- **Flexible Transports**: Console, file, buffer (for testing), and custom transport support
+- **Flexible Transports**: Console, file, buffer (for testing), Influxdb and custom transport support
 - **Hierarchical Loggers**: Root and child loggers with inherited context and indentation
 - **Conditional Logging**: Build messages only when inline conditions are met
 - **Middleware Support**: Express and Oak middleware for request tracking
@@ -268,14 +268,13 @@ None of the existing loggers that I could find supported the following requireme
 - hierarchical indentation for structured logging output
 - custom transports:
   - **Buffer transport** for testing and programmatic log inspection
-  - A [logdy](https://logdy.dev/) transport is in development
+  - An [Influxdb](https://www.influxdata.com/) transport, optimized for display using [Grafana](https://grafana.com/)
   - external transports requires open and close support, or equivalent.
 - JSON, JSON array and console text output all supported
 
 ## Action Items
 
 - Verify middleware implementations, especially for express
-- Revive old SOS transport as a general HTTP transport and rename to 'http' transport (beware).
 
 ## Author
 

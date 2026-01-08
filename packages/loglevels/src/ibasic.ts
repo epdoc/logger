@@ -1,5 +1,5 @@
 import type { Integer } from '@epdoc/type';
-import type { LogLevelMap, Name, SeverityNumber, Value } from './types.ts';
+import type { LogLevelMap, Name, Value } from './types.ts';
 
 /**
  * Defines the core contract for a log level management system.
@@ -41,16 +41,8 @@ export interface IBasic {
   readonly levelDefs: LogLevelMap;
 
   /**
-   * Converts a log level name or numeric value to its corresponding OTLP severityText string.
-   *
-   * @param {Name | Value} level - The log level to convert.
-   * @returns {Value} The severityText value of the log level.
-   * @throws {Error} If the level name or value is not defined.
-   */
-  asSeverityNumber(level: Name | Value): SeverityNumber;
-
-  /**
    * Converts a log level name or numeric value to its corresponding numeric value.
+   * We recommend you set this value to OTLP severity number.
    *
    * @param {Name | Value} level - The log level to convert.
    * @returns {Value} The numeric value of the log level.

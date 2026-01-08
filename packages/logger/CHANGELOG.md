@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1003.2.1] - 2026-01-07 - InfluxTransport Implementation
+
+### Added
+- **InfluxTransport**: New transport for InfluxDB with buffering, batching, and retry logic
+- **InfluxTransport**: Optimized tag/field mapping for Grafana integration and InfluxDB performance
+- **InfluxTransport**: Configuration options for service, environment, and hostname context
+- **InfluxTransport**: Changed duration from nanoseconds to milliseconds (`duration_ms`) for better readability
+- **InfluxTransport**: Added automatic hostname detection with fallback to 'unknown'
+- **InfluxTransport**: New configuration options: `service`, `environment`, `hostname` for enhanced log context
+
 ## [1003.2.0] - 2026-01-06
 
 ### Added
@@ -20,43 +30,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1003.1.10-alpha.0] - 2026-01-05
 
-- Added loglevel asSeverityNumber support for OTLP.
-- Added OTLP transport
-
-## [1003.1.9] - 2026-01-04
-
+- Added loglevel asSeverityNumber support if you like OTLP severity numbers.
 - Updated msgbuilder dependency
 
 ## [1003.1.8] - 2026-01-04
 
 - Decouple transport layer from generics and deprecate createLogManager()
-
-## [1003.1.7] - 2025-12-31
-
 - Updated dependencies
 
 ## [1003.1.6] - 2025-12-31
 
 - Added strict testing of logMgr show options
-
-## [1003.1.5] - 2025-12-31
-
 - Improved jsdoc comments. We are not releasing this version.
 
 ## [1003.1.4] - 2025-12-27
 
 - Fixed bug in color option processsing
-
-## [1003.1.3] - 2025-12-27
-
 - fix lint and check failures
-
-## [1003.1.2] - 2025-12-27
-
 - Updated to latest msgbuilder
-
-## [1003.1.1] - 2025-12-27
-
 - Added show.color option
 
 ## [1003.1.0] - 2025-12-25
@@ -70,8 +61,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1003.1.0-alpha.3] - 2025-12-25
 
 - Add BufferTransport for testing and programmatic log inspection
-
-- Create BufferTransport class extending Base.Transport for in-memory log capture
 - Add comprehensive testing utilities (assertContains, assertCount, assertMatches)
 - Support configurable maxEntries with FIFO behavior for memory management
 - Include rich inspection API (getEntries, getMessages, contains, matches)

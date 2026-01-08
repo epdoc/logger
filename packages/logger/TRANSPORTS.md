@@ -4,6 +4,22 @@ Transports are responsible for outputting log messages to various destinations. 
 
 ## Available Transports
 
+### Default Transport
+
+The Console transport is used by default
+
+```typescript
+import * as Log from '@epdoc/logger';
+import { Console } from '@epdoc/msgbuilder';
+
+type MsgBuilder = Console.Builder;
+type Logger = Log.Std.Logger<MsgBuilder>;
+
+const logMgr = new Log.Mgr<MsgBuilder>();
+const logger = await logMgr.getLogger<Logger>();
+logger.info.h2('Starting application').emit();
+```
+
 ### Console Transport
 
 Outputs log messages to the console with color formatting and customizable output options.
@@ -12,10 +28,15 @@ Outputs log messages to the console with color formatting and customizable outpu
 import * as Log from '@epdoc/logger';
 import { Console } from '@epdoc/msgbuilder';
 
-const logMgr = Log.createLogManager(Console.Builder, {
-  transports: [new Log.Transport.Console.Transport()],
-  threshold: 'info'
-});
+const logMgr = new Log.Mgr<Console.Builder>();
+// The following lines are not actually necessary. 
+// They show the default configuration when no other transports are added.
+const consoleTransport = new Log.Transport.Console.Transport(logMgr);
+await logMgr.addTransport(consoleTransport);
+logMgr.threshold = 'info';
+
+const logger = await logMgr.getLogger();
+logger.info.h2('Starting application').emit();
 ```
 
 **Features:**
@@ -32,16 +53,14 @@ Writes log messages to files with support for rotation, buffering, and different
 import * as Log from '@epdoc/logger';
 import { Console } from '@epdoc/msgbuilder';
 
-const fileTransport = new Log.Transport.File.Transport({
+const logMgr = new Log.Mgr<Console.Builder>();
+const fileTransport = new Log.Transport.File.Transport(logMgr, {
   filename: 'app.log',
   bufferSize: 4096,
   mode: 'append'
 });
-
-const logMgr = Log.createLogManager(Console.Builder, {
-  transports: [fileTransport],
-  threshold: 'info'
-});
+await logMgr.addTransport(fileTransport);
+logMgr.threshold = 'debug';           // The default threshold is 'info'
 ```
 
 **Features:**
@@ -51,6 +70,38 @@ const logMgr = Log.createLogManager(Console.Builder, {
 - Automatic directory creation
 - Graceful error handling
 
+### InfluxDB Transport
+
+Sends log messages to InfluxDB for time-series analysis and Grafana visualization with optimized batching and retry logic.
+
+```typescript
+import * as Log from '@epdoc/logger';
+import { Console } from '@epdoc/msgbuilder';
+
+const logMgr = new Log.Mgr<Console.Builder>();
+const influxTransport = new Log.Transport.Influx.Transport(logMgr, {
+  host: 'http://localhost:8086',
+  token: 'your-influx-token',
+  org: 'your-org',
+  bucket: 'logs',
+  service: 'my-app',
+  environment: 'production'
+});
+await logMgr.addTransport(influxTransport);
+logMgr.threshold = 'debug';
+```
+
+**Features:**
+- Automatic batching (100 messages per batch, 5-second intervals)
+- Retry logic with exponential backoff (up to 3 attempts)
+- Optimized tag/field mapping for Grafana integration
+- Configurable service, environment, and hostname context
+- Graceful error handling and connection recovery
+
+**Data Structure:**
+- **Tags** (low cardinality): `level`, `service`, `environment`, `host`, `package`
+- **Fields** (high cardinality): `message`, `request_id`, `session_id`, `duration_ms`, `data_*`
+
 ### Buffer Transport
 
 Captures log messages in memory for testing and programmatic inspection.
@@ -59,17 +110,17 @@ Captures log messages in memory for testing and programmatic inspection.
 import * as Log from '@epdoc/logger';
 import { Console } from '@epdoc/msgbuilder';
 
-const bufferTransport = new Log.Transport.Buffer.BufferTransport({
-  maxEntries: 1000
-});
+const logMgr = new Log.Mgr();
 
-const logMgr = Log.createLogManager(Console.Builder, {
-  transports: [bufferTransport],
-  threshold: 'info'
+const bufferTransport = new Log.Transport.Buffer.BufferTransport(logMgr, {
+  maxEntries: 1000,
+  delayReady: 100  // Delay 100ms before transport becomes ready
 });
+await logMgr.addTransport(bufferTransport);
 
-// Later in tests
-const logger = logMgr.getLogger();
+// This will set our logLevels to the default set, and start the transports.
+// Messages will be queued until the transports are ready.
+const logger = await logMgr.getLogger();
 logger.info.text('Test message').emit();
 
 // Inspect captured logs
@@ -103,14 +154,20 @@ You can combine multiple transports to output logs to different destinations:
 import * as Log from '@epdoc/logger';
 import { Console } from '@epdoc/msgbuilder';
 
-const consoleTransport = new Log.Transport.Console.Transport();
-const fileTransport = new Log.Transport.File.Transport({ filename: 'app.log' });
-const bufferTransport = new Log.Transport.Buffer.BufferTransport();
-
-const logMgr = Log.createLogManager(Console.Builder, {
-  transports: [consoleTransport, fileTransport, bufferTransport],
-  threshold: 'info'
+const logMgr = new Log.Mgr<Console.Builder>();
+const consoleTransport = new Log.Transport.Console.Transport(logMgr);
+const fileTransport = new Log.Transport.File.Transport(logMgr, { filename: 'app.log' });
+const influxTransport = new Log.Transport.Influx.Transport(logMgr, {
+  host: 'http://localhost:8086',
+  token: 'your-token',
+  org: 'your-org',
+  bucket: 'logs'
 });
+
+logMgr.addTransport(consoleTransport);
+logMgr.addTransport(fileTransport);
+logMgr.addTransport(influxTransport);
+logMgr.threshold = 'info';
 ```
 
 ## Transport Configuration
@@ -147,12 +204,35 @@ interface IFileTransportOptions {
 }
 ```
 
+### InfluxDB Transport Options
+
+```typescript
+interface IInfluxTransportOptions {
+  /** InfluxDB host URL */
+  host: string;
+  /** Authentication token */
+  token: string;
+  /** Organization name */
+  org: string;
+  /** Bucket name */
+  bucket: string;
+  /** Service/application name (optional) */
+  service?: string;
+  /** Environment (dev/staging/prod) (optional) */
+  environment?: string;
+  /** Override hostname (optional) */
+  hostname?: string;
+}
+```
+
 ### Buffer Transport Options
 
 ```typescript
 interface IBufferTransportOptions {
   /** Maximum number of entries to store */
   maxEntries?: number;
+  /** Delay in milliseconds before transport becomes ready (useful for testing) */
+  delayReady?: number;
 }
 ```
 
@@ -188,8 +268,10 @@ class CustomTransport extends BaseTransport {
 
 ### For Production
 - Use `File.Transport` for persistent logging
+- Use `Influx.Transport` for time-series analysis and monitoring dashboards
 - Configure file rotation to manage disk space
 - Consider multiple transports for different log levels
+- Set appropriate service/environment tags for InfluxDB organization
 
 ### For Testing
 - Use `Buffer.Transport` exclusively in tests
@@ -198,11 +280,10 @@ class CustomTransport extends BaseTransport {
 
 ```typescript
 // Example test setup
-const bufferTransport = new Log.Transport.Buffer.BufferTransport();
-const logMgr = Log.createLogManager(Console.Builder, {
-  transports: [bufferTransport],
-  threshold: 'debug'
-});
+const logMgr = new Log.Mgr<Console.Builder>();
+const bufferTransport = new Log.Transport.Buffer.BufferTransport(logMgr);
+logMgr.addTransport(bufferTransport);
+logMgr.threshold = 'debug';
 
 // In test
 beforeEach(() => {
