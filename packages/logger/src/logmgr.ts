@@ -51,7 +51,7 @@ export class LogMgr<
   protected _logLevels: Level.IBasic | undefined;
   protected _rootLogger: Logger.IEmitter | undefined;
   protected _msgBuilder: MsgBuilder.Abstract | undefined;
-  protected _threshold: Level.Value = 5;
+  protected _threshold: Level.Value = 3;
   protected _show: Log.EmitterShowOpts = { pkgSep: '.' };
   // protected _pkg: string = '';
   // protected _reqId: string = '';

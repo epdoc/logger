@@ -22,8 +22,11 @@ deno add @epdoc/logger @epdoc/msgbuilder @epdoc/cliapp
 import * as Log from '@epdoc/logger';
 import { Console } from '@epdoc/msgbuilder';
 
-const logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
-const logger = logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
+type MsgBuilder = Console.Builder;
+type Logger = Log.Std.Logger<MsgBuilder>;
+
+const logMgr = new Log.Mgr<MsgBuilder>();
+const logger = await logMgr.getLogger<Logger>();
 
 logger.info.h1('Hello World').emit();
 ```
@@ -32,10 +35,10 @@ logger.info.h1('Hello World').emit();
 
 | Package | Purpose | Status |
 |---------|---------|---------|
-| **[@epdoc/logger](./packages/logger/)** | Core logging with transports | ✅ Stable |
-| **[@epdoc/msgbuilder](./packages/msgbuilder/)** | Structured message formatting | ✅ Stable |
-| **[@epdoc/cliapp](./packages/cliapp/)** | CLI application framework | ✅ Stable |
-| **[@epdoc/loglevels](./packages/loglevels/)** | Log level management | ✅ Stable |
+| **[@epdoc/logger](./packages/logger/README.md)** | Core logging with transports | ✅ Stable |
+| **[@epdoc/msgbuilder](./packages/msgbuilder/README.md)** | Structured message formatting | ✅ Stable |
+| **[@epdoc/cliapp](./packages/cliapp/README.md)** | CLI application framework | ✅ Stable |
+| **[@epdoc/loglevels](./packages/loglevels/README.md)** | Log level management | ✅ Stable |
 | **[examples](./packages/examples/)** | Working examples and tutorials | ✅ Reference |
 | **[demo](./packages/demo/)** | Complete CLI app showcase | ✅ Reference |
 | [@epdoc/logdy](./packages/logdy/) | Logdy transport | 🚧 Development |
@@ -61,10 +64,18 @@ logger.info.h1('Hello World').emit();
 
 ## Use Cases
 
-### Simple Application Logging
+### Simple Application Logging ([examples/logger.01.run.ts](./packages/examples/logger.01.run.ts))
 ```typescript
-const logger = Log.createLogManager().getLogger();
-logger.info.text('Application started').emit();
+import * as Log from '@epdoc/logger';
+import { Console } from '@epdoc/msgbuilder';
+
+type MsgBuilder = Console.Builder;
+type Logger = Log.Std.Logger<MsgBuilder>;
+
+const logMgr = new Log.Mgr<MsgBuilder>();
+const logger = await logMgr.getLogger<Logger>();
+
+logger.info.h1('Hello World').emit();
 ```
 
 ### CLI Applications

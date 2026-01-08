@@ -18,8 +18,8 @@ import { BareLogger } from './logger.ts';
 const bareLogLevelsSet: Level.LogLevelsSet = {
   id: 'bare',
   levels: {
-    warn: { val: 2, severityNumber: 13, fmtFn: colors.yellow, warn: true },
-    info: { val: 3, severityNumber: 9, fmtFn: colors.green, default: true },
+    warn: { val: 13, fmtFn: colors.yellow, warn: true },
+    info: { val: 9, fmtFn: colors.green, default: true },
   },
 } as const;
 

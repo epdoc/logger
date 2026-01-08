@@ -14,7 +14,7 @@ deno add @epdoc/loglevels
 ## Usage
 
 The core of this module is the `LogLevels` class, which takes a log level definition object and provides an interface
-for working with your custom levels.
+for working with your custom levels. We DO NOT declare log levels in this module.
 
 ```ts
 import { LogLevels, type LogLevelsDef } from '@epdoc/loglevels';
@@ -55,10 +55,11 @@ console.log(levels.applyColors(errorMessage, 'ERROR'));
 
 ## API Overview
 
-- **`LogLevelsDef`**: A type definition for an object that defines your custom log levels. The keys are the level names
-  (e.g., `'ERROR'`), and the values are `LogLevelDef` objects specifying the `val` (numeric value) and other properties.
+- **`LogLevelsSet`**: A type definition for an object that defines your custom log levels. The keys of the levels
+  property are the level names (e.g., `'ERROR'`), and the values are `LogLevelSpec` objects specifying the `val`
+  (numeric value) and other properties.
 
-- **`LogLevels`**: A class that takes a `LogLevelsDef` and implements the `IBasic` interface. It provides methods for
+- **`LogLevels`**: A class that takes a `LogLevelsSet` and implements the `IBasic` interface. It provides methods for
   converting between level names and values, checking logging thresholds (`meetsThreshold`), and applying custom
   formatting.
 
@@ -83,18 +84,22 @@ This table shows common industry log levels.
 
 ## @epdoc/logger Log Levels
 
-We provide the following log level sets:
+We provide the following log level sets in [@epdoc/logger](../logger/README.md). All sets use the same numeric values for the same levels, and these are based
+off of OTLP severity levels.
 
-| Level       | `Log.Bare.Logger` (minimalist) | `Log.Min.Logger` (minimalist) |  `Log.Otlp.Logger` (OTLP levels) | `Log.Std.Logger` (superset of the Standard, NPM amd log4j) | `Log.Java.Logger` (`java.util.logging`) |
-| :---------- | :----------------------------- | :---------------------------- |  :---------------------------- | :--------------------------------------------------------- | :-------------------------------------- |
-| **FATAL**   | -                              | -                             | ✔ **FATAL**                            | ✔ **FATAL** \| **CRITICAL**                                | -                                       |
-| **ERROR**   | -                              | ✔ **ERROR**                   | ✔ **ERROR**                   | ✔ **ERROR**                                                | ✔ **SEVERE**                            |
-| **WARN**    | ✔ **WARN**                     | ✔ **WARN**                    | ✔ **WARN**                    | ✔ **WARN**                                                 | ✔ **WARN**                              |
-| **INFO**    | ✔ **INFO**                     | ✔ **INFO**                    | ✔ **INFO**                    | ✔ **INFO**                                                 | ✔ **INFO**                              |
-| **VERBOSE** | -                              | -                             | -                             | ✔ **VERBOSE**                                              | ✔ **CONFIG**                            |
-| **DEBUG**   | -                              | ✔ **DEBUG**                   | ✔ **DEBUG**                   | ✔ **DEBUG**                                                | ✔ **FINE**                              |
-| **TRACE**   | -                              | -                             | ✔ **TRACE**                          | ✔ **TRACE**                                                | ✔ **FINER**                             |
-| **SPAM**    | -                              | -                             | -                             | ✔ **SPAM** \| **SILLY**                                    | ✔ **FINEST**                            |
+| Level (OTLP)    | `Log.Bare.Logger` (minimalist) | `Log.Min.Logger` (minimalist) | `Log.Otlp.Logger` (OTLP levels) | `Log.Std.Logger` (superset of the Standard, NPM amd log4j) | `Log.Java.Logger` (`java.util.logging`) |
+| :-------------- | :----------------------------- | :---------------------------- | :------------------------------ | :--------------------------------------------------------- | :-------------------------------------- |
+| **FATAL2** (22) | -                              | -                             | -                               | ✔ **FATAL**                                                | -                                       |
+| **FATAL** (21)  | -                              | -                             | ✔ **FATAL**                     | ✔ **CRITICAL**                                             | -                                       |
+| **ERROR** (17)  | -                              | ✔ **ERROR**                   | ✔ **ERROR**                     | ✔ **ERROR**                                                | ✔ **SEVERE**                            |
+| **WARN** (13)   | ✔ **WARN**                     | ✔ **WARN**                    | ✔ **WARN**                      | ✔ **WARN**                                                 | ✔ **WARN**                              |
+| **INFO** (9)    | ✔ **INFO**                     | ✔ **INFO**                    | ✔ **INFO**                      | ✔ **INFO**                                                 | ✔ **INFO**                              |
+| **DEBUG2** (6)  | -                              | -                             | -                               | ✔ **VERBOSE**                                              | -                                       |
+| **DEBUG** (5)   | -                              | ✔ **DEBUG**                   | ✔ **DEBUG**                     | ✔ **DEBUG**                                                | ✔ **CONFIG**                            |
+| **TRACE4** (4)  | -                              | -                             | -                               | -                                                          | -                                       |
+| **TRACE3** (3)  | -                              | -                             | -                               | ✔ **TRACE**                                                | ✔ **FINE**                              |
+| **TRACE2** (2)  | -                              | -                             | -                               | ✔ **SPAM**                                                 | ✔ **FINER**                             |
+| **TRACE** (1)   | -                              | -                             | ✔ **TRACE**                     | ✔ **SILLY**                                                | ✔ **FINEST**                            |
 
 The `Bare` set is meant for library modules that wish to support @epdoc/logger without locking the user into the `Std`
 or `Java` loggers. The `Min` set would be a step up from using the `Bare` set and would require the main project to use
@@ -102,3 +107,43 @@ something based on it.
 
 We also provide `Log.Cli.Logger` with levels `error`, `warn`, `help`, `data`, `info`, `debug`, `prompt`, `verbose`,
 `input` and `silly`. This set of log levels is less commonly used.
+
+## OTLP Log Severity Levels
+
+| Number | Short Name | Description            |
+| ------ | ---------- | ---------------------- |
+| **1**  | TRACE      | Trace-level severity   |
+| **2**  | TRACE2     |                        |
+| **3**  | TRACE3     |                        |
+| **4**  | TRACE4     |                        |
+| **5**  | DEBUG      | Debug-level severity   |
+| **6**  | DEBUG2     |                        |
+| **7**  | DEBUG3     |                        |
+| **8**  | DEBUG4     |                        |
+| **9**  | INFO       | Informational severity |
+| **10** | INFO2      |                        |
+| **11** | INFO3      |                        |
+| **12** | INFO4      |                        |
+| **13** | WARN       | Warning severity       |
+| **14** | WARN2      |                        |
+| **15** | WARN3      |                        |
+| **16** | WARN4      |                        |
+| **17** | ERROR      | Error severity         |
+| **18** | ERROR2     |                        |
+| **19** | ERROR3     |                        |
+| **20** | ERROR4     |                        |
+| **21** | FATAL      | Fatal severity         |
+| **22** | FATAL2     |                        |
+| **23** | FATAL3     |                        |
+| **24** | FATAL4     |                        |
+
+### Commonly Used Subset
+
+In practice, these are the most commonly used levels:
+
+1. **TRACE** (1) - Most verbose, for tracing execution flow
+2. **DEBUG** (5) - Debug information for developers
+3. **INFO** (9) - General operational information
+4. **WARN** (13) - Warning messages (potentially harmful situations)
+5. **ERROR** (17) - Error messages (failed operations)
+6. **FATAL** (21) - Severe errors causing application failure

@@ -18,9 +18,9 @@ import { MinLogger } from './logger.ts';
 const minLogLevelsSet: Level.LogLevelsSet = {
   id: 'min',
   levels: {
-    error: { val: 1, severityNumber: 17, fmtFn: colors.red, flush: true },
-    warn: { val: 2, severityNumber: 13, fmtFn: colors.yellow, warn: true },
-    info: { val: 3, severityNumber: 9, fmtFn: colors.green, default: true },
+    error: { val: 17, fmtFn: colors.red, flush: true },
+    warn: { val: 13, fmtFn: colors.yellow, warn: true },
+    info: { val: 9, fmtFn: colors.green, default: true },
     debug: {
       val: 5,
       lowest: true,

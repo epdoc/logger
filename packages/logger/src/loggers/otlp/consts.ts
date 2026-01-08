@@ -18,19 +18,18 @@ import { OtlpLogger } from './logger.ts';
 const otlpLogLevelsSet: Level.LogLevelsSet = {
   id: 'std',
   levels: {
-    fatal: { val: 0, severityNumber: 21, fmtFn: colors.brightRed, flush: true, icon: '☠' },
-    error: { val: 1, severityNumber: 17, fmtFn: colors.red, flush: true, icon: '✗' },
-    warn: { val: 2, severityNumber: 13, fmtFn: colors.yellow, warn: true, icon: '⚠' },
-    info: { val: 3, severityNumber: 9, fmtFn: colors.green, default: true, icon: 'ℹ' },
+    fatal: { val: 21, fmtFn: colors.brightRed, flush: true, icon: '☠' },
+    error: { val: 17, fmtFn: colors.red, flush: true, icon: '✗' },
+    warn: { val: 13, fmtFn: colors.yellow, warn: true, icon: '⚠' },
+    info: { val: 9, fmtFn: colors.green, default: true, icon: 'ℹ' },
     debug: {
       val: 5,
-      severityNumber: 5,
       fmtFn: (str: string) => {
         return colors.dim(colors.blue(str));
       },
       icon: 'Δ',
     },
-    trace: { val: 6, severityNumber: 1, fmtFn: colors.gray, icon: '↳' },
+    trace: { val: 1, fmtFn: colors.gray, icon: '↳' },
   },
 } as const;
 
