@@ -1,4 +1,4 @@
-import { assertEquals } from '@std/assert';
+import { assertEquals, assertThrows } from '@std/assert';
 import { describe, test } from '@std/testing/bdd';
 import { reset, set } from '../../../test-utils/color-map.ts';
 import * as Log from '../src/mod.ts';
@@ -7,35 +7,36 @@ describe('levels', () => {
   describe('cli', () => {
     test('values', () => {
       const logLevels = Log.Cli.factoryMethods.createLevels();
-      assertEquals(logLevels.asValue('error'), 0);
-      assertEquals(logLevels.asValue('warn'), 1);
-      assertEquals(logLevels.asValue('help'), 2);
-      assertEquals(logLevels.asValue('data'), 3);
-      assertEquals(logLevels.asValue('info'), 4);
+      assertEquals(logLevels.asValue('error'), 17);
+      assertEquals(logLevels.asValue('warn'), 13);
+      assertEquals(logLevels.asValue('help'), 11);
+      assertEquals(logLevels.asValue('data'), 10);
+      assertEquals(logLevels.asValue('info'), 9);
       assertEquals(logLevels.asValue('debug'), 5);
-      assertEquals(logLevels.asValue('prompt'), 6);
-      assertEquals(logLevels.asValue('verbose'), 7);
-      assertEquals(logLevels.asValue('input'), 8);
-      assertEquals(logLevels.asValue('silly'), 9);
-      assertEquals(logLevels.asName(9), 'SILLY');
-      assertEquals(logLevels.asName(8), 'INPUT');
-      assertEquals(logLevels.asName(7), 'VERBOSE');
-      assertEquals(logLevels.asName(6), 'PROMPT');
+      assertEquals(logLevels.asValue('prompt'), 4);
+      assertEquals(logLevels.asValue('verbose'), 3);
+      assertEquals(logLevels.asValue('input'), 2);
+      assertEquals(logLevels.asValue('silly'), 1);
+      assertEquals(logLevels.asName(1), 'SILLY');
+      assertEquals(logLevels.asName(2), 'INPUT');
+      assertEquals(logLevels.asName(3), 'VERBOSE');
+      assertEquals(logLevels.asName(4), 'PROMPT');
       assertEquals(logLevels.asName(5), 'DEBUG');
-      assertEquals(logLevels.asName(4), 'INFO');
-      assertEquals(logLevels.asName(3), 'DATA');
-      assertEquals(logLevels.asName(2), 'HELP');
-      assertEquals(logLevels.asName(1), 'WARN');
-      assertEquals(logLevels.asName(0), 'ERROR');
+      assertEquals(logLevels.asName(9), 'INFO');
+      assertEquals(logLevels.asName(10), 'DATA');
+      assertEquals(logLevels.asName(11), 'HELP');
+      assertEquals(logLevels.asName(13), 'WARN');
+      assertEquals(logLevels.asName(17), 'ERROR');
     });
 
     test('cli threshold', () => {
       const logLevels = Log.Cli.factoryMethods.createLevels();
       // For increasing levels: level meets threshold if level >= threshold
-      assertEquals(logLevels.meetsThreshold(4, 4), true);
-      assertEquals(logLevels.meetsThreshold(4, 5), true);
-      assertEquals(logLevels.meetsThreshold(5, 4), false);
-      assertEquals(logLevels.meetsThreshold(4, 2), false);
+      assertEquals(logLevels.meetsThreshold('prompt', 'prompt'), true);
+      assertEquals(logLevels.meetsThreshold('prompt', 'verbose'), true);
+      assertEquals(logLevels.meetsThreshold('verbose', 'prompt'), false);
+      assertEquals(logLevels.meetsThreshold(3, 4), false);
+      assertEquals(logLevels.meetsThreshold('prompt', 'silly'), true);
     });
 
     test('cli flush threshold', () => {
@@ -70,32 +71,32 @@ describe('levels', () => {
   describe('std', () => {
     test('values', () => {
       const logLevels = Log.Std.factoryMethods.createLevels();
-      assertEquals(logLevels.asValue('fatal'), 0);
-      assertEquals(logLevels.asValue('critical'), 0);
-      assertEquals(logLevels.asValue('error'), 1);
-      assertEquals(logLevels.asValue('warn'), 2);
-      assertEquals(logLevels.asValue('info'), 3);
-      assertEquals(logLevels.asValue('verbose'), 4);
+      assertEquals(logLevels.asValue('fatal'), 22);
+      assertEquals(logLevels.asValue('critical'), 21);
+      assertEquals(logLevels.asValue('error'), 17);
+      assertEquals(logLevels.asValue('warn'), 13);
+      assertEquals(logLevels.asValue('info'), 9);
+      assertEquals(logLevels.asValue('verbose'), 6);
       assertEquals(logLevels.asValue('debug'), 5);
-      assertEquals(logLevels.asValue('trace'), 6);
-      assertEquals(logLevels.asValue('spam'), 7);
-      assertEquals(logLevels.asName(7), 'SPAM');
-      assertEquals(logLevels.asName(6), 'TRACE');
+      assertEquals(logLevels.asValue('trace'), 4);
+      assertEquals(logLevels.asValue('spam'), 2);
+      assertEquals(logLevels.asName(2), 'SPAM');
+      assertEquals(logLevels.asName(4), 'TRACE');
       assertEquals(logLevels.asName(5), 'DEBUG');
-      assertEquals(logLevels.asName(4), 'VERBOSE');
-      assertEquals(logLevels.asName(3), 'INFO');
-      assertEquals(logLevels.asName(2), 'WARN');
-      assertEquals(logLevels.asName(1), 'ERROR');
-      assertEquals(logLevels.asName(0), 'FATAL');
+      assertEquals(logLevels.asName(6), 'VERBOSE');
+      assertEquals(logLevels.asName(9), 'INFO');
+      assertEquals(logLevels.asName(13), 'WARN');
+      assertEquals(logLevels.asName(17), 'ERROR');
+      assertEquals(logLevels.asName(22), 'FATAL');
     });
 
     test('std threshold', () => {
       const logLevels = Log.Std.factoryMethods.createLevels();
       // For increasing levels: level meets threshold if level >= threshold
       assertEquals(logLevels.meetsThreshold(4, 4), true);
-      assertEquals(logLevels.meetsThreshold(4, 5), true);
-      assertEquals(logLevels.meetsThreshold(5, 4), false);
-      assertEquals(logLevels.meetsThreshold(4, 2), false);
+      assertEquals(logLevels.meetsThreshold(4, 5), false);
+      assertEquals(logLevels.meetsThreshold(5, 4), true);
+      assertEquals(logLevels.meetsThreshold(4, 2), true);
     });
 
     test('std flush threshold', () => {
@@ -134,23 +135,28 @@ describe('levels', () => {
   describe('min', () => {
     test('values', () => {
       const logLevels = Log.Min.factoryMethods.createLevels();
-      assertEquals(logLevels.asValue('error'), 1);
-      assertEquals(logLevels.asValue('warn'), 2);
-      assertEquals(logLevels.asValue('info'), 3);
+      assertEquals(logLevels.asValue('error'), 17);
+      assertEquals(logLevels.asValue('warn'), 13);
+      assertEquals(logLevels.asValue('info'), 9);
       assertEquals(logLevels.asValue('debug'), 5);
       assertEquals(logLevels.asName(5), 'DEBUG');
-      assertEquals(logLevels.asName(3), 'INFO');
-      assertEquals(logLevels.asName(2), 'WARN');
-      assertEquals(logLevels.asName(1), 'ERROR');
+      assertEquals(logLevels.asName(9), 'INFO');
+      assertEquals(logLevels.asName(13), 'WARN');
+      assertEquals(logLevels.asName(17), 'ERROR');
     });
 
     test('std threshold', () => {
       const logLevels = Log.Min.factoryMethods.createLevels();
       // For increasing levels: level meets threshold if level >= threshold
-      assertEquals(logLevels.meetsThreshold(2, 2), true);
-      assertEquals(logLevels.meetsThreshold(2, 3), true);
-      assertEquals(logLevels.meetsThreshold(3, 2), false);
-      assertEquals(logLevels.meetsThreshold(2, 1), false);
+      assertEquals(logLevels.meetsThreshold(17, 13), true);
+      assertEquals(logLevels.meetsThreshold(13, 13), true);
+      assertEquals(logLevels.meetsThreshold(5, 9), false);
+      assertEquals(logLevels.meetsThreshold(5, 13), false);
+      assertThrows(
+        () => logLevels.meetsThreshold(3, 13),
+        Error,
+        'Cannot get log level: no name for level: 3',
+      );
     });
 
     test('std flush threshold', () => {

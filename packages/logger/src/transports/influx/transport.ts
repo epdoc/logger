@@ -105,7 +105,7 @@ export class InfluxTransport extends Base.Transport {
     this.#isTransmitting = true;
     try {
       await this.#transmitBatch(lines);
-    } catch (err) {
+    } catch (_err) {
       // Re-add failed lines to front of buffer for retry
       this.#buffer.unshift(...lines);
     } finally {

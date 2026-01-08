@@ -8,7 +8,7 @@ export interface Options extends Base.Options {
   org: string;
   bucket: string;
   token: string;
-  service?: string;      // Application/service name
-  environment?: string;  // dev, staging, prod
-  hostname?: string;     // Override auto-detected hostname
+  service?: string; // Application/service name
+  environment?: string; // dev, staging, prod
+  hostname?: string; // Override auto-detected hostname
 }
