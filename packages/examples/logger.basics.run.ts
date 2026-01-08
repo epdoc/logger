@@ -10,7 +10,7 @@ import { Console } from '@epdoc/msgbuilder';
 console.log('=== Example 1: Basic Logger Setup ===');
 
 const basicLogMgr = new Log.Mgr<Console.Builder>();
-basicLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
+basicLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter);
 basicLogMgr.initLevels(Log.Std.factoryMethods);
 basicLogMgr.threshold = 'info';
 const basicLogger = await basicLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
@@ -55,7 +55,7 @@ class CustomBuilder extends Console.Builder {
 type CustomLogger = Log.Std.Logger<CustomBuilder>;
 
 const customLogMgr = new Log.Mgr<CustomBuilder>();
-customLogMgr.msgBuilderFactory = (emitter) => new CustomBuilder(emitter as any);
+customLogMgr.msgBuilderFactory = (emitter) => new CustomBuilder(emitter);
 customLogMgr.initLevels(Log.Std.factoryMethods);
 customLogMgr.threshold = 'info';
 const customLogger = await customLogMgr.getLogger<CustomLogger>();
@@ -72,7 +72,7 @@ stdLogger.info.text('Standard logger - full featured').emit();
 
 // CLI logger (simplified for command-line tools)
 const cliLogMgr = new Log.Mgr<Console.Builder>();
-cliLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any); // Assuming Console.Builder is used for CliLogger
+cliLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter); // Assuming Console.Builder is used for CliLogger
 cliLogMgr.initLevels(Log.Cli.factoryMethods); // Use Cli factory methods
 cliLogMgr.threshold = 'info';
 const cliLogger = await cliLogMgr.getLogger<Log.Cli.Logger<Console.Builder>>();
@@ -82,7 +82,7 @@ cliLogger.info.text('CLI logger - streamlined for CLI apps').emit();
 console.log('\n=== Example 5: Logger Configuration ===');
 
 const configuredLogMgr = new Log.Mgr<Console.Builder>();
-configuredLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
+configuredLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter);
 configuredLogMgr.initLevels(Log.Std.factoryMethods);
 configuredLogMgr.threshold = 'debug';
 configuredLogMgr.show = {
