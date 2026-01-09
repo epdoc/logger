@@ -51,8 +51,16 @@ export class LogMgr<
   protected _logLevels: Level.IBasic | undefined;
   protected _rootLogger: Logger.IEmitter | undefined;
   protected _msgBuilder: MsgBuilder.Abstract | undefined;
-  protected _threshold: Level.Value = 3;
-  protected _show: Log.EmitterShowOpts = { pkgSep: '.' };
+  protected _threshold: Level.Value = 9;
+  protected _show: Log.EmitterShowOpts = {
+    pkgSep: '.',
+    level: false,
+    pkg: false,
+    reqId: false,
+    sid: false,
+    time: false,
+    data: false,
+  };
   // protected _pkg: string = '';
   // protected _reqId: string = '';
   protected _mark: Record<string, HrMilliseconds> = {};
@@ -153,6 +161,7 @@ export class LogMgr<
     }
     if (!this._logLevels) {
       this._logLevels = this._loggerFactories.createLevels();
+      this._threshold = this._logLevels.asValue(this._logLevels.defaultLevelName);
     }
     return this;
   }
