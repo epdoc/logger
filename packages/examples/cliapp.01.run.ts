@@ -23,10 +23,10 @@ class AppContext extends CliApp.Ctx.Base<Logger> {
 }
 
 // 3. Define options interface
-interface AppOptions {
+type AppOptions = CliApp.Opts & {
   verbose?: boolean;
   output?: string;
-}
+};
 
 // 4. Define your root command
 class AppRootCmd extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<AppContext>, AppOptions> {
@@ -54,20 +54,21 @@ class AppRootCmd extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<AppContext>, A
   protected override addExtras(): void {
     this.cmd.hook('preAction', (cmd) => {
       const opts = cmd.optsWithGlobals() as AppOptions;
+      // Configure the logging options before any subcommands are executed
       CliApp.configureLogging(this.ctx, opts);
 
-      this.log.info.section('CliApp Example 01 - Context and a Root Commmand').emit();
+      // this.log.info.section('CliApp Example 01 - Context and a Root Commmand').emit();
 
-      const transports = this.ctx.logMgr.transportMgr.transports.map((transport) => transport.toString());
-      this.log.info.label('Transports:').value(transports.join(', ')).emit();
-      this.log.info.label('Threshold:').value(this.ctx.logMgr.threshold).value(
-        this.ctx.logMgr.logLevels.asName(this.ctx.logMgr.threshold),
-      ).emit();
-      this.log.info.label('Show:').value(JSON.stringify(this.ctx.logMgr.show)).emit();
-      this.log.error.error('This is an error message').emit();
-      this.log.debug.text('This is a debug message').emit();
-      this.log.verbose.text('This is a verbose message').emit();
-      this.log.spam.text('This is a spam message').emit();
+      // const transports = this.ctx.logMgr.transportMgr.transports.map((transport) => transport.toString());
+      // this.log.info.label('Transports:').value(transports.join(', ')).emit();
+      // this.log.info.label('Threshold:').value(this.ctx.logMgr.threshold).value(
+      //   this.ctx.logMgr.logLevels.asName(this.ctx.logMgr.threshold),
+      // ).emit();
+      // this.log.info.label('Show:').value(JSON.stringify(this.ctx.logMgr.show)).emit();
+      // this.log.error.error('This is an error message').emit();
+      // this.log.debug.text('This is a debug message').emit();
+      // this.log.verbose.text('This is a verbose message').emit();
+      // this.log.spam.text('This is a spam message').emit();
     });
   }
 
@@ -75,6 +76,19 @@ class AppRootCmd extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<AppContext>, A
     args: string[],
     opts: AppOptions,
   ): Promise<void> {
+    this.log.info.section('CliApp Example 01 - Context and a Root Commmand').emit();
+
+    const transports = this.ctx.logMgr.transportMgr.transports.map((transport) => transport.toString());
+    this.log.info.label('Transports:').value(transports.join(', ')).emit();
+    this.log.info.label('Threshold:').value(this.ctx.logMgr.threshold).value(
+      this.ctx.logMgr.logLevels.asName(this.ctx.logMgr.threshold),
+    ).emit();
+    this.log.info.label('Show:').value(JSON.stringify(this.ctx.logMgr.show)).emit();
+    this.log.error.error('This is an error message').emit();
+    this.log.debug.text('This is a debug message').emit();
+    this.log.verbose.text('This is a verbose message').emit();
+    this.log.spam.text('This is a spam message').emit();
+
     this.ctx.log.info.section('Processing Files').emit();
     this.ctx.log.info.label('Files:').value(args.join(', '))
       .label('Output:').value(opts.output || 'default')

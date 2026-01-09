@@ -404,9 +404,74 @@ Commands follow a structured setup sequence:
 4. **addExtras()** - Add help text, hooks, etc.
 5. **setupAction()** - *(Internal)* Wire up the executeAction method
 
+#### When to Use Each Method
+
+#### When to Use Each Method
+
+**Use `addExtras()` for:**
+- **Help text** - `addHelpText()` must be called during command setup
+- **Shared configuration** - `preAction` hooks in root commands run for ALL subcommands
+- **Lifecycle hooks** - Register hooks for `preSubcommand`, `postAction`, etc.
+
+```typescript
+// Root command
+protected override addExtras(): void {
+  this.cmd.addHelpText('after', '\nExamples:\n  my-cmd process file.txt --verbose');
+  
+  // This preAction hook runs for ALL commands (root + subcommands)
+  this.cmd.hook('preAction', (cmd) => {
+    const opts = cmd.optsWithGlobals() as AppOptions;
+    CliApp.configureLogging(this.ctx, opts); // Applied to all subcommands
+  });
+}
+```
+
+**Use `executeAction()` for:**
+- **Command-specific logic** - Only runs when THIS specific command is executed
+- **Not shared with subcommands** - Subcommands have their own `executeAction`
+
+```typescript
+// Root command
+protected override executeAction(args: string[], opts: AppOptions): Promise<void> {
+  // This ONLY runs if user executes root command directly
+  // NOT when they run subcommands like "mycli fetch" or "mycli process"
+  this.ctx.log.info.text('Root command executed').emit();
+  return Promise.resolve();
+}
+
+// Subcommand  
+protected override executeAction(args: string[], opts: SubOptions): Promise<void> {
+  // This ONLY runs when this specific subcommand is executed
+  // But it benefits from root command's preAction hook for logging config
+  return this.processFiles(args, opts);
+}
+```
+
+**Key insight:** Root command `preAction` hooks run for all subcommands, making `addExtras()` the right place for shared configuration like logging setup.
+```
+
+**Use `executeAction()` for:**
+- **Main command logic** and business functionality
+- **Processing arguments and options** to perform the actual work
+- **File operations, API calls, data processing** - the core purpose of your command
+
+```typescript
+protected override executeAction(args: string[], opts: AppOptions): Promise<void> {
+  // Main command logic here
+  this.ctx.log.info.section('Processing Files').emit();
+  return this.processFiles(args, opts);
+}
+```
+
+**Why not put everything in `addExtras`?**
+- `addExtras` runs during command setup, before argument parsing
+- `executeAction` runs after parsing with clean access to typed arguments and options
+- Separation keeps setup concerns separate from business logic
+- `executeAction` is the natural place for the command's primary functionality
+
 #### Option Definition
 
-Use Commander.js syntax for options, including the new fluent API:
+Use Commander.js syntax for options, including the new fluent API that is offered when using CliApp:
 
 ```typescript
 protected override addOptions(): void {
@@ -454,7 +519,7 @@ abstract class BaseContext<M, L> implements Ctx.IBase<M, L> {
 
 **Key Points:**
 - Extend `BaseContext` with your message builder and logger types
-- Call `setupLogging()` in your constructor
+- Call `setupLogging()` after the BaseContext is constructed
 - Bundle types with `ContextBundle<Context, MsgBuilder, Logger>` for cleaner command signatures
 - Add application state and helper methods to your context class
 

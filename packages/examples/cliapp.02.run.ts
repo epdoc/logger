@@ -14,13 +14,13 @@
 
 import * as CliApp from '@epdoc/cliapp';
 import * as Log from '@epdoc/logger';
-import { Console } from '@epdoc/msgbuilder';
+import { Console, type IEmitter } from '@epdoc/msgbuilder';
 import pkg from '../cliapp/deno.json' with { type: 'json' };
 
 // 1. Define custom msgbuilder with project-specific methods
 class AppBuilder extends Console.Builder {
-  constructor(emitter: Log.IEmitter) {
-    super(emitter as any);
+  constructor(emitter: IEmitter) {
+    super(emitter);
   }
 
   fileOp(operation: string, path: string) {
@@ -43,15 +43,16 @@ class AppContext extends CliApp.Ctx.Base<Logger> {
   override dryRun = false;
 
   constructor() {
-    super(pkg);
-    this.setupLogging();
+    super({
+      name: 'cliapp.02.run.ts',
+      version: '0.1.0',
+      description: 'CliApp Example 02 - Custom MsgBuilder, Context and Subcommands',
+    });
   }
 
   async setupLogging() {
     this.logMgr = new Log.Mgr<AppBuilder>();
-    this.logMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter as any);
-    this.logMgr.initLevels(Log.Std.factoryMethods);
-    this.logMgr.threshold = 'info';
+    this.logMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter);
     this.log = await this.logMgr.getLogger<Logger>();
   }
 
@@ -78,10 +79,10 @@ interface CleanOptions {
   force?: boolean;
 }
 
-interface RootOptions {
+type RootOptions = CliApp.Opts & {
   config?: string;
   quiet?: boolean;
-}
+};
 
 // 5. Define commands using structured command classes
 class ProcessCmd extends CliApp.Cmd.Sub<CliApp.Cmd.ContextBundle<AppContext>, ProcessOptions> {
@@ -189,6 +190,7 @@ class FileProcessorRoot extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<AppCont
 
   protected override addOptions(): void {
     this.cmd
+      .addLogging(this.ctx)
       .option('--config <file>', 'Configuration file')
       .option('--quiet', 'Suppress output');
   }
@@ -202,6 +204,11 @@ class FileProcessorRoot extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<AppCont
   }
 
   protected override addExtras(): void {
+    this.cmd.hook('preAction', (cmd) => {
+      const opts = cmd.optsWithGlobals() as RootOptions;
+      // Configure the logging options before any subcommands are executed
+      CliApp.configureLogging(this.ctx, opts);
+    });
     this.cmd.addHelpText(
       'after',
       '\nExamples:\n  $ file-processor process *.txt --verbose\n  $ file-processor clean --dry-run',
@@ -236,5 +243,6 @@ if (import.meta.main) {
   await ctx.setupLogging();
   const rootCmd = new FileProcessorRoot(ctx);
   const cmd = await rootCmd.init();
-  await cmd.parseAsync();
+  // Wrap "await cmd.parseAsync()" in CliApp.run to cleanly handle errors, shutdown, etc.
+  await CliApp.run(ctx, () => cmd.parseAsync());
 }
