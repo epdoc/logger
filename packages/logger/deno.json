@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logger",
-  "version": "1003.2.4",
+  "version": "1003.2.5",
   "description": "Logging module with chainable formatting, middleware mixins and extendable transports",
   "author": {
     "name": "James Pravetz",

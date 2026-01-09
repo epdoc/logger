@@ -59,7 +59,7 @@ export class ConsoleTransport extends Base.Transport {
    * @returns {string} A string identifying the transport and its format.
    */
   override toString(): string {
-    return `Console[${this._format}]`;
+    return `Console[${this._format},${this._color ? 'color' : 'no-color'}]`;
   }
 
   /**
