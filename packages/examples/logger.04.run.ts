@@ -1,8 +1,10 @@
 import * as Log from '@epdoc/logger';
-import { Console } from '@epdoc/msgbuilder';
+import { Console, type IEmitter } from '@epdoc/msgbuilder';
+
+const color = !Deno.args.includes('--no-color');
 
 class CustomBuilder extends Console.Builder {
-  constructor(emitter: Log.IEmitter) {
+  constructor(emitter: IEmitter) {
     super(emitter);
   }
 
@@ -12,6 +14,11 @@ class CustomBuilder extends Console.Builder {
 
   metric(name: string, value: number, unit = '') {
     return this.text('📊 ').text(name).text(': ').text(value.toString()).text(unit);
+  }
+
+  transports() {
+    const transports = logMgr.transportMgr.transports.map((transport) => transport.toString());
+    return this.value(transports.join(', '));
   }
 }
 
@@ -23,12 +30,13 @@ logMgr.initLevels(Log.Std.factoryMethods);
 logMgr.show = {
   level: true,
   timestamp: 'elapsed',
+  color: color,
 };
 logMgr.threshold = 'debug';
 const logger = await logMgr.getLogger<Logger>();
 
 logger.info.section('Example 04 - Std Logger with custom message builder').emit();
-logger.info.label('Transport:').value('Console').emit();
+logger.info.label('Transports:').transports().emit();
 logger.info.label('Threshold:').value(logMgr.threshold).value(logMgr.logLevels.asName(logMgr.threshold)).emit();
 logger.info.label('Show:').value(JSON.stringify(logMgr.show)).emit();
 logger.info.apiCall('GET', '/api/users').emit();
