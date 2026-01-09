@@ -259,22 +259,8 @@ class CustomTransport extends BaseTransport {
 }
 ```
 
-## Best Practices
-
-### For Development
-- Use `Console.Transport` for immediate feedback
-- Add `Buffer.Transport` for testing scenarios
-- Set appropriate log levels to avoid noise
-
-### For Production
-- Use `File.Transport` for persistent logging
-- Use `Influx.Transport` for time-series analysis and monitoring dashboards
-- Configure file rotation to manage disk space
-- Consider multiple transports for different log levels
-- Set appropriate service/environment tags for InfluxDB organization
-
-### For Testing
-- Use `Buffer.Transport` exclusively in tests
+## For Testing
+- Use `Buffer.Transport` in tests
 - Clear buffer between test cases
 - Use assertion methods for reliable test verification
 
