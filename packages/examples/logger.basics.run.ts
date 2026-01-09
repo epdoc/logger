@@ -6,63 +6,6 @@
 import * as Log from '@epdoc/logger';
 import { Console } from '@epdoc/msgbuilder';
 
-// Example 1: Simple logger setup
-console.log('=== Example 1: Basic Logger Setup ===');
-
-const basicLogMgr = new Log.Mgr<Console.Builder>();
-basicLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter);
-basicLogMgr.initLevels(Log.Std.factoryMethods);
-basicLogMgr.threshold = 'info';
-const basicLogger = await basicLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
-
-basicLogger.info.h1('Basic Logger').text(' - Simple setup').emit();
-basicLogger.warn.text('This is a warning message').emit();
-basicLogger.debug.text("This debug message won't show (threshold is info)").emit();
-
-// Example 2: Setting show options
-console.log('\n=== Example 2: Logger and setting show options ===');
-
-const helperLogMgr = new Log.Mgr<Console.Builder>();
-helperLogMgr.msgBuilderFactory = (emitter) => new Console.Builder(emitter as any);
-helperLogMgr.initLevels(Log.Std.factoryMethods);
-helperLogMgr.threshold = 'debug';
-helperLogMgr.show = {
-  level: true,
-  timestamp: 'elapsed',
-};
-
-const helperLogger = await helperLogMgr.getLogger<Log.Std.Logger<Console.Builder>>();
-helperLogger.info.text('Created with helper - much simpler!').emit();
-helperLogger.debug.text('Debug messages now visible').emit();
-
-// Example 3: Custom message builder
-console.log('\n=== Example 3: Custom Message Builder ===');
-
-class CustomBuilder extends Console.Builder {
-  constructor(emitter: Log.IEmitter) {
-    super(emitter as any);
-  }
-
-  apiCall(method: string, endpoint: string) {
-    return this.text('[API] ').text(method).text(' ').text(endpoint);
-  }
-
-  metric(name: string, value: number, unit = '') {
-    return this.text('📊 ').text(name).text(': ').text(value.toString()).text(unit);
-  }
-}
-
-type CustomLogger = Log.Std.Logger<CustomBuilder>;
-
-const customLogMgr = new Log.Mgr<CustomBuilder>();
-customLogMgr.msgBuilderFactory = (emitter) => new CustomBuilder(emitter);
-customLogMgr.initLevels(Log.Std.factoryMethods);
-customLogMgr.threshold = 'info';
-const customLogger = await customLogMgr.getLogger<CustomLogger>();
-
-customLogger.info.apiCall('GET', '/api/users').emit();
-customLogger.info.metric('Response Time', 245, 'ms').emit();
-
 // Example 4: Different logger types
 console.log('\n=== Example 4: CLI vs Standard Logger ===');
 

@@ -12,8 +12,7 @@ type Logger = Log.Std.Logger<MsgBuilder>;
 const logMgr = new Log.Mgr<MsgBuilder>();
 const logger = await logMgr.getLogger<Logger>();
 
-logger.info.section('Example 01 - Basic Logger Setup using defaults').emit();
-logger.info.h1('Basic Logger').text(' - Simple setup').emit();
+logger.info.section('Example 01 - Std Logger default setup').emit();
 logger.info.label('Transport:').value('Console').emit();
 logger.info.label('Threshold:').value(logMgr.threshold).value(logMgr.logLevels.asName(logMgr.threshold)).emit();
 logger.info.label('Show:').value(JSON.stringify(logMgr.show)).emit();
