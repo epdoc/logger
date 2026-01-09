@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.14] - 2026-01-08
+
+- Updated dependencies
+
 ## [1.1.13] - 2026-01-08
 
 - Updated logger depedency with loglevel changes
