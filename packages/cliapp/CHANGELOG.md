@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.15] - 2026-01-10
+
+- Updated to latest @epdoc/logger
+
 ## [1.1.14] - 2026-01-08
 
 - Updated dependencies
