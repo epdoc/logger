@@ -9,6 +9,7 @@ Deno.test('BufferTransport - basic functionality', async () => {
   logMgr.threshold = 'info';
   const bufferTransport = new BufferTransport(logMgr);
   await logMgr.addTransport(bufferTransport);
+  await logMgr.start();
 
   const logger = await logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
 

@@ -38,7 +38,7 @@ export interface ITransportEmitter {
  */
 export class Emitter implements MsgBuilder.IEmitter {
   private readonly _level: Level.Name;
-  private readonly _transportMgr: ITransportEmitter;
+  private readonly _msgEmitter: ITransportEmitter;
   private readonly _sid?: string;
   private readonly _reqId?: string;
   private readonly _pkg?: string;
@@ -60,8 +60,8 @@ export class Emitter implements MsgBuilder.IEmitter {
    * @internal
    */
   constructor(
+    logMgr: ITransportEmitter,
     level: Level.Name,
-    transportMgr: ITransportEmitter,
     context: {
       sid?: string;
       reqId?: string;
@@ -76,7 +76,7 @@ export class Emitter implements MsgBuilder.IEmitter {
     demark?: (name: string, keep?: boolean) => number,
   ) {
     this._level = level;
-    this._transportMgr = transportMgr;
+    this._msgEmitter = logMgr;
     this._sid = context.sid;
     this._reqId = context.reqId;
     this._pkg = context.pkgs.length > 0 ? context.pkgs.join(context.pkgSep) : undefined;
@@ -185,26 +185,19 @@ export class Emitter implements MsgBuilder.IEmitter {
    * @public
    */
   emit = (data: MsgBuilder.EmitterData): MsgBuilder.EmitterData => {
-    if (this._meetsThreshold) {
-      const entry: Log.Entry = {
-        level: this._level,
-        timestamp: data.timestamp,
-        time: data.elapsed,
-        sid: this._sid,
-        reqId: this._reqId,
-        pkg: this._pkg,
-        msg: data.formatter,
-        data: data.data,
-      };
+    const entry: Log.Entry = {
+      level: this._level,
+      timestamp: data.timestamp,
+      time: data.elapsed,
+      sid: this._sid,
+      reqId: this._reqId,
+      pkg: this._pkg,
+      msg: data.formatter,
+      data: data.data,
+    };
 
-      // Emit directly to transport manager, bypassing LogMgr
-      this._transportMgr.emit(entry);
-
-      // If this message meets flush threshold, trigger flush
-      if (this._meetsFlushThreshold && this._flushCallback) {
-        this._flushCallback();
-      }
-    }
+    // Emit to logMgr, which will test thresholds and emit to transport manager.
+    this._msgEmitter.emit(entry);
 
     return data;
   };

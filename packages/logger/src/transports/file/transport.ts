@@ -113,7 +113,7 @@ export class FileTransport extends Console.Transport {
    * Flushes the buffer to the file.
    * @returns {Promise<void>} A promise that resolves when the buffer is flushed.
    */
-  async flush(): Promise<void> {
+  override async flush(): Promise<void> {
     if (this.pointer > 0 && this.file) {
       let written = 0;
       while (written < this.pointer) {

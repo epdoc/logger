@@ -156,6 +156,7 @@ export class TransportMgr {
    */
   async stop(): Promise<void> {
     const jobs: Promise<void>[] = [];
+    this.flushQueue();
     this.transports.forEach((transport) => {
       jobs.push(transport.stop());
     });
@@ -166,13 +167,14 @@ export class TransportMgr {
    * Emits a log entry to all registered transports.
    * If not all transports are ready, queues the message.
    *
-   * @param {Log.Entry} msg - The log entry to emit.
+   * @param msg - The log entry to emit.
+   * @param flush - Whether to force any transports to flush their buffers or batched messages right away. This might be done for error messages.
    */
-  emit(msg: Log.Entry): void {
+  emit(msg: Log.Entry, flush = false): void {
     if (this.allReady()) {
       // All transports ready - emit directly and flush any queued messages
-      this.emitToTransports(msg);
       this.flushQueue();
+      this.#emitToTransports(msg, flush);
     } else {
       // Queue the message until all transports are ready
       this._queue.push(msg);
@@ -183,20 +185,23 @@ export class TransportMgr {
    * Emits a message directly to all transports without queuing.
    * @private
    */
-  private emitToTransports(msg: Log.Entry): void {
+  #emitToTransports(msg: Log.Entry, flush = false): void {
     for (const transport of this.transports) {
       transport.emit(msg);
+      if (flush) {
+        transport.flush();
+      }
     }
   }
 
   /**
    * Flushes all queued messages to transports when they become ready.
-   * @private
+   * @param flush - Whether to force any transports to flush their buffers or batched messages right away. This might be done for error messages.
    */
-  private flushQueue(): void {
+  flushQueue(flush = false): void {
     while (this._queue.length > 0 && this.allReady()) {
       const msg = this._queue.shift()!;
-      this.emitToTransports(msg);
+      this.#emitToTransports(msg, flush);
     }
   }
 }

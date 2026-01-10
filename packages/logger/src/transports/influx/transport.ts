@@ -11,7 +11,7 @@ export class InfluxTransport extends Base.Transport {
   protected override _opts: Influx.Options;
   #buffer: string[] = [];
   #batchSize = 100;
-  #flushInterval = 5000; // 5 seconds
+  #flushInterval = 2000; // 2 seconds
   #flushTimer?: number;
   #isTransmitting = false;
   #hostname: string;
@@ -80,23 +80,23 @@ export class InfluxTransport extends Base.Transport {
       clearInterval(this.#flushTimer);
       this.#flushTimer = undefined;
     }
-    await this.#flush();
+    await this.flush();
   }
 
   #startFlushTimer(): void {
     this.#flushTimer = setInterval(() => {
-      this.#flush();
+      this.flush();
     }, this.#flushInterval);
   }
 
   #addToBuffer(line: string): void {
     this.#buffer.push(line);
     if (this.#buffer.length >= this.#batchSize) {
-      this.#flush();
+      this.flush();
     }
   }
 
-  async #flush(): Promise<void> {
+  override async flush(): Promise<void> {
     if (this.#buffer.length === 0 || this.#isTransmitting) return;
 
     const lines = this.#buffer.splice(0);

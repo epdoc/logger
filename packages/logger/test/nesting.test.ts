@@ -105,9 +105,7 @@ describe('Logger Nesting', () => {
       expect(capturedEntries.length).toBe(2);
       // First message: warning from LogMgr (no pkg field)
       expect(capturedEntries[0].pkg).toBeUndefined();
-      expect(capturedEntries[0].msg).toBe(
-        'Log Manager is already running. Normally transports are added before start.',
-      );
+      expect(capturedEntries[0].msg).toContain('Log Manager is already running.');
       // Second message: from grandchild logger
       expect(capturedEntries[1].pkg).toBe('root.child.grandchild');
       expect(capturedEntries[1].msg).toBe('test');

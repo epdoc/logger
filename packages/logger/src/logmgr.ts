@@ -6,7 +6,7 @@ import * as Logger from '$logger';
 import * as Transport from '$transport';
 import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
-import { Emitter } from './emitter.ts';
+import { Emitter, type ITransportEmitter } from './emitter.ts';
 import { isStrictEmitterShowOpts } from './guards.ts';
 
 /**
@@ -45,7 +45,7 @@ import { isStrictEmitterShowOpts } from './guards.ts';
  */
 export class LogMgr<
   M extends MsgBuilder.Abstract = MsgBuilder.Console.Builder,
-> implements Transport.ILogMgrTransportContext {
+> implements Transport.ILogMgrTransportContext, ITransportEmitter {
   protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
   protected _logLevels: Level.IBasic | undefined;
@@ -64,11 +64,7 @@ export class LogMgr<
   // protected _pkg: string = '';
   // protected _reqId: string = '';
   protected _mark: Record<string, HrMilliseconds> = {};
-  protected _bRunning = true;
-  /**
-   * A queue of log messages waiting for a transport to come online.
-   */
-  protected _queue: Log.Entry[] = [];
+  protected _bRunning = false;
   readonly transportMgr: Transport.Mgr = new Transport.Mgr(this);
   protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.createMsgBuilder;
   protected _loggerFactories: Logger.IFactoryMethods<M, Logger.IEmitter> = Logger.Std.factoryMethods;
@@ -289,8 +285,8 @@ export class LogMgr<
 
     // Create a lightweight emitter that captures context and has direct access to TransportMgr
     const directEmitter = new Emitter(
+      this,
       level as Level.Name,
-      this.transportMgr,
       {
         sid: emitter.sid,
         reqId: emitter.reqId,
@@ -302,7 +298,7 @@ export class LogMgr<
         meetsFlushThreshold,
       },
       // Pass flush callback to handle flush threshold
-      meetsFlushThreshold ? () => this.flushQueue() : undefined,
+      meetsFlushThreshold ? () => this.transportMgr.flushQueue(true) : undefined,
       // Pass the logger's demark method for ewt functionality
       emitter.demark ? (name: string, keep?: boolean) => emitter.demark!(name, keep ?? false) : undefined,
     );
@@ -321,7 +317,10 @@ export class LogMgr<
   async addTransport(transport: Transport.Base.Transport): Promise<void> {
     assert(this._logLevels, 'Log Manager must be initialized before adding transports.');
     if (this.transportMgr.isRunning()) {
-      this.emit({ level: 'warn', msg: 'Log Manager is already running. Normally transports are added before start.' });
+      this.emit({
+        level: 'warn',
+        msg: `Log Manager is already running. Transport ${transport.toString()} is now active for new messages.`,
+      });
     }
     await this.transportMgr.add(transport);
   }
@@ -334,15 +333,22 @@ export class LogMgr<
    * @internal
    */
   async start(): Promise<void> {
+    if (this._bRunning) {
+      this.emit({ level: 'warn', msg: 'Start called on Log Manager that is already running.' });
+      return;
+    }
     await this.transportMgr.start();
-    this.flushQueue();
+    this._bRunning = true;
   }
 
   /**
    * @internal
    */
   async stop(): Promise<void> {
-    this.flushQueue();
+    if (!this._bRunning) {
+      this.emit({ level: 'warn', msg: 'Stop called on Log Manager that is not running.' });
+      return;
+    }
     await this.transportMgr.stop();
     this._bRunning = false;
   }
@@ -380,34 +386,6 @@ export class LogMgr<
   }
 
   /**
-   * Log messages are first written to a buffer, then flushed. Calling this function will force
-   * the queue to be flushed. Normally this function should not need to be called. Will only
-   * flush the queue if all transports are ready to receive messages.
-   * @returns {LogManager}
-   * @private
-   */
-  flushQueue(): this {
-    if (this._bRunning && this._queue.length) {
-      if (this.transportMgr.allReady()) {
-        const nextMsg = this._queue.shift();
-        if (nextMsg) {
-          this.transportMgr.emit(nextMsg);
-          for (let idx = 0; idx < this.transportMgr.transports.length; idx++) {
-            const transport = this.transportMgr.transports[idx];
-            // const logLevel = transport.level || nextMsg.level || this.logLevel;
-            if (this.meetsThreshold(nextMsg.level)) {
-              // nextMsg._logLevel = undefined;
-              transport.emit(nextMsg);
-            }
-          }
-          this.flushQueue();
-        }
-      }
-    }
-    return this;
-  }
-
-  /**
    * @internal
    * Emits a log message. This is called by the
    * Logger implementation which, in turn, is called by the {@link IMsgBuilder}
@@ -419,25 +397,18 @@ export class LogMgr<
       msg.timestamp = new Date();
     }
     if (this.meetsThreshold(msg.level)) {
-      if (this.transportMgr.isRunning()) {
-        this.transportMgr.emit(msg);
-        if (this.meetsFlushThreshold(msg.level)) {
-          this.flushQueue();
-        }
-      } else {
-        this._queue.push(msg);
-      }
+      const flush = this.meetsFlushThreshold(msg.level);
+      this.transportMgr.emit(msg, flush);
     }
   }
 
   /**
-   * Emits a log message without checking log level thresholds. This is only used internall
+   * Emits a log message without checking log level thresholds. This is only used internally.
    * @param {Entry} msg - The log message to emit.
    * @internal
    */
   forceEmit(msg: Log.Entry): void {
     this.transportMgr.emit(msg);
-    this.flushQueue();
   }
 
   /**

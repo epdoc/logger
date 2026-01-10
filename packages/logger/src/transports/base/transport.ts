@@ -217,6 +217,14 @@ export abstract class AbstractTransport {
   }
 
   /**
+   * Flushes any buffered log messages.
+   * @returns {Promise<void>}
+   */
+  flush(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  /**
    * Checks if this transport is of the same type as another.
    *
    * @param {AbstractTransport<M>} transport - The transport to compare against.
