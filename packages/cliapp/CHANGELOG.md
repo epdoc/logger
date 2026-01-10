@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.17] - 2026-01-10
+
+- Added influx guards that were missed in previous commit.
+
 ## [1.1.16] - 2026-01-10
 
 - Added influx guards that were missed in previous commit.
