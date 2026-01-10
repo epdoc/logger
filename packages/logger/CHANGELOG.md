@@ -8,13 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1003.2.8] - 2026-01-10
 
 - Improved error handling in influx messaage queue.
-
-## [1003.2.7] - 2026-01-10
-
 - Added missing influx guards from last commit.
-
-## [1003.2.6] - 2026-01-10
-
 - Fixed bug in transport message queue during startup.
 
 ## [1003.2.5] - 2026-01-09

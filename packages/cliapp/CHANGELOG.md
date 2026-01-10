@@ -6,23 +6,6 @@ All notable changes to this project will be documented in this file.
 
 - Updated to latest @epdoc/logger
 
-## [1.1.18] - 2026-01-10
-
-- updated dependencies
-
-
-## [1.1.17] - 2026-01-10
-
-- Added influx guards that were missed in previous commit.
-
-## [1.1.16] - 2026-01-10
-
-- Added influx guards that were missed in previous commit.
-
-## [1.1.15] - 2026-01-10
-
-- Updated to latest @epdoc/logger
-
 ## [1.1.14] - 2026-01-08
 
 - Updated dependencies
@@ -38,9 +21,6 @@ All notable changes to this project will be documented in this file.
 ## [1.1.11] - 2026-01-04
 
 - Updated msgbuilder and logger dependencies
-
-## [1.1.10] - 2026-01-04
-
 - Implement type inference to simplify generics from BaseContext<M,L> to BaseContext<L>
 
 ## [1.1.9] - 2025-12-31
