@@ -17,6 +17,9 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
   ctx: ICtx<M, L>,
   opts: GlobalLogOptions,
 ): void {
+  if (opts.dryRun) {
+    ctx.dryRun = true;
+  }
   // Determine threshold
   let threshold: string | undefined;
   const logOptions: string[] = [];

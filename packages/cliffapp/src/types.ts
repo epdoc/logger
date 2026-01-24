@@ -20,6 +20,10 @@ export interface ICtx<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = L
   close: () => Promise<void>;
 }
 
+export interface ISilentError extends Error {
+  silent: boolean;
+}
+
 export interface GlobalLogOptions {
   log?: string;
   logShow?: string[]; // Cliffy uses camelCase for options like --log-show

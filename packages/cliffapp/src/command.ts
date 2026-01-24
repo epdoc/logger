@@ -33,6 +33,16 @@ export function addLoggingOptions<
 }
 
 /**
+ * Error class for failures that should not display stack traces.
+ */
+export class SilentError extends Error implements ISilentError {
+  silent = true;
+  constructor(message: string) {
+    super(message);
+  }
+}
+
+/**
  * A standardized run wrapper for Cliffy applications.
  * Handles initialization, global logging setup, error handling, and shutdown.
  */
@@ -45,16 +55,18 @@ export async function run<M extends MsgBuilder, L extends Logger<M>>(
     // We use a global action to configure logging once the options are parsed.
     // In Cliffy, global actions run before subcommand actions.
     command.globalAction((opts: any) => {
-      if (opts.dryRun) {
-        ctx.dryRun = true;
-      }
       configureLogging(ctx, opts as GlobalLogOptions);
     });
 
     await command.parse(args);
   } catch (err) {
+    const isSilent = (err as ISilentError).silent === true;
     if (ctx.log) {
-      ctx.log.error.text(err instanceof Error ? err.message : String(err)).emit();
+      if (isSilent) {
+        ctx.log.error.text(err instanceof Error ? err.message : String(err)).emit();
+      } else {
+        ctx.log.error.text(err instanceof Error ? err.stack || err.message : String(err)).emit();
+      }
     } else {
       console.error(err);
     }
