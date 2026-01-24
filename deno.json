@@ -15,7 +15,9 @@
     "./packages/logger",
     "./packages/cliapp",
     "./packages/demo",
-    "./packages/examples"
+    "./packages/examples",
+    "./packages/cliffapp",
+    "./packages/demo-cliffy"
   ],
   "fmt": {
     "include": [
