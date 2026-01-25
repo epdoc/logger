@@ -13,6 +13,15 @@ const REG = {
  * This function is designed to be called automatically by the `run` wrapper
  * inside a Cliffy pre-action hook.
  *
+ * @example
+ * ```ts
+ * import { configureLogging, ICtx, GlobalLogOptions } from "@epdoc/cliffapp";
+ *
+ * const ctx = {} as ICtx; // Your context
+ * const opts: GlobalLogOptions = { verbose: true };
+ * configureLogging(ctx, opts);
+ * ```
+ *
  * @param ctx - The application context.
  * @param opts - The parsed global log options.
  */

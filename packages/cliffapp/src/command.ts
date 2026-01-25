@@ -17,6 +17,16 @@ import type { GlobalLogOptions, ICtx, ISilentError, Logger, MsgBuilder } from '.
  * - `-S, --spam`: Shortcut for `--log spam`.
  * - `-n, --dry-run`: Set dry-run mode (available via `ctx.dryRun`).
  *
+ * @example
+ * ```ts
+ * import { Command } from "@cliffy/command";
+ * import { addLoggingOptions, ICtx } from "@epdoc/cliffapp";
+ *
+ * const ctx = {} as ICtx; // Your context
+ * const command = new Command();
+ * addLoggingOptions(command, ctx);
+ * ```
+ *
  * @param command - The Cliffy Command instance to add options to.
  * @param _ctx - The application context (used for type inference).
  * @returns The modified Command instance.
@@ -62,6 +72,21 @@ export class SilentError extends Error implements ISilentError {
  * A standardized run wrapper for Cliffy applications.
  * Handles initialization, global logging setup based on parsed options,
  * error handling (with support for SilentError), and graceful shutdown.
+ *
+ * @example
+ * ```ts
+ * import { Command } from "@cliffy/command";
+ * import { run, ICtx } from "@epdoc/cliffapp";
+ *
+ * const ctx = {} as ICtx; // Your context
+ * const command = new Command().action(() => {
+ *   ctx.log.info.text("Hello World").emit();
+ * });
+ *
+ * if (import.meta.main) {
+ *   await run(ctx, command);
+ * }
+ * ```
  *
  * @param ctx - The application context.
  * @param command - The root Cliffy Command instance.
