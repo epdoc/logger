@@ -1,8 +1,5 @@
-/**
- * @file Logging configuration for Cliffy applications
- */
-
-import { Log, _ } from './dep.ts';
+import * as Log from '@epdoc/logger';
+import { _ } from '@epdoc/type';
 import type { GlobalLogOptions, ICtx, Logger, MsgBuilder } from './types.ts';
 
 const REG = {
@@ -10,8 +7,14 @@ const REG = {
 };
 
 /**
- * Configures logging based on parsed CLI options.
- * This is designed to be called in a Cliffy pre-action hook or action.
+ * Configures the @epdoc/logger system based on parsed CLI options.
+ * This normally maps options like `--log`, `--verbose`, etc., to the logger manager.
+ *
+ * This function is designed to be called automatically by the `run` wrapper
+ * inside a Cliffy pre-action hook.
+ *
+ * @param ctx - The application context.
+ * @param opts - The parsed global log options.
  */
 export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Logger<M>>(
   ctx: ICtx<M, L>,

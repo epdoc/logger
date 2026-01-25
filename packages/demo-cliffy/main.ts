@@ -10,6 +10,6 @@ if (import.meta.main) {
   const ctx = new AppContext();
   await ctx.setupLogging();
   const rootCmd = createRootCommand(ctx);
-  
+
   await CliffApp.run(ctx, rootCmd);
 }

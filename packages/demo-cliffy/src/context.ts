@@ -2,7 +2,7 @@
  * @file Application Context for demo-cliffy
  */
 
-import { Logger, CliffApp } from './dep.ts';
+import { CliffApp, Logger } from './dep.ts';
 import { Console } from '@epdoc/msgbuilder';
 import pkg from '../deno.json' with { type: 'json' };
 
@@ -16,7 +16,7 @@ export class AppContext implements CliffApp.ICtx<MsgBuilder, AppLogger> {
   pkg = {
     name: pkg.name,
     version: pkg.version,
-    description: "A demo application using Cliffy and @epdoc/logger"
+    description: 'A demo application using Cliffy and @epdoc/logger',
   };
 
   constructor() {

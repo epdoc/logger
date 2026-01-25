@@ -1,8 +1,4 @@
-/**
- * @file Core types for Cliffy integration
- */
-
-import type { Log } from './dep.ts';
+import type * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
 
 export type MsgBuilder = Console.Builder;
@@ -33,4 +29,5 @@ export interface GlobalLogOptions {
   debug?: boolean;
   trace?: boolean;
   spam?: boolean;
+  dryRun?: boolean;
 }

@@ -17,7 +17,7 @@ export function createSubCommand(ctx: AppContext) {
         .label('Force').value(opts.force ? 'Yes' : 'No')
         .label('Dry Run').value(ctx.dryRun ? 'Yes' : 'No')
         .emit();
-        
+
       if (ctx.dryRun) {
         ctx.log.warn.text('Dry run enabled, skipping actual work').emit();
       } else {
