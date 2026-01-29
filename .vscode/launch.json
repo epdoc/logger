@@ -93,6 +93,50 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "demo-cliffy: main",
+      "program": "${workspaceFolder}/packages/demo-cliffy/./main.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "run",
+        "-A",
+        "--inspect-brk"
+      ],
+      "args": [],
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "presentation": {
+        "group": "demo-cliffy"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "demo-cliffy: main --help",
+      "program": "${workspaceFolder}/packages/demo-cliffy/./main.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "runtimeArgs": [
+        "run",
+        "-A",
+        "--inspect-brk"
+      ],
+      "args": [
+        "--help"
+      ],
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "presentation": {
+        "group": "demo-cliffy"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "logger: test/nesting.test.ts",
       "cwd": "${workspaceFolder}",
       "attachSimplePort": 9229,
@@ -305,6 +349,26 @@
         "-A",
         "--inspect-brk",
         "${workspaceFolder}/packages/logger/test/std.test.ts"
+      ],
+      "presentation": {
+        "group": "logger"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "logger: test/influx.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/packages/logger/test/influx.test.ts"
       ],
       "presentation": {
         "group": "logger"
@@ -588,6 +652,26 @@
       "program": "${workspaceFolder}/packages/examples/cliapp.01.run.ts",
       "presentation": {
         "group": "examples"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "cliffapp: test/cliffapp.test.ts",
+      "cwd": "${workspaceFolder}",
+      "attachSimplePort": 9229,
+      "runtimeExecutable": "/Users/jpravetz/.deno/bin/deno",
+      "env": {
+        "LAUNCHGEN": "true"
+      },
+      "runtimeArgs": [
+        "test",
+        "-A",
+        "--inspect-brk",
+        "${workspaceFolder}/packages/cliffapp/test/cliffapp.test.ts"
+      ],
+      "presentation": {
+        "group": "cliffapp"
       }
     },
     {

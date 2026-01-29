@@ -42,4 +42,4 @@ test/datacopy
 cov_profile
 _test
 docs/
-.vscode
+.vscode/
