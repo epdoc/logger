@@ -13,13 +13,14 @@
     "jsr:@epdoc/duration@~0.3.7": "0.3.7",
     "jsr:@epdoc/fs@^1.2.14": "1.2.14",
     "jsr:@epdoc/logger@^1003.2.8": "1003.2.8",
+    "jsr:@epdoc/loglevels@^0.0.13": "0.0.13",
     "jsr:@epdoc/msgbuilder@~0.1.0-alpha.7": "0.1.0-alpha.7",
     "jsr:@epdoc/string@~0.1.16": "0.1.16",
     "jsr:@epdoc/type@^1.2.4": "1.2.4",
     "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@^1.0.14": "1.0.17",
     "jsr:@std/assert@^1.0.15": "1.0.17",
-    "jsr:@std/assert@^1.0.16": "1.0.16",
+    "jsr:@std/assert@^1.0.16": "1.0.17",
     "jsr:@std/assert@^1.0.17": "1.0.17",
     "jsr:@std/assert@^1.0.6": "1.0.6",
     "jsr:@std/async@^1.0.15": "1.0.15",
@@ -46,7 +47,7 @@
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/path@^1.1.2": "1.1.4",
     "jsr:@std/path@^1.1.4": "1.1.4",
-    "jsr:@std/testing@^1.0.16": "1.0.16",
+    "jsr:@std/testing@^1.0.16": "1.0.17",
     "jsr:@std/testing@^1.0.17": "1.0.17",
     "jsr:@std/text@~1.0.7": "1.0.16",
     "npm:@types/node@*": "22.15.15",
@@ -138,6 +139,12 @@
         "jsr:@epdoc/type",
         "jsr:@std/assert@^1.0.16",
         "jsr:@std/fmt@^1.0.8"
+      ]
+    },
+    "@epdoc/loglevels@0.0.13": {
+      "integrity": "df56ec70075d98aa578be8d3c49b4b137e22cc4b94afb4b6314270d916444418",
+      "dependencies": [
+        "jsr:@epdoc/type"
       ]
     },
     "@epdoc/msgbuilder@0.1.0-alpha.7": {
@@ -436,10 +443,10 @@
           "jsr:@epdoc/msgbuilder@~0.1.0-alpha.7",
           "jsr:@epdoc/string@~0.1.16",
           "jsr:@epdoc/type@^1.2.4",
-          "jsr:@std/assert@^1.0.16",
+          "jsr:@std/assert@^1.0.17",
           "jsr:@std/expect@^1.0.17",
-          "jsr:@std/fmt@^1.0.8",
-          "jsr:@std/testing@^1.0.16"
+          "jsr:@std/fmt@^1.0.9",
+          "jsr:@std/testing@^1.0.17"
         ]
       },
       "packages/loglevels": {
@@ -455,10 +462,10 @@
           "jsr:@epdoc/duration@~0.3.7",
           "jsr:@epdoc/string@~0.1.16",
           "jsr:@epdoc/type@^1.2.4",
-          "jsr:@std/assert@^1.0.16",
+          "jsr:@std/assert@^1.0.17",
           "jsr:@std/expect@^1.0.17",
-          "jsr:@std/fmt@^1.0.8",
-          "jsr:@std/testing@^1.0.16"
+          "jsr:@std/fmt@^1.0.9",
+          "jsr:@std/testing@^1.0.17"
         ]
       }
     }
