@@ -2,8 +2,9 @@ import { Command } from "@cliffy/command";
 import { Mgr as LogManager } from "@epdoc/logger";
 import { expect } from "@std/expect";
 import { describe, it } from "@std/testing/bdd";
-import { addLoggingOptions, run, SilentError } from "../src/command.ts";
-import { configureLogging } from "../src/logging.ts";
+import { addLoggingOptions, configureLogging } from "../src/logging.ts";
+import { run, } from "../src/run.ts";
+import { SilentError } from "../src/silent-error.ts";
 import type { ICtx, Logger } from "../src/types.ts";
 
 describe("cliffapp", () => {
@@ -85,7 +86,7 @@ describe("cliffapp", () => {
       };
       const cmd = new Command().action(() => {}).noExit();
 
-      await run(ctx, cmd, []);
+      await run(ctx, cmd, [], { noExit: true });
       expect(closed).toBe(true);
     });
 
@@ -95,7 +96,7 @@ describe("cliffapp", () => {
       addLoggingOptions(cmd, ctx);
       cmd.action(() => {});
 
-      await run(ctx, cmd, ["--debug"]);
+      await run(ctx, cmd, ["--debug"], { noExit: true });
       expect(ctx.logMgr.logLevels.asName(ctx.logMgr.threshold).toLowerCase()).toBe("debug");
     });
   });
