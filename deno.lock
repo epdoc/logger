@@ -368,6 +368,8 @@
       "packages/cliffapp": {
         "dependencies": [
           "jsr:@cliffy/command@1.0.0-rc.8",
+          "jsr:@epdoc/logger@^1003.2.9",
+          "jsr:@epdoc/msgbuilder@~0.1.0-alpha.7",
           "jsr:@epdoc/type@^1.2.4",
           "jsr:@std/expect@^1.0.17",
           "jsr:@std/fmt@^1.0.9",

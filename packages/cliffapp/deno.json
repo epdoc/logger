@@ -1,22 +1,23 @@
 {
   "name": "@epdoc/cliffapp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "exports": "./src/mod.ts",
   "imports": {
     "@cliffy/command": "jsr:@cliffy/command@1.0.0-rc.8",
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.2.9",
+    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.0-alpha.7",
     "@std/expect": "jsr:@std/expect@^1.0.17",
     "@std/fmt": "jsr:@std/fmt@^1.0.9",
     "@std/testing": "jsr:@std/testing@^1.0.17",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.4"
   },
-    "tasks": {
+  "tasks": {
     "test": "deno test -A",
     "lint": "deno lint",
     "check": "deno check src test",
     "prepublish": "deno publish --dry-run",
     "publish": "deno publish"
   },
-
   "lint": {
     "include": [
       "src"
