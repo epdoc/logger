@@ -66,3 +66,23 @@ export interface GlobalLogOptions {
   /** Whether to run in dry-run mode. Maps to `-n, --dry-run`. */
   dryRun?: boolean;
 }
+
+export type DenoPkg = {
+  /** Package name */
+  name: string;
+  /** Semantic version string */
+  version: string;
+  /** Package description */
+  description: string;
+  /** Optional author information */
+  author?: { name?: string; email?: string };
+  /** Workspace configuration for monorepos */
+  workspace?: string[];
+  /** License identifier */
+  license?: string;
+  /** Repository information */
+  repository?: {
+    type: string;
+    url: string;
+  };
+};

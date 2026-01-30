@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/cliffapp",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "exports": "./src/mod.ts",
   "imports": {
     "@cliffy/command": "jsr:@cliffy/command@1.0.0-rc.8",

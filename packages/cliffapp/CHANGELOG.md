@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2026-01-30
+
+- Added DenoPkg declaration
+
 ## [0.1.2] - 2026-01-28
 
 - Fixed run function which was not fully developed.
