@@ -1,27 +1,34 @@
-/**
- * @file Sample subcommand for demo-cliffy
- */
+import type { AppContext } from '../context.ts';
+import { CliffApp } from '../dep.ts';
 
-import { Command } from '@cliffy/command';
-import { AppContext } from '../context.ts';
+type SubOpts = {
+  force?: boolean;
+};
 
-export function createSubCommand(ctx: AppContext) {
-  return new Command()
-    .name('sub')
-    .description('A sample subcommand')
-    .arguments('<input:string>')
-    .option('-f, --force', 'Force execution')
-    .action((opts, input) => {
-      ctx.log.info.h1('Subcommand Execution')
+export class SubCommand extends CliffApp.AbstractCmd<AppContext> {
+  protected override setupOptions(): void {
+    this.cmd
+      .name('sub')
+      .description('A sample subcommand')
+      .arguments('<input:string>')
+      .option('-f, --force', 'Force execution');
+  }
+
+  protected override setupAction(): void {
+    this.cmd.action((opts: unknown, ...args: unknown[]) => {
+      const { force } = opts as SubOpts;
+      const [input] = args as [string];
+      this.ctx.log.info.h1('Subcommand Execution')
         .label('Input').value(input)
-        .label('Force').value(opts.force ? 'Yes' : 'No')
-        .label('Dry Run').value(ctx.dryRun ? 'Yes' : 'No')
+        .label('Force').value(force ? 'Yes' : 'No')
+        .label('Dry Run').value(this.ctx.dryRun ? 'Yes' : 'No')
         .emit();
 
-      if (ctx.dryRun) {
-        ctx.log.warn.text('Dry run enabled, skipping actual work').emit();
+      if (this.ctx.dryRun) {
+        this.ctx.log.warn.text('Dry run enabled, skipping actual work').emit();
       } else {
-        ctx.log.info.text('Performing actual work...').emit();
+        this.ctx.log.info.text('Performing actual work...').emit();
       }
     });
+  }
 }

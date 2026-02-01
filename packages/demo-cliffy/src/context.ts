@@ -2,9 +2,9 @@
  * @file Application Context for demo-cliffy
  */
 
-import { CliffApp, Logger } from './dep.ts';
-import { Console } from '@epdoc/msgbuilder';
+import type { Console } from '@epdoc/msgbuilder';
 import pkg from '../deno.json' with { type: 'json' };
+import { type CliffApp, Logger } from './dep.ts';
 
 export type MsgBuilder = Console.Builder;
 export type AppLogger = Logger.Std.Logger<MsgBuilder>;

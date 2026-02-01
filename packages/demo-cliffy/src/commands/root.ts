@@ -1,26 +1,22 @@
-/**
- * @file Root command for demo-cliffy
- */
-
-import { Command } from '@cliffy/command';
-import { AppContext } from '../context.ts';
+import type { AppContext } from '../context.ts';
 import { CliffApp } from '../dep.ts';
-import { createSubCommand } from './sub.ts';
+import { SubCommand } from './sub.ts';
 
-export function createRootCommand(ctx: AppContext) {
-  const root = new Command()
-    .name(ctx.pkg.name)
-    .version(ctx.pkg.version)
-    .description(ctx.pkg.description!)
-    .action(() => {
-      root.showHelp();
-    });
+export class RootCommand extends CliffApp.AbstractCmd<AppContext> {
+  protected override subCommands = {
+    sub: SubCommand,
+  };
 
-  // Add standard logging options from cliffapp
-  CliffApp.addLoggingOptions(root, ctx);
+  protected override setupOptions(): void {
+    this.cmd
+      .name(this.ctx.pkg.name)
+      .version(this.ctx.pkg.version)
+      .description(this.ctx.pkg.description!)
+      .action(() => {
+        this.cmd.showHelp();
+      });
 
-  // Add subcommands
-  root.command('sub', createSubCommand(ctx));
-
-  return root;
+    // Add standard logging options from cliffapp
+    CliffApp.addLoggingOptions(this.cmd, this.ctx);
+  }
 }
