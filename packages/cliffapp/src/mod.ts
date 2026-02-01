@@ -8,6 +8,7 @@
  * @module
  */
 
+export * from './abstract-cmd.ts';
 export * from './logging.ts';
 export * from './run.ts';
 export * from './silent-error.ts';

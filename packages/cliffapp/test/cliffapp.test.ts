@@ -15,7 +15,7 @@ describe("cliffapp", () => {
       log,
       logMgr: logMgr,
       dryRun: false,
-      pkg: { name: "test-app", version: "1.0.0" },
+      pkg: { name: "test-app", version: "1.0.0", description: "blech" },
       close: () => Promise.resolve(),
     };
   };

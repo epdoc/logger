@@ -14,7 +14,10 @@ export type Logger<M extends MsgBuilder = MsgBuilder> = Log.Std.Logger<M>;
 /**
  * Application context for Cliffy applications.
  */
-export interface ICtx<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Logger<M>> {
+export interface ICtx<
+  M extends MsgBuilder = MsgBuilder,
+  L extends Logger<M> = Logger<M>,
+> {
   /** The logger instance for the application. */
   log: L;
   /** The log manager coordinating loggers and transports. */
@@ -22,14 +25,7 @@ export interface ICtx<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = L
   /** Whether the application is running in dry-run mode. */
   dryRun: boolean;
   /** Package information for the application. */
-  pkg: {
-    /** The name of the package. */
-    name: string;
-    /** The version of the package. */
-    version: string;
-    /** An optional description of the package. */
-    description?: string;
-  };
+  pkg: DenoPkg;
   /** Cleanup and shutdown logic for the application. */
   close: () => Promise<void>;
 }
