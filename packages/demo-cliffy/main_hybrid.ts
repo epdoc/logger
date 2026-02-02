@@ -10,7 +10,7 @@ import { CliffApp } from './src/dep.ts';
  * - Class-based root with procedural/declarative leaves
  */
 
-export class HybridRoot extends CliffApp.AbstractCmd<AppContext> {
+export class HybridRoot extends CliffApp.Command<AppContext> {
   protected override subCommands = {
     // 1. A class-based subcommand
     standard: SubCommand,
@@ -51,8 +51,8 @@ if (import.meta.main) {
   await ctx.setupLogging();
 
   const root = new HybridRoot();
-  root.setContext(ctx);
-  root.init();
+  await root.setContext(ctx);
+  await root.init();
 
   await CliffApp.run(ctx, root.cmd);
 }

@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [0.1.8] - 2026-02-02
 
+### ARCHITECTURE NOTES
+- **Staged Initialization Required**: The `init()` process is broken into stages because options must be declared before parsing, but parsed options are needed to create child contexts and configure subcommands
+- **Options Flow Down Tree**: Root options (like `--api-url`, `--host`) are parsed first, then used to create specialized contexts (like `HostCtx`) that flow down to child commands
+- **Context Refinement**: Each command level can refine the context using `deriveChildContext()` based on the options it receives, allowing progressive specialization as you go deeper in the command tree
+- **Cliffy Constraint**: This staged approach is necessitated by Cliffy's requirement that options be declared before parsing, while still allowing dynamic subcommand configuration based on parsed parent options
+
 ### BREAKING CHANGES
 - **Removed `abstract` keyword from `AbstractCmd`** - Now a concrete class that can be instantiated directly
 - **Eliminated `DeclarativeCommand` class** - No longer needed, use `new AbstractCmd(node)` instead

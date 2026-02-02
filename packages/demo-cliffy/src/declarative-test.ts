@@ -1,5 +1,6 @@
-import { AbstractCmd, CommandEngine, CommandNode } from '../../cliffapp/src/mod.ts';
-import { AppContext, ctx } from './context.ts';
+import { Command, type CommandNode } from '../../cliffapp/src/mod.ts';
+import type { AppContext } from './context.ts';
+import { ctx } from './context.ts';
 
 /**
  * A purely declarative command tree.
@@ -12,7 +13,7 @@ const DECLARATIVE_TREE: CommandNode<AppContext> = {
   subCommands: {
     hello: {
       description: 'Say hello',
-      action: async (ctx, opts) => {
+      action: (ctx, opts) => {
         ctx.log.info.text(`Hello, ${opts.name || 'World'}!`).emit();
       },
     },
@@ -22,7 +23,7 @@ const DECLARATIVE_TREE: CommandNode<AppContext> = {
 /**
  * A Class that hosts an object-literal subcommand (Hybrid).
  */
-export class HybridCmd extends AbstractCmd<AppContext> {
+export class HybridCmd extends Command<AppContext> {
   protected override subCommands = {
     // Hosted object literal
     hosted: {
@@ -39,19 +40,21 @@ export class HybridCmd extends AbstractCmd<AppContext> {
 }
 
 async function runDemo() {
-  const engine = new CommandEngine(ctx);
-
   console.log('--- Running Purely Declarative Tree ---');
   // Mocking arguments for the test
-  const oldArgs = Deno.args;
+  const _oldArgs = Deno.args;
   // @ts-ignore: Mocking Deno.args
   Deno.args = ['hello', '--name', 'Antigravity'];
-  await engine.run(DECLARATIVE_TREE);
+
+  const cmd = new Command(DECLARATIVE_TREE);
+  await cmd.setContext(ctx);
+  await cmd.init();
+  await cmd.cmd.parse(Deno.args);
 
   console.log('\n--- Running Hybrid Class ---');
   const hybrid = new HybridCmd();
-  hybrid.setContext(ctx);
-  hybrid.init();
+  await hybrid.setContext(ctx);
+  await hybrid.init();
   // @ts-ignore: Mocking args
   Deno.args = ['hosted'];
   await hybrid.cmd.parse(Deno.args);

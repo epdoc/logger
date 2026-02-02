@@ -2,7 +2,7 @@ import type { AppContext } from '../context.ts';
 import { CliffApp } from '../dep.ts';
 import { SubCommand } from './sub.ts';
 
-export class RootCommand extends CliffApp.AbstractCmd<AppContext> {
+export class RootCommand extends CliffApp.Command<AppContext> {
   // Functional subcommands: only show 'sub' command if not in special 'quiet' mode
   protected override subCommands = (ctx: AppContext) => {
     const cmds: CliffApp.SubCommandsConfig<AppContext> = {
@@ -14,13 +14,13 @@ export class RootCommand extends CliffApp.AbstractCmd<AppContext> {
     return cmds;
   };
 
-  protected override refineContext(ctx: AppContext, opts: CliffApp.GenericOptions): AppContext {
+  protected override deriveChildContext(ctx: AppContext, opts: CliffApp.CmdOptions): Promise<AppContext> {
     if (opts.debugMode) {
       // In a real app, you might return a new object or a modified clone
       ctx.debugMode = true;
       ctx.log.info.text('Refining context: setting debugMode = true').emit();
     }
-    return ctx;
+    return Promise.resolve(ctx);
   }
 
   protected override setupOptions(): void {

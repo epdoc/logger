@@ -18,8 +18,8 @@ if (import.meta.main) {
   const rootCmd = new RootCommand();
   
   // The first setContext provides the initial context
-  rootCmd.setContext(ctx);
-  rootCmd.init();
+  await rootCmd.setContext(ctx);
+  await rootCmd.init();
 
   // Run the application
   await CliffApp.run(ctx, rootCmd.cmd);

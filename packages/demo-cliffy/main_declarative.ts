@@ -41,6 +41,8 @@ if (import.meta.main) {
   const ctx = new AppContext();
   await ctx.setupLogging();
 
-  const engine = new CliffApp.CommandEngine(ctx);
-  await engine.run(TREE);
+  const cmd = new CliffApp.Command(TREE);
+  await cmd.setContext(ctx);
+  await cmd.init();
+  await cmd.cmd.parse(Deno.args);
 }

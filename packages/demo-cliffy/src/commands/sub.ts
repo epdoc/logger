@@ -5,7 +5,7 @@ type SubOpts = {
   force?: boolean;
 };
 
-export class SubCommand extends CliffApp.AbstractCmd<AppContext> {
+export class SubCommand extends CliffApp.Command<AppContext> {
   protected override setupOptions(): void {
     this.cmd
       .name('sub')
