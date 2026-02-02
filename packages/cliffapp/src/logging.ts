@@ -23,31 +23,60 @@ const logShowValues = [
 ];
 
 /**
- * Adds standard @epdoc/logger logging options to a Cliffy command.
- * These are added as global options so they are available to all subcommands.
+ * Adds standardized logging options to a Cliffy command.
  *
- * Specific options added:
- * - `--log <level>`: Set the threshold log output level (e.g., debug, info, warn, error).
- * - `--log-show <components>`: Comma-separated list of log components to show (e.g., level, time, pkg, all).
- * - `--no-color`: Disable color in output.
- * - `-A, --showall`: Shortcut for `--log-show all`.
- * - `-v, --verbose`: Shortcut for `--log verbose`.
- * - `-D, --debug`: Shortcut for `--log debug`.
- * - `-T, --trace`: Shortcut for `--log trace`.
- * - `-S, --spam`: Shortcut for `--log spam`.
- * - `-n, --dry-run`: Set dry-run mode (available via `ctx.dryRun`).
+ * This function adds a comprehensive set of logging-related options that integrate
+ * seamlessly with @epdoc/logger. The options are added as global options, making
+ * them available to all subcommands in the hierarchy.
  *
- * @example
- * ```ts
+ * ## Added Options:
+ *
+ * **Log Level Control:**
+ * - `--log-level <level>`: Set threshold log level with validation (FATAL, ERROR, WARN, INFO, VERBOSE, DEBUG, TRACE, SPAM)
+ * - `-v, --verbose`: Shortcut for `--log-level VERBOSE`
+ * - `-D, --debug`: Shortcut for `--log-level DEBUG`
+ * - `-T, --trace`: Shortcut for `--log-level TRACE`
+ * - `-S, --spam`: Shortcut for `--log-level SPAM`
+ *
+ * **Log Display Control:**
+ * - `--log-show <components>`: Comma-separated list of components to display (level, time, package, etc.)
+ * - `-A, --log-show-all`: Shortcut for `--log-show all`
+ * - `--no-color`: Disable colored output
+ *
+ * **Execution Control:**
+ * - `-n, --dry-run`: Enable dry-run mode (sets `ctx.dryRun = true`)
+ *
+ * ## Usage Patterns:
+ *
+ * @example Basic usage:
+ * ```typescript
  * import { Command } from "@cliffy/command";
- * import { addLoggingOptions, ICtx } from "@epdoc/cliffapp";
+ * import { addLoggingOptions } from "@epdoc/cliffapp";
  *
- * const ctx = {} as ICtx; // Your context
- * const command = new Command();
- * addLoggingOptions(command, ctx);
+ * const cmd = new Command();
+ * addLoggingOptions(cmd, ctx);
  * ```
  *
- * @param command - The Cliffy Command instance to add options to.
+ * @example In a class-based command:
+ * ```typescript
+ * class MyCommand extends Command<MyContext> {
+ *   protected override setupOptions(): void {
+ *     this.cmd.description("My command");
+ *     addLoggingOptions(this.cmd, this.ctx);
+ *   }
+ * }
+ * ```
+ *
+ * @example In a declarative command:
+ * ```typescript
+ * const tree = {
+ *   description: "My CLI",
+ *   setupGlobalAction: (cmd, ctx) => addLoggingOptions(cmd, ctx),
+ *   // ... rest of command definition
+ * };
+ * ```
+ *
+ * @param command - The Cliffy Command instance to enhance with logging options
  * @param ctx - The application context (used for type inference).
  * @returns The modified Command instance.
  */

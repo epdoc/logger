@@ -53,7 +53,57 @@ export type MsgBuilder = Console.Builder;
 export type Logger<M extends MsgBuilder = MsgBuilder> = Log.Std.Logger<M>;
 
 /**
- * Application context for Cliffy applications.
+ * Core application context interface for Cliffy applications.
+ *
+ * This interface defines the essential services and state that every command
+ * in your CLI application can access. It provides the foundation for logging,
+ * configuration management, and application lifecycle.
+ *
+ * ## Key Properties:
+ *
+ * **Logging System:**
+ * - `log`: Direct access to logger for emitting messages
+ * - `logMgr`: Manager for configuring logging behavior
+ *
+ * **Application State:**
+ * - `dryRun`: Flag indicating whether to perform actual operations
+ * - `pkg`: Package metadata from deno.json
+ *
+ * **Lifecycle Management:**
+ * - `close()`: Cleanup method called during shutdown
+ *
+ * @template M - Message builder type for customizing log message formatting
+ * @template L - Logger type that works with the message builder
+ *
+ * @example Basic implementation:
+ * ```typescript
+ * class MyContext implements ICtx {
+ *   log!: Logger;
+ *   logMgr!: LogManager;
+ *   dryRun = false;
+ *   pkg = { name: "my-app", version: "1.0.0", description: "My CLI" };
+ *
+ *   async close() {
+ *     await this.logMgr.close();
+ *   }
+ * }
+ * ```
+ *
+ * @example Extended context with services:
+ * ```typescript
+ * interface ApiContext extends ICtx {
+ *   apiClient: ApiClient;
+ *   database: DatabaseConnection;
+ *   config: AppConfig;
+ * }
+ *
+ * class MyApiContext implements ApiContext {
+ *   // ... ICtx properties
+ *   apiClient!: ApiClient;
+ *   database!: DatabaseConnection;
+ *   config!: AppConfig;
+ * }
+ * ```
  */
 export interface ICtx<
   M extends MsgBuilder = MsgBuilder,
@@ -121,7 +171,85 @@ export type CommandClass<Ctx extends ICtx> = new () => {
 };
 
 /**
- * Declarative definition of a command node.
+ * Declarative command definition for building command trees without classes.
+ *
+ * CommandNode allows you to define entire command hierarchies using object literals,
+ * providing a functional alternative to class-based command definitions. This is
+ * particularly useful for simple commands, configuration-driven CLIs, or rapid prototyping.
+ *
+ * ## Key Features:
+ *
+ * **Structure Definition:**
+ * - `description`: Command description for help text
+ * - `version`: Optional version string
+ * - `arguments`: Argument specification (e.g., '<file> [output]')
+ *
+ * **Options Configuration:**
+ * - `options`: Static options map or context-dependent function
+ * - `setupOptions`: Advanced option configuration hook
+ *
+ * **Hierarchy Management:**
+ * - `subCommands`: Nested command definitions (recursive)
+ * - Supports mixing CommandNode and class-based commands
+ *
+ * **Context Integration:**
+ * - `refineContext`: Transform context based on parsed options
+ * - `setupGlobalAction`: Configure global action hooks
+ *
+ * **Execution:**
+ * - `action`: Command implementation function
+ *
+ * @template Ctx - Application context type
+ *
+ * @example Simple command:
+ * ```typescript
+ * const helloCmd: CommandNode<MyContext> = {
+ *   description: "Say hello",
+ *   options: {
+ *     '--name <name>': 'Name to greet'
+ *   },
+ *   action: (ctx, opts) => {
+ *     ctx.log.info.text(`Hello, ${opts.name || 'World'}!`).emit();
+ *   }
+ * };
+ * ```
+ *
+ * @example Command with context refinement:
+ * ```typescript
+ * const apiCmd: CommandNode<MyContext> = {
+ *   description: "API operations",
+ *   options: {
+ *     '--api-url <url>': 'API endpoint URL'
+ *   },
+ *   refineContext: async (ctx, opts) => {
+ *     ctx.apiClient = new ApiClient(opts.apiUrl);
+ *     return ctx;
+ *   },
+ *   subCommands: {
+ *     users: {
+ *       description: "User management",
+ *       action: async (ctx) => {
+ *         const users = await ctx.apiClient.getUsers();
+ *         ctx.log.info.text(`Found ${users.length} users`).emit();
+ *       }
+ *     }
+ *   }
+ * };
+ * ```
+ *
+ * @example Mixed with class-based commands:
+ * ```typescript
+ * const rootCmd: CommandNode<MyContext> = {
+ *   description: "My CLI",
+ *   subCommands: {
+ *     simple: {
+ *       description: "Simple declarative command",
+ *       action: (ctx) => ctx.log.info.text("Hello!").emit()
+ *     },
+ *     complex: ComplexClassBasedCommand // Class reference
+ *   }
+ * };
+ * ```
  */
 export type CommandNode<Ctx extends ICtx> = {
   /** The description of the command shown in the help menu. */

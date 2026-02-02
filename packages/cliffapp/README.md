@@ -1,6 +1,6 @@
 # @epdoc/cliffapp
 
-A unified command framework bridging [@epdoc/logger](https://jsr.io/@epdoc/logger) and [deno-cliffy](https://github.com/c4spar/deno-cliffy), supporting both declarative and class-based command hierarchies with progressive context refinement.
+A command framework bridging [@epdoc/logger](https://jsr.io/@epdoc/logger) and [deno-cliffy](https://github.com/c4spar/deno-cliffy), supporting both declarative and class-based Cliffy command hierarchies with progressive context refinement.
 
 ## Features
 
@@ -466,36 +466,6 @@ await cmd.init();
 await cmd.cmd.parse(['--name', 'test', '--verbose']);
 ```
 
-## Migration from 0.1.7
-
-```typescript
-// OLD (0.1.7)
-import { AbstractCmd, DeclarativeCommand, CommandEngine } from "@epdoc/cliffapp";
-
-class MyCmd extends AbstractCmd<MyContext> {
-  protected override refineContext(ctx, opts) {
-    return ctx;
-  }
-}
-
-const engine = new CommandEngine(ctx);
-await engine.run(tree);
-
-// NEW (0.1.8+)
-import { Command } from "@epdoc/cliffapp";
-
-class MyCmd extends Command<MyContext> {
-  protected override async deriveChildContext(ctx, opts): Promise<MyContext> {
-    return ctx;
-  }
-}
-
-const cmd = new Command(tree);
-await cmd.setContext(ctx);
-await cmd.init();
-await cmd.cmd.parse(Deno.args);
-```
-
 ## Examples
 
 See the [demo-cliffy](../demo-cliffy/) package for complete working examples of all three patterns.
@@ -526,11 +496,11 @@ class Command<Ctx extends ICtx = ICtx> {
 // Add standard logging options
 addLoggingOptions(command: Command, ctx: ICtx): Command
 
-// Run application with error handling and lifecycle management
-run(ctx: ICtx, command: Command, args?: string[]): Promise<void>
-
 // Configure logging from parsed options
 configureLogging(ctx: ICtx, opts: Partial<GlobalOptions>): void
+
+// Run application with error handling and lifecycle management
+run(ctx: ICtx, command: Command, args?: string[]): Promise<void>
 ```
 
 ## License

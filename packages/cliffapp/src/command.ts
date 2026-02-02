@@ -2,10 +2,33 @@ import { Command as CliffyCommand } from '@cliffy/command';
 import type * as Base from './types.ts';
 
 /**
- * Base class for all commands, providing declarative subcommand management,
- * recursive context propagation, and lifecycle hooks.
+ * Unified command class supporting both class-based and declarative patterns.
  *
- * @template Ctx - The application context type, must extend Base.ICtx.
+ * Handles the complete command lifecycle including:
+ * - Option declaration and parsing
+ * - Context propagation and refinement down the command tree
+ * - Subcommand registration and initialization
+ * - Integration with Cliffy's parsing and execution model
+ *
+ * @template Ctx - The application context type, must extend Base.ICtx
+ *
+ * @example Class-based usage:
+ * ```typescript
+ * class MyCommand extends Command<MyContext> {
+ *   protected override setupOptions(): void {
+ *     this.cmd.description("My command").option("-f, --force", "Force action");
+ *   }
+ * }
+ * ```
+ *
+ * @example Declarative usage:
+ * ```typescript
+ * const cmd = new Command({
+ *   description: "My command",
+ *   options: { "--force": "Force action" },
+ *   action: (ctx, opts) => console.log("Hello!")
+ * });
+ * ```
  */
 export class Command<Ctx extends Base.ICtx = Base.ICtx> {
   /** The Cliffy Command instance for this command. */
@@ -30,8 +53,25 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
   #ctx?: Ctx;
 
   /**
-   * Creates a new AbstractCmd. Can optionally be configured from a CommandNode.
-   * @param node Optional declarative configuration
+   * Creates a new Command instance.
+   *
+   * @param node - Optional declarative configuration. When provided, the command
+   *               will be configured from this CommandNode instead of requiring
+   *               method overrides.
+   *
+   * @example Class-based (no node):
+   * ```typescript
+   * const cmd = new Command();
+   * // Override setupOptions(), setupAction(), etc.
+   * ```
+   *
+   * @example Declarative (with node):
+   * ```typescript
+   * const cmd = new Command({
+   *   description: "My command",
+   *   action: (ctx, opts) => ctx.log.info.text("Hello!").emit()
+   * });
+   * ```
    */
   constructor(node?: Base.CommandNode<Ctx>) {
     this.node = node;
@@ -42,7 +82,24 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
 
   /**
    * Initializes the command by setting up options, subcommands, and actions.
-   * This should be called once after instantiation.
+   *
+   * This method orchestrates the complete command initialization process:
+   * 1. Sets up command options and metadata (setupOptions)
+   * 2. Configures global action hooks (configureGlobalHooks)
+   * 3. Registers and initializes subcommands
+   * 4. Sets up the primary command action (setupAction)
+   *
+   * Must be called after setContext() and before parsing arguments.
+   *
+   * @throws {Error} If context is not set before calling init()
+   *
+   * @example
+   * ```typescript
+   * const cmd = new Command();
+   * await cmd.setContext(myContext);
+   * await cmd.init(); // Required before parsing
+   * await cmd.cmd.parse(Deno.args);
+   * ```
    */
   async init(): Promise<void> {
     this.setupOptions();
@@ -89,7 +146,20 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
     this.setupAction();
   }
 
-  /** Access to the command's context. Throws if accessed before being set. */
+  /**
+   * Access to the command's context.
+   *
+   * @throws {Error} If accessed before setContext() is called
+   *
+   * @example
+   * ```typescript
+   * protected setupAction(): void {
+   *   this.cmd.action(() => {
+   *     this.ctx.log.info.text("Hello!").emit(); // Safe to use ctx here
+   *   });
+   * }
+   * ```
+   */
   get ctx(): Ctx {
     if (!this.#ctx) {
       throw new Error(
@@ -131,11 +201,29 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
 
   /**
    * Sets the context for this command and recursively propagates it to children.
-   * The context can be transformed by the deriveChildContext hook.
    *
-   * @param ctx - The new context to apply.
-   * @param opts - Options from the command line.
-   * @param args - Positional arguments from the command line.
+   * The context flows down the command tree, allowing each level to refine it
+   * based on parsed options. This enables progressive specialization where
+   * root options (like --api-url) can create services (like ApiClient) that
+   * are available to all child commands.
+   *
+   * @param ctx - The context to apply to this command and its children
+   * @param opts - Parsed command line options (used for context refinement)
+   * @param args - Positional arguments from the command line
+   *
+   * @example Context refinement:
+   * ```typescript
+   * // Root command parses --api-url, creates ApiClient
+   * await rootCmd.setContext(baseCtx, { apiUrl: "https://api.com" });
+   *
+   * // Child commands inherit the ApiClient via refined context
+   * class UserCmd extends Command {
+   *   protected override async deriveChildContext(ctx, opts) {
+   *     ctx.userService = new UserService(ctx.apiClient);
+   *     return ctx;
+   *   }
+   * }
+   * ```
    */
   async setContext(ctx: Ctx, opts: Base.CmdOptions = {}, args: Base.CmdArgs = []): Promise<void> {
     this.#parentCtx = ctx;
@@ -166,13 +254,41 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
   }
 
   /**
-   * Hook for refining or specializing the context as it moves down the tree.
-   * Override this to create child contexts with specialized settings.
+   * Hook for refining or specializing the context as it moves down the command tree.
    *
-   * @param ctx - The context passed from the parent.
-   * @param _opts - Options from the command line.
-   * @param _args - Positional arguments from the command line.
-   * @returns The refined context to use for this command and its children.
+   * This is where the magic of progressive context refinement happens. Each command
+   * can transform the context based on its parsed options, adding services, changing
+   * configuration, or creating specialized contexts for its children.
+   *
+   * @param ctx - The context passed from the parent command
+   * @param opts - Parsed command line options for this command level
+   * @param args - Positional arguments from the command line
+   * @returns The refined context to use for this command and its children
+   *
+   * @example Adding services to context:
+   * ```typescript
+   * protected override async deriveChildContext(ctx: MyContext, opts: CmdOptions): Promise<MyContext> {
+   *   if (opts.apiUrl) {
+   *     ctx.apiClient = new ApiClient(opts.apiUrl);
+   *   }
+   *
+   *   if (opts.database) {
+   *     ctx.db = await DatabaseService.connect(opts.database);
+   *   }
+   *
+   *   return ctx;
+   * }
+   * ```
+   *
+   * @example Creating specialized context:
+   * ```typescript
+   * protected override async deriveChildContext(ctx: BaseContext): Promise<AdminContext> {
+   *   const adminCtx = new AdminContext();
+   *   Object.assign(adminCtx, ctx);
+   *   adminCtx.adminService = new AdminService();
+   *   return adminCtx;
+   * }
+   * ```
    */
   protected async deriveChildContext(
     ctx: Ctx,
@@ -188,10 +304,29 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
   /**
    * Lifecycle hook to configure command options, description, and arguments.
    *
-   * @example
-   * ```ts
-   * protected setupOptions(): void {
-   *   this.cmd.description('My Command').option('-f, --force', 'Force action');
+   * This is called during the init() phase to set up the command's basic structure.
+   * For class-based commands, override this method to define your command's interface.
+   * For declarative commands, this is handled automatically from the CommandNode.
+   *
+   * Note: This is called before context is available, so only declare static options here.
+   * Context-dependent options should be handled in deriveChildContext or setupGlobalAction.
+   *
+   * @example Class-based usage:
+   * ```typescript
+   * protected override setupOptions(): void {
+   *   this.cmd
+   *     .description('User management commands')
+   *     .option('-f, --force', 'Force the operation')
+   *     .option('--batch-size <size:number>', 'Batch size', { default: 100 })
+   *     .arguments('<action> [target]');
+   * }
+   * ```
+   *
+   * @example Adding logging options:
+   * ```typescript
+   * protected override setupOptions(): void {
+   *   this.cmd.description('My command');
+   *   addLoggingOptions(this.cmd, this.ctx); // Adds --verbose, --debug, etc.
    * }
    * ```
    */
@@ -221,8 +356,28 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
   }
 
   /**
-   * Lifecycle hook to configure global hooks. Global actions run before
-   * subcommand actions. Useful for context refinement based on global flags.
+   * Lifecycle hook to configure global action hooks.
+   *
+   * Global actions run before any subcommand actions, making them ideal for:
+   * - Setting up logging configuration based on global flags
+   * - Performing authentication or authorization
+   * - Initializing shared resources
+   * - Context refinement based on global options
+   *
+   * @example
+   * ```typescript
+   * protected override configureGlobalHooks(): void {
+   *   this.cmd.globalAction((opts) => {
+   *     if (opts.verbose) {
+   *       this.ctx.logMgr.threshold = 'verbose';
+   *     }
+   *
+   *     if (opts.apiKey) {
+   *       this.ctx.apiClient.setApiKey(opts.apiKey);
+   *     }
+   *   });
+   * }
+   * ```
    */
   protected configureGlobalHooks(): void {
     if (this.node?.setupGlobalAction) {
@@ -231,12 +386,62 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
   }
 
   /**
-   * Lifecycle hook for manual subcommand registration (if declarative is not used).
+   * Lifecycle hook for manual subcommand registration.
+   *
+   * This is called after automatic subcommand registration from the `subCommands`
+   * property. Use this for dynamic subcommand registration or when you need
+   * more control over the registration process.
+   *
+   * Most commands won't need to override this - use the `subCommands` property
+   * or declarative `subCommands` in CommandNode instead.
+   *
+   * @example Dynamic subcommand registration:
+   * ```typescript
+   * protected override setupSubcommands(): void {
+   *   // Add plugin-based commands
+   *   for (const plugin of this.ctx.plugins) {
+   *     this.cmd.command(plugin.name, plugin.createCommand());
+   *   }
+   * }
+   * ```
    */
   protected setupSubcommands(): void {}
 
   /**
    * Lifecycle hook to configure the primary action for this command.
+   *
+   * This defines what happens when the command is executed. For class-based
+   * commands, override this method to define your command's behavior.
+   * For declarative commands, this is handled automatically from the CommandNode.
+   *
+   * @example Simple action:
+   * ```typescript
+   * protected override setupAction(): void {
+   *   this.cmd.action((opts, ...args) => {
+   *     this.ctx.log.info.text(`Hello ${opts.name || 'World'}!`).emit();
+   *   });
+   * }
+   * ```
+   *
+   * @example Complex action with validation:
+   * ```typescript
+   * protected override setupAction(): void {
+   *   this.cmd.action(async (opts, ...args) => {
+   *     const [target] = args as [string];
+   *
+   *     if (!target) {
+   *       throw new Error('Target is required');
+   *     }
+   *
+   *     if (this.ctx.dryRun) {
+   *       this.ctx.log.info.text(`Would process: ${target}`).emit();
+   *       return;
+   *     }
+   *
+   *     await this.processTarget(target, opts);
+   *   });
+   * }
+   * ```
    */
   protected setupAction(): void {
     if (this.node?.action) {
