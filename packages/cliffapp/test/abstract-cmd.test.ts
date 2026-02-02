@@ -13,7 +13,7 @@ const mockCtx: MockCtx = {
   log: {} as any,
   logMgr: {} as any,
   dryRun: false,
-  pkg: { name: "test", version: "1.0.0", description: "blah blah" },
+  // pkg: { name: "test", version: "1.0.0", description: "blah blah" },
   close: () => Promise.resolve(),
 };
 

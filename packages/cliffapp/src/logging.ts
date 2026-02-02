@@ -36,22 +36,25 @@ const REG = {
  * @param _ctx - The application context (used for type inference).
  * @returns The modified Command instance.
  */
-export function addLoggingOptions<
-  M extends MsgBuilder,
-  L extends Logger<M>,
->(
-  // deno-lint-ignore no-explicit-any
-  command: Command<void, void, void, any[], any, any, any, any>,
+export function addLoggingOptions<C extends Command, M extends MsgBuilder, L extends Logger<M>>(
+  command: C,
   _ctx: ICtx<M, L>,
-  // deno-lint-ignore no-explicit-any
-): Command<void, void, void, any[], any, any, any, any> {
+): C {
   return command
-    .globalOption('--log <level:string>', 'Set the threshold log output level.', {
-      collect: false,
-    })
-    .globalOption('--log-show <show:string[]>', 'Enable log message output components.', {
-      separator: ',',
-    })
+    .globalOption(
+      '--log <level:string>',
+      'Set the threshold log output level.',
+      {
+        collect: false,
+      },
+    )
+    .globalOption(
+      '--log-show <show:string[]>',
+      'Enable log message output components.',
+      {
+        separator: ',',
+      },
+    )
     .globalOption('--no-color', 'Do not show color in output')
     .globalOption('-A, --showall', 'Shortcut for --log-show all')
     .globalOption('-v, --verbose', 'Shortcut for --log verbose')
@@ -60,7 +63,7 @@ export function addLoggingOptions<
     .globalOption('-S, --spam', 'Shortcut for --log spam')
     .globalOption('-n, --dry-run', 'Do not modify any existing data or files', {
       default: false,
-    });
+    }) as unknown as C;
 }
 
 /**
@@ -82,7 +85,10 @@ export function addLoggingOptions<
  * @param ctx - The application context.
  * @param opts - The parsed global log options.
  */
-export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Logger<M>>(
+export function configureLogging<
+  M extends MsgBuilder = MsgBuilder,
+  L extends Logger<M> = Logger<M>,
+>(
   ctx: ICtx<M, L>,
   opts: GlobalLogOptions,
 ): void {
@@ -115,8 +121,11 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
   }
 
   if (logOptions.length > 1) {
-    ctx.log.error.text('Conflicting command line options:').label(logOptions).emit();
-    throw new Error('Conflicting command line options: ' + logOptions.join(', '));
+    ctx.log.error.text('Conflicting command line options:').label(logOptions)
+      .emit();
+    throw new Error(
+      'Conflicting command line options: ' + logOptions.join(', '),
+    );
   }
 
   if (threshold) {

@@ -13,6 +13,7 @@ export class AppContext implements CliffApp.ICtx<MsgBuilder, AppLogger> {
   log!: AppLogger;
   logMgr!: Logger.Mgr<MsgBuilder>;
   dryRun = false;
+  debugMode = false;
   pkg = {
     name: pkg.name,
     version: pkg.version,
@@ -34,3 +35,6 @@ export class AppContext implements CliffApp.ICtx<MsgBuilder, AppLogger> {
     await this.logMgr.close();
   }
 }
+
+export const ctx = new AppContext();
+await ctx.setupLogging();

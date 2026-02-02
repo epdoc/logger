@@ -52,9 +52,13 @@ export async function run<M extends MsgBuilder, L extends Logger<M>>(
 
     try {
       await ctx.close();
-      ctx.log.info.h1('Application').label('Interrupted').ewt(performance.now() - t0);
+      ctx.log.info.h1('Application').label('Interrupted').ewt(
+        performance.now() - t0,
+      );
     } catch (err) {
-      ctx.log.error.label('Error during interrupt cleanup').err(err instanceof Error ? err : new Error(String(err)));
+      ctx.log.error.label('Error during interrupt cleanup').err(
+        err instanceof Error ? err : new Error(String(err)),
+      );
     }
     Deno.exit(0);
   };
@@ -66,8 +70,7 @@ export async function run<M extends MsgBuilder, L extends Logger<M>>(
     command.globalAction(
       ((opts: GlobalLogOptions) => {
         configureLogging(ctx, opts);
-        // deno-lint-ignore no-explicit-any
-      }) as ActionHandler<void, any[], any, any, any, any, any, any>,
+      }) as ActionHandler,
     );
 
     await command.parse(args);
@@ -94,7 +97,9 @@ export async function run<M extends MsgBuilder, L extends Logger<M>>(
       try {
         await ctx.close();
         if (exitCode === 0) {
-          ctx.log.info.h1('Application').label('done').ewt(performance.now() - t0);
+          ctx.log.info.h1('Application').label('done').ewt(
+            performance.now() - t0,
+          );
           ctx.log.nodent();
         }
       } catch (closeError) {

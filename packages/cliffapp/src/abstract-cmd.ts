@@ -1,5 +1,5 @@
 import { Command } from '@cliffy/command';
-import type { ICtx, Logger, MsgBuilder } from './types.ts';
+import type { CommandNode, GenericOptions, ICtx, Logger, MsgBuilder, SubCommandsConfig } from './types.ts';
 
 /**
  * Base class for all commands, providing declarative subcommand management,
@@ -12,13 +12,16 @@ export abstract class AbstractCmd<Ctx extends ICtx = ICtx> {
   readonly cmd: Command = new Command();
 
   /**
-   * Declarative mapping of subcommand names to their class constructors.
-   * Children are automatically instantiated and registered during init().
+   * Declarative mapping of subcommand names to their class constructors
+   * or purely declarative CommandNode objects.
    */
-  protected subCommands: Record<string, new () => AbstractCmd<Ctx>> = {};
+  protected subCommands: SubCommandsConfig<Ctx> = {};
 
   /** Active instances of child commands. */
   protected children: AbstractCmd<Ctx>[] = [];
+
+  /** Stored parent context to allow re-refinement after parsing. */
+  #parentCtx?: Ctx;
 
   /** The current context for this command. */
   #ctx?: Ctx;
@@ -31,9 +34,35 @@ export abstract class AbstractCmd<Ctx extends ICtx = ICtx> {
     this.setupOptions();
     this.setupGlobalAction();
 
+    // Trigger a post-parse refinement pass using globalAction.
+    // We wrap any existing handler (from setupGlobalAction) to allow both to run.
+    // deno-lint-ignore no-explicit-any
+    const userHandler = (this.cmd as any)['globalActionHandler'];
+    this.cmd.globalAction(
+      (async (opts: GenericOptions, ...args: unknown[]) => {
+        if (this.#parentCtx) {
+          this.setContext(this.#parentCtx, opts, args);
+        }
+        if (userHandler) {
+          await userHandler(opts, ...args);
+        }
+        // deno-lint-ignore no-explicit-any
+      }) as any,
+    );
+
     // Automatically instantiate and register subcommands
-    for (const [name, ChildClass] of Object.entries(this.subCommands)) {
-      const child = new ChildClass();
+    const subCommands = typeof this.subCommands === 'function' ? this.subCommands(this.ctx) : this.subCommands;
+
+    for (const [name, Entry] of Object.entries(subCommands)) {
+      let child: AbstractCmd<Ctx>;
+      if (typeof Entry === 'function') {
+        child = new (Entry as new () => AbstractCmd<Ctx>)();
+      } else {
+        child = new ProxyCmd(Entry as CommandNode<Ctx>) as unknown as AbstractCmd<
+          Ctx
+        >;
+      }
+
       if (this.#ctx) {
         child.setContext(this.#ctx);
       }
@@ -91,11 +120,14 @@ export abstract class AbstractCmd<Ctx extends ICtx = ICtx> {
    * The context can be transformed by the refineContext hook.
    *
    * @param ctx - The new context to apply.
+   * @param opts - Options from the command line.
+   * @param args - Positional arguments from the command line.
    */
-  setContext(ctx: Ctx): void {
-    this.#ctx = this.refineContext(ctx);
+  setContext(ctx: Ctx, opts: GenericOptions = {}, args: unknown[] = []): void {
+    this.#parentCtx = ctx;
+    this.#ctx = this.refineContext(ctx, opts, args);
     for (const child of this.children) {
-      child.setContext(this.#ctx);
+      child.setContext(this.#ctx, opts, args);
     }
   }
 
@@ -104,9 +136,15 @@ export abstract class AbstractCmd<Ctx extends ICtx = ICtx> {
    * Override this to create child contexts with specialized settings.
    *
    * @param ctx - The context passed from the parent.
+   * @param _opts - Options from the command line.
+   * @param _args - Positional arguments from the command line.
    * @returns The refined context to use for this command and its children.
    */
-  protected refineContext(ctx: Ctx): Ctx {
+  protected refineContext(
+    ctx: Ctx,
+    _opts: GenericOptions,
+    _args: unknown[],
+  ): Ctx {
     return ctx;
   }
 
@@ -137,4 +175,73 @@ export abstract class AbstractCmd<Ctx extends ICtx = ICtx> {
    * Lifecycle hook to configure the primary action for this command.
    */
   protected setupAction(): void {}
+}
+
+/**
+ * A specialized AbstractCmd that builds itself from a declarative CommandNode.
+ * This class facilitates the hybrid model where object literals can be used
+ * as subcommands within a class-based hierarchy.
+ */
+export class ProxyCmd<Ctx extends ICtx = ICtx> extends AbstractCmd<Ctx> {
+  /**
+   * Creates a new ProxyCmd from a declarative node.
+   * @param node The CommandNode definition to wrap.
+   */
+  constructor(private node: CommandNode<Ctx>) {
+    super();
+    // Copy subcommands from the node to the class property
+    if (this.node.subCommands) {
+      this.subCommands = this.node.subCommands;
+    }
+  }
+
+  protected override refineContext(
+    ctx: Ctx,
+    opts: GenericOptions,
+    args: unknown[],
+  ): Ctx {
+    if (this.node.refineContext) {
+      return this.node.refineContext(ctx, opts, args) as Ctx;
+    }
+    return ctx;
+  }
+
+  protected override setupGlobalAction(): void {
+    if (this.node.setupGlobalAction) {
+      this.node.setupGlobalAction(this.cmd, this.ctx);
+    }
+  }
+
+  protected override setupOptions(): void {
+    const cmd = this.cmd;
+    cmd.description(this.node.description);
+    if (this.node.version) cmd.version(this.node.version);
+    if (this.node.arguments) cmd.arguments(this.node.arguments);
+
+    // Resolve and register options
+    const options = typeof this.node.options === 'function' ? this.node.options(this.ctx) : this.node.options;
+
+    if (options) {
+      Object.entries(options).forEach(([flags, def]) => {
+        if (typeof def === 'string') {
+          cmd.option(flags, def);
+        } else {
+          cmd.option(flags, def.description, {
+            default: def.default,
+            required: def.required,
+            hidden: def.hidden,
+            collect: def.collect,
+          });
+        }
+      });
+    }
+  }
+
+  protected override setupAction(): void {
+    if (this.node.action) {
+      this.cmd.action(async (opts: unknown, ...args: unknown[]) => {
+        await this.node.action!(this.ctx, opts as GenericOptions, ...args);
+      });
+    }
+  }
 }
