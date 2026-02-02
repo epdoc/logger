@@ -1,6 +1,6 @@
-import type { ActionHandler, Command } from '@cliffy/command';
+import type * as Cliffy from '@cliffy/command';
 import { configureLogging } from './logging.ts';
-import type { GlobalLogOptions, ICtx, ISilentError, Logger, MsgBuilder } from './types.ts';
+import type * as Base from './types.ts';
 
 /**
  * A standardized run wrapper for Cliffy applications.
@@ -34,9 +34,9 @@ import type { GlobalLogOptions, ICtx, ISilentError, Logger, MsgBuilder } from '.
  * @param args - Command line arguments (defaults to Deno.args).
  * @param options - Optional configuration object.
  */
-export async function run<M extends MsgBuilder, L extends Logger<M>>(
-  ctx: ICtx<M, L>,
-  command: Command,
+export async function run<M extends Base.MsgBuilder, L extends Base.Logger<M>>(
+  ctx: Base.ICtx<M, L>,
+  command: Cliffy.Command,
   args: string[] = Deno.args,
   options: { noExit?: boolean } = {},
 ): Promise<void> {
@@ -68,9 +68,9 @@ export async function run<M extends MsgBuilder, L extends Logger<M>>(
     // We use a global action to configure logging once the options are parsed.
     // In Cliffy, global actions run before subcommand actions.
     command.globalAction(
-      ((opts: GlobalLogOptions) => {
+      ((opts: Base.GlobalOptions) => {
         configureLogging(ctx, opts);
-      }) as ActionHandler,
+      }) as Cliffy.ActionHandler,
     );
 
     await command.parse(args);
@@ -78,7 +78,7 @@ export async function run<M extends MsgBuilder, L extends Logger<M>>(
     exitCode = 1;
     const t1 = performance.now() - t0;
     const err = error instanceof Error ? error : new Error(String(error));
-    const isSilent = (err as ISilentError).silent === true;
+    const isSilent = (err as Base.ISilentError).silent === true;
 
     if (isSilent) {
       ctx.log.nodent().info.h1('Application').error(err.message).ewt(t1);

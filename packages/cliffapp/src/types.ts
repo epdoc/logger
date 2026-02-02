@@ -1,4 +1,4 @@
-import type { Command } from '@cliffy/command';
+import type { Command as CliffyCommand } from '@cliffy/command';
 import type * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
 import type { Dict } from '@epdoc/type';
@@ -71,7 +71,8 @@ export interface ICtx<
   close: () => Promise<void>;
 }
 
-export type BaseCmdOptions = Dict;
+export type CmdOptions = Dict;
+export type CmdArgs = string[];
 
 /**
  * A mapping of option flags to their descriptions or configurations.
@@ -107,8 +108,17 @@ export type SubCommandsConfig<Ctx extends ICtx> =
  */
 export type SubCommandsRecord<Ctx extends ICtx> = Record<
   string,
-  CommandNode<Ctx> | (new () => AbstractCmd<Ctx>)
+  CommandNode<Ctx> | CommandClass<Ctx>
 >;
+
+/**
+ * Constructor type for command classes
+ */
+export type CommandClass<Ctx extends ICtx> = new () => {
+  cmd: CliffyCommand; // Cliffy Command
+  setContext(ctx: Ctx, opts?: CmdOptions, args?: CmdArgs): Promise<void>;
+  init(): Promise<void>;
+};
 
 /**
  * Declarative definition of a command node.
@@ -129,32 +139,32 @@ export type CommandNode<Ctx extends ICtx> = {
    * Note: This is called during the declarative build phase and also during the
    * post-parse refinement pass.
    */
-  refineContext?: (parentCtx: Ctx, opts: BaseCmdOptions, args: unknown[]) => Ctx | Promise<Ctx>;
+  refineContext?: (parentCtx: Ctx, opts: CmdOptions, args: unknown[]) => Ctx | Promise<Ctx>;
   /** Hook to configure global actions (for context refinement based on opts). */
-  setupGlobalAction?: (cmd: Command, ctx: Ctx) => void;
+  setupGlobalAction?: (cmd: CliffyCommand, ctx: Ctx) => void;
   /** The logic to execute when the command is run. */
-  action?: (ctx: Ctx, opts: BaseCmdOptions, ...args: unknown[]) => Promise<void> | void;
+  action?: (ctx: Ctx, opts: CmdOptions, ...args: unknown[]) => Promise<void> | void;
   /** Optional setup for command specific options */
-  setupOptions?: (cmd: Command, ctx: Ctx) => void;
+  setupOptions?: (cmd: CliffyCommand, ctx: Ctx) => void;
 };
 
 /**
  * Base class for all commands, providing context management and lifecycle hooks.
  */
-export abstract class AbstractCmd<Ctx extends ICtx = ICtx> {
-  abstract init(): Promise<void>;
-  abstract setContext(ctx: Ctx, opts?: BaseCmdOptions, args?: unknown[]): Promise<void>;
-}
+// export abstract class AbstractCmd<Ctx extends ICtx = ICtx> {
+//   abstract init(): Promise<void>;
+//   abstract setContext(ctx: Ctx, opts?: CmdOptions, args?: unknown[]): Promise<void>;
+// }
 
 export type ArgOptions = {
   /** Positional arguments passed to the command */
-  args: string[];
+  args: CmdArgs;
 };
 
 /**
  * Standard command line options used across most commands.
  */
-export type GlobalOptions = BaseCmdOptions & {
+export type GlobalOptions = CmdOptions & {
   /** Log level threshold (e.g., 'info', 'debug', 'error') */
   logLevel: string;
   /** Shortcut to set logLevel to verbose */

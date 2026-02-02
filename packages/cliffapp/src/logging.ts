@@ -1,11 +1,26 @@
-import type { Command } from '@cliffy/command';
+import * as Cliffy from '@cliffy/command';
 import * as Log from '@epdoc/logger';
 import { _ } from '@epdoc/type';
+import * as colors from '@std/fmt/colors';
 import type { GlobalOptions, ICtx, Logger, MsgBuilder } from './types.ts';
 
 const REG = {
   levelType: new RegExp(/^level(:(icon|\d{1,2}|\-\d{1,2}))?$/),
+  logShow: new RegExp(/^(level(:(icon|\d+))?|package|reqId|utc|locale|elapsed|time|all)$/),
 };
+
+const logShowValues = [
+  'level',
+  'level:icon',
+  'level:int',
+  'package',
+  'reqId',
+  'utc',
+  'locale',
+  'elapsed',
+  'time',
+  'all',
+];
 
 /**
  * Adds standard @epdoc/logger logging options to a Cliffy command.
@@ -33,16 +48,20 @@ const REG = {
  * ```
  *
  * @param command - The Cliffy Command instance to add options to.
- * @param _ctx - The application context (used for type inference).
+ * @param ctx - The application context (used for type inference).
  * @returns The modified Command instance.
  */
-export function addLoggingOptions<C extends Command, M extends MsgBuilder, L extends Logger<M>>(
+export function addLoggingOptions<C extends Cliffy.Command, M extends MsgBuilder, L extends Logger<M>>(
   command: C,
-  _ctx: ICtx<M, L>,
+  ctx: ICtx<M, L>,
 ): C {
+  // Register enum type for log levels (equivalent to commander's .choices())
+  command.globalType('logLevel', new Cliffy.EnumType(ctx.logMgr.logLevels.names));
+  command.globalType('logShow', new Cliffy.EnumType(logShowValues));
+
   return command
     .globalOption(
-      '--log-level <level:string>',
+      '--log-level <level:logLevel>',
       'Set the threshold log output level.',
       {
         collect: false,
@@ -54,9 +73,27 @@ export function addLoggingOptions<C extends Command, M extends MsgBuilder, L ext
     .globalOption('-S, --spam', 'Shortcut for --log-level spam')
     .globalOption(
       '--log-show <show:string[]>',
-      'Enable log message output components.',
+      'Control which log properties are displayed. ' +
+        'Can comma separate ' +
+        colors.blue('level|level:icon|level:int|package|reqId|utc|locale|elapsed|time|all') +
+        '. E.g. ' +
+        colors.green('--log-show level,elapsed,package') +
+        ', or ' +
+        colors.green('--log-show all') +
+        ' or the equivalent ' +
+        colors.green('-A'),
       {
         separator: ',',
+        value: (val: string[], previous: string[] = []) => {
+          for (const choice of val) {
+            if (!REG.logShow.test(choice)) {
+              throw new Error(
+                `Invalid log-show value: ${choice}. Valid values: level, level:icon, level:INT, package, reqId, utc, locale, elapsed, time, all`,
+              );
+            }
+          }
+          return [...previous, ...val];
+        },
       },
     )
     .globalOption('-A, --log-show-all', 'Shortcut for --log-show all')
@@ -90,7 +127,7 @@ export function configureLogging<
   L extends Logger<M> = Logger<M>,
 >(
   ctx: ICtx<M, L>,
-  opts: GlobalOptions,
+  opts: Partial<GlobalOptions>,
 ): void {
   if (opts.dryRun) {
     ctx.dryRun = true;
@@ -99,9 +136,9 @@ export function configureLogging<
   let threshold: string | undefined;
   const logOptions: string[] = [];
 
-  if (opts.log) {
+  if (opts.logLevel) {
     threshold = opts.logLevel;
-    logOptions.push(`--log ${opts.log}`);
+    logOptions.push(`--log-level ${opts.logLevel}`);
   }
   if (opts.verbose) {
     threshold = 'verbose';

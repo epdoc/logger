@@ -1,10 +1,9 @@
 import { expect } from "@std/expect";
 import { describe, it } from "@std/testing/bdd";
-import { AbstractCmd } from "../src/abstract-cmd.ts";
-import { ICtx } from "../src/types.ts";
+import * as CliffApp from '../src/mod.ts';
 
 // Mock Context
-interface MockCtx extends ICtx {
+interface MockCtx extends CliffApp.ICtx {
   host?: string;
   isRefined?: boolean;
 }
@@ -13,23 +12,23 @@ const mockCtx: MockCtx = {
   log: {} as any,
   logMgr: {} as any,
   dryRun: false,
-  // pkg: { name: "test", version: "1.0.0", description: "blah blah" },
+  pkg: { name: "test", version: "1.0.0", description: "test package" },
   close: () => Promise.resolve(),
 };
 
 // Mock Commands
-class ChildCmd extends AbstractCmd<MockCtx> {
+class ChildCmd extends CliffApp.Command<MockCtx> {
   protected override setupOptions(): void {
     this.cmd.description("Child Command");
   }
 }
 
-class ParentCmd extends AbstractCmd<MockCtx> {
+class ParentCmd extends CliffApp.Command<MockCtx> {
   protected override subCommands = {
     child: ChildCmd,
   };
 
-  protected override refineContext(ctx: MockCtx): MockCtx {
+  protected override async deriveChildContext(ctx: MockCtx): Promise<MockCtx> {
     return { ...ctx, isRefined: true };
   }
 
@@ -38,10 +37,11 @@ class ParentCmd extends AbstractCmd<MockCtx> {
   }
 }
 
-describe("AbstractCmd", () => {
-  it("should instantiate and register subcommands declaratively", () => {
+describe("CliffApp.Command", () => {
+  it("should instantiate and register subcommands declaratively", async () => {
     const parent = new ParentCmd();
-    parent.init();
+    await parent.setContext(mockCtx);
+    await parent.init();
 
     expect(parent.cmd.getCommands().length).toBe(1);
     expect(parent.cmd.getCommand("child")).toBeDefined();
@@ -50,10 +50,10 @@ describe("AbstractCmd", () => {
     expect((parent as any).children[0]).toBeInstanceOf(ChildCmd);
   });
 
-  it("should propagate context recursively and allow refinement", () => {
+  it("should propagate context recursively and allow refinement", async () => {
     const parent = new ParentCmd();
-    parent.init();
-    parent.setContext(mockCtx);
+    await parent.setContext(mockCtx);
+    await parent.init();
 
     expect(parent.ctx.isRefined).toBe(true);
 
@@ -68,11 +68,11 @@ describe("AbstractCmd", () => {
 
   it("should call lifecycle hooks in order", () => {
     let callOrder: string[] = [];
-    class HookCmd extends AbstractCmd<MockCtx> {
+    class HookCmd extends CliffApp.Command<MockCtx> {
       protected override setupOptions() {
         callOrder.push("options");
       }
-      protected override setupGlobalAction() {
+      protected override configureGlobalHooks() {
         callOrder.push("global");
       }
       protected override setupSubcommands() {
