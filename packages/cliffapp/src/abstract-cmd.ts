@@ -1,5 +1,5 @@
 import { Command } from '@cliffy/command';
-import type { CommandNode, GenericOptions, ICtx, Logger, MsgBuilder, SubCommandsConfig } from './types.ts';
+import type { CommandNode, GenericOptions, ICtx, SubCommandsConfig } from './types.ts';
 
 /**
  * Base class for all commands, providing declarative subcommand management,
@@ -30,7 +30,7 @@ export abstract class AbstractCmd<Ctx extends ICtx = ICtx> {
    * Initializes the command by setting up options, subcommands, and actions.
    * This should be called once after instantiation.
    */
-  init(): void {
+  async init(): Promise<void> {
     this.setupOptions();
     this.setupGlobalAction();
 
@@ -41,7 +41,7 @@ export abstract class AbstractCmd<Ctx extends ICtx = ICtx> {
     this.cmd.globalAction(
       (async (opts: GenericOptions, ...args: unknown[]) => {
         if (this.#parentCtx) {
-          this.setContext(this.#parentCtx, opts, args);
+          await this.setContext(this.#parentCtx, opts, args);
         }
         if (userHandler) {
           await userHandler(opts, ...args);
@@ -51,24 +51,26 @@ export abstract class AbstractCmd<Ctx extends ICtx = ICtx> {
     );
 
     // Automatically instantiate and register subcommands
-    const subCommands = typeof this.subCommands === 'function' ? this.subCommands(this.ctx) : this.subCommands;
+    const subCommands = typeof this.subCommands === 'function' ? await this.subCommands(this.ctx) : this.subCommands;
 
-    for (const [name, Entry] of Object.entries(subCommands)) {
-      let child: AbstractCmd<Ctx>;
-      if (typeof Entry === 'function') {
-        child = new (Entry as new () => AbstractCmd<Ctx>)();
-      } else {
-        child = new ProxyCmd(Entry as CommandNode<Ctx>) as unknown as AbstractCmd<
-          Ctx
-        >;
-      }
+    if (subCommands) {
+      for (const [name, Entry] of Object.entries(subCommands)) {
+        let child: AbstractCmd<Ctx>;
+        if (typeof Entry === 'function') {
+          child = new (Entry as new () => AbstractCmd<Ctx>)();
+        } else {
+          child = new ProxyCmd(Entry as CommandNode<Ctx>) as unknown as AbstractCmd<
+            Ctx
+          >;
+        }
 
-      if (this.#ctx) {
-        child.setContext(this.#ctx);
+        if (this.#ctx) {
+          await child.setContext(this.#ctx);
+        }
+        await child.init();
+        this.children.push(child);
+        this.cmd.command(name, child.cmd);
       }
-      child.init();
-      this.children.push(child);
-      this.cmd.command(name, child.cmd);
     }
 
     this.setupSubcommands();
@@ -123,11 +125,11 @@ export abstract class AbstractCmd<Ctx extends ICtx = ICtx> {
    * @param opts - Options from the command line.
    * @param args - Positional arguments from the command line.
    */
-  setContext(ctx: Ctx, opts: GenericOptions = {}, args: unknown[] = []): void {
+  async setContext(ctx: Ctx, opts: GenericOptions = {}, args: unknown[] = []): Promise<void> {
     this.#parentCtx = ctx;
-    this.#ctx = this.refineContext(ctx, opts, args);
+    this.#ctx = await this.refineContext(ctx, opts, args);
     for (const child of this.children) {
-      child.setContext(this.#ctx, opts, args);
+      await child.setContext(this.#ctx, opts, args);
     }
   }
 
@@ -144,7 +146,7 @@ export abstract class AbstractCmd<Ctx extends ICtx = ICtx> {
     ctx: Ctx,
     _opts: GenericOptions,
     _args: unknown[],
-  ): Ctx {
+  ): Ctx | Promise<Ctx> {
     return ctx;
   }
 
@@ -195,13 +197,13 @@ export class ProxyCmd<Ctx extends ICtx = ICtx> extends AbstractCmd<Ctx> {
     }
   }
 
-  protected override refineContext(
+  protected override async refineContext(
     ctx: Ctx,
     opts: GenericOptions,
     args: unknown[],
-  ): Ctx {
+  ): Promise<Ctx> {
     if (this.node.refineContext) {
-      return this.node.refineContext(ctx, opts, args) as Ctx;
+      return await this.node.refineContext(ctx, opts, args) as Ctx;
     }
     return ctx;
   }

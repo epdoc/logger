@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.7] - 2026-02-02
+
+- Snapshot
+
 ## [0.1.4] - 2026-02-01
 
 - Added support for declarative command specification

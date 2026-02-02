@@ -9,8 +9,8 @@ export class CommandEngine<Ctx extends ICtx> {
 
   async run(node: CommandNode<Ctx>) {
     const proxy = new ProxyCmd(node);
-    proxy.setContext(this.initialCtx);
-    proxy.init();
+    await proxy.setContext(this.initialCtx);
+    await proxy.init();
     await proxy.cmd.parse(Deno.args);
   }
 }

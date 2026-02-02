@@ -1,7 +1,7 @@
 import type { Command } from '@cliffy/command';
 import * as Log from '@epdoc/logger';
 import { _ } from '@epdoc/type';
-import type { GlobalLogOptions, ICtx, Logger, MsgBuilder } from './types.ts';
+import type { GlobalOptions, ICtx, Logger, MsgBuilder } from './types.ts';
 
 const REG = {
   levelType: new RegExp(/^level(:(icon|\d{1,2}|\-\d{1,2}))?$/),
@@ -42,12 +42,16 @@ export function addLoggingOptions<C extends Command, M extends MsgBuilder, L ext
 ): C {
   return command
     .globalOption(
-      '--log <level:string>',
+      '--log-level <level:string>',
       'Set the threshold log output level.',
       {
         collect: false,
       },
     )
+    .globalOption('-v, --verbose', 'Shortcut for --log-level verbose')
+    .globalOption('-D, --debug', 'Shortcut for --log-level debug')
+    .globalOption('-T, --trace', 'Shortcut for --log-level trace')
+    .globalOption('-S, --spam', 'Shortcut for --log-level spam')
     .globalOption(
       '--log-show <show:string[]>',
       'Enable log message output components.',
@@ -55,12 +59,8 @@ export function addLoggingOptions<C extends Command, M extends MsgBuilder, L ext
         separator: ',',
       },
     )
+    .globalOption('-A, --log-show-all', 'Shortcut for --log-show all')
     .globalOption('--no-color', 'Do not show color in output')
-    .globalOption('-A, --showall', 'Shortcut for --log-show all')
-    .globalOption('-v, --verbose', 'Shortcut for --log verbose')
-    .globalOption('-D, --debug', 'Shortcut for --log debug')
-    .globalOption('-T, --trace', 'Shortcut for --log trace')
-    .globalOption('-S, --spam', 'Shortcut for --log spam')
     .globalOption('-n, --dry-run', 'Do not modify any existing data or files', {
       default: false,
     }) as unknown as C;
@@ -90,7 +90,7 @@ export function configureLogging<
   L extends Logger<M> = Logger<M>,
 >(
   ctx: ICtx<M, L>,
-  opts: GlobalLogOptions,
+  opts: GlobalOptions,
 ): void {
   if (opts.dryRun) {
     ctx.dryRun = true;
@@ -100,7 +100,7 @@ export function configureLogging<
   const logOptions: string[] = [];
 
   if (opts.log) {
-    threshold = opts.log;
+    threshold = opts.logLevel;
     logOptions.push(`--log ${opts.log}`);
   }
   if (opts.verbose) {
@@ -137,6 +137,10 @@ export function configureLogging<
 
   if (_.isBoolean(opts.color)) {
     show.color = opts.color;
+  }
+
+  if (_.isBoolean(opts.noColor)) {
+    show.color = !opts.noColor;
   }
 
   if (opts.showall) {
