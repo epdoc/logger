@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/demo-cliffy",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "exports": "./main.ts",
   "imports": {
     "@cliffy/command": "jsr:@cliffy/command@1.0.0-rc.8",
