@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/loglevels",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Log levels",
   "author": {
     "name": "James Pravetz",
@@ -38,7 +38,7 @@
   },
   "imports": {
     "@epdoc/type": "jsr:@epdoc/type@^1.2.4",
-    "@std/assert": "jsr:@std/assert@^1.0.17",
+    "@std/assert": "jsr:@std/assert@^1.0.18",
     "@std/fmt": "jsr:@std/fmt@^1.0.9",
     "@std/testing": "jsr:@std/testing@^1.0.17"
   }
