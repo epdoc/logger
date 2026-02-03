@@ -3,7 +3,7 @@ import { describe, it } from "@std/testing/bdd";
 import * as CliffApp from '../src/mod.ts';
 
 // Mock Context
-interface MockCtx extends CliffApp.ICtx {
+interface MockCtx extends CliffApp.Ctx.ICtx {
   host?: string;
   isRefined?: boolean;
 }

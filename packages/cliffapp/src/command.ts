@@ -1,5 +1,6 @@
 import { Command as CliffyCommand } from '@cliffy/command';
-import type * as Base from './types.ts';
+import type * as Ctx from './context.ts';
+import type * as CliffApp from './types.ts';
 
 /**
  * Unified command class supporting both class-based and declarative patterns.
@@ -10,7 +11,7 @@ import type * as Base from './types.ts';
  * - Subcommand registration and initialization
  * - Integration with Cliffy's parsing and execution model
  *
- * @template Ctx - The application context type, must extend Base.ICtx
+ * @template Ctx - The application context type, must extend CliffApp.ICtx
  *
  * @example Class-based usage:
  * ```typescript
@@ -30,27 +31,27 @@ import type * as Base from './types.ts';
  * });
  * ```
  */
-export class Command<Ctx extends Base.ICtx = Base.ICtx> {
+export class Command<Context extends Ctx.ICtx = Ctx.ICtx> {
   /** The Cliffy Command instance for this command. */
   readonly cmd: CliffyCommand = new CliffyCommand();
 
   /**
    * Declarative mapping of subcommand names to their class constructors
-   * or purely declarative Base.CommandNode objects.
+   * or purely declarative CliffApp.CommandNode objects.
    */
-  protected subCommands: Base.SubCommandsConfig<Ctx> = {};
+  protected subCommands: CliffApp.SubCommandsConfig<Context> = {};
 
   /** Active instances of child commands. */
-  protected children: Command<Ctx>[] = [];
+  protected children: Command<Context>[] = [];
 
   /** Optional declarative node configuration */
-  private node?: Base.CommandNode<Ctx>;
+  private node?: CliffApp.CommandNode<Context>;
 
   /** Stored parent context to allow re-refinement after parsing. */
-  #parentCtx?: Ctx;
+  #parentCtx?: Context;
 
   /** The current context for this command. */
-  #ctx?: Ctx;
+  #ctx?: Context;
 
   /**
    * Creates a new Command instance.
@@ -73,7 +74,7 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
    * });
    * ```
    */
-  constructor(node?: Base.CommandNode<Ctx>) {
+  constructor(node?: CliffApp.CommandNode<Context>) {
     this.node = node;
     if (node?.subCommands) {
       this.subCommands = node.subCommands;
@@ -110,7 +111,7 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
     // deno-lint-ignore no-explicit-any
     const userHandler = (this.cmd as any)['globalActionHandler'];
     this.cmd.globalAction(
-      (async (opts: Base.CmdOptions, ...args: Base.CmdArgs) => {
+      (async (opts: CliffApp.CmdOptions, ...args: CliffApp.CmdArgs) => {
         if (this.#parentCtx) {
           await this.setContext(this.#parentCtx, opts, args);
         }
@@ -126,11 +127,11 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
 
     if (subCommands) {
       for (const [name, Entry] of Object.entries(subCommands)) {
-        let child: Command<Ctx>;
+        let child: Command<Context>;
         if (typeof Entry === 'function') {
-          child = new (Entry as new () => Command<Ctx>)();
+          child = new (Entry as new () => Command<Context>)();
         } else {
-          child = new Command(Entry as Base.CommandNode<Ctx>);
+          child = new Command(Entry as CliffApp.CommandNode<Context>);
         }
 
         if (this.#ctx) {
@@ -160,7 +161,7 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
    * }
    * ```
    */
-  get ctx(): Ctx {
+  get ctx(): Context {
     if (!this.#ctx) {
       throw new Error(
         `Context not set for command: ${this.cmd.getName() || 'root'}`,
@@ -170,32 +171,32 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
   }
 
   /** Convenience getter for the logger. */
-  get log(): Base.Logger {
+  get log(): Ctx.Logger {
     return this.ctx.log;
   }
 
   /** Convenience getter for debug logging. */
-  get debug(): Base.MsgBuilder {
+  get debug(): Ctx.MsgBuilder {
     return this.ctx.log.debug;
   }
 
   /** Convenience getter for verbose logging. */
-  get verbose(): Base.MsgBuilder {
+  get verbose(): Ctx.MsgBuilder {
     return this.ctx.log.verbose;
   }
 
   /** Convenience getter for info logging. */
-  get info(): Base.MsgBuilder {
+  get info(): Ctx.MsgBuilder {
     return this.ctx.log.info;
   }
 
   /** Convenience getter for warn logging. */
-  get warn(): Base.MsgBuilder {
+  get warn(): Ctx.MsgBuilder {
     return this.ctx.log.warn;
   }
 
   /** Convenience getter for error logging. */
-  get error(): Base.MsgBuilder {
+  get error(): Ctx.MsgBuilder {
     return this.ctx.log.error;
   }
 
@@ -225,7 +226,7 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
    * }
    * ```
    */
-  async setContext(ctx: Ctx, opts: Base.CmdOptions = {}, args: Base.CmdArgs = []): Promise<void> {
+  async setContext(ctx: Context, opts: CliffApp.CmdOptions = {}, args: CliffApp.CmdArgs = []): Promise<void> {
     this.#parentCtx = ctx;
     this.#ctx = await this.deriveChildContext(ctx, opts, args);
 
@@ -291,12 +292,12 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
    * ```
    */
   protected async deriveChildContext(
-    ctx: Ctx,
-    opts: Base.CmdOptions,
-    args: Base.CmdArgs,
-  ): Promise<Ctx> {
+    ctx: Context,
+    opts: CliffApp.CmdOptions,
+    args: CliffApp.CmdArgs,
+  ): Promise<Context> {
     if (this.node?.refineContext) {
-      return await this.node.refineContext(ctx, opts, args) as Ctx;
+      return await this.node.refineContext(ctx, opts, args) as Context;
     }
     return ctx;
   }
@@ -446,7 +447,7 @@ export class Command<Ctx extends Base.ICtx = Base.ICtx> {
   protected setupAction(): void {
     if (this.node?.action) {
       this.cmd.action(async (opts: unknown, ...args: unknown[]) => {
-        await this.node!.action!(this.ctx, opts as Base.CmdOptions, ...args);
+        await this.node!.action!(this.ctx, opts as CliffApp.CmdOptions, ...args);
       });
     }
   }

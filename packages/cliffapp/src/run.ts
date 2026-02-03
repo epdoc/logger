@@ -1,6 +1,7 @@
 import type * as Cliffy from '@cliffy/command';
+import type * as Ctx from './context.ts';
 import { configureLogging } from './logging.ts';
-import type * as Base from './types.ts';
+import type * as CliffApp from './types.ts';
 
 /**
  * Standardized application runner with complete lifecycle management.
@@ -63,8 +64,8 @@ import type * as Base from './types.ts';
  * @param options - Configuration options for the runner
  * @param options.noExit - If true, don't call Deno.exit() (useful for testing)
  */
-export async function run<M extends Base.MsgBuilder, L extends Base.Logger<M>>(
-  ctx: Base.ICtx<M, L>,
+export async function run<M extends Ctx.MsgBuilder, L extends Ctx.Logger>(
+  ctx: Ctx.ICtx<M, L>,
   command: Cliffy.Command,
   args: string[] = Deno.args,
   options: { noExit?: boolean } = {},
@@ -97,7 +98,7 @@ export async function run<M extends Base.MsgBuilder, L extends Base.Logger<M>>(
     // We use a global action to configure logging once the options are parsed.
     // In Cliffy, global actions run before subcommand actions.
     command.globalAction(
-      ((opts: Base.GlobalOptions) => {
+      ((opts: CliffApp.GlobalOptions) => {
         configureLogging(ctx, opts);
       }) as Cliffy.ActionHandler,
     );
@@ -107,7 +108,7 @@ export async function run<M extends Base.MsgBuilder, L extends Base.Logger<M>>(
     exitCode = 1;
     const t1 = performance.now() - t0;
     const err = error instanceof Error ? error : new Error(String(error));
-    const isSilent = (err as Base.ISilentError).silent === true;
+    const isSilent = (err as CliffApp.ISilentError).silent === true;
 
     if (isSilent) {
       ctx.log.nodent().info.h1('Application').error(err.message).ewt(t1);

@@ -364,7 +364,7 @@
         "dependencies": [
           "jsr:@cliffy/command@1.0.0-rc.8",
           "jsr:@epdoc/logger@^1003.2.8",
-          "jsr:@epdoc/msgbuilder@~0.1.0-alpha.7",
+          "jsr:@epdoc/msgbuilder@0.1",
           "jsr:@std/fmt@^1.0.8"
         ]
       },

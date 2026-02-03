@@ -65,7 +65,9 @@
  */
 
 export * from './command.ts';
+export * as Ctx from './context.ts';
 export * from './logging.ts';
+export type { DenoPkg } from './pkg-type.ts';
 export * from './run.ts';
 export * from './silent-error.ts';
 export * from './types.ts';

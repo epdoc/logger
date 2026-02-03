@@ -5,9 +5,9 @@ import { describe, it } from "@std/testing/bdd";
 import * as CliffApp from '../src/mod.ts';
 
 describe("cliffapp", () => {
-  const createCtx = async (): Promise<CliffApp.ICtx> => {
+  const createCtx = async (): Promise<CliffApp.Ctx.ICtx> => {
     const logMgr = new LogManager();
-    const log = await logMgr.getLogger<CliffApp.Logger>({ pkg: "test" });
+    const log = await logMgr.getLogger<CliffApp.Ctx.Logger>({ pkg: "test" });
     return {
       log,
       logMgr: logMgr,

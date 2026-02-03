@@ -2,7 +2,8 @@ import * as Cliffy from '@cliffy/command';
 import * as Log from '@epdoc/logger';
 import { _ } from '@epdoc/type';
 import * as colors from '@std/fmt/colors';
-import type { GlobalOptions, ICtx, Logger, MsgBuilder } from './types.ts';
+import type * as Ctx from './context.ts';
+import type * as CliffApp from './types.ts';
 
 const REG = {
   levelType: new RegExp(/^level(:(icon|\d{1,2}|\-\d{1,2}))?$/),
@@ -80,9 +81,9 @@ const logShowValues = [
  * @param ctx - The application context (used for type inference).
  * @returns The modified Command instance.
  */
-export function addLoggingOptions<C extends Cliffy.Command, M extends MsgBuilder, L extends Logger<M>>(
+export function addLoggingOptions<C extends Cliffy.Command, M extends Ctx.MsgBuilder, L extends Ctx.Logger>(
   command: C,
-  ctx: ICtx<M, L>,
+  ctx: Ctx.ICtx<M, L>,
 ): C {
   // Register enum type for log levels (equivalent to commander's .choices())
   command.globalType('logLevel', new Cliffy.EnumType(ctx.logMgr.logLevels.names));
@@ -152,11 +153,11 @@ export function addLoggingOptions<C extends Cliffy.Command, M extends MsgBuilder
  * @param opts - The parsed global log options.
  */
 export function configureLogging<
-  M extends MsgBuilder = MsgBuilder,
-  L extends Logger<M> = Logger<M>,
+  M extends Ctx.MsgBuilder = Ctx.MsgBuilder,
+  L extends Ctx.Logger = Ctx.Logger,
 >(
-  ctx: ICtx<M, L>,
-  opts: Partial<GlobalOptions>,
+  ctx: Ctx.ICtx<M, L>,
+  opts: Partial<CliffApp.GlobalOptions>,
 ): void {
   if (opts.dryRun) {
     ctx.dryRun = true;

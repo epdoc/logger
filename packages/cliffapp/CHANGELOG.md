@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.5] - 2026-02-03
+
+- Defined an actual Context in context.ts that apps can use rather than making their own
+
 ## [0.2.4] - 2026-02-03
 
 - Fixed --log-show-all flag implementation
