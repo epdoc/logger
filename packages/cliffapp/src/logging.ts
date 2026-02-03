@@ -209,7 +209,7 @@ export function configureLogging<
     show.color = !opts.noColor;
   }
 
-  if (opts.showall) {
+  if (opts.logShowAll) {
     setAllShow(show);
   } else if (opts.logShow) {
     if (_.isNonEmptyArray(opts.logShow)) {
