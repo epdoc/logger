@@ -1,7 +1,11 @@
 {
   "name": "@epdoc/cliffapp",
-  "version": "0.2.6",
-  "exports": "./src/mod.ts",
+  "version": "0.2.7",
+  "exports": {
+    ".": "./src/mod.ts",
+    "./context": "./src/context.ts",
+    "./types": "./src/types.ts"
+  },
   "imports": {
     "@cliffy/command": "jsr:@cliffy/command@1.0.0-rc.8",
     "@epdoc/logger": "jsr:@epdoc/logger@^1003.2.11",
