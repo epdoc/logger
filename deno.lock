@@ -8,6 +8,7 @@
     "jsr:@epdoc/datetime@^2.0.14": "2.0.14",
     "jsr:@epdoc/duration@~0.3.7": "0.3.7",
     "jsr:@epdoc/fs@^1.2.14": "1.2.16",
+    "jsr:@epdoc/logger@^1003.2.10": "1003.2.10",
     "jsr:@epdoc/logger@^1003.2.9": "1003.2.9",
     "jsr:@epdoc/loglevels@^0.0.14": "0.0.14",
     "jsr:@epdoc/msgbuilder@0.1": "0.1.0",
@@ -108,6 +109,17 @@
         "jsr:@epdoc/string",
         "jsr:@epdoc/type",
         "jsr:@std/assert@^1.0.17",
+        "jsr:@std/fmt@^1.0.9"
+      ]
+    },
+    "@epdoc/logger@1003.2.10": {
+      "integrity": "3643e2ec8d37579d992be3c27afa6aef05f2e7f9eae0ffba283a600de748566c",
+      "dependencies": [
+        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/duration",
+        "jsr:@epdoc/string",
+        "jsr:@epdoc/type",
+        "jsr:@std/assert@^1.0.18",
         "jsr:@std/fmt@^1.0.9"
       ]
     },
@@ -353,7 +365,7 @@
       "packages/cliffapp": {
         "dependencies": [
           "jsr:@cliffy/command@1.0.0-rc.8",
-          "jsr:@epdoc/logger@^1003.2.9",
+          "jsr:@epdoc/logger@^1003.2.10",
           "jsr:@epdoc/msgbuilder@0.1",
           "jsr:@epdoc/type@^1.2.4",
           "jsr:@std/expect@^1.0.17",
