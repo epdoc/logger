@@ -1,37 +1,57 @@
 import { Command as CliffyCommand } from '@cliffy/command';
+import type { GlobalOptions } from '@epdoc/cliffapp';
 import type * as Ctx from './context.ts';
+import { addLoggingOptions, configureLogging } from './logging.ts';
 import type * as CliffApp from './types.ts';
 
 /**
- * Unified command class supporting both class-based and declarative patterns.
+ * Abstract command class supporting both class-based and declarative patterns.
  *
- * Handles the complete command lifecycle including:
- * - Option declaration and parsing
- * - Context propagation and refinement down the command tree
+ * Commands automatically detect whether they are root commands (requiring logging options)
+ * or subcommands (inheriting context from parent) based on the presence of the
+ * `_isSubcommand` marker in options.
+ *
+ * Key features:
+ * - Automatic root/subcommand detection
+ * - Progressive context refinement down the command tree
+ * - Automatic logging configuration for root commands
  * - Subcommand registration and initialization
  * - Integration with Cliffy's parsing and execution model
  *
- * @template Ctx - The application context type, must extend CliffApp.ICtx
+ * @template Context - The application context type, must extend CliffApp.ICtx
  *
- * @example Class-based usage:
+ * @example Class-based command:
  * ```typescript
  * class MyCommand extends Command<MyContext> {
- *   protected override setupOptions(): void {
- *     this.cmd.description("My command").option("-f, --force", "Force action");
+ *   protected setupCommandOptions(): void {
+ *     this.cmd
+ *       .description("My command")
+ *       .option("-f, --force", "Force action")
+ *       .arguments("<file>");
+ *   }
+ *
+ *   protected action(opts: CmdOptions, ...args: string[]): Promise<void> {
+ *     // Logging automatically configured for root commands
+ *     const [file] = args;
+ *     this.info.text(`Processing ${file}`).emit();
  *   }
  * }
  * ```
  *
- * @example Declarative usage:
+ * @example Declarative command:
  * ```typescript
  * const cmd = new Command({
  *   description: "My command",
  *   options: { "--force": "Force action" },
- *   action: (ctx, opts) => console.log("Hello!")
+ *   action: (ctx, opts) => ctx.log.info.text("Hello!").emit()
  * });
  * ```
  */
-export class Command<Context extends Ctx.ICtx = Ctx.ICtx> {
+export class Command<
+  Context extends Ctx.ICtx = Ctx.ICtx,
+  SubContext extends Context = Context,
+  Opts extends CliffApp.CmdOptions = CliffApp.CmdOptions,
+> {
   /** The Cliffy Command instance for this command. */
   readonly cmd: CliffyCommand = new CliffyCommand();
 
@@ -53,6 +73,51 @@ export class Command<Context extends Ctx.ICtx = Ctx.ICtx> {
   /** The current context for this command. */
   #ctx?: Context;
 
+  /** Whether this command is acting as root */
+  #isRoot: boolean = false;
+
+  /**
+   * Abstract action method that command implementers must define.
+   *
+   * The framework automatically handles logging configuration for root commands,
+   * so implementers don't need to call CliffApp.configureLogging() manually.
+   *
+   * @param opts - Parsed command line options
+   * @param args - Positional arguments from the command line
+   *
+   * @example
+   * ```typescript
+   * protected action(opts: CmdOptions, ...args: string[]): Promise<void> {
+   *   const [file] = args;
+   *
+   *   if (!file) {
+   *     this.warn.text('No file specified').emit();
+   *     return;
+   *   }
+   *
+   *   if (this.ctx.dryRun) {
+   *     this.info.text(`Would process: ${file}`).emit();
+   *     return;
+   *   }
+   *
+   *   await this.processFile(file, opts);
+   * }
+   * ```
+   */
+  /**
+   * Default action method that shows help.
+   *
+   * Override this method in subclasses to define custom behavior.
+   * The framework automatically handles logging configuration for root commands.
+   *
+   * @param opts - Parsed command line options
+   * @param args - Positional arguments from the command line
+   */
+  protected action(opts: Opts, ...args: string[]): Promise<void> | void {
+    // Default behavior: show help
+    this.cmd.showHelp();
+  }
+
   /**
    * Creates a new Command instance.
    *
@@ -63,7 +128,7 @@ export class Command<Context extends Ctx.ICtx = Ctx.ICtx> {
    * @example Class-based (no node):
    * ```typescript
    * const cmd = new Command();
-   * // Override setupOptions(), setupAction(), etc.
+   * // Override setupCommandOptions(), action(), etc.
    * ```
    *
    * @example Declarative (with node):
@@ -131,11 +196,14 @@ export class Command<Context extends Ctx.ICtx = Ctx.ICtx> {
         if (typeof Entry === 'function') {
           child = new (Entry as new () => Command<Context>)();
         } else {
+          // Declarative CommandNode - create concrete implementation
           child = new Command(Entry as CliffApp.CommandNode<Context>);
         }
 
         if (this.#ctx) {
-          await child.setContext(this.#ctx);
+          // Mark child as subcommand when setting context
+          const subcommandOpts = { ...{}, _isSubcommand: true };
+          await child.setContext(this.#ctx, subcommandOpts);
         }
         await child.init();
         this.children.push(child);
@@ -228,6 +296,10 @@ export class Command<Context extends Ctx.ICtx = Ctx.ICtx> {
    */
   async setContext(ctx: Context, opts: CliffApp.CmdOptions = {}, args: CliffApp.CmdArgs = []): Promise<void> {
     this.#parentCtx = ctx;
+
+    // Determine if this command should act as root
+    this.#isRoot = this.#determineIsRoot(opts);
+
     this.#ctx = await this.deriveChildContext(ctx, opts, args);
 
     // Handle context-dependent options for declarative nodes
@@ -252,6 +324,14 @@ export class Command<Context extends Ctx.ICtx = Ctx.ICtx> {
     for (const child of this.children) {
       await child.setContext(this.#ctx, opts, args);
     }
+  }
+
+  /**
+   * Determine if this command should act as root (top-level with logging options).
+   */
+  #determineIsRoot(opts: CliffApp.CmdOptions): boolean {
+    // Root commands don't have the subcommand marker
+    return !opts._isSubcommand;
   }
 
   /**
@@ -295,11 +375,11 @@ export class Command<Context extends Ctx.ICtx = Ctx.ICtx> {
     ctx: Context,
     opts: CliffApp.CmdOptions,
     args: CliffApp.CmdArgs,
-  ): Promise<Context> {
+  ): Promise<SubContext> {
     if (this.node?.refineContext) {
-      return await this.node.refineContext(ctx, opts, args) as Context;
+      return await this.node.refineContext(ctx, opts, args) as SubContext;
     }
-    return ctx;
+    return ctx as SubContext;
   }
 
   /**
@@ -332,7 +412,38 @@ export class Command<Context extends Ctx.ICtx = Ctx.ICtx> {
    * ```
    */
   protected setupOptions(): void {
+    // Setup command-specific options first
+    this.setupCommandOptions();
+
+    // Add logging options only for root commands
+    if (this.#shouldAddLoggingOptions()) {
+      addLoggingOptions(this.cmd, this.ctx);
+    }
+  }
+
+  /**
+   * Lifecycle hook to configure command-specific options, description, and arguments.
+   *
+   * Override this method to define your command's interface. The framework will
+   * automatically add logging options for root commands after this method runs.
+   *
+   * Note: This is called before context is fully available, so only declare static
+   * options here. Context-dependent options should be handled in deriveChildContext.
+   *
+   * @example
+   * ```typescript
+   * protected override setupCommandOptions(): void {
+   *   this.cmd
+   *     .description('Process files with custom logic')
+   *     .option('-f, --force', 'Force the operation')
+   *     .option('--batch-size <size:number>', 'Batch size', { default: 100 })
+   *     .arguments('<files...>');
+   * }
+   * ```
+   */
+  protected setupCommandOptions(): void {
     if (this.node) {
+      this.log.spam.text('Adding options from CommandNode definitions').emit();
       this.cmd.description(this.node.description);
       if (this.node.version) this.cmd.version(this.node.version);
       if (this.node.arguments) this.cmd.arguments(this.node.arguments);
@@ -354,6 +465,13 @@ export class Command<Context extends Ctx.ICtx = Ctx.ICtx> {
         });
       }
     }
+  }
+
+  /**
+   * Check if logging options should be added to this command.
+   */
+  #shouldAddLoggingOptions(): boolean {
+    return this.#isRoot;
   }
 
   /**
@@ -411,44 +529,29 @@ export class Command<Context extends Ctx.ICtx = Ctx.ICtx> {
   /**
    * Lifecycle hook to configure the primary action for this command.
    *
-   * This defines what happens when the command is executed. For class-based
-   * commands, override this method to define your command's behavior.
-   * For declarative commands, this is handled automatically from the CommandNode.
+   * This method is called automatically by the framework and wraps the user's
+   * abstract action() method with automatic logging configuration for root commands.
    *
-   * @example Simple action:
+   * Users should implement the abstract action() method instead of overriding this.
+   *
+   * @example User implements action(), not setupAction():
    * ```typescript
-   * protected override setupAction(): void {
-   *   this.cmd.action((opts, ...args) => {
-   *     this.ctx.log.info.text(`Hello ${opts.name || 'World'}!`).emit();
-   *   });
-   * }
-   * ```
-   *
-   * @example Complex action with validation:
-   * ```typescript
-   * protected override setupAction(): void {
-   *   this.cmd.action(async (opts, ...args) => {
-   *     const [target] = args as [string];
-   *
-   *     if (!target) {
-   *       throw new Error('Target is required');
-   *     }
-   *
-   *     if (this.ctx.dryRun) {
-   *       this.ctx.log.info.text(`Would process: ${target}`).emit();
-   *       return;
-   *     }
-   *
-   *     await this.processTarget(target, opts);
-   *   });
+   * protected action(opts: CmdOptions, ...args: string[]): Promise<void> {
+   *   // Framework has already configured logging if this is a root command
+   *   const [file] = args;
+   *   this.info.text(`Processing ${file}`).emit();
    * }
    * ```
    */
   protected setupAction(): void {
-    if (this.node?.action) {
-      this.cmd.action(async (opts: unknown, ...args: unknown[]) => {
-        await this.node!.action!(this.ctx, opts as CliffApp.CmdOptions, ...args);
-      });
-    }
+    this.cmd.action(async (opts: unknown, ...args: unknown[]) => {
+      // Configure logging only for root commands
+      if (this.#isRoot) {
+        configureLogging(this.ctx, opts as GlobalOptions);
+      }
+
+      // Call user's action method
+      await this.action(opts as Opts, ...args as string[]);
+    });
   }
 }

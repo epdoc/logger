@@ -1,13 +1,9 @@
 {
   "name": "@epdoc/cliffapp",
-  "version": "0.2.7",
-  "exports": {
-    ".": "./src/mod.ts",
-    "./context": "./src/context.ts",
-    "./types": "./src/types.ts"
-  },
+  "version": "0.2.8",
+  "exports": "./src/mod.ts",
   "imports": {
-    "@cliffy/command": "jsr:@cliffy/command@1.0.0-rc.8",
+    "@cliffy/command": "jsr:@jpravetz/command@1.0.0-rc.9-fix.1",
     "@epdoc/logger": "jsr:@epdoc/logger@^1003.2.11",
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.1",
     "@std/expect": "jsr:@std/expect@^1.0.17",

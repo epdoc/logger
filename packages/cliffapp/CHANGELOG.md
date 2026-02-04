@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.8] - 2026-02-04
+
+- Final commit of work until deno-cliffy is stable and fixes their option parsing bugs
+
 ## [0.2.7] - 2026-02-03
 
 - Updated dependencies

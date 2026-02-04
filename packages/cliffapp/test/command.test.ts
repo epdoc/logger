@@ -10,7 +10,11 @@ interface MockCtx extends CliffApp.Ctx.ICtx {
 
 const mockCtx: MockCtx = {
   log: {} as any,
-  logMgr: {} as any,
+  logMgr: {
+    logLevels: {
+      names: ['error', 'warn', 'info', 'debug', 'trace']
+    }
+  } as any,
   dryRun: false,
   pkg: { name: "test", version: "1.0.0", description: "test package" },
   close: () => Promise.resolve(),
@@ -18,8 +22,12 @@ const mockCtx: MockCtx = {
 
 // Mock Commands
 class ChildCmd extends CliffApp.Command<MockCtx> {
-  protected override setupOptions(): void {
+  protected override setupCommandOptions(): void {
     this.cmd.description("Child Command");
+  }
+
+  protected action(): void {
+    // Test action implementation
   }
 }
 
@@ -32,8 +40,12 @@ class ParentCmd extends CliffApp.Command<MockCtx> {
     return { ...ctx, isRefined: true };
   }
 
-  protected override setupOptions(): void {
+  protected override setupCommandOptions(): void {
     this.cmd.description("Parent Command");
+  }
+
+  protected action(): void {
+    // Test action implementation
   }
 }
 
@@ -80,6 +92,9 @@ describe("CliffApp.Command", () => {
       }
       protected override setupAction() {
         callOrder.push("action");
+      }
+      protected action(): void {
+        // Test action implementation
       }
     }
 
