@@ -6,7 +6,7 @@
  */
 
 import * as Commander from 'commander';
-import type { Command } from './cmd-old.ts';
+import type { BaseCommand } from './cmd-abstract.ts';
 
 /**
  * Fluent builder for Commander.js options with method chaining
@@ -130,7 +130,9 @@ export class FluentOptionBuilder<T> {
    * @returns The original command instance
    */
   emit(): T {
-    (this.#command as Command).addOption(this.#option);
+    // Access the commander property if it exists (BaseCommand), otherwise assume it's a Commander.Command
+    const cmd = (this.#command as { commander?: Commander.Command }).commander || (this.#command as Commander.Command);
+    cmd.addOption(this.#option);
     return this.#command;
   }
 }

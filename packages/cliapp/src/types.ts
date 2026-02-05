@@ -11,8 +11,10 @@ import type { Dict } from '@epdoc/type';
 // Clean imports - respecting circular dependency separation
 export type { Context, ICtx } from './context.ts';
 export type { DenoPkg } from './pkg-type.ts';
+export type { BaseCommand } from './cmd-abstract.ts';
 
 // Local imports for use in this file
+import type { BaseCommand } from './cmd-abstract.ts';
 import type { ICtx } from './context.ts';
 import type { DenoPkg } from './pkg-type.ts';
 
@@ -101,6 +103,8 @@ export interface CommandNode<Context extends ICtx = ICtx> {
   action?: (ctx: Context, opts: CmdOptions, ...args: CmdArgs) => Promise<void> | void;
   /** Context refinement function for transforming parent context to child context */
   refineContext?: (ctx: Context, opts: CmdOptions, args: CmdArgs) => Promise<Context> | Context;
+  /** Hydrate context with parsed options */
+  hydrate?: (ctx: Context, opts: CmdOptions) => void;
   /** Subcommands */
   subCommands?: Record<string, CommandConstructor<Context> | CommandNode<Context>>;
 }
@@ -109,5 +113,5 @@ export interface CommandNode<Context extends ICtx = ICtx> {
  * Constructor type for Command classes
  */
 export interface CommandConstructor<Context extends ICtx = ICtx> {
-  new (pkg: DenoPkg, node?: CommandNode<Context>): any; // Use any to avoid circular reference
+  new (initialContext?: Context): BaseCommand<Context, Context>;
 }

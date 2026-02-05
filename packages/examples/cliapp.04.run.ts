@@ -1,4 +1,5 @@
 import * as CliApp from '../cliapp/src/mod.ts';
+import * as Log from '../logger/src/mod.ts';
 import pkg from './deno.json' with { type: 'json' };
 
 // Define your contexts
@@ -9,15 +10,15 @@ class RootContext extends CliApp.Ctx.Context {
 class ChildContext extends RootContext {
   processedFiles = 0;
 
-  constructor(parent: RootContext, params?: CliApp.Log.IGetChildParams) {
+  constructor(parent: RootContext, params?: Log.IGetChildParams) {
     super(parent, params);
     // Inherit custom properties from parent
     this.debugMode = parent.debugMode;
   }
 }
 
-type RootOptions = CliApp.LogOptions & { debugMode: boolean };
-type SubOptions = { force: boolean };
+type RootOptions = CliApp.LogOptions & { rootOption: boolean };
+type SubOptions = { subOption: boolean };
 
 // Define your commands using BaseCommand
 class RootCommand extends CliApp.BaseCommand<RootContext, RootContext, RootOptions> {
@@ -32,7 +33,7 @@ class RootCommand extends CliApp.BaseCommand<RootContext, RootContext, RootOptio
   }
 
   defineOptions(): void {
-    this.commander.option('--debug-mode', 'Enable debug mode');
+    this.commander.option('--root-option', 'Example root command option');
   }
 
   createContext(parent?: RootContext): RootContext {
@@ -41,7 +42,7 @@ class RootCommand extends CliApp.BaseCommand<RootContext, RootContext, RootOptio
   }
 
   hydrateContext(options: RootOptions): void {
-    this.ctx.debugMode = options.debugMode;
+    this.ctx.debugMode = options.rootOption;
   }
 
   execute(_opts: RootOptions, _args: CliApp.CmdArgs): void {
@@ -62,7 +63,7 @@ class SubCommand extends CliApp.BaseCommand<ChildContext, RootContext, SubOption
 
   defineOptions(): void {
     this.commander.argument('<files...>', 'Files to process');
-    this.commander.option('-f, --force', 'Force processing');
+    this.commander.option('--sub-option', 'Example subcommand option');
   }
 
   createContext(parent?: RootContext): ChildContext {
@@ -81,9 +82,9 @@ class SubCommand extends CliApp.BaseCommand<ChildContext, RootContext, SubOption
 
     this.ctx.log.info.h1('Processing:').emit();
     this.ctx.log.indent();
-    this.ctx.log.info.label('Force:').value(opts.force).emit();
+    this.ctx.log.info.label('Sub option:').value(opts.subOption).emit();
     this.ctx.log.info.label('Files:').count(files.length).value('file').emit();
-    this.ctx.log.debug.label('Debug mode:').value(this.ctx.debugMode).emit();
+    this.ctx.log.debug.label('Root option (from parent):').value(this.ctx.debugMode).emit();
     this.ctx.log.outdent();
 
     // Process files...
@@ -99,5 +100,5 @@ if (import.meta.main) {
 
   const rootCmd = new RootCommand(initialCtx);
 
-  await CliApp.run(initialCtx, rootCmd.commander);
+  await CliApp.run(initialCtx, rootCmd);
 }

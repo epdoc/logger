@@ -6,7 +6,7 @@
 
 // Core functionality
 export { BaseCommand } from './cmd-abstract.ts';
-export { DeclarativeCommand } from './cmd-declarative.ts';
+export { createCommand } from './cmd-factory.ts';
 export { Context, type ICtx } from './context.ts';
 export { FluentOptionBuilder } from './option.ts';
 

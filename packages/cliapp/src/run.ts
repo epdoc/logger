@@ -7,9 +7,8 @@
 
 import * as _ from '@epdoc/type';
 import * as Commander from 'commander';
-import type { Command as CliAppCommand } from './cmd-old.ts';
-import type { CmdOptions, ICtx, ISilentError, LogOptions } from './types.ts';
-import { configureLogging } from './utils.ts';
+import type { BaseCommand } from './cmd-abstract.ts';
+import type { ICtx, ISilentError } from './types.ts';
 
 /**
  * Runs a CLI application with comprehensive lifecycle management
@@ -60,23 +59,15 @@ export async function run(
  * await run(ctx, cmd); // Automatic logging configuration
  * ```
  */
-export async function run<
-  Context extends ICtx,
-  Options extends CmdOptions,
-  DerivedContext extends Context,
->(
+export async function run(
   ctx: ICtx,
-  command: CliAppCommand<Context, Options, DerivedContext>,
+  command: BaseCommand<ICtx, ICtx>,
   options?: { noExit?: boolean },
 ): Promise<void>;
 
-export async function run<
-  Context extends ICtx = ICtx,
-  Options extends CmdOptions = CmdOptions,
-  DerivedContext extends Context = Context,
->(
+export async function run(
   ctx: ICtx,
-  appFnOrCommand: (() => Promise<unknown>) | CliAppCommand<Context, Options, DerivedContext>,
+  appFnOrCommand: (() => Promise<unknown>) | BaseCommand<ICtx, ICtx>,
   options: { noExit?: boolean } = {},
 ): Promise<void> {
   const t0 = performance.now();
@@ -105,16 +96,8 @@ export async function run<
       // Original function-based approach
       await appFnOrCommand();
     } else {
-      // Enhanced Command-based approach with automatic logging configuration
-      const command = appFnOrCommand;
-
-      // Add preAction hook to configure logging after options are parsed
-      command.hook('preAction', (thisCommand: Commander.Command) => {
-        const opts = thisCommand.opts() as LogOptions;
-        configureLogging(ctx, opts);
-      });
-
-      await command.parseAsync();
+      // BaseCommand - use its commander property to parse
+      await appFnOrCommand.commander.parseAsync();
     }
   } catch (error) {
     exitCode = 1;
