@@ -71,6 +71,25 @@ export class Command<
     }
     this.configureHelp(config.help).configureOutput(config.output);
 
+    // Setup lifecycle in proper order
+    this.setupOptions();
+    this.configureGlobalHooks();
+    await this.setupSubcommands();
+    this.setupAction();
+
+    return this;
+  }
+
+  /**
+   * Lifecycle hook to configure command options, description, and arguments.
+   * 
+   * Override this method to define your command's interface. The framework will
+   * automatically add logging options for root commands after this method runs.
+   */
+  protected setupOptions(): void {
+    // Setup command-specific options first
+    this.setupCommandOptions();
+
     // Setup from declarative node configuration
     if (this.node) {
       this.setupFromNode();
@@ -80,11 +99,39 @@ export class Command<
     if (this._isRoot) {
       this.addLogging();
     }
+  }
 
-    // Setup subcommands
-    await this.setupSubcommands();
+  /**
+   * Lifecycle hook for command-specific options, description, and arguments.
+   * 
+   * Override this method instead of setupOptions() to define your command's interface.
+   * The framework will automatically add logging options for root commands after this runs.
+   */
+  protected setupCommandOptions(): void {
+    // Override in subclasses to add command-specific options
+  }
 
-    return this;
+  /**
+   * Lifecycle hook to configure global action hooks.
+   * 
+   * Override this method to add global hooks that run before/after actions.
+   */
+  protected configureGlobalHooks(): void {
+    // Override in subclasses if needed
+  }
+
+  /**
+   * Lifecycle hook to setup the command action.
+   * 
+   * Override this method to configure the command's action handler.
+   */
+  protected setupAction(): void {
+    // Set up the action handler that calls execute()
+    this.action(async (...args: unknown[]) => {
+      const opts = this.opts() as Options;
+      const cmdArgs = args as string[];
+      await this.execute(opts, cmdArgs);
+    });
   }
 
   /**

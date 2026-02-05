@@ -6,8 +6,9 @@
  */
 
 import * as _ from '@epdoc/type';
+import * as Commander from 'commander';
 import type { Command as CliAppCommand } from './command.ts';
-import type { ICtx, ISilentError } from './types.ts';
+import type { ICtx, ISilentError, LogOptions, CmdOptions } from './types.ts';
 import { configureLogging } from './utils.ts';
 
 /**
@@ -59,15 +60,23 @@ export async function run(
  * await run(ctx, cmd); // Automatic logging configuration
  * ```
  */
-export async function run(
+export async function run<
+  Context extends ICtx,
+  Options extends CmdOptions,
+  DerivedContext extends Context
+>(
   ctx: ICtx,
-  command: CliAppCommand,
+  command: CliAppCommand<Context, Options, DerivedContext>,
   options?: { noExit?: boolean },
 ): Promise<void>;
 
-export async function run(
+export async function run<
+  Context extends ICtx = ICtx,
+  Options extends CmdOptions = CmdOptions,
+  DerivedContext extends Context = Context
+>(
   ctx: ICtx,
-  appFnOrCommand: (() => Promise<unknown>) | CliAppCommand,
+  appFnOrCommand: (() => Promise<unknown>) | CliAppCommand<Context, Options, DerivedContext>,
   options: { noExit?: boolean } = {},
 ): Promise<void> {
   const t0 = performance.now();
@@ -100,8 +109,8 @@ export async function run(
       const command = appFnOrCommand;
 
       // Add preAction hook to configure logging after options are parsed
-      command.hook('preAction', (thisCommand: any) => {
-        const opts = thisCommand.opts();
+      command.hook('preAction', (thisCommand: Commander.Command) => {
+        const opts = thisCommand.opts() as LogOptions;
         configureLogging(ctx, opts);
       });
 

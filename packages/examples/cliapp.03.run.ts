@@ -14,6 +14,10 @@ type RootOptions = CliApp.LogOptions & { debugMode: boolean };
 
 // Define your commands
 class RootCommand extends CliApp.Command<RootContext, RootOptions, ChildContext> {
+  protected override setupCommandOptions(): void {
+    this.option('--debug-mode', 'Enable debug mode');
+  }
+
   protected override subCommands = {
     process: SubCommand,
   };
@@ -30,8 +34,7 @@ class RootCommand extends CliApp.Command<RootContext, RootOptions, ChildContext>
 type SubOptions = { force: boolean };
 
 class SubCommand extends CliApp.Command<ChildContext, SubOptions, ChildContext> {
-  constructor() {
-    super(pkg);
+  protected override setupCommandOptions(): void {
     this.description('Process files');
     this.argument('<files...>', 'Files to process');
     this.option('-f, --force', 'Force processing');
