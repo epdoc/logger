@@ -2,7 +2,7 @@ import * as _ from '@epdoc/type';
 import { assertEquals, assertExists } from '@std/assert';
 import { describe, it } from '@std/testing/bdd';
 import pkg from '../deno.json' with { type: 'json' };
-import { Command } from '../src/command.ts';
+import { Command } from '../src/cmd-old.ts';
 import { FluentOptionBuilder } from '../src/option.ts';
 
 describe('FluentOptionBuilder', () => {

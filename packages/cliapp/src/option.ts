@@ -6,7 +6,7 @@
  */
 
 import * as Commander from 'commander';
-import type { Command } from './command.ts';
+import type { Command } from './cmd-old.ts';
 
 /**
  * Fluent builder for Commander.js options with method chaining

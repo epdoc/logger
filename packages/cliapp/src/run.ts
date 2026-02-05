@@ -7,8 +7,8 @@
 
 import * as _ from '@epdoc/type';
 import * as Commander from 'commander';
-import type { Command as CliAppCommand } from './command.ts';
-import type { ICtx, ISilentError, LogOptions, CmdOptions } from './types.ts';
+import type { Command as CliAppCommand } from './cmd-old.ts';
+import type { CmdOptions, ICtx, ISilentError, LogOptions } from './types.ts';
 import { configureLogging } from './utils.ts';
 
 /**
@@ -63,7 +63,7 @@ export async function run(
 export async function run<
   Context extends ICtx,
   Options extends CmdOptions,
-  DerivedContext extends Context
+  DerivedContext extends Context,
 >(
   ctx: ICtx,
   command: CliAppCommand<Context, Options, DerivedContext>,
@@ -73,7 +73,7 @@ export async function run<
 export async function run<
   Context extends ICtx = ICtx,
   Options extends CmdOptions = CmdOptions,
-  DerivedContext extends Context = Context
+  DerivedContext extends Context = Context,
 >(
   ctx: ICtx,
   appFnOrCommand: (() => Promise<unknown>) | CliAppCommand<Context, Options, DerivedContext>,
