@@ -1,13 +1,6 @@
-/**
- * @file CLI application utility functions
- * @description Provides essential utilities for CLI applications including logging configuration,
- * application lifecycle management, and command-line argument parsing helpers.
- * @module
- */
-
 import * as Log from '@epdoc/logger';
 import * as _ from '@epdoc/type';
-import type { ICtx, ISilentError, Logger, MsgBuilder, Opts } from './types.ts';
+import type { ICtx, LogOptions } from './types.ts';
 
 const REG = {
   levelType: new RegExp(/^level(:(icon|\d{1,2}|\-\d{1,2}))?$/),
@@ -36,59 +29,68 @@ const REG = {
  * // --showall shows all available log components
  * ```
  */
-export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Logger<M>>(
-  ctx: ICtx<M, L>,
-  opts: Opts,
-): void {
+/**
+ * Configures logging based on parsed CLI options
+ *
+ * @param ctx - Application context with logger
+ * @param opts - Parsed command-line options
+ */
+export function configureLogging(ctx: ICtx, opts: LogOptions): void {
   if (opts.dryRun) {
     ctx.dryRun = true;
   }
 
   // confirm that only one of opts.log, opts.verbose, opts.debug, opts.trace or opts.spam are set
+  // Determine threshold
+  let threshold: string | undefined;
   const logOptions: string[] = [];
-  if (opts.log) logOptions.push(`--log ${opts.log}`);
-  if (opts.verbose) logOptions.push('--verbose');
-  if (opts.debug) logOptions.push('--debug');
-  if (opts.trace) logOptions.push('--trace');
-  if (opts.spam) logOptions.push('--spam');
-  if (logOptions.length > 1) {
-    ctx.log.error.error('Conflicting command line options:').label(logOptions)
-      .emit();
-    const err = new Error(
-      'Conflicting command line options: ' + logOptions.join(', '),
-    ) as ISilentError;
-    err.silent = true;
-    throw err;
+
+  if (opts.logLevel) {
+    threshold = opts.logLevel;
+    logOptions.push(`--log-level ${opts.logLevel}`);
+  }
+  if (opts.verbose) {
+    threshold = 'verbose';
+    logOptions.push('--verbose');
+  }
+  if (opts.debug) {
+    threshold = 'debug';
+    logOptions.push('--debug');
+  }
+  if (opts.trace) {
+    threshold = 'trace';
+    logOptions.push('--trace');
+  }
+  if (opts.spam) {
+    threshold = 'spam';
+    logOptions.push('--spam');
   }
 
-  if (opts.log) {
-    ctx.logMgr.threshold = opts.log;
-  } else if (opts.verbose) {
-    ctx.logMgr.threshold = 'verbose';
-  } else if (opts.debug) {
-    ctx.logMgr.threshold = 'debug';
-  } else if (opts.trace) {
-    ctx.logMgr.threshold = 'trace';
-  } else if (opts.spam) {
-    ctx.logMgr.threshold = 'spam';
+  if (logOptions.length > 1) {
+    ctx.log.error.text('Conflicting command line options:').label(logOptions)
+      .emit();
+    throw new Error(
+      'Conflicting command line options: ' + logOptions.join(', '),
+    );
+  }
+
+  if (threshold) {
+    ctx.logMgr.threshold = threshold;
   }
 
   const show: Log.EmitterShowOpts = {};
 
-  if (_.isBoolean(opts.color)) {
-    show.color = opts.color;
+  if (_.isBoolean(opts.noColor)) {
+    show.color = !opts.noColor;
   }
 
-  if (opts.showall) {
-    show.timestamp = Log.TimestampFormat.ELAPSED;
-    show.pkg = true;
-    show.level = true;
-    show.reqId = true;
-    show.time = true;
-  } else if (opts.log_show) {
-    if (_.isNonEmptyArray(opts.log_show)) {
-      for (const prefix of opts.log_show) {
-        const m = prefix.match(REG.levelType);
+  if (opts.logShowAll) {
+    setAllShow(show);
+  } else if (opts.logShow) {
+    if (_.isNonEmptyArray(opts.logShow)) {
+      for (const prefix of opts.logShow) {
+        const prefixStr = String(prefix);
+        const m = prefixStr.match(REG.levelType);
         if (m && m.length) {
           show.level = true;
           if (m.length > 1) {
@@ -112,24 +114,25 @@ export function configureLogging<M extends MsgBuilder = MsgBuilder, L extends Lo
         } else if (prefix === 'time') {
           show.time = true;
         } else if (prefix === 'all') {
-          show.timestamp = Log.TimestampFormat.ELAPSED;
-          show.pkg = true;
-          show.level = true;
-          show.reqId = true;
-          show.time = true;
+          setAllShow(show);
         }
       }
     } else {
-      show.level = true;
-      show.timestamp = Log.TimestampFormat.ELAPSED;
-      show.pkg = true;
-      show.reqId = true;
-      show.time = true;
+      setAllShow(show);
     }
   }
   if (!_.isEmpty(show)) {
     ctx.logMgr.show = show;
   }
+}
+
+function setAllShow(show: Log.EmitterShowOpts) {
+  show.timestamp = Log.TimestampFormat.ELAPSED;
+  show.pkg = true;
+  show.level = true;
+  show.reqId = true;
+  show.time = true;
+  show.color = true;
 }
 
 /**

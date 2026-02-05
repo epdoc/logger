@@ -276,6 +276,13 @@
           "jsr:@std/assert@^1.0.16"
         ]
       },
+      "packages/demo-cliapp-v2": {
+        "dependencies": [
+          "jsr:@epdoc/logger@^1003.2.8",
+          "jsr:@epdoc/msgbuilder@0.1",
+          "jsr:@std/fmt@^1.0.8"
+        ]
+      },
       "packages/demo-cliffy": {
         "dependencies": [
           "jsr:@epdoc/logger@^1003.2.8",

@@ -79,7 +79,7 @@ interface CleanOptions {
   force?: boolean;
 }
 
-type RootOptions = CliApp.Opts & {
+type RootOptions = CliApp.LogOptions & {
   config?: string;
   quiet?: boolean;
 };

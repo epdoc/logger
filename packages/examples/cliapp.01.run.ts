@@ -23,7 +23,7 @@ class AppContext extends CliApp.Ctx.Base<Logger> {
 }
 
 // 3. Define options interface
-type AppOptions = CliApp.Opts & {
+type AppOptions = CliApp.LogOptions & {
   verbose?: boolean;
   output?: string;
 };

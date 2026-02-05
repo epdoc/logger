@@ -1,17 +1,13 @@
 /**
- * @file Main module exports for @epdoc/cliapp
- * @description Entry point for the CLI application framework, providing command and context
- * functionality for building command-line applications.
+ * @file Main module exports for @epdoc/cliapp v2.0
+ * @description Clean CLI framework with automatic context flow and declarative configuration
  * @module
  */
 
-// Core command and context functionality
+// Core functionality
 export { Command } from './command.ts';
+export { Context, type ICtx } from './context.ts';
 export { FluentOptionBuilder } from './option.ts';
-export * as Ctx from './context/mod.ts';
-
-// Structured command base classes
-export * as Cmd from './cmd/mod.ts';
 
 // Application lifecycle management
 export { run } from './run.ts';
@@ -22,5 +18,5 @@ export * from './types.ts';
 // Utility functions
 export { commaList, configureLogging } from './utils.ts';
 
-// Re-export Commander.js for convenience and custom options
+// Re-export Commander.js for convenience
 export * as Commander from 'commander';

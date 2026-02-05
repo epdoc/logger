@@ -1,17 +1,17 @@
 /**
- * @file Application Context for demo-cliffy
+ * @file Application Context for demo-cliapp-v2
  */
 
-import { CliffApp } from './dep.ts';
+import { Context } from '@epdoc/cliapp';
 
-export class AppContext extends CliffApp.Ctx.Context {
+export class AppContext extends Context {
   isApp = true;
   name?: string;
+  debugMode = false;
 }
 
 export class ChildContext extends AppContext {
   isChild = true;
-  debugMode = false;
 }
 
 // export const ctx = new AppContext(pkg as unknown as CliffApp.DenoPkg, { pkg: 'app' });

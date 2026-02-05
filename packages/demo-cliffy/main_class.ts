@@ -1,3 +1,4 @@
+import pkg from './deno.json' with { type: 'json' };
 import { RootCommand } from './src/commands/root.ts';
 import { AppContext } from './src/context.ts';
 import { CliffApp } from './src/dep.ts';
@@ -11,7 +12,7 @@ import { CliffApp } from './src/dep.ts';
  * - Functional subcommand resolution
  */
 if (import.meta.main) {
-  const ctx = new AppContext();
+  const ctx = new AppContext(pkg as unknown as CliffApp.DenoPkg, { pkg: 'main'});
   await ctx.setupLogging();
 
   // Instantiate and initialize root command

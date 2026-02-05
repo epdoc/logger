@@ -1,660 +1,178 @@
-# @epdoc/cliapp
+# @epdoc/cliapp v2.0
 
-> **📚 Complete Documentation**: This package is part of the [@epdoc/logger ecosystem](../../README.md). For comprehensive guides, tutorials, and integration examples, see the [root documentation](../../README.md).
+A clean, type-safe CLI framework with automatic context flow and declarative configuration.
 
-A CLI framework built on [@epdoc/logger](https://github.com/epdoc/logger) and [Commander.js](https://www.npmjs.com/package/commander), designed for building type-safe, maintainable command-line applications.
+## Features
 
-## Quick Links to Complete Documentation
-
-- **[🚀 Getting Started Guide](../../GETTING_STARTED.md)** - Complete ecosystem tutorial including CLI integration
-- **[🎯 Demo Project](../../packages/demo/)** - Complete working CLI app with custom message builders
-- **[💡 Examples Collection](../../packages/examples/)** - Focused CLI and logging examples
-- **[🏗️ Architecture Overview](../../ARCHITECTURE.md)** - Technical patterns and ContextBundle usage
-- **[⚙️ Configuration Guide](../../CONFIGURATION.md)** - Advanced logging configuration for CLI apps
-- **[📝 Core Logger](../../packages/logger/README.md)** - Logging functionality
-- **[🎨 Message Builders](../../packages/msgbuilder/README.md)** - Rich formatting for CLI output
-
-## Package-Specific Features
-
-This package provides CLI application framework with:
-
-- **🚀 BaseContext Pattern** - Simplified context setup with structured logging integration
-- **🏗️ Structured Commands** - Class-based command architecture with `Cmd.Sub` and `Cmd.Root`
-- **🎯 Arguments Support** - Full support for command arguments (required, optional, variadic)
-- **⚙️ Options Support** - Built-in Commander.js option handling with type safety and fluent API
-- **🔧 Custom Message Builders** - Project-specific logging methods with type safety
-- **📊 Structured Logging** - Built on [@epdoc/logger](https://github.com/epdoc/logger) with rich formatting
-- **🏗️ Scalable Architecture** - Patterns for single commands to complex multi-command applications
-
-## Installation
-
-```bash
-deno add jsr:@epdoc/cliapp
-```
-
-> **💡 Ecosystem Integration**: This package is designed to work with [@epdoc/logger](../logger/) and [@epdoc/msgbuilder](../msgbuilder/) for complete CLI application development. See the [complete ecosystem guide](../../GETTING_STARTED.md) for integrated usage patterns.
+- **Automatic Context Flow** - Context flows seamlessly from parent to child commands
+- **Type-Safe Transformations** - Transform context types with `deriveChildContext()`
+- **Declarative Configuration** - Define commands with pure configuration objects
+- **Built-in Logging** - Integrated with `@epdoc/logger` for structured logging
+- **Commander.js Foundation** - Built on the stable, mature Commander.js library
+- **Production Ready** - Comprehensive error handling, signal management, and cleanup
 
 ## Quick Start
 
-### [Minimal CLI App](../examples/minimal.run.ts)
-
 ```typescript
-import * as CliApp from '@epdoc/cliapp';
-import * as Log from '@epdoc/logger';
-import { Console } from '@epdoc/msgbuilder';
 import pkg from './deno.json' with { type: 'json' };
+import { Command, Context, run } from '@epdoc/cliapp';
 
-// 1. Define types once per project
-type MsgBuilder = Console.Builder;
-type Logger = Log.Std.Logger<MsgBuilder>;
-
-// 2. Bundle context types together
-type AppBundle = CliApp.Cmd.ContextBundle<AppContext, MsgBuilder, Logger>;
-
-// 3. Define options interface
-interface AppOptions {
-  verbose?: boolean;
-  output?: string;
+// Define your context
+class AppContext extends Context {
+  debugMode = false;
 }
 
-// 4. Create your context
-class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
+class ChildContext extends AppContext {
+  processedFiles = 0;
+}
+
+// Define your commands
+class RootCommand extends Command<AppContext, ChildContext> {
+  protected subCommands = {
+    process: ProcessCommand,
+  };
+
+  protected async deriveChildContext(ctx: AppContext): Promise<ChildContext> {
+    const child = new ChildContext(ctx);
+    child.debugMode = ctx.debugMode; // Flow state to child
+    return child;
+  }
+}
+
+class ProcessCommand extends Command<ChildContext> {
   constructor() {
     super(pkg);
-    this.setupLogging(); // Must call in constructor
+    this.description('Process files');
+    this.argument('<files...>', 'Files to process');
+    this.option('-f, --force', 'Force processing');
   }
 
-  setupLogging() {
-    // For standard Console.Builder, you can use either:
-    this.logMgr = Log.createLogManager(Console.Builder, { threshold: 'info' });
-    // or: this.logMgr = Log.createLogManager(undefined, { threshold: 'info' });
-    this.log = this.logMgr.getLogger<Logger>();
-  }
-}
-
-// 5. Define your root command
-class AppRootCmd extends CliApp.Cmd.Root<AppBundle, AppOptions> {
-  constructor(ctx: AppContext) {
-    super(ctx, ctx.pkg);
-  }
-
-  protected override addArguments(): void {
-    this.cmd.argument('[files...]', 'Files to process');
-  }
-
-  protected override addOptions(): void {
-    this.cmd
-      .option('--output <dir>', 'Output directory')
-      .option('--verbose', 'Verbose output')
-      // Fluent option API for complex options
-      .fluentOption('--format <type>', 'Output format')
-        .choices(['json', 'yaml', 'csv']).default('json').emit();
-  }
-    this.ctx.log.info.h1('Processing Files')
-      .label('Files:').value(args.join(', '))
-      .label('Output:').value(opts.output || 'default')
-      .emit();
-    return Promise.resolve();
-  }
-}
-
-// 6. Run it
-if (import.meta.main) {
-  const ctx = new AppContext();
-  const rootCmd = new AppRootCmd(ctx);
-  const cmd = await rootCmd.init();
-  await cmd.parseAsync();
-}
-```
-
-### With Custom Message Builder
-
-For a complete example of using custom message builders with real-world CLI functionality, see the **[Demo Project](../demo/README.md)**.
-
-The demo showcases:
-- Custom message builder with `fileOp()` methods
-- File system operations with rich logging
-- Multiple subcommands (`list`, `process`)
-- Integration with `@epdoc/fs` for file handling
-- Proper ContextBundle usage patterns
-
-## Project Organization
-
-### Single Command Application
-
-```
-my-tool/
-├── deno.json
-├── main.ts             # Entry point with root command
-├── src/
-│   ├── context.ts      # AppContext class
-│   └── types.ts        # Type definitions
-└── README.md
-```
-
-**main.ts:**
-```typescript
-import * as CliApp from '@epdoc/cliapp';
-import { AppContext, AppBundle } from './src/context.ts';
-
-interface MyOptions {
-  output?: string;
-  verbose?: boolean;
-}
-
-class MyToolCmd extends CliApp.Cmd.Root<AppBundle, MyOptions> {
-  constructor(ctx: AppContext) {
-    super(ctx, ctx.pkg);
-  }
-
-  protected override addArguments(): void {
-    this.cmd.argument('[files...]', 'Files to process');
-  }
-
-  protected override addOptions(): void {
-    this.cmd
-      .option('--output <dir>', 'Output directory')
-      .option('--verbose', 'Verbose output');
-  }
-
-  protected override async executeAction(args: string[], opts: MyOptions): Promise<void> {
-    // Your implementation here
-  }
-}
-
-if (import.meta.main) {
-  const ctx = new AppContext();
-  const rootCmd = new MyToolCmd(ctx);
-  const cmd = await rootCmd.init();
-  await cmd.parseAsync();
-}
-```
-
-**src/context.ts:**
-```typescript
-import * as CliApp from '@epdoc/cliapp';
-import * as Log from '@epdoc/logger';
-import { Console } from '@epdoc/msgbuilder';
-import pkg from '../deno.json' with { type: 'json' };
-
-const AppBuilder = Console.extender({
-  // Your custom logging methods
-});
-
-export type MsgBuilder = InstanceType<typeof AppBuilder>;
-export type Logger = Log.Std.Logger<MsgBuilder>;
-
-export class AppContext extends CliApp.Ctx.Base<MsgBuilder, Logger> {
-  constructor() {
-    super(pkg);
-    this.setupLogging();
-  }
-
-  setupLogging() {
-    this.logMgr = Log.createLogManager(AppBuilder, { threshold: 'info' });
-    this.log = this.logMgr.getLogger<Logger>();
-  }
-}
-
-// Export the bundled type for use in commands
-export type AppBundle = CliApp.Cmd.ContextBundle<AppContext, MsgBuilder, Logger>;
-```
-
-### Multi-Command Application
-
-```
-my-cli/
-├── deno.json
-├── main.ts             # Minimal run wrapper
-├── src/
-│   ├── context.ts      # Shared AppContext
-│   ├── types.ts        # Shared types
-│   ├── cmd/
-│   │   ├── root.ts    # Fetch command
-│   │   ├── fetch.ts    # Fetch command
-│   │   ├── process.ts  # Process command
-│   │   └── export.ts   # Export command
-│   └── lib/
-│       ├── api.ts      # Business logic
-│       └── utils.ts    # Utilities
-└── README.md
-```
-
-**src/commands/fetch.ts:**
-```typescript
-import * as CliApp from '@epdoc/cliapp';
-import type { AppContext, AppBundle } from '../context.ts';
-
-interface FetchOptions {
-  limit?: number;
-  format?: string;
-}
-
-export class FetchCmd extends CliApp.Cmd.Sub<AppBundle, FetchOptions> {
-  constructor(ctx: AppContext) {
-    super(ctx, 'fetch', 'Fetch data from remote source');
-  }
-
-  protected override addArguments(): void {
-    this.cmd.argument('<endpoint>', 'API endpoint to fetch from');
-  }
-
-  protected override addOptions(): void {
-    this.cmd
-      .option('--limit <n>', 'Max items', '100')
-      .option('--format <type>', 'Output format', 'json')
-      .addOption(new CliApp.Commander.Option('--format <type>', 'Output format')
-        .choices(['json', 'csv']).default('json'));
-  }
-
-  protected override async executeAction(args: string[], opts: FetchOptions): Promise<void> {
-    const endpoint = args[0];
-    this.ctx.log.info.text(`Fetching from ${endpoint}`).emit();
-    // Implementation here
-  }
-}
-```
-
-**main.ts:**
-```typescript
-import * as CliApp from '@epdoc/cliapp';
-import { AppContext, AppBundle } from './src/context.ts';
-import { FetchCmd } from './src/commands/fetch.ts';
-import { ProcessCmd } from './src/commands/process.ts';
-import { ExportCmd } from './src/commands/export.ts';
-
-interface RootOptions {
-  config?: string;
-  verbose?: boolean;
-}
-
-class MyCliRoot extends CliApp.Cmd.Root<AppBundle, RootOptions> {
-  constructor(ctx: AppContext) {
-    super(ctx, ctx.pkg);
-  }
-
-  protected override addOptions(): void {
-    this.cmd
-      .option('--config <file>', 'Config file')
-      .option('--verbose', 'Verbose output');
-  }
-
-  protected override async addCommands(): Promise<void> {
-    const fetchCmd = new FetchCmd(this.ctx);
-    const processCmd = new ProcessCmd(this.ctx);
-    const exportCmd = new ExportCmd(this.ctx);
-
-    this.cmd.addCommand(await fetchCmd.init());
-    this.cmd.addCommand(await processCmd.init());
-    this.cmd.addCommand(await exportCmd.init());
-  }
-
-  protected override async executeAction(args: string[], opts: RootOptions): Promise<void> {
-    this.ctx.log.info.h1('My CLI Tool').text('Use --help for commands').emit();
-  }
-}
-
-if (import.meta.main) {
-  const ctx = new AppContext();
-  const rootCmd = new MyCliRoot(ctx);
-  const cmd = await rootCmd.init();
-  await cmd.parseAsync();
-}
-```
-
-### Complex Application with Custom Options
-
-```
-enterprise-cli/
-├── deno.json
-├── src/
-│   ├── main.ts
-│   ├── context.ts
-│   ├── types.ts
-│   ├── cmd/
-│   │   ├── deploy/
-│   │   │   ├── mod.ts        # Deploy root command
-│   │   │   ├── staging.ts    # Deploy to staging
-│   │   │   └── production.ts # Deploy to production
-│   │   └── config/
-│   │       ├── mod.ts        # Config root command
-│   │       ├── get.ts        # Get config
-│   │       └── set.ts        # Set config
-│   ├── options/
-│   │   ├── environment.ts    # Custom environment option
-│   │   └── daterange.ts      # Custom date range option
-│   └── lib/
-│       ├── deployment.ts
-│       └── config.ts
-└── README.md
-```
-
-**src/options/environment.ts:**
-```typescript
-import * as CliApp from '@epdoc/cliapp';
-
-type Environment = 'dev' | 'staging' | 'prod';
-
-export class EnvironmentOption extends CliApp.Declarative.Option.Base<Environment> {
-  constructor(flags: string, description: string) {
-    super(flags, description);
-    this.choices(['dev', 'staging', 'prod']);
-  }
-
-  parse(value: string): Environment {
-    if (!['dev', 'staging', 'prod'].includes(value)) {
-      throw new Error(`Invalid environment: ${value}`);
+  action = async (files: string[], opts: any) => {
+    this.ctx.log.info.text(`Processing ${files.length} files`);
+    if (this.ctx.debugMode) {
+      this.ctx.log.debug.text('Debug mode enabled');
     }
-    return value as Environment;
+    // Process files...
+    this.ctx.processedFiles = files.length;
+  };
+}
+
+// Run your application
+if (import.meta.main) {
+  const ctx = new AppContext(pkg);
+  await ctx.setupLogging();
+
+  const root = new RootCommand();
+  await root.init(ctx);
+  root.option('--debug-mode', 'Enable debug mode');
+  root.addLogging();
+
+  await run(ctx, () => root.parseAsync());
+}
+```
+
+## Core Concepts
+
+### Context Flow
+
+Context automatically flows from parent to child commands:
+
+```typescript
+class RootCommand extends Command<AppContext, ChildContext> {
+  // Transform parent context → child context
+  protected async deriveChildContext(ctx: AppContext): Promise<ChildContext> {
+    const child = new ChildContext(ctx); // Inherit logging, etc.
+    child.debugMode = ctx.debugMode;     // Flow specific state
+    return child;
   }
+}
+```
+
+### Clean API
+
+No more painful context passing:
+
+```typescript
+// v2.0 - Clean and simple
+cmd.addLogging();        // Uses this.ctx automatically
+cmd.init(ctx);           // One-time context setup
+this.ctx.log.info.text('Hello'); // Direct access
+
+// v1.x - Painful repetition
+cmd.addLogging(ctx);     // Pass context everywhere
+cmd.init(ctx);
+ctx.log.info.text('Hello');
+```
+
+### Declarative Configuration
+
+Mix class-based and declarative approaches:
+
+```typescript
+class MyCommand extends Command<Context> {
+  protected subCommands = {
+    // Class-based subcommand
+    advanced: AdvancedCommand,
+    
+    // Declarative subcommand
+    simple: {
+      name: 'simple',
+      description: 'Simple command',
+      options: {
+        '--count <n>': 'Number of items'
+      },
+      action: (ctx, opts) => {
+        ctx.log.info.text(`Count: ${opts.count}`);
+      }
+    }
+  };
 }
 ```
 
 ## API Reference
 
-### Structured Command API
-
-#### Base Command Classes
+### Command Class
 
 ```typescript
-// For subcommands
-abstract class BaseCmd<Bundle extends ContextBundle<unknown, unknown, unknown>, TOptions = unknown> {
-  constructor(ctx: Bundle['Context'], name: string, description: string, aliases?: string[]);
-  
-  // Override these methods as needed
-  protected addArguments(): void;
-  protected addOptions(): void;
-  protected addExtras(): void;
-  protected abstract executeAction(args: string[], opts: TOptions, cmd: Command): Promise<void>;
-  
-  // Call this to initialize the command
-  init(): Promise<Command>;
-}
-
-// For root commands
-class BaseRootCmd<Bundle extends ContextBundle<unknown, unknown, unknown>, TOptions = unknown> {
-  constructor(ctx: Bundle['Context'], pkg: DenoPkg);
-  
-  // Override these methods as needed
-  protected addArguments(): void;
-  protected addOptions(): void;
-  protected async addCommands(): Promise<void>;
-  protected addExtras(): void;
-  protected executeAction?(args: string[], opts: TOptions, cmd: Command): Promise<void>;
-  
-  // Call this to initialize the command
-  async init(): Promise<Command>;
-}
-
-// ContextBundle type for bundling context, message builder, and logger types
-type ContextBundle<Context, MsgBuilder, Logger> = {
-  Context: Context;
-  MsgBuilder: MsgBuilder;
-  Logger: Logger;
-};
+class Command<Context, SubContext, Opts> extends Commander.Command
 ```
 
-#### Command Setup Order
+**Key Methods:**
+- `init(ctx: Context): Promise<this>` - Initialize with context
+- `addLogging(): this` - Add standard logging options
+- `deriveChildContext(ctx, opts, args): Promise<SubContext>` - Transform context
 
-Commands follow a structured setup sequence:
+**Properties:**
+- `ctx: Context` - Current context instance
+- `subCommands` - Declarative subcommand mapping
 
-1. **addArguments()** - Define command arguments using `this.cmd.argument()`
-2. **addOptions()** - Define command options using `this.cmd.option()`
-3. **addCommands()** - *(Root commands only)* Add subcommands
-4. **addExtras()** - Add help text, hooks, etc.
-5. **setupAction()** - *(Internal)* Wire up the executeAction method
-
-#### When to Use Each Method
-
-#### When to Use Each Method
-
-**Use `addExtras()` for:**
-- **Help text** - `addHelpText()` must be called during command setup
-- **Shared configuration** - `preAction` hooks in root commands run for ALL subcommands
-- **Lifecycle hooks** - Register hooks for `preSubcommand`, `postAction`, etc.
+### Context Class
 
 ```typescript
-// Root command
-protected override addExtras(): void {
-  this.cmd.addHelpText('after', '\nExamples:\n  my-cmd process file.txt --verbose');
-  
-  // This preAction hook runs for ALL commands (root + subcommands)
-  this.cmd.hook('preAction', (cmd) => {
-    const opts = cmd.optsWithGlobals() as AppOptions;
-    CliApp.configureLogging(this.ctx, opts); // Applied to all subcommands
-  });
-}
+class Context implements ICtx
 ```
 
-**Use `executeAction()` for:**
-- **Command-specific logic** - Only runs when THIS specific command is executed
-- **Not shared with subcommands** - Subcommands have their own `executeAction`
+**Key Methods:**
+- `setupLogging(level?: string): Promise<void>` - Setup logging for root context
+- `close(): Promise<void>` - Cleanup resources
+
+**Properties:**
+- `log: Logger` - Logger instance
+- `logMgr: Log.Mgr` - Log manager
+- `pkg: DenoPkg` - Package metadata
+
+### Run Function
 
 ```typescript
-// Root command
-protected override executeAction(args: string[], opts: AppOptions): Promise<void> {
-  // This ONLY runs if user executes root command directly
-  // NOT when they run subcommands like "mycli fetch" or "mycli process"
-  this.ctx.log.info.text('Root command executed').emit();
-  return Promise.resolve();
-}
-
-// Subcommand  
-protected override executeAction(args: string[], opts: SubOptions): Promise<void> {
-  // This ONLY runs when this specific subcommand is executed
-  // But it benefits from root command's preAction hook for logging config
-  return this.processFiles(args, opts);
-}
+function run(ctx: ICtx, appFn: () => Promise<unknown>, options?: { noExit?: boolean }): Promise<void>
 ```
 
-**Key insight:** Root command `preAction` hooks run for all subcommands, making `addExtras()` the right place for shared configuration like logging setup.
-```
+Provides comprehensive application lifecycle management with error handling, signal management, and cleanup.
 
-**Use `executeAction()` for:**
-- **Main command logic** and business functionality
-- **Processing arguments and options** to perform the actual work
-- **File operations, API calls, data processing** - the core purpose of your command
+## Migration from v1.x
 
-```typescript
-protected override executeAction(args: string[], opts: AppOptions): Promise<void> {
-  // Main command logic here
-  this.ctx.log.info.section('Processing Files').emit();
-  return this.processFiles(args, opts);
-}
-```
-
-**Why not put everything in `addExtras`?**
-- `addExtras` runs during command setup, before argument parsing
-- `executeAction` runs after parsing with clean access to typed arguments and options
-- Separation keeps setup concerns separate from business logic
-- `executeAction` is the natural place for the command's primary functionality
-
-#### Option Definition
-
-Use Commander.js syntax for options, including the new fluent API that is offered when using CliApp:
-
-```typescript
-protected override addOptions(): void {
-  this.cmd
-    .option('-v, --verbose', 'Verbose output')
-    .option('--output <path>', 'Output file path', 'default.txt')
-    .option('--count <n>', 'Number of items', '10')
-    // Traditional Commander.js approach
-    .addOption(new CliApp.Commander.Option('--format <type>', 'Output format')
-      .choices(['json', 'yaml', 'csv'])
-      .default('json'))
-    // New fluent API approach
-    .fluentOption('--env <name>', 'Environment')
-      .choices(['dev', 'staging', 'prod']).default('dev').required().done();
-}
-```
-
-#### Argument Definition
-
-Use Commander.js syntax for arguments:
-
-```typescript
-protected override addArguments(): void {
-  this.cmd
-    .argument('<input>', 'Input file')           // Required
-    .argument('[output]', 'Output file')         // Optional
-    .argument('[files...]', 'Multiple files');   // Variadic
-}
-```
-
-### BaseContext Pattern
-
-```typescript
-abstract class BaseContext<M, L> implements Ctx.IBase<M, L> {
-  log!: L;
-  logMgr!: Log.Mgr<M>;
-  dryRun: boolean;
-  pkg: DenoPkg;
-  
-  constructor(pkg?: DenoPkg);
-  abstract setupLogging(): void;  // Must call in constructor
-  async close(): Promise<void>;
-}
-```
-
-**Key Points:**
-- Extend `BaseContext` with your message builder and logger types
-- Call `setupLogging()` after the BaseContext is constructed
-- Bundle types with `ContextBundle<Context, MsgBuilder, Logger>` for cleaner command signatures
-- Add application state and helper methods to your context class
-
-## Examples
-
-See the [examples directory](../examples/) for complete working examples:
-
-- **[cliapp.run.ts](../examples/cliapp.run.ts)** - Complete CLI app with BaseContext and structured commands
-- **[logger.basics.run.ts](../examples/logger.basics.run.ts)** - Logger setup patterns
-- **[logger.advanced.run.ts](../examples/logger.advanced.run.ts)** - Advanced logging features
-
-Run all examples with: `./examples/run.sh`
-
-## Best Practices
-
-### 1. Project Structure
-- **Single command**: Keep simple with main.ts and context.ts
-- **Multi-command**: Organize commands in separate files/directories
-- **Complex apps**: Use nested command structure with shared types
-
-### 2. Type Safety
-- Define types once per project (`MsgBuilder`, `Logger`)
-- Bundle types together with `ContextBundle<Context, MsgBuilder, Logger>`
-- Use separate declaration pattern for options
-- Leverage TypeScript's type inference in actions
-
-### 3. Custom Message Builders
-- Add domain-specific logging methods (`fileOp`, `apiCall`, `progress`)
-- Keep methods focused and reusable
-- Use semantic naming that matches your domain
-
-### 4. Error Handling
-```typescript
-protected override async executeAction(args: string[], opts: MyOptions): Promise<void> {
-  try {
-    // Your logic here
-    this.ctx.log.info.text('Success!').emit();
-  } catch (error) {
-    this.ctx.log.error.text(`Failed: ${error.message}`).emit();
-    Deno.exit(1);
-  }
-}
-```
-
-### 5. Testing
-```typescript
-// Create test context
-const testCtx = new AppContext();
-testCtx.logMgr.threshold = 'error'; // Suppress logs in tests
-
-// Test command actions directly
-const cmd = new MyCmd(testCtx);
-await cmd['executeAction'](['arg1'], { option1: 'value' }, mockCommand);
-
-// Or create a test bundle type
-type TestBundle = CliApp.Cmd.ContextBundle<AppContext, MsgBuilder, Logger>;
-class TestCmd extends CliApp.Cmd.Sub<TestBundle, TestOptions> {
-  // Test implementation
-}
-```
-
-## Advanced Features
-
-### Async Command Initialization
-
-Commands can perform async operations during initialization:
-
-```typescript
-class DataCmd extends CliApp.Cmd.Sub<AppBundle, DataOptions> {
-  private config!: Config;
-
-  constructor(ctx: AppContext) {
-    super(ctx, 'data', 'Process data files');
-  }
-
-  override async init(): Promise<CliApp.Command> {
-    // Load config before setting up options
-    this.config = await this.loadConfig();
-    return super.init();
-  }
-
-  protected override addOptions(): void {
-    this.cmd
-      .option('--format <type>', 'Data format', this.config.defaultFormat)
-      .option('--output <path>', 'Output path', this.config.outputDir);
-  }
-
-  private async loadConfig(): Promise<Config> {
-    // Load configuration from file, API, etc.
-    return JSON.parse(await Deno.readTextFile('./config.json'));
-  }
-}
-```
-
-### Global Options Access
-
-Commands can access both local and global options:
-
-```typescript
-protected override async executeAction(args: string[], opts: MyOptions, cmd: CliApp.Command): Promise<void> {
-  // Local options
-  console.log('Local verbose:', opts.verbose);
-  
-  // Global options (from parent commands)
-  const globalOpts = cmd.optsWithGlobals();
-  console.log('Global config:', globalOpts.config);
-  
-  // Command metadata
-  console.log('Command name:', cmd.name());
-  console.log('Raw args:', cmd.args);
-}
-```
-
-### Custom Help and Hooks
-
-```typescript
-protected override addExtras(): void {
-  // Add custom help text
-  this.cmd.addHelpText('before', 'Custom header text');
-  this.cmd.addHelpText('after', '\nExamples:\n  my-cmd process file.txt --verbose');
-  
-  // Add lifecycle hooks
-  this.cmd.hook('preAction', (thisCommand, actionCommand) => {
-    this.ctx.log.debug.text(`About to run: ${actionCommand.name()}`).emit();
-  });
-}
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Submit a pull request
+See [MIGRATION.md](./MIGRATION.md) for detailed migration guide.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+MIT

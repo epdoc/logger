@@ -1,156 +1,113 @@
 /**
  * @file Core types and interfaces for CLI application development
- * @description Centralizes type definitions for package metadata, loggers, application context,
- * and command-line options, ensuring consistency and type safety across the CLI framework.
+ * @description Clean type definitions for CliApp v2.0
  * @module
  */
 
 import type * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
+import type { Dict } from '@epdoc/type';
 
-/**
- * Package metadata structure from deno.json
- *
- * @example
- * ```typescript
- * import pkg from './deno.json' with { type: 'json' };
- * const context = new AppContext(pkg);
- * ```
- */
-export type DenoPkg = {
-  /** Package name */
-  name: string;
-  /** Semantic version string */
-  version: string;
-  /** Package description */
-  description: string;
-  /** Optional author information */
-  author?: { name?: string; email?: string };
-  /** Workspace configuration for monorepos */
-  workspace?: string[];
-  /** License identifier */
-  license?: string;
-  /** Repository information */
-  repository?: {
-    type: string;
-    url: string;
-  };
-};
+// Clean imports - respecting circular dependency separation
+export type { Context, ICtx } from './context.ts';
+export type { DenoPkg } from './pkg-type.ts';
+
+// Local imports for use in this file
+import type { ICtx } from './context.ts';
+import type { DenoPkg } from './pkg-type.ts';
 
 /**
  * Base message builder type for CLI applications
- *
- * All custom message builders should extend Console.Builder to ensure
- * compatibility with the CLI framework's logging system.
  */
 export type MsgBuilder = Console.Builder;
 
 /**
- * Generic logger type that works with custom message builders
- *
- * @template M - Message builder type extending MsgBuilder
- *
- * @example
- * ```typescript
- * type MyLogger = Logger<MyCustomBuilder>;
- * ```
+ * Generic logger type
  */
 export type Logger<M extends MsgBuilder = MsgBuilder> = Log.Std.Logger<M>;
 
 /**
- * Application context interface for CLI applications
- *
- * Provides the core structure that all CLI contexts must implement,
- * including logging capabilities, package metadata, and lifecycle management.
- *
- * @template M - Message builder type
- * @template L - Logger type
- *
- * @example
- * ```typescript
- * class AppContext implements ICtx<MyBuilder, MyLogger> {
- *   log: MyLogger;
- *   logMgr: Log.Mgr<MyBuilder>;
- *   dryRun = false;
- *   pkg: DenoPkg;
- *
- *   async close() {
- *     await this.logMgr.close();
- *   }
- * }
- * ```
+ * Command-line options dictionary
  */
-export interface ICtx<
-  M extends MsgBuilder = MsgBuilder,
-  L extends Logger<M> = Logger<M>,
-> {
-  /** Logger instance for application output */
-  log: L;
-  /** Log manager for configuration and lifecycle */
-  logMgr: Log.Mgr<M>;
-  /** Flag indicating dry-run mode (no actual changes) */
+export type CmdOptions = Dict;
+
+/**
+ * Command-line arguments array
+ */
+export type CmdArgs = string[];
+
+/**
+ * Standard CLI options structure
+ */
+export type LogOptions = CmdOptions & {
+  /** Log level threshold (e.g., 'info', 'debug', 'error') */
+  logLevel: string;
+  /** Shortcut to set logLevel to verbose */
+  verbose: boolean;
+  /** Shortcut to set logLevel to debug */
+  debug: boolean;
+  /** Shortcut to set logLevel to trace */
+  trace: boolean;
+  /** Shortcut to set logLevel to spam (the lowest log level) */
+  spam: boolean;
+  /** Array of log properties to display (e.g., 'level', 'timestamp'). Empty shows only the message.  */
+  logShow: string[] | boolean | undefined;
+  /** Show all available log properties */
+  logShowAll: boolean;
+  /** Display color output */
+  color: boolean;
+  /** Dry-run mode - show what would be done without executing */
   dryRun: boolean;
-  /** Package metadata from deno.json */
-  pkg: DenoPkg;
-  /** Cleanup method called when application exits */
-  close: () => Promise<void>;
+};
+
+/**
+ * Configuration for a single command-line option
+ */
+export interface OptionConfig {
+  description: string;
+  default?: unknown;
+  required?: boolean;
+  hidden?: boolean;
+  collect?: boolean;
 }
 
 /**
- * Standard command-line options structure
- *
- * Defines the common CLI options that are automatically added by the framework,
- * including logging configuration and operational flags.
- *
- * @example
- * ```typescript
- * function configureApp(opts: Opts) {
- *   if (opts.verbose) {
- *     logMgr.threshold = 'debug';
- *   }
- *   if (opts.dryRun) {
- *     console.log('Running in dry-run mode');
- *   }
- * }
- * ```
+ * A mapping of option flags to their descriptions or configurations
  */
-export type Opts = Partial<{
-  /** Log level threshold (e.g., 'info', 'debug', 'error') */
-  log: string;
-  /** Array of log components to display (e.g., 'level', 'timestamp') */
-  log_show: string[];
-  /** Display color output */
-  color: boolean;
-  /** Show all available log components */
-  showall: boolean;
-  /** Enable verbose output */
-  verbose: boolean;
-  /** Enable debug mode */
-  debug: boolean;
-  /** Enable trace-level logging */
-  trace: boolean;
-  /** Enable spam-level logging (most verbose) */
-  spam: boolean;
-  /** Dry-run mode - show what would be done without executing */
-  dryRun: boolean;
-  /** Positional arguments passed to the command */
-  args: string[];
-}>;
+export type OptionsMap = Record<string, string | OptionConfig>;
 
 /**
  * Error interface for silent failures
- *
- * Used to indicate errors that should not display stack traces
- * or verbose error information to the user.
- *
- * @example
- * ```typescript
- * const error = new Error('Validation failed') as ISilentError;
- * error.silent = true;
- * throw error;
- * ```
  */
 export interface ISilentError extends Error {
-  /** Flag indicating this error should be handled silently */
   silent: boolean;
+}
+
+/**
+ * Declarative command node configuration for pure configuration-based commands
+ */
+export interface CommandNode<Context extends ICtx = ICtx> {
+  /** Command name */
+  name: string;
+  /** Command description */
+  description?: string;
+  /** Command aliases */
+  aliases?: string[];
+  /** Command options */
+  options?: OptionsMap;
+  /** Command arguments */
+  arguments?: string[];
+  /** Command action handler */
+  action?: (ctx: Context, opts: CmdOptions, ...args: CmdArgs) => Promise<void> | void;
+  /** Context refinement function for transforming parent context to child context */
+  refineContext?: (ctx: Context, opts: CmdOptions, args: CmdArgs) => Promise<Context> | Context;
+  /** Subcommands */
+  subCommands?: Record<string, CommandConstructor<Context> | CommandNode<Context>>;
+}
+
+/**
+ * Constructor type for Command classes
+ */
+export interface CommandConstructor<Context extends ICtx = ICtx> {
+  new (pkg: DenoPkg, node?: CommandNode<Context>): any; // Use any to avoid circular reference
 }

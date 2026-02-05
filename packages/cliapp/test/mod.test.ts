@@ -38,7 +38,7 @@ beforeEach(() => {
   // (Deno as any).args = []; // Removed: No longer relying on global Deno.args for these tests
 });
 
-type MyCliOpts = CliApp.Opts & {
+type MyCliOpts = CliApp.LogOptions & {
   dryRun?: boolean;
   token?: string;
   recursive?: number | boolean; // Adjusted for addRecursion

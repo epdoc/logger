@@ -3,7 +3,7 @@
   "version": "0.0.5",
   "exports": "./main.ts",
   "imports": {
-    "@cliffy/command": "jsr:@cliffy/command@1.0.0-rc.8",
+    "@cliffy/command": "jsr:@jpravetz/command@1.0.0-rc.9-fix.2",
     "@epdoc/logger": "jsr:@epdoc/logger@^1003.2.8",
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.0",
     "@std/fmt": "jsr:@std/fmt@^1.0.8"

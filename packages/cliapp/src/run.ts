@@ -6,48 +6,69 @@
  */
 
 import * as _ from '@epdoc/type';
-import type { ICtx, Logger, MsgBuilder } from './types.ts';
+import type { ICtx, ISilentError } from './types.ts';
+import { configureLogging } from './utils.ts';
+import type { Command } from './command.ts';
 
 /**
- * Runs a CLI application with standardized lifecycle management
+ * Runs a CLI application with comprehensive lifecycle management
  *
- * Provides a complete application wrapper that handles:
+ * Provides production-ready application wrapper that handles:
  * - SIGINT (Ctrl-C) signal handling for graceful shutdown
  * - Error handling with appropriate logging and exit codes
  * - Resource cleanup via ctx.close()
  * - Performance timing and reporting
  * - Stack trace management based on log level
- *
- * This function never returns - it always calls Deno.exit() with appropriate exit codes.
+ * - Silent error handling for user-friendly messages
  *
  * @param ctx - Application context for logging and resource management
  * @param appFn - Main application function to execute
+ * @param options - Configuration options for the runner
+ * @param options.noExit - If true, don't call Deno.exit() (useful for testing)
  *
  * @example
  * ```typescript
- * // Traditional API usage
  * await run(ctx, async () => {
  *   const cmd = new Command(pkg);
- *   cmd.init(ctx);
- *   cmd.addLogging(ctx);
- *
- *   const opts = await cmd.parseOpts();
- *   configureLogging(ctx, opts);
- *
- *   // Your application logic here
- *   await processFiles(opts.files);
+ *   await cmd.init(ctx);
+ *   await cmd.parseAsync();
  * });
- *
- * // The run function handles:
- * // - Ctrl-C interruption (exit code 0)
- * // - Application errors (exit code 1)
- * // - Resource cleanup (ctx.close())
- * // - Performance timing
  * ```
  */
-export async function run<M extends MsgBuilder = MsgBuilder, L extends Logger<M> = Logger<M>>(
-  ctx: ICtx<M, L>,
+export async function run(
+  ctx: ICtx,
   appFn: () => Promise<unknown>,
+  options?: { noExit?: boolean },
+): Promise<void>;
+
+/**
+ * Enhanced run function with automatic logging configuration
+ * 
+ * This overload automatically configures logging based on parsed command options.
+ * The command's global action handler will call configureLogging() after parsing.
+ *
+ * @param ctx - Application context for logging and resource management
+ * @param command - Command instance that will be parsed
+ * @param options - Configuration options for the runner
+ * @param options.noExit - If true, don't call Deno.exit() (useful for testing)
+ *
+ * @example
+ * ```typescript
+ * const cmd = new RootCommand();
+ * await cmd.init(ctx);
+ * await run(ctx, cmd); // Automatic logging configuration
+ * ```
+ */
+export async function run(
+  ctx: ICtx,
+  command: Command<any>,
+  options?: { noExit?: boolean },
+): Promise<void>;
+
+export async function run(
+  ctx: ICtx,
+  appFnOrCommand: (() => Promise<unknown>) | Command<any>,
+  options: { noExit?: boolean } = {},
 ): Promise<void> {
   const t0 = performance.now();
   let exitCode = 0;
@@ -70,13 +91,29 @@ export async function run<M extends MsgBuilder = MsgBuilder, L extends Logger<M>
   Deno.addSignalListener('SIGINT', sigintHandler);
 
   try {
-    await appFn();
+    // Handle both function and Command overloads
+    if (typeof appFnOrCommand === 'function') {
+      // Original function-based approach
+      await appFnOrCommand();
+    } else {
+      // Enhanced Command-based approach with automatic logging configuration
+      const command = appFnOrCommand;
+      
+      // Add preAction hook to configure logging after options are parsed
+      command.hook('preAction', (thisCommand: any) => {
+        const opts = thisCommand.opts();
+        configureLogging(ctx, opts);
+      });
+      
+      await command.parseAsync();
+    }
   } catch (error) {
     exitCode = 1;
     const t1 = performance.now() - t0;
     const err = _.asError(error);
+    const isSilent = (err as ISilentError).silent === true;
 
-    if ('silent' in err) {
+    if (isSilent) {
       ctx.log.nodent().info.h1('Application').error(err.message).ewt(t1);
     } else {
       ctx.log.error.h1('Application').err(err).ewt(t1);
@@ -103,7 +140,7 @@ export async function run<M extends MsgBuilder = MsgBuilder, L extends Logger<M>
     }
 
     Deno.removeSignalListener('SIGINT', sigintHandler);
-    if (!interrupted) {
+    if (!interrupted && !options.noExit) {
       Deno.exit(exitCode);
     }
   }
