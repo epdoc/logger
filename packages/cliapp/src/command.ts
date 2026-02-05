@@ -4,7 +4,7 @@ import * as Commander from 'commander';
 import { assert } from 'node:console';
 import { config } from './config.ts';
 import { FluentOptionBuilder } from './option.ts';
-import type { CmdArgs, CmdOptions, CommandConstructor, CommandNode, DenoPkg, ICtx } from './types.ts';
+import type { CmdArgs, CmdOptions, CommandConstructor, CommandNode, ICtx } from './types.ts';
 import { commaList } from './utils.ts';
 
 /**
@@ -15,9 +15,6 @@ export class Command<
   Options extends CmdOptions = CmdOptions,
   DerivedContext extends Context = Context,
 > extends Commander.Command {
-  /** Package metadata from deno.json */
-  pkg: DenoPkg;
-
   /** Current context instance */
   protected _ctx?: Context;
 
@@ -36,11 +33,24 @@ export class Command<
     | ((ctx: Context) => Promise<Record<string, CommandConstructor<Context> | CommandNode<Context>>>);
 
   /**
+   * Default action method that shows help.
+   *
+   * Override this method in subclasses to define custom behavior.
+   * The framework automatically handles logging configuration for root commands.
+   *
+   * @param opts - Parsed command line options
+   * @param args - Positional arguments from the command line
+   */
+  protected execute(_opts: Options, _args: CmdArgs): Promise<void> | void {
+    // Default behavior: show help
+    this.help();
+  }
+
+  /**
    * Creates a new Command instance
    */
-  constructor(pkg: DenoPkg, node?: CommandNode<Context>) {
-    super(pkg.name);
-    this.pkg = pkg;
+  constructor(node?: CommandNode<Context>) {
+    super();
     this.node = node;
   }
 
@@ -53,11 +63,11 @@ export class Command<
     // Detect if this is a root command (no parent)
     this._isRoot = !this.parent;
 
-    if (this.pkg.version) {
-      this.version(this.pkg.version, '-v, --version', 'Output the current version.');
-    }
-    if (this.pkg.description) {
-      this.description(this.pkg.description);
+    const pkg = this.ctx.pkg;
+    if (pkg) {
+      pkg.name && this.name(pkg.name);
+      pkg.version && this.version(pkg.version, '-v, --version', 'Output the current version.');
+      pkg.description && this.description(pkg.description);
     }
     this.configureHelp(config.help).configureOutput(config.output);
 
@@ -141,32 +151,32 @@ export class Command<
   protected async setupSubcommands(): Promise<void> {
     if (!this.subCommands) return;
 
-    const subCommands = typeof this.subCommands === 'function' ? await this.subCommands(this.ctx) : this.subCommands;
+    const subCommands = _.isFunction(this.subCommands) ? await this.subCommands(this.ctx) : this.subCommands;
 
     for (const [name, Entry] of Object.entries(subCommands)) {
       let child: Command<DerivedContext>;
 
-      if (typeof Entry === 'function') {
+      if (_.isFunction(Entry)) {
         // Class constructor
-        child = new (Entry as unknown as CommandConstructor<DerivedContext>)(this.pkg);
+        child = new (Entry as unknown as CommandConstructor<DerivedContext>)(this.ctx.pkg);
       } else {
         // Declarative CommandNode
-        child = new Command<DerivedContext>(this.pkg, Entry as unknown as CommandNode<DerivedContext>);
+        child = new Command<DerivedContext>(Entry as unknown as CommandNode<DerivedContext>);
       }
 
       // Set the command name
       child.name(name);
-      
+
       // Store the original action handler
       const originalActionHandler = (child as any)._actionHandler;
-      
+
       // Wrap the action handler to derive context at runtime
       (child as any)._actionHandler = async (...args: unknown[]) => {
         // Derive context with actual runtime options from parent
         const parentOpts = this.opts();
         const childCtx = await this.deriveChildContext(this.ctx, parentOpts, args as string[]);
         await child.init(childCtx);
-        
+
         // Call the original action handler
         if (originalActionHandler) {
           return await originalActionHandler.apply(child, args);

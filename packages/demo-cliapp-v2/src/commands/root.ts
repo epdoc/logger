@@ -34,6 +34,8 @@ export class RootCommand extends CliApp.Command<AppContext, RootOpts, ChildConte
         this.ctx.log.info.text('Root command options:').emit();
         this.ctx.log.indent();
         this.ctx.log.info.label('debugMode').value(opts.debugMode).emit();
+        this.ctx.log.info.label('noColor').value(opts.noColor).emit();
+        this.ctx.log.info.label('logLevel').value(opts.logLevel).emit();
         this.ctx.log.info.label('args:').value(args.join(',')).emit();
         this.ctx.log.outdent();
         if (args.length === 0) {

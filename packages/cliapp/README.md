@@ -1,21 +1,21 @@
 # @epdoc/cliapp v2.0
 
-A clean, type-safe CLI framework with automatic context flow and declarative configuration.
+A type-safe CLI framework supporting command hierarchies, context flow and optional declarative configuration. Built to integrate @epdoc/logger with commanderjs.
 
 ## Features
 
-- **Automatic Context Flow** - Context flows seamlessly from parent to child commands
-- **Type-Safe Transformations** - Transform context types with `deriveChildContext()`
+- **Context Flow** - Context flows from parent to child commands using `deriveChildContext()`
+- **Class-bassed Configuration** - Define commands by declaring subclasses of our `Command` class, or
 - **Declarative Configuration** - Define commands with pure configuration objects
 - **Built-in Logging** - Integrated with `@epdoc/logger` for structured logging
 - **Commander.js Foundation** - Built on the stable, mature Commander.js library
-- **Production Ready** - Comprehensive error handling, signal management, and cleanup
+- **Production Ready** - Comprehensive error handling, signal management, and cleanup with `run()`
 
 ## Quick Start
 
 ```typescript
 import pkg from './deno.json' with { type: 'json' };
-import { Command, Context, run } from '@epdoc/cliapp';
+import { Command, Context, run, LogOptions, CmdArgs } from '@epdoc/cliapp';
 
 // Define your context
 class AppContext extends Context {
@@ -26,16 +26,20 @@ class ChildContext extends AppContext {
   processedFiles = 0;
 }
 
+type RootOptions = LogOptions & { debugMode: boolean }
+
 // Define your commands
-class RootCommand extends Command<AppContext, ChildContext> {
+class RootCommand extends Command<AppContext, RootOptions, ChildContext> {
   protected subCommands = {
     process: ProcessCommand,
   };
 
+  protected override action(opts:RootOptions,args:CmdArgs) {
+    this.ctx.debugMode = opts.debugMode;
+  }
+
   protected async deriveChildContext(ctx: AppContext): Promise<ChildContext> {
-    const child = new ChildContext(ctx);
-    child.debugMode = ctx.debugMode; // Flow state to child
-    return child;
+    return new ChildContext(ctx);
   }
 }
 
@@ -48,7 +52,7 @@ class ProcessCommand extends Command<ChildContext> {
   }
 
   action = async (files: string[], opts: any) => {
-    this.ctx.log.info.text(`Processing ${files.length} files`);
+    this.ctx.log.info.text('Processing').cound(files.length).text('file').emit();
     if (this.ctx.debugMode) {
       this.ctx.log.debug.text('Debug mode enabled');
     }

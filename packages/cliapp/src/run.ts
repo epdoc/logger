@@ -6,9 +6,9 @@
  */
 
 import * as _ from '@epdoc/type';
+import type { Command as CliAppCommand } from './command.ts';
 import type { ICtx, ISilentError } from './types.ts';
 import { configureLogging } from './utils.ts';
-import type { Command } from './command.ts';
 
 /**
  * Runs a CLI application with comprehensive lifecycle management
@@ -43,7 +43,7 @@ export async function run(
 
 /**
  * Enhanced run function with automatic logging configuration
- * 
+ *
  * This overload automatically configures logging based on parsed command options.
  * The command's global action handler will call configureLogging() after parsing.
  *
@@ -61,13 +61,13 @@ export async function run(
  */
 export async function run(
   ctx: ICtx,
-  command: Command<any>,
+  command: CliAppCommand,
   options?: { noExit?: boolean },
 ): Promise<void>;
 
 export async function run(
   ctx: ICtx,
-  appFnOrCommand: (() => Promise<unknown>) | Command<any>,
+  appFnOrCommand: (() => Promise<unknown>) | CliAppCommand,
   options: { noExit?: boolean } = {},
 ): Promise<void> {
   const t0 = performance.now();
@@ -92,19 +92,19 @@ export async function run(
 
   try {
     // Handle both function and Command overloads
-    if (typeof appFnOrCommand === 'function') {
+    if (_.isFunction(appFnOrCommand)) {
       // Original function-based approach
       await appFnOrCommand();
     } else {
       // Enhanced Command-based approach with automatic logging configuration
       const command = appFnOrCommand;
-      
+
       // Add preAction hook to configure logging after options are parsed
       command.hook('preAction', (thisCommand: any) => {
         const opts = thisCommand.opts();
         configureLogging(ctx, opts);
       });
-      
+
       await command.parseAsync();
     }
   } catch (error) {
