@@ -16,7 +16,6 @@ export type { BaseCommand } from './cmd-abstract.ts';
 // Local imports for use in this file
 import type { BaseCommand } from './cmd-abstract.ts';
 import type { ICtx } from './context.ts';
-import type { DenoPkg } from './pkg-type.ts';
 
 /**
  * Base message builder type for CLI applications

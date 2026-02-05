@@ -9,13 +9,13 @@ import type * as CliApp from './types.ts';
 
 /**
  * Create a command class from declarative CommandNode configuration
- * 
+ *
  * The factory returns a class (not an instance) that extends BaseCommand.
  * You can then instantiate it: `new MyCommand(initialContext)`
- * 
+ *
  * @param node - Declarative command configuration
  * @returns A class extending BaseCommand that implements the configuration
- * 
+ *
  * @example
  * ```typescript
  * const ProcessCommand = createCommand<ChildContext, RootContext>({
@@ -29,7 +29,7 @@ import type * as CliApp from './types.ts';
  *     ctx.log.info.text(`Processing ${files.length} files`).emit();
  *   }
  * });
- * 
+ *
  * // Later, instantiate it:
  * const cmd = new ProcessCommand();
  * ```

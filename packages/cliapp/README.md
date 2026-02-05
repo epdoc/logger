@@ -1,181 +1,240 @@
-# @epdoc/cliapp v2.0
+# @epdoc/cliapp
 
-A type-safe CLI framework supporting command hierarchies, context flow and optional declarative configuration. Built to integrate @epdoc/logger with commanderjs.
+Type-safe CLI framework with automatic context flow, built on Commander.js and integrated with @epdoc/logger.
 
 ## Features
 
-- **Context Flow** - Context flows from parent to child commands using `deriveChildContext()`
-- **Class-bassed Configuration** - Define commands by declaring subclasses of our `Command` class, or
-- **Declarative Configuration** - Define commands with pure configuration objects
-- **Built-in Logging** - Integrated with `@epdoc/logger` for structured logging
-- **Commander.js Foundation** - Built on the stable, mature Commander.js library
-- **Production Ready** - Comprehensive error handling, signal management, and cleanup with `run()`
+- **Automatic Context Flow** - Parent context flows to child commands automatically
+- **Class-Based or Declarative** - Choose your style or mix both
+- **Built-in Logging** - Integrated @epdoc/logger with automatic configuration
+- **Type-Safe** - Full TypeScript support with generic constraints
+- **Production Ready** - Error handling, signal management, and cleanup
 
-## Quick Start
+## Installation
+
+```bash
+deno add @epdoc/cliapp @epdoc/logger @epdoc/msgbuilder
+```
+
+## Quick Start - Class-Based
 
 ```typescript
+import * as CliApp from '@epdoc/cliapp';
 import pkg from './deno.json' with { type: 'json' };
-import { Command, Context, run, LogOptions, CmdArgs } from '@epdoc/cliapp';
 
-// Define your context
-class AppContext extends Context {
-  debugMode = false;
+// Define contexts
+class RootContext extends CliApp.Context {
+  apiUrl = '';
 }
 
-class ChildContext extends AppContext {
+class ChildContext extends RootContext {
   processedFiles = 0;
-}
-
-type RootOptions = LogOptions & { debugMode: boolean }
-
-// Define your commands
-class RootCommand extends Command<AppContext, RootOptions, ChildContext> {
-  protected subCommands = {
-    process: ProcessCommand,
-  };
-
-  protected override action(opts:RootOptions,args:CmdArgs) {
-    this.ctx.debugMode = opts.debugMode;
-  }
-
-  protected async deriveChildContext(ctx: AppContext): Promise<ChildContext> {
-    return new ChildContext(ctx);
+  
+  constructor(parent: RootContext, params?: any) {
+    super(parent, params);
+    this.apiUrl = parent.apiUrl; // Inherit from parent
   }
 }
 
-class ProcessCommand extends Command<ChildContext> {
-  constructor() {
-    super(pkg);
-    this.description('Process files');
-    this.argument('<files...>', 'Files to process');
-    this.option('-f, --force', 'Force processing');
+// Define commands
+class RootCommand extends CliApp.BaseCommand<RootContext, RootContext> {
+  defineMetadata() {
+    this.commander.name(pkg.name);
+    this.commander.description(pkg.description);
   }
 
-  action = async (files: string[], opts: any) => {
-    this.ctx.log.info.text('Processing').cound(files.length).text('file').emit();
-    if (this.ctx.debugMode) {
-      this.ctx.log.debug.text('Debug mode enabled');
-    }
-    // Process files...
-    this.ctx.processedFiles = files.length;
-  };
+  defineOptions() {
+    this.commander.option('--api-url <url>', 'API URL');
+  }
+
+  createContext(parent?: RootContext) {
+    return parent || this.parentContext!;
+  }
+
+  hydrateContext(options) {
+    this.ctx.apiUrl = options.apiUrl;
+  }
+
+  execute() {
+    this.commander.help();
+  }
+
+  protected override getSubCommands() {
+    return [new ProcessCommand()];
+  }
 }
 
-// Run your application
+class ProcessCommand extends CliApp.BaseCommand<ChildContext, RootContext> {
+  defineMetadata() {
+    this.commander.name('process');
+    this.commander.description('Process files');
+  }
+
+  defineOptions() {
+    this.commander.argument('<files...>', 'Files to process');
+  }
+
+  createContext(parent) {
+    return new ChildContext(parent);
+  }
+
+  hydrateContext() {}
+
+  execute(opts, files) {
+    this.ctx.log.info.text(`Processing ${files.length} files`).emit();
+    this.ctx.log.info.text(`API: ${this.ctx.apiUrl}`).emit();
+  }
+}
+
+// Run
 if (import.meta.main) {
-  const ctx = new AppContext(pkg);
+  const ctx = new RootContext(pkg);
   await ctx.setupLogging();
-
-  const root = new RootCommand();
-  await root.init(ctx);
-  root.option('--debug-mode', 'Enable debug mode');
-  root.addLogging();
-
-  await run(ctx, () => root.parseAsync());
+  const cmd = new RootCommand(ctx);
+  await CliApp.run(ctx, cmd);
 }
 ```
 
-## Core Concepts
+## Quick Start - Declarative
+
+```typescript
+import * as CliApp from '@epdoc/cliapp';
+import pkg from './deno.json' with { type: 'json' };
+
+// Define contexts (same as above)
+class RootContext extends CliApp.Context {
+  apiUrl = '';
+}
+
+// Create commands declaratively
+const RootCommand = CliApp.createCommand({
+  name: pkg.name,
+  description: pkg.description,
+  options: {
+    '--api-url <url>': 'API URL'
+  },
+  hydrate: (ctx, opts) => {
+    ctx.apiUrl = opts.apiUrl;
+  },
+  subCommands: {
+    process: CliApp.createCommand({
+      name: 'process',
+      description: 'Process files',
+      arguments: ['<files...>'],
+      action: (ctx, opts, ...files) => {
+        ctx.log.info.text(`Processing ${files.length} files`).emit();
+        ctx.log.info.text(`API: ${ctx.apiUrl}`).emit();
+      }
+    })
+  }
+});
+
+// Run (same as above)
+if (import.meta.main) {
+  const ctx = new RootContext(pkg);
+  await ctx.setupLogging();
+  const cmd = new RootCommand(ctx);
+  await CliApp.run(ctx, cmd);
+}
+```
+
+## Key Concepts
 
 ### Context Flow
 
-Context automatically flows from parent to child commands:
+Context automatically flows from parent to child:
 
-```typescript
-class RootCommand extends Command<AppContext, ChildContext> {
-  // Transform parent context → child context
-  protected async deriveChildContext(ctx: AppContext): Promise<ChildContext> {
-    const child = new ChildContext(ctx); // Inherit logging, etc.
-    child.debugMode = ctx.debugMode;     // Flow specific state
-    return child;
-  }
-}
+1. Parent command's `hydrateContext()` runs with parent options
+2. Child command's `createContext()` receives hydrated parent context
+3. Child inherits parent state via constructor
+
+### Lifecycle
+
+Commands follow this lifecycle:
+
+1. **Construction** - `new Command()` creates instance
+2. **Metadata** - `defineMetadata()` sets name, description
+3. **Options** - `defineOptions()` adds options and arguments
+4. **Parsing** - Commander.js parses command line
+5. **PreAction Hook** - Context created and hydrated
+6. **Execution** - `execute()` runs with parsed options
+
+### Built-in Logging
+
+Root commands automatically get logging options:
+- `--log-level <level>` - Set log threshold
+- `--debug`, `--trace`, `--spam` - Shortcuts
+- `--log_show [props]` - Configure log output
+- `--no-color` - Disable colors
+
+## Examples
+
+See working examples in [packages/examples/](../../examples/):
+- `cliapp.04.run.ts` - Class-based approach
+- `cliapp.03.run.ts` - Declarative approach
+
+Run examples:
+```bash
+cd packages/examples
+deno run -A cliapp.04.run.ts --help
+deno run -A cliapp.04.run.ts --root-option process --sub-option file1.txt
 ```
 
-### Clean API
+## API
 
-No more painful context passing:
+### BaseCommand
 
-```typescript
-// v2.0 - Clean and simple
-cmd.addLogging();        // Uses this.ctx automatically
-cmd.init(ctx);           // One-time context setup
-this.ctx.log.info.text('Hello'); // Direct access
+Abstract class for creating commands.
 
-// v1.x - Painful repetition
-cmd.addLogging(ctx);     // Pass context everywhere
-cmd.init(ctx);
-ctx.log.info.text('Hello');
-```
+**Abstract Methods:**
+- `defineMetadata()` - Set command name, description, version
+- `defineOptions()` - Add options and arguments
+- `createContext(parent?)` - Create context instance
+- `hydrateContext(options)` - Populate context from parsed options
+- `execute(options, args)` - Run command logic
 
-### Declarative Configuration
+**Override Methods:**
+- `getSubCommands()` - Return array of subcommand instances
 
-Mix class-based and declarative approaches:
+### createCommand(node)
 
-```typescript
-class MyCommand extends Command<Context> {
-  protected subCommands = {
-    // Class-based subcommand
-    advanced: AdvancedCommand,
-    
-    // Declarative subcommand
-    simple: {
-      name: 'simple',
-      description: 'Simple command',
-      options: {
-        '--count <n>': 'Number of items'
-      },
-      action: (ctx, opts) => {
-        ctx.log.info.text(`Count: ${opts.count}`);
-      }
-    }
-  };
-}
-```
+Factory function to create commands from declarative configuration.
 
-## API Reference
+**CommandNode Properties:**
+- `name` - Command name
+- `description` - Command description
+- `options` - Object mapping flags to descriptions
+- `arguments` - Array of argument specifications
+- `hydrate(ctx, opts)` - Hydrate context callback
+- `action(ctx, opts, ...args)` - Command action
+- `subCommands` - Object mapping names to subcommands
 
-### Command Class
+### Context
 
-```typescript
-class Command<Context, SubContext, Opts> extends Commander.Command
-```
+Base context class with logging support.
 
-**Key Methods:**
-- `init(ctx: Context): Promise<this>` - Initialize with context
-- `addLogging(): this` - Add standard logging options
-- `deriveChildContext(ctx, opts, args): Promise<SubContext>` - Transform context
+**Constructor:**
+- `new Context(pkg)` - Create root context
+- `new Context(parent, params?)` - Create child context
+
+**Methods:**
+- `setupLogging(level?)` - Initialize logging (root only)
+- `close()` - Cleanup resources
 
 **Properties:**
-- `ctx: Context` - Current context instance
-- `subCommands` - Declarative subcommand mapping
+- `log` - Logger instance
+- `logMgr` - Log manager
+- `pkg` - Package metadata
 
-### Context Class
+### run(ctx, command, options?)
 
-```typescript
-class Context implements ICtx
-```
+Run application with lifecycle management.
 
-**Key Methods:**
-- `setupLogging(level?: string): Promise<void>` - Setup logging for root context
-- `close(): Promise<void>` - Cleanup resources
-
-**Properties:**
-- `log: Logger` - Logger instance
-- `logMgr: Log.Mgr` - Log manager
-- `pkg: DenoPkg` - Package metadata
-
-### Run Function
-
-```typescript
-function run(ctx: ICtx, appFn: () => Promise<unknown>, options?: { noExit?: boolean }): Promise<void>
-```
-
-Provides comprehensive application lifecycle management with error handling, signal management, and cleanup.
-
-## Migration from v1.x
-
-See [MIGRATION.md](./MIGRATION.md) for detailed migration guide.
+**Features:**
+- Error handling with stack traces
+- SIGINT (Ctrl-C) handling
+- Resource cleanup via `ctx.close()`
+- Performance timing
 
 ## License
 

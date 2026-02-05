@@ -1,12 +1,4 @@
-/**
- * @file Fluent Option Builder for CLI Commands
- * @description Provides a fluent API for building Commander.js options with method chaining,
- * similar to the MsgBuilder pattern used in @epdoc/msgbuilder.
- * @module
- */
-
 import * as Commander from 'commander';
-import type { BaseCommand } from './cmd-abstract.ts';
 
 /**
  * Fluent builder for Commander.js options with method chaining

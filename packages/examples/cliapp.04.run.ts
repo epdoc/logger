@@ -1,5 +1,5 @@
 import * as CliApp from '../cliapp/src/mod.ts';
-import * as Log from '../logger/src/mod.ts';
+import type * as Log from '../logger/src/mod.ts';
 import pkg from './deno.json' with { type: 'json' };
 
 // Define your contexts
