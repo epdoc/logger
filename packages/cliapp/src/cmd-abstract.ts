@@ -1,6 +1,7 @@
 import * as Commander from 'commander';
 import type * as Ctx from './context.ts';
 import type * as CliApp from './types.ts';
+import { config } from './config.ts';
 import { configureLogging } from './utils.ts';
 
 export abstract class BaseCommand<
@@ -17,6 +18,10 @@ export abstract class BaseCommand<
   constructor(name?: string, initialContext?: TParentContext) {
     this.commander = new Commander.Command(name);
     this.parentContext = initialContext;
+
+    // Configure help and output formatting
+    this.commander.configureHelp(config.help);
+    this.commander.configureOutput(config.output);
 
     this.defineMetadata();
     this.defineOptions();
