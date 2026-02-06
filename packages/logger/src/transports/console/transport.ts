@@ -86,7 +86,7 @@ export class ConsoleTransport extends Base.Transport {
     }
     const show = this._show;
     const _logLevels = this._logMgr.logLevels;
-    const color = (this._color === true && this._show.color !== false) ? true : false;
+    const color = this.useColor;
 
     const entry: TransportEntry = Object.assign(
       {
@@ -169,7 +169,7 @@ export class ConsoleTransport extends Base.Transport {
 
   formatJsonArrayEntry(entry: TransportEntry, msg: Entry): string {
     const logLevels = this._logMgr.logLevels;
-    const color = (this._color === true && this._show.color !== false) ? true : false;
+    const color = this.useColor;
     const parts: (string | null | object | number)[] = [];
     if (_.isString(entry.timestamp) && this._show.timestamp) {
       parts.push(color ? logLevels.applyColors(entry.timestamp, msg.level) : entry.timestamp);
@@ -225,7 +225,7 @@ export class ConsoleTransport extends Base.Transport {
       }
     }
     s = '[' + s + ']';
-    if (this._color) {
+    if (this.useColor) {
       return this._logMgr.logLevels.applyColors(s, level);
     }
     return s;
@@ -265,7 +265,7 @@ export class ConsoleTransport extends Base.Transport {
         s += opts.post;
       }
     }
-    if (this._color && consoleStyleFormatters[colorFn]) {
+    if (this.useColor && consoleStyleFormatters[colorFn]) {
       return (consoleStyleFormatters as Console.StyleFormatterMap)[colorFn](s);
     }
     return s;

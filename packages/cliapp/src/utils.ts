@@ -134,7 +134,9 @@ function setAllShow(show: Log.EmitterShowOpts) {
   show.level = true;
   show.reqId = true;
   show.time = true;
-  show.color = true;
+  if (show.color !== false) {
+    show.color = true;
+  }
 }
 
 /**

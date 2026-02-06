@@ -16,6 +16,7 @@
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.1",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.4",
     "@std/assert": "jsr:@std/assert@^1.0.18",
+    "@std/expect": "jsr:@std/expect@^1.0.17",
     "@std/fmt": "jsr:@std/fmt@^1.0.9",
     "@std/testing": "jsr:@std/testing@^1.0.17",
     "commander": "npm:commander@^14.0.3"
