@@ -17,7 +17,7 @@ class AppBuilder extends Console.Builder {
 type Logger = Log.Std.Logger<AppBuilder>;
 
 // Context extending base Context class with custom types
-class AppContext extends CliApp.Context<Logger> {
+class AppContext extends CliApp.Context<AppBuilder, Logger> {
   processedFiles = 0;
 
   override async setupLogging() {
@@ -84,7 +84,7 @@ class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, RootOptions
     }
   }
 
-  async execute() {
+  execute() {
     this.ctx.log.info.h1('File Processor').emit();
     this.ctx.logStatus('info', 'Use subcommands: process, clean');
   }
@@ -118,7 +118,7 @@ class ProcessCommand extends CliApp.BaseCommand<AppContext, AppContext, ProcessO
     }
   }
 
-  async execute(opts: ProcessOptions, files: string[]) {
+  execute(opts: ProcessOptions, files: string[]) {
     this.ctx.log.info.h1('File Processing')
       .label('Directory:').value(opts.input || '.')
       .label('Pattern:').value(opts.pattern || '*.txt')
@@ -154,11 +154,11 @@ class CleanCommand extends CliApp.BaseCommand<AppContext, AppContext, CleanOptio
     return parent!;
   }
 
-  hydrateContext(options: CleanOptions) {
+  hydrateContext(_options: CleanOptions) {
     // Inherit dry-run from parent context
   }
 
-  async execute(opts: CleanOptions, target: string[]) {
+  execute(opts: CleanOptions, target: string[]) {
     const targetDir = target[0] || '.';
     this.ctx.log.info.h1('Cleanup Operation')
       .label('Target:').value(targetDir)
@@ -191,5 +191,5 @@ if (import.meta.main) {
 
   const cmd = new RootCommand(ctx);
 
-  await CliApp.run(ctx, cmd);
+  await CliApp.run<AppContext>(ctx, cmd);
 }

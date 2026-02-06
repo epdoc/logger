@@ -32,6 +32,7 @@ type ExtenderMethod = (this: ConsoleMsgBuilder, ...args: any[]) => ConsoleMsgBui
  * const logger = logMgr.getLogger();
  * logger.info.apiCall('GET', '/api/users').emit();
  * ```
+ * @deprecated Use direct class extension instead: `class MyBuilder extends Console.Console.Builder { }`
  */
 export function extender<T extends Record<string, ExtenderMethod>>(
   extensions: T,
