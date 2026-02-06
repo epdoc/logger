@@ -3,8 +3,15 @@ import * as Log from '../logger/src/mod.ts';
 import pkg from './deno.json' with { type: 'json' };
 
 // Define your contexts
-class RootContext extends CliApp.Ctx.Context {
+class RootContext extends CliApp.Context {
   debugMode = false;
+
+  async setupLogging() {
+    this.logMgr = new Log.Mgr<CliApp.Ctx.MsgBuilder>();
+    this.logMgr.initLevels();
+    this.logMgr.threshold = 'info';
+    this.log = await this.logMgr.getLogger<CliApp.Ctx.Logger>();
+  }
 }
 
 class ChildContext extends RootContext {

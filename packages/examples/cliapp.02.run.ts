@@ -17,9 +17,7 @@ class AppBuilder extends Console.Builder {
 type Logger = Log.Std.Logger<AppBuilder>;
 
 // Context extending base Context class with custom types
-class AppContext extends CliApp.Context {
-  declare log: Logger;
-  declare logMgr: Log.Mgr<AppBuilder>;
+class AppContext extends CliApp.Context<Logger> {
   processedFiles = 0;
 
   override async setupLogging() {
