@@ -6,27 +6,43 @@
     "jsr:@cliffy/table@1.0.0-rc.8": "1.0.0-rc.8",
     "jsr:@epdoc/datetime@^2.0.14": "2.0.14",
     "jsr:@epdoc/duration@~0.3.7": "0.3.7",
+    "jsr:@epdoc/fs@^1.2.14": "1.2.16",
     "jsr:@epdoc/string@~0.1.16": "0.1.16",
     "jsr:@epdoc/type@^1.2.4": "1.2.4",
     "jsr:@jpravetz/command@1.0.0-rc.9-fix.1": "1.0.0-rc.9-fix.1",
+    "jsr:@jpravetz/command@1.0.0-rc.9-fix.2": "1.0.0-rc.9-fix.2",
     "jsr:@std/assert@1": "1.0.6",
+    "jsr:@std/assert@^1.0.14": "1.0.18",
+    "jsr:@std/assert@^1.0.15": "1.0.18",
     "jsr:@std/assert@^1.0.16": "1.0.18",
+    "jsr:@std/assert@^1.0.17": "1.0.18",
     "jsr:@std/assert@^1.0.18": "1.0.18",
     "jsr:@std/assert@^1.0.6": "1.0.6",
+    "jsr:@std/async@^1.1.0": "1.1.0",
     "jsr:@std/bytes@*": "1.0.4",
     "jsr:@std/bytes@^1.0.4": "1.0.4",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
+    "jsr:@std/bytes@^1.0.6": "1.0.6",
+    "jsr:@std/data-structures@^1.0.10": "1.0.10",
     "jsr:@std/encoding@^1.0.10": "1.0.10",
     "jsr:@std/expect@*": "1.0.4",
+    "jsr:@std/expect@^1.0.17": "1.0.17",
+    "jsr:@std/fmt@^1.0.8": "1.0.9",
     "jsr:@std/fmt@^1.0.9": "1.0.9",
     "jsr:@std/fmt@~1.0.2": "1.0.9",
     "jsr:@std/fs@*": "1.0.11",
+    "jsr:@std/fs@^1.0.22": "1.0.22",
     "jsr:@std/fs@^1.0.4": "1.0.11",
+    "jsr:@std/internal@^1.0.10": "1.0.12",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "jsr:@std/internal@^1.0.4": "1.0.4",
     "jsr:@std/io@0.225": "0.225.2",
     "jsr:@std/path@^1.0.8": "1.0.8",
+    "jsr:@std/path@^1.1.4": "1.1.4",
+    "jsr:@std/semver@^1.0.5": "1.0.7",
+    "jsr:@std/testing@^1.0.17": "1.0.17",
     "jsr:@std/text@~1.0.7": "1.0.17",
+    "jsr:@std/yaml@^1.0.11": "1.0.11",
     "npm:@types/node@*": "22.15.15",
     "npm:checksum@1": "1.0.0",
     "npm:commander@^14.0.3": "14.0.3",
@@ -61,6 +77,18 @@
         "jsr:@epdoc/type"
       ]
     },
+    "@epdoc/fs@1.2.16": {
+      "integrity": "8f93928f7206256d7ffbe3fa1dea5d6a0ba9252591dd497d39f639be6911837c",
+      "dependencies": [
+        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/type",
+        "jsr:@std/assert@^1.0.15",
+        "jsr:@std/bytes@^1.0.6",
+        "jsr:@std/encoding",
+        "jsr:@std/path@^1.1.4",
+        "jsr:@std/yaml"
+      ]
+    },
     "@epdoc/string@0.1.16": {
       "integrity": "1a1eb9d6e0a9415fa404444fc521666189bf57043b32642b9593a4cb28bda020",
       "dependencies": [
@@ -81,6 +109,18 @@
         "jsr:@cliffy/internal",
         "jsr:@cliffy/table",
         "jsr:@std/fmt@~1.0.2",
+        "jsr:@std/semver",
+        "jsr:@std/text"
+      ]
+    },
+    "@jpravetz/command@1.0.0-rc.9-fix.2": {
+      "integrity": "98e6309fb65bf69436d165cb05cd38a3f74ddca9e668ad08e5cac6d6b34531a6",
+      "dependencies": [
+        "jsr:@cliffy/flags",
+        "jsr:@cliffy/internal",
+        "jsr:@cliffy/table",
+        "jsr:@std/fmt@~1.0.2",
+        "jsr:@std/semver",
         "jsr:@std/text"
       ]
     },
@@ -96,11 +136,20 @@
         "jsr:@std/internal@^1.0.12"
       ]
     },
+    "@std/async@1.1.0": {
+      "integrity": "72418df08d1be84668a53e48aab3520d68ae6882182f8a5ca75c6d1f087220d1"
+    },
     "@std/bytes@1.0.4": {
       "integrity": "11a0debe522707c95c7b7ef89b478c13fb1583a7cfb9a85674cd2cc2e3a28abc"
     },
     "@std/bytes@1.0.5": {
       "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
+    },
+    "@std/bytes@1.0.6": {
+      "integrity": "f6ac6adbd8ccd99314045f5703e23af0a68d7f7e58364b47d2c7f408aeb5820a"
+    },
+    "@std/data-structures@1.0.10": {
+      "integrity": "f574f86b0e07c69b9edc555fcc814b57d29258bad39fd5a34ba8a80ecf033cfe"
     },
     "@std/encoding@1.0.10": {
       "integrity": "8783c6384a2d13abd5e9e87a7ae0520a30e9f56aeeaa3bdf910a3eaaf5c811a1"
@@ -112,6 +161,13 @@
         "jsr:@std/internal@^1.0.4"
       ]
     },
+    "@std/expect@1.0.17": {
+      "integrity": "316b47dd65c33e3151344eb3267bf42efba17d1415425f07ed96185d67fc04d9",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.14",
+        "jsr:@std/internal@^1.0.10"
+      ]
+    },
     "@std/fmt@1.0.8": {
       "integrity": "71e1fc498787e4434d213647a6e43e794af4fd393ef8f52062246e06f7e372b7"
     },
@@ -121,7 +177,13 @@
     "@std/fs@1.0.11": {
       "integrity": "ba674672693340c5ebdd018b4fe1af46cb08741f42b4c538154e97d217b55bdd",
       "dependencies": [
-        "jsr:@std/path"
+        "jsr:@std/path@^1.0.8"
+      ]
+    },
+    "@std/fs@1.0.22": {
+      "integrity": "de0f277a58a867147a8a01bc1b181d0dfa80bfddba8c9cf2bacd6747bcec9308",
+      "dependencies": [
+        "jsr:@std/path@^1.1.4"
       ]
     },
     "@std/internal@1.0.4": {
@@ -142,6 +204,15 @@
     "@std/path@1.0.8": {
       "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
     },
+    "@std/path@1.1.4": {
+      "integrity": "1d2d43f39efb1b42f0b1882a25486647cb851481862dc7313390b2bb044314b5",
+      "dependencies": [
+        "jsr:@std/internal@^1.0.12"
+      ]
+    },
+    "@std/semver@1.0.7": {
+      "integrity": "7d5f65391762dc4358abde80fc3354086ddb40101f140295e60f290c138887d0"
+    },
     "@std/testing@1.0.3": {
       "integrity": "f98c2bee53860a5916727d7e7d3abe920dd6f9edace022e2d059f00d05c2cf42",
       "dependencies": [
@@ -149,8 +220,22 @@
         "jsr:@std/internal@^1.0.4"
       ]
     },
+    "@std/testing@1.0.17": {
+      "integrity": "87bdc2700fa98249d48a17cd72413352d3d3680dcfbdb64947fd0982d6bbf681",
+      "dependencies": [
+        "jsr:@std/assert@^1.0.17",
+        "jsr:@std/async",
+        "jsr:@std/data-structures",
+        "jsr:@std/fs@^1.0.22",
+        "jsr:@std/internal@^1.0.12",
+        "jsr:@std/path@^1.1.4"
+      ]
+    },
     "@std/text@1.0.17": {
       "integrity": "4b2c4ef67ae5b6c1dfd447c81c83a43718f52e3c7e748d8b33f694aba9895f95"
+    },
+    "@std/yaml@1.0.11": {
+      "integrity": "bd139ce77f2d06cbed3713c8b26d301d2a2e12ecc7986130a268107e212143ee"
     }
   },
   "npm": {
@@ -253,6 +338,7 @@
           "jsr:@epdoc/msgbuilder@~0.1.1",
           "jsr:@epdoc/type@^1.2.4",
           "jsr:@std/assert@^1.0.18",
+          "jsr:@std/expect@^1.0.17",
           "jsr:@std/fmt@^1.0.9",
           "jsr:@std/testing@^1.0.17",
           "npm:commander@^14.0.3"
