@@ -100,8 +100,11 @@ export abstract class BaseCommand<
       const opts = this.commander.opts() as TOpts;
       this.hydrateContext(opts);
 
-      // 3. Configure logging for root commands (check if we have logging options)
-      if ('logLevel' in opts || 'verbose' in opts || 'debug' in opts) {
+      // 3. Configure logging for root commands (check if we have any logging options)
+      if (
+        'logLevel' in opts || 'verbose' in opts || 'debug' in opts || 'trace' in opts || 'spam' in opts ||
+        'logShow' in opts || 'logShowAll' in opts || 'color' in opts
+      ) {
         configureLogging(this.ctx, opts as CliApp.LogOptions);
       }
 

@@ -80,7 +80,9 @@ export function configureLogging(ctx: ICtx, opts: LogOptions): void {
 
   const show: Log.EmitterShowOpts = {};
 
-  if (_.isBoolean(opts.noColor)) {
+  if (_.isBoolean(opts.color)) {
+    show.color = opts.color;
+  } else if (_.isBoolean(opts.noColor)) {
     show.color = !opts.noColor;
   }
 
