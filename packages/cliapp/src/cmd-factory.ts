@@ -69,11 +69,11 @@ export function createCommand<
       }
     }
 
-    createContext(parent?: TParentContext): TContext {
+    createContext(parent?: TParentContext): Promise<TContext> | TContext {
       if (node.refineContext && parent) {
         // Call refineContext to create the child context
         // Note: opts/args not available yet, will be hydrated later
-        return node.refineContext(parent as TContext, {}, []) as TContext;
+        return node.refineContext(parent as TContext, {}, []);
       }
       return (parent || this.parentContext) as TContext;
     }

@@ -92,9 +92,9 @@ export abstract class BaseCommand<
     }
 
     // The middleware chain - runs after parsing, before action
-    this.commander.hook('preAction', (_thisCommand: Commander.Command, _actionCommand: Commander.Command) => {
+    this.commander.hook('preAction', async (_thisCommand: Commander.Command, _actionCommand: Commander.Command) => {
       // 1. Create the context instance for this specific level
-      this.ctx = this.createContext(this.parentContext);
+      this.ctx = await this.createContext(this.parentContext);
 
       // 2. Hydrate context using parsed options for this command
       const opts = this.commander.opts() as TOpts;
@@ -169,7 +169,7 @@ export abstract class BaseCommand<
    * For subcommands, parent will be the hydrated parent context.
    *
    * @param parent - The parent context (undefined for root commands)
-   * @returns The context instance for this command
+   * @returns The context instance for this command (or a Promise that resolves to it)
    *
    * @example
    * ```typescript
@@ -179,7 +179,7 @@ export abstract class BaseCommand<
    * }
    * ```
    */
-  abstract createContext(parent?: TParentContext): TContext;
+  abstract createContext(parent?: TParentContext): Promise<TContext> | TContext;
 
   /**
    * Hydrate the context with parsed command-line options

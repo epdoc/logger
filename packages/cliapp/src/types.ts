@@ -9,9 +9,9 @@ import type { Console } from '@epdoc/msgbuilder';
 import type { Dict } from '@epdoc/type';
 
 // Clean imports - respecting circular dependency separation
+export type { BaseCommand } from './cmd-abstract.ts';
 export type { Context, ICtx } from './context.ts';
 export type { DenoPkg } from './pkg-type.ts';
-export type { BaseCommand } from './cmd-abstract.ts';
 
 // Local imports for use in this file
 import type { BaseCommand } from './cmd-abstract.ts';
@@ -85,9 +85,9 @@ export interface ISilentError extends Error {
 }
 
 /**
- * Declarative command node configuration for pure configuration-based commands
+ * Declarative command node configuration for configuration-based commands
  */
-export interface CommandNode<Context extends ICtx = ICtx> {
+export interface CommandNode<TContext extends ICtx = ICtx> {
   /** Command name */
   name: string;
   /** Command description */
@@ -99,18 +99,18 @@ export interface CommandNode<Context extends ICtx = ICtx> {
   /** Command arguments */
   arguments?: string[];
   /** Command action handler */
-  action?: (ctx: Context, opts: CmdOptions, ...args: CmdArgs) => Promise<void> | void;
+  action?: (ctx: TContext, opts: CmdOptions, ...args: CmdArgs) => Promise<void> | void;
   /** Context refinement function for transforming parent context to child context */
-  refineContext?: (ctx: Context, opts: CmdOptions, args: CmdArgs) => Promise<Context> | Context;
+  refineContext?: (ctx: TContext, opts: CmdOptions, args: CmdArgs) => Promise<TContext> | TContext;
   /** Hydrate context with parsed options */
-  hydrate?: (ctx: Context, opts: CmdOptions) => void;
+  hydrate?: (ctx: TContext, opts: CmdOptions) => void;
   /** Subcommands */
-  subCommands?: Record<string, CommandConstructor<Context> | CommandNode<Context>>;
+  subCommands?: Record<string, CommandConstructor<TContext> | CommandNode<TContext>>;
 }
 
 /**
  * Constructor type for Command classes
  */
-export interface CommandConstructor<Context extends ICtx = ICtx> {
-  new (initialContext?: Context): BaseCommand<Context, Context>;
+export interface CommandConstructor<TContext extends ICtx = ICtx> {
+  new (initialContext?: TContext): BaseCommand<TContext, TContext>;
 }

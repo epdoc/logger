@@ -9,31 +9,20 @@ const REG = {
 /**
  * Configures logging settings based on command-line options
  *
- * Processes standard logging options (--log, --verbose, --debug, etc.) and applies
+ * Processes standard logging options (--log-level, --verbose, --debug, etc.) and applies
  * them to the logger manager. Handles log level conflicts and configures output
- * formatting based on --log_show options.
+ * formatting based on --log-show options.
  *
  * @param ctx - Application context containing the logger manager
  * @param opts - Parsed command-line options from Commander.js
  *
- * @throws {ISilentError} When conflicting log level options are provided
+ * @throws {Error} When conflicting log level options are provided
  *
  * @example
  * ```typescript
- * const opts = await cmd.parseOpts();
+ * const opts = cmd.commander.opts();
  * configureLogging(ctx, opts);
- *
- * // Now logger respects CLI options:
- * // --verbose sets threshold to 'verbose'
- * // --log_show level,elapsed shows level and timing
- * // --showall shows all available log components
  * ```
- */
-/**
- * Configures logging based on parsed CLI options
- *
- * @param ctx - Application context with logger
- * @param opts - Parsed command-line options
  */
 export function configureLogging(ctx: ICtx, opts: LogOptions): void {
   if (opts.dryRun) {

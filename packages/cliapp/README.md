@@ -25,12 +25,18 @@ import pkg from './deno.json' with { type: 'json' };
 // Define contexts
 class RootContext extends CliApp.Context {
   apiUrl = '';
+
+  setupLogging() {
+    this.logMgr = new Log.Mgr<CliApp.Ctx.MsgBuilder>();
+    this.logMgr.initLevels();
+    this.log = this.logMgr.getLogger<CliApp.Ctx.Logger>();
+  }
 }
 
 class ChildContext extends RootContext {
   processedFiles = 0;
   
-  constructor(parent: RootContext, params?: any) {
+  constructor(parent: RootContext, params?: Log.IGetChildParams) {
     super(parent, params);
     this.apiUrl = parent.apiUrl; // Inherit from parent
   }
@@ -38,6 +44,10 @@ class ChildContext extends RootContext {
 
 // Define commands
 class RootCommand extends CliApp.BaseCommand<RootContext, RootContext> {
+  constructor(ctx: RootContext) {
+    super(undefined, ctx, true); // Mark as root
+  }
+
   defineMetadata() {
     this.commander.name(pkg.name);
     this.commander.description(pkg.description);
@@ -74,8 +84,8 @@ class ProcessCommand extends CliApp.BaseCommand<ChildContext, RootContext> {
     this.commander.argument('<files...>', 'Files to process');
   }
 
-  createContext(parent) {
-    return new ChildContext(parent);
+  createContext(parent: RootContext) {
+    return new ChildContext(parent, { pkg: 'process' });
   }
 
   hydrateContext() {}
@@ -104,6 +114,7 @@ import pkg from './deno.json' with { type: 'json' };
 // Define contexts (same as above)
 class RootContext extends CliApp.Context {
   apiUrl = '';
+  setupLogging() { /* ... see above ... */ }
 }
 
 // Create commands declaratively
@@ -129,7 +140,7 @@ const RootCommand = CliApp.createCommand({
   }
 });
 
-// Run (same as above)
+// Run
 if (import.meta.main) {
   const ctx = new RootContext(pkg);
   await ctx.setupLogging();
@@ -152,7 +163,7 @@ Context automatically flows from parent to child:
 
 Commands follow this lifecycle:
 
-1. **Construction** - `new Command()` creates instance
+1. **Construction** - `new Command()` creates instance, sets metadata/options
 2. **Metadata** - `defineMetadata()` sets name, description
 3. **Options** - `defineOptions()` adds options and arguments
 4. **Parsing** - Commander.js parses command line
@@ -161,11 +172,11 @@ Commands follow this lifecycle:
 
 ### Built-in Logging
 
-Root commands automatically get logging options:
+Root commands (when `isRoot` is set in constructor) automatically get:
 - `--log-level <level>` - Set log threshold
-- `--debug`, `--trace`, `--spam` - Shortcuts
-- `--log_show [props]` - Configure log output
-- `--no-color` - Disable colors
+- `--verbose`, `--debug`, `--trace`, `--spam` - Shortcuts
+- `--log-show [props]` - Configure log output (level, pkg, etc.)
+- `--no-color` - Disable ANSI color output
 
 ## Examples
 
@@ -188,16 +199,15 @@ To support custom message builders while maintaining a clean API, we use `any` i
 
 Specifically, the `Context` class is defined with `L extends Log.Std.Logger<any>`. This allows the context to accept any logger implementation, but then uses conditional types (`ExtractMsgBuilder<L>`) to recover the specific builder type for use in `logMgr`.
 
-## API
+## Running the Examples
 
-Run examples:
+From the `packages/examples` directory:
 ```bash
-cd packages/examples
-deno run -A cliapp.04.run.ts --help
-deno run -A cliapp.04.run.ts --root-option process --sub-option file1.txt
+deno run -A cliapp.01.run.ts --help
+deno run -A cliapp.01.run.ts --root-option process --sub-option file1.txt
 ```
 
-## API
+## API Reference
 
 ### BaseCommand
 
@@ -211,7 +221,7 @@ Abstract class for creating commands.
 - `execute(options, args)` - Run command logic
 
 **Override Methods:**
-- `getSubCommands()` - Return array of subcommand instances
+- `getSubCommands()` - Return array of subcommand instances (called during registration)
 
 ### createCommand(node)
 
@@ -228,30 +238,24 @@ Factory function to create commands from declarative configuration.
 
 ### Context
 
-Base context class with logging support.
+Abstract base context class with logging support.
 
 **Constructor:**
 - `new Context(pkg)` - Create root context
 - `new Context(parent, params?)` - Create child context
 
 **Methods:**
-- `setupLogging(level?)` - Initialize logging (root only)
-- `close()` - Cleanup resources
+- `setupLogging()` - Initialize logging (must be implemented by root)
+- `close()` - Gracefully shut down logging and resources
 
 **Properties:**
 - `log` - Logger instance
 - `logMgr` - Log manager
-- `pkg` - Package metadata
+- `pkg` - Package metadata (deno.json)
 
-### run(ctx, command, options?)
+### run(ctx, command | appFn, options?)
 
-Run application with lifecycle management.
-
-**Features:**
-- Error handling with stack traces
-- SIGINT (Ctrl-C) handling
-- Resource cleanup via `ctx.close()`
-- Performance timing
+Run application with lifecycle management. Handles SIGINT and errors.
 
 ## License
 

@@ -6,8 +6,7 @@ export type MsgBuilder = Console.Builder;
 export type Logger = Log.Std.Logger<MsgBuilder>;
 
 /**
- * Extract MsgBuilder type from Logger type.
- * TODO: This is ugly. Is there a better way? Do we really need this?
+ * Extract MsgBuilder type from Logger type using conditional types.
  */
 export type ExtractMsgBuilder<L> = L extends Log.Std.Logger<infer M> ? M : MsgBuilder;
 
@@ -30,7 +29,6 @@ export interface ICtx<M extends Console.Builder = any, L = Log.Std.Logger<M>> {
 
 /**
  * Abstract base context class for CLI applications.
- * TODO: Previously this was an actual class, but it was made abstract because of our problems with generics. If you see code that is treating this as an actual class, that is the reason.
  *
  * Extend this class and implement setupLogging() to create contexts with custom message builders.
  * The MsgBuilder type is automatically inferred from the Logger type.
