@@ -3,7 +3,7 @@ import { CliffApp } from './src/dep.ts';
 
 /**
  * Demo 2: Purely Declarative Implementation
- * 
+ *
  * Demonstrates:
  * - Defining commands using CommandNode object literals
  * - Using CommandEngine to run the tree
@@ -21,13 +21,13 @@ const TREE: CliffApp.CommandNode<AppContext> = {
   subCommands: {
     hello: {
       description: 'Say hello',
-      action: async (ctx, opts) => {
+      action: (ctx, opts) => {
         ctx.log.info.text(`Hello, ${opts.name}!`).emit();
       },
     },
     goodbye: {
       description: 'Say goodbye',
-      action: async (ctx, opts) => {
+      action: (ctx, opts) => {
         ctx.log.info.text(`Goodbye, ${opts.name}!`).emit();
       },
     },

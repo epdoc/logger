@@ -6,7 +6,6 @@
  */
 
 import * as _ from '@epdoc/type';
-import type { Console } from '@epdoc/msgbuilder';
 import type { BaseCommand } from './cmd-abstract.ts';
 import type { ICtx, ISilentError } from './types.ts';
 

@@ -3,7 +3,6 @@
  * @description Factory function to create BaseCommand subclasses from CommandNode configuration
  */
 
-import type { Console } from '@epdoc/msgbuilder';
 import { BaseCommand } from './cmd-abstract.ts';
 import type * as Ctx from './context.ts';
 import type * as CliApp from './types.ts';

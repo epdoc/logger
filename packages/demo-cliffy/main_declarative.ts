@@ -21,13 +21,13 @@ const TREE: CliffApp.CommandNode<AppContext> = {
   subCommands: {
     hello: {
       description: 'Say hello',
-      action: async (ctx, opts) => {
+      action: (ctx, opts) => {
         ctx.log.info.text(`Hello, ${opts.name}!`).emit();
       },
     },
     goodbye: {
       description: 'Say goodbye',
-      action: async (ctx, opts) => {
+      action: (ctx, opts) => {
         ctx.log.info.text(`Goodbye, ${opts.name}!`).emit();
       },
     },

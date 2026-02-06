@@ -55,7 +55,7 @@ export class RootCommand extends CliApp.BaseCommand<ChildContext, AppContext> {
     this.commander.option('--debug-mode', 'Enable special debug mode for context refinement demo');
   }
 
-  async createContext() Promise<void> {
+  async createContext(): Promise<void> {
     this.ctx = new AppContext(); // Starts fresh
     await this.ctx.setupLogging();
   }
@@ -64,14 +64,14 @@ export class RootCommand extends CliApp.BaseCommand<ChildContext, AppContext> {
     if (opts.debugMode) {
       this.ctx.debugMode = true;
     }
-          this.ctx.log.info.text('Hydrated Root command options:').emit();
-        this.ctx.log.indent();
-        this.ctx.log.info.label('debugMode').value(opts.debugMode).emit();
-        this.ctx.log.info.label('noColor').value(opts.noColor).emit();
-        this.ctx.log.info.label('logLevel').value(opts.logLevel).emit();
-        this.ctx.log.info.label('args:').value(args.join(',')).emit();
-        this.ctx.log.outdent();
-}
+    this.ctx.log.info.text('Hydrated Root command options:').emit();
+    this.ctx.log.indent();
+    this.ctx.log.info.label('debugMode').value(opts.debugMode).emit();
+    this.ctx.log.info.label('noColor').value(opts.noColor).emit();
+    this.ctx.log.info.label('logLevel').value(opts.logLevel).emit();
+    this.ctx.log.info.label('args:').value(args.join(',')).emit();
+    this.ctx.log.outdent();
+  }
 
   // If no subcommands are called, help is the default
   execute() {

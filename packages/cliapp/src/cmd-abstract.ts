@@ -4,11 +4,9 @@
  */
 
 import * as Commander from 'commander';
-import type * as Log from '@epdoc/logger';
-import type { Console } from '@epdoc/msgbuilder';
+import { config } from './config.ts';
 import type * as Ctx from './context.ts';
 import type * as CliApp from './types.ts';
-import { config } from './config.ts';
 import { configureLogging } from './utils.ts';
 
 /**
