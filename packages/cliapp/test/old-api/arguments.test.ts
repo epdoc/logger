@@ -10,10 +10,9 @@ import { assertEquals, assertExists } from '@std/assert';
 type M = Console.Console.Builder;
 type L = Log.Std.Logger<M>;
 
-class TestContext extends CliApp.Ctx.Base<L> {
-  constructor(pkg?: CliApp.DenoPkg) {
+class TestContext extends CliApp.Context<L> {
+  constructor(pkg: CliApp.DenoPkg) {
     super(pkg);
-    this.setupLogging();
   }
 
   async setupLogging() {
@@ -25,14 +24,12 @@ class TestContext extends CliApp.Ctx.Base<L> {
   }
 }
 
-type TestBundle = CliApp.Cmd.ContextBundle<TestContext>;
-
 interface TestOptions {
   verbose?: boolean;
 }
 
 Deno.test('Arguments - Required argument', async () => {
-  class TestCmd extends CliApp.Cmd.Sub<TestBundle, TestOptions> {
+  class TestCmd extends CliApp.BaseCommand<TestContext, TestOptions> {
     receivedArgs: string[] = [];
 
     constructor(ctx: TestContext) {
@@ -61,7 +58,7 @@ Deno.test('Arguments - Required argument', async () => {
 });
 
 Deno.test('Arguments - Optional argument', async () => {
-  class TestCmd extends CliApp.Cmd.Sub<TestBundle, TestOptions> {
+  class TestCmd extends CliApp.BaseCommand<TestContext, TestOptions> {
     receivedArgs: string[] = [];
 
     constructor(ctx: TestContext) {
@@ -90,7 +87,7 @@ Deno.test('Arguments - Optional argument', async () => {
 });
 
 Deno.test('Arguments - Variadic argument', async () => {
-  class TestCmd extends CliApp.Cmd.Sub<TestBundle, TestOptions> {
+  class TestCmd extends CliApp.BaseCommand<TestContext, TestOptions> {
     receivedArgs: string[] = [];
 
     constructor(ctx: TestContext) {
@@ -119,7 +116,7 @@ Deno.test('Arguments - Variadic argument', async () => {
 });
 
 Deno.test('Arguments - Multiple arguments', async () => {
-  class TestCmd extends CliApp.Cmd.Sub<TestBundle, TestOptions> {
+  class TestCmd extends CliApp.BaseCommand<TestContext, TestOptions> {
     receivedArgs: string[] = [];
 
     constructor(ctx: TestContext) {
@@ -150,12 +147,11 @@ Deno.test('Arguments - Multiple arguments', async () => {
 });
 
 Deno.test('Arguments - Root command with arguments', async () => {
-  class TestRootCmd extends CliApp.Cmd.Root<TestBundle, TestOptions> {
+  class TestRootCmd extends CliApp.BaseCommand<TestContext, TestOptions> {
     receivedArgs: string[] = [];
 
     constructor(ctx: TestContext) {
-      const pkg = { name: 'test', version: '1.0.0', description: 'Test root' };
-      super(ctx, pkg);
+      super(ctx, 'test', 'Test root');
     }
 
     protected override addArguments(): void {

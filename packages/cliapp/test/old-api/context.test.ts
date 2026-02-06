@@ -7,16 +7,14 @@ import * as Log from '@epdoc/logger';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { assertEquals, assertExists } from '@std/assert';
 
-const Ctx = CliApp.Ctx;
-
 type M = MsgBuilder.Console.Builder;
 type L = Log.Std.Logger<M>;
 
-// Test implementation of BaseContext
-class TestContext extends Ctx.Base<L> {
+// Test implementation of Context
+class TestContext extends CliApp.Context<L> {
   setupLoggingCalled = false;
 
-  constructor(pkg?: CliApp.DenoPkg) {
+  constructor(pkg: CliApp.DenoPkg) {
     super(pkg);
   }
 
@@ -43,9 +41,9 @@ class CustomBuilder extends MsgBuilder.Console.Builder {
 
 type CustomLogger = Log.Std.Logger<CustomBuilder>;
 
-class CustomTestContext extends CliApp.Ctx.Base<CustomLogger> {
-  constructor() {
-    super();
+class CustomTestContext extends CliApp.Context<CustomLogger> {
+  constructor(pkg: CliApp.DenoPkg) {
+    super(pkg);
   }
 
   async setupLogging() {

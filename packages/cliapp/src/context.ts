@@ -28,19 +28,19 @@ export interface ICtx<M extends Console.Builder = MsgBuilder, L = Log.Std.Logger
 
 /**
  * Abstract base context class for CLI applications.
- * 
+ *
  * Extend this class and implement setupLogging() to create contexts with custom message builders.
  * The MsgBuilder type is automatically inferred from the Logger type.
- * 
+ *
  * @template L - Logger type (MsgBuilder is automatically extracted)
- * 
+ *
  * @example
  * ```typescript
  * class AppBuilder extends Console.Builder {
  *   fileOp(op: string, path: string) { return this.text(op).text(' ').text(path); }
  * }
  * type Logger = Log.Std.Logger<AppBuilder>;
- * 
+ *
  * class AppContext extends Context<Logger> {
  *   async setupLogging() {
  *     this.logMgr = new Log.Mgr<AppBuilder>();

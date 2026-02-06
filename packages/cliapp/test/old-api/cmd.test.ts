@@ -7,17 +7,13 @@ import * as Log from '@epdoc/logger';
 import * as Console from '@epdoc/msgbuilder';
 import { assertEquals, assertExists, assertInstanceOf } from '@std/assert';
 
-const Ctx = CliApp.Ctx;
-const Cmd = CliApp.Cmd;
-
 type M = Console.Console.Builder;
 type L = Log.Std.Logger<M>;
 
 // Test context implementation
-class TestContext extends Ctx.Base<L> {
-  constructor(pkg?: CliApp.DenoPkg) {
+class TestContext extends CliApp.Context<L> {
+  constructor(pkg: CliApp.DenoPkg) {
     super(pkg);
-    this.setupLogging();
   }
 
   async setupLogging() {
@@ -35,10 +31,8 @@ interface TestOptions {
   output?: string;
 }
 
-type TestBundle = CliApp.Cmd.ContextBundle<TestContext>;
-
 // Test subcommand implementation
-class TestSubCmd extends Cmd.Sub<TestBundle, TestOptions> {
+class TestSubCmd extends CliApp.BaseCommand<TestContext, TestOptions> {
   public addArgumentsCalled = false;
   public addOptionsCalled = false;
   public addExtrasCalled = false;

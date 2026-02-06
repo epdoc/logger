@@ -6,7 +6,7 @@
   "tasks": {
     "dev": "deno test --watch",
     "test": "deno test -A test/*.test.ts",
-    "check": "deno check src test",
+    "check": "deno check src test ../examples/cliapp*.ts",
     "examples": "./examples/run.sh"
   },
   "license": "MIT",
@@ -22,7 +22,8 @@
   "lint": {
     "include": [
       "src",
-      "test"
+      "test/*.ts",
+      "../examples/cliapp*.ts"
     ]
   },
   "fmt": {
