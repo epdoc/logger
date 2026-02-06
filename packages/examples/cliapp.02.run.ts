@@ -1,62 +1,33 @@
-/**
- * @file Basic CLI app using BaseContext and structured commands
- * @description Demonstrates the BaseContext pattern with Cmd.Sub and Cmd.Root for CLI applications
- *
- * Key features demonstrated:
- * - BaseContext extension with custom msgbuilder types
- * - Structured command classes using Cmd.Sub and Cmd.Root
- * - Type-safe option parsing with proper TypeScript interfaces
- * - Command arguments and options
- * - Root options available to all subcommands
- * - Custom logging with project-specific message builders
- * - Real-world CLI patterns (file processing, cleanup operations)
- */
+import * as CliApp from '../cliapp/src/mod.ts';
+import * as Log from '../logger/src/mod.ts';
+import { Console } from '../msgbuilder/src/mod.ts';
+import pkg from './deno.json' with { type: 'json' };
 
-import * as CliApp from '@epdoc/cliapp';
-import * as Log from '@epdoc/logger';
-import { Console, type IEmitter } from '@epdoc/msgbuilder';
-import pkg from '../cliapp/deno.json' with { type: 'json' };
-
-// 1. Define custom msgbuilder with project-specific methods
+// Custom MsgBuilder with additional methods
 class AppBuilder extends Console.Builder {
-  constructor(emitter: IEmitter) {
-    super(emitter);
-  }
-
   fileOp(operation: string, path: string) {
-    return this.text('📁 ').text(operation).text(' ').path(path);
+    return this.text('📁 ').text(operation).text(' ').value(path);
   }
-
   status(type: 'success' | 'error' | 'info') {
-    const icons = { success: '✅', error: '❌', info: 'ℹ️' };
-    return this.text(icons[type]).text(' ');
+    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+    return this.text(icon).text(' ');
   }
 }
 
-// 2. Define types once per project
 type Logger = Log.Std.Logger<AppBuilder>;
 
-// 3. Extend BaseContext with your specific types
-class AppContext extends CliApp.Ctx.Base<Logger> {
-  // Add project-specific properties
+// Context extending base Context class with custom types
+class AppContext extends CliApp.Context {
+  declare log: Logger;
+  declare logMgr: Log.Mgr<AppBuilder>;
   processedFiles = 0;
-  override dryRun = false;
 
-  constructor() {
-    super({
-      name: 'cliapp.02.run.ts',
-      version: '0.1.0',
-      description: 'CliApp Example 02 - Custom MsgBuilder, Context and Subcommands',
-    });
-  }
-
-  async setupLogging() {
+  override async setupLogging() {
     this.logMgr = new Log.Mgr<AppBuilder>();
     this.logMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter);
     this.log = await this.logMgr.getLogger<Logger>();
   }
 
-  // Helper methods using custom msgbuilder
   logFileOperation(op: string, path: string) {
     this.log.info.fileOp(op, path).emit();
     this.processedFiles++;
@@ -67,98 +38,134 @@ class AppContext extends CliApp.Ctx.Base<Logger> {
   }
 }
 
-// 4. Define option interfaces
-interface ProcessOptions {
-  input?: string;
-  pattern?: string;
-  verbose?: boolean;
-}
-
-interface CleanOptions {
-  dryRun?: boolean;
-  force?: boolean;
-}
-
+// Option types
 type RootOptions = CliApp.LogOptions & {
   config?: string;
   quiet?: boolean;
+  dryRun?: boolean;
 };
 
-// 5. Define commands using structured command classes
-class ProcessCmd extends CliApp.Cmd.Sub<CliApp.Cmd.ContextBundle<AppContext>, ProcessOptions> {
-  constructor(ctx: AppContext) {
-    super(ctx, 'process', 'Process files in a directory');
+type ProcessOptions = {
+  input?: string;
+  pattern?: string;
+  verbose?: boolean;
+};
+
+type CleanOptions = {
+  force?: boolean;
+  dryRun?: boolean;
+};
+
+// Root command
+class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, RootOptions> {
+  constructor(initialContext?: AppContext) {
+    super(undefined, initialContext, true, true); // Mark as root, add dry-run
   }
 
-  protected override addArguments(): void {
-    this.cmd.argument('[files...]', 'Files to process');
+  defineMetadata() {
+    this.commander.name(pkg.name);
+    this.commander.version(pkg.version);
+    this.commander.description(pkg.description);
   }
 
-  protected override addOptions(): void {
-    this.cmd
-      .option('--input <dir>', 'Input directory', '.')
-      .option('--pattern <glob>', 'File pattern', '*.txt')
-      .option('--verbose', 'Verbose output');
+  defineOptions() {
+    this.commander.option('--config <file>', 'Configuration file');
+    this.commander.option('--quiet', 'Suppress output');
   }
 
-  protected override async executeAction(args: string[], opts: ProcessOptions): Promise<void> {
-    if (opts.verbose) {
+  createContext(parent?: AppContext) {
+    return parent || this.parentContext!;
+  }
+
+  hydrateContext(options: RootOptions) {
+    if (options.quiet) {
+      this.ctx.logMgr.threshold = 'error';
+    }
+    if (options.dryRun) {
+      this.ctx.dryRun = true;
+    }
+  }
+
+  async execute() {
+    this.ctx.log.info.h1('File Processor').emit();
+    this.ctx.logStatus('info', 'Use subcommands: process, clean');
+  }
+
+  protected override getSubCommands() {
+    return [new ProcessCommand(), new CleanCommand()];
+  }
+}
+
+// Process command
+class ProcessCommand extends CliApp.BaseCommand<AppContext, AppContext, ProcessOptions> {
+  defineMetadata() {
+    this.commander.name('process');
+    this.commander.description('Process files in a directory');
+  }
+
+  defineOptions() {
+    this.commander.argument('[files...]', 'Files to process');
+    this.commander.option('--input <dir>', 'Input directory', '.');
+    this.commander.option('--pattern <glob>', 'File pattern', '*.txt');
+    this.commander.option('--verbose', 'Verbose output');
+  }
+
+  createContext(parent?: AppContext) {
+    return parent!;
+  }
+
+  hydrateContext(options: ProcessOptions) {
+    if (options.verbose) {
       this.ctx.logMgr.threshold = 'debug';
     }
+  }
 
+  async execute(opts: ProcessOptions, files: string[]) {
     this.ctx.log.info.h1('File Processing')
       .label('Directory:').value(opts.input || '.')
       .label('Pattern:').value(opts.pattern || '*.txt')
       .emit();
 
-    try {
-      // Use provided files or discover files
-      const filesToProcess = args.length > 0 ? args : ['file1.txt', 'file2.txt', 'file3.txt'];
+    const filesToProcess = files.length > 0 ? files : ['file1.txt', 'file2.txt'];
+    this.ctx.log.info.text(`Processing ${filesToProcess.length} files...`).emit();
 
-      this.ctx.log.info.text(`Processing ${filesToProcess.length} files...`).emit();
-
-      for (const file of filesToProcess) {
-        this.ctx.logFileOperation('PROCESS', `${opts.input || '.'}/${file}`);
-
-        if (opts.verbose) {
-          this.ctx.log.debug.text(`Processing details for ${file}`).emit();
-        }
-
-        // Simulate processing time
-        await new Promise((resolve) => setTimeout(resolve, 100));
+    for (const file of filesToProcess) {
+      this.ctx.logFileOperation('PROCESS', `${opts.input || '.'}/${file}`);
+      if (opts.verbose) {
+        this.ctx.log.debug.text(`Processing details for ${file}`).emit();
       }
-
-      this.ctx.logStatus('success', `Processed ${this.ctx.processedFiles} files successfully`);
-    } catch (error) {
-      this.ctx.logStatus('error', `Processing failed: ${(error as Error).message}`);
     }
+
+    this.ctx.logStatus('success', `Processed ${this.ctx.processedFiles} files successfully`);
   }
 }
 
-class CleanCmd extends CliApp.Cmd.Sub<CliApp.Cmd.ContextBundle<AppContext>, CleanOptions> {
-  constructor(ctx: AppContext) {
-    super(ctx, 'clean', 'Clean temporary files');
+// Clean command
+class CleanCommand extends CliApp.BaseCommand<AppContext, AppContext, CleanOptions> {
+  defineMetadata() {
+    this.commander.name('clean');
+    this.commander.description('Clean temporary files');
   }
 
-  protected override addArguments(): void {
-    this.cmd.argument('[target]', 'Target directory to clean');
+  defineOptions() {
+    this.commander.argument('[target]', 'Target directory', '.');
+    this.commander.option('--force', 'Force deletion');
   }
 
-  protected override addOptions(): void {
-    this.cmd
-      .option('--dry-run', 'Show what would be deleted')
-      .option('--force', 'Force deletion without confirmation');
+  createContext(parent?: AppContext) {
+    return parent!;
   }
 
-  protected override executeAction(args: string[], opts: CleanOptions): Promise<void> {
-    this.ctx.dryRun = opts.dryRun || false;
+  hydrateContext(options: CleanOptions) {
+    // Inherit dry-run from parent context
+  }
 
-    const targetDir = args[0] || '.';
-
+  async execute(opts: CleanOptions, target: string[]) {
+    const targetDir = target[0] || '.';
     this.ctx.log.info.h1('Cleanup Operation')
       .label('Target:').value(targetDir)
-      .label('Dry Run:').value(this.ctx.dryRun ? 'Yes' : 'No')
       .label('Force:').value(opts.force ? 'Yes' : 'No')
+      .label('Dry Run:').value(this.ctx.dryRun ? 'Yes' : 'No')
       .emit();
 
     const tempFiles = ['temp1.tmp', 'temp2.tmp', 'cache.dat'];
@@ -172,77 +179,19 @@ class CleanCmd extends CliApp.Cmd.Sub<CliApp.Cmd.ContextBundle<AppContext>, Clea
       }
     }
 
-    const message = this.ctx.dryRun ? `Would delete ${tempFiles.length} files` : `Deleted ${tempFiles.length} files`;
+    const message = this.ctx.dryRun
+      ? `Would delete ${tempFiles.length} files`
+      : `Deleted ${tempFiles.length} files`;
     this.ctx.logStatus('success', message);
-    return Promise.resolve();
   }
 }
 
-// 6. Create root command with subcommands
-class FileProcessorRoot extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<AppContext>, RootOptions> {
-  constructor(ctx: AppContext) {
-    super(ctx, pkg);
-  }
-
-  protected override addArguments(): void {
-    this.cmd.argument('[command]', 'Command to run (if not using subcommands)');
-  }
-
-  protected override addOptions(): void {
-    this.cmd
-      .addLogging(this.ctx)
-      .option('--config <file>', 'Configuration file')
-      .option('--quiet', 'Suppress output');
-  }
-
-  protected override async addCommands(): Promise<void> {
-    const processCmd = new ProcessCmd(this.ctx);
-    const cleanCmd = new CleanCmd(this.ctx);
-
-    this.cmd.addCommand(await processCmd.init());
-    this.cmd.addCommand(await cleanCmd.init());
-  }
-
-  protected override addExtras(): void {
-    this.cmd.hook('preAction', (cmd) => {
-      const opts = cmd.optsWithGlobals() as RootOptions;
-      // Configure the logging options before any subcommands are executed
-      CliApp.configureLogging(this.ctx, opts);
-    });
-    this.cmd.addHelpText(
-      'after',
-      '\nExamples:\n  $ file-processor process *.txt --verbose\n  $ file-processor clean --dry-run',
-    );
-  }
-
-  protected override executeAction(args: string[], opts: RootOptions): Promise<void> {
-    if (opts.quiet) {
-      this.ctx.logMgr.threshold = 'error';
-    }
-
-    if (opts.config) {
-      this.ctx.logStatus('info', `Using config file: ${opts.config}`);
-    }
-
-    this.ctx.log.info.h1('File Processor')
-      .text('Use --help to see available commands')
-      .emit();
-
-    if (args.length > 0) {
-      this.ctx.logStatus('info', `Command argument provided: ${args[0]}`);
-    }
-
-    this.ctx.logStatus('info', 'Ready to process files');
-    return Promise.resolve();
-  }
-}
-
-// 7. Run the application
+// Run your application
 if (import.meta.main) {
-  const ctx = new AppContext();
+  const ctx = new AppContext(pkg);
   await ctx.setupLogging();
-  const rootCmd = new FileProcessorRoot(ctx);
-  const cmd = await rootCmd.init();
-  // Wrap "await cmd.parseAsync()" in CliApp.run to cleanly handle errors, shutdown, etc.
-  await CliApp.run(ctx, () => cmd.parseAsync());
+
+  const cmd = new RootCommand(ctx);
+
+  await CliApp.run(ctx, cmd);
 }

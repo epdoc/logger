@@ -37,16 +37,17 @@ import type * as CliApp from './types.ts';
  */
 export function createCommand<
   TContext extends TParentContext,
-  TParentContext extends Ctx.ICtx<Console.Builder, any> = Ctx.ICtx,
+  TParentContext extends Ctx.ICtx<any, any> = Ctx.ICtx,
   TOpts extends CliApp.CmdOptions = CliApp.CmdOptions,
 >(
   node: CliApp.CommandNode<TContext>,
   isRoot = false,
+  addDryRun = false,
 ): new (initialContext?: TParentContext) => BaseCommand<TContext, TParentContext, TOpts> {
   // Return an anonymous class that extends BaseCommand
   return class extends BaseCommand<TContext, TParentContext, TOpts> {
     constructor(initialContext?: TParentContext) {
-      super(node.name, initialContext, isRoot);
+      super(node.name, initialContext, isRoot, addDryRun);
     }
 
     defineMetadata(): void {

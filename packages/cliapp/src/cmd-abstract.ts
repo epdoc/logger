@@ -49,7 +49,7 @@ import { configureLogging } from './utils.ts';
  */
 export abstract class BaseCommand<
   TContext extends TParentContext,
-  TParentContext extends Ctx.ICtx<Console.Builder, any> = Ctx.ICtx,
+  TParentContext extends Ctx.ICtx<any, any> = Ctx.ICtx,
   TOpts extends CliApp.CmdOptions = CliApp.CmdOptions,
 > {
   /** The underlying Commander.js Command instance */
@@ -69,8 +69,9 @@ export abstract class BaseCommand<
    * @param name - Optional command name
    * @param initialContext - Optional initial context for root commands
    * @param isRoot - Whether this is a root command (required for root commands to get logging options)
+   * @param addDryRun - Whether to add --dry-run option (only for root commands)
    */
-  constructor(name?: string, initialContext?: TParentContext, isRoot = false) {
+  constructor(name?: string, initialContext?: TParentContext, isRoot = false, addDryRun = false) {
     this.commander = new Commander.Command(name);
     this.parentContext = initialContext;
 
@@ -87,6 +88,9 @@ export abstract class BaseCommand<
     // Add logging options for root commands
     if (isRoot) {
       this.#addLoggingOptions();
+      if (addDryRun) {
+        this.commander.option('--dry-run', 'Perform a dry run without making changes');
+      }
     }
 
     // The middleware chain - runs after parsing, before action
