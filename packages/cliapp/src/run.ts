@@ -34,7 +34,7 @@ import type { ICtx, ISilentError } from './types.ts';
  * });
  * ```
  */
-export async function run<TCtx extends ICtx<any, any> = ICtx>(
+export async function run<TCtx extends ICtx = ICtx>(
   ctx: TCtx,
   appFn: () => Promise<unknown>,
   options?: { noExit?: boolean },
@@ -58,13 +58,13 @@ export async function run<TCtx extends ICtx<any, any> = ICtx>(
  * await run(ctx, cmd); // Automatic logging configuration
  * ```
  */
-export async function run<TCtx extends ICtx<any, any> = ICtx>(
+export async function run<TCtx extends ICtx = ICtx>(
   ctx: TCtx,
   command: BaseCommand<TCtx, TCtx>,
   options?: { noExit?: boolean },
 ): Promise<void>;
 
-export async function run<TCtx extends ICtx<any, any> = ICtx>(
+export async function run<TCtx extends ICtx = ICtx>(
   ctx: TCtx,
   appFnOrCommand: (() => Promise<unknown>) | BaseCommand<TCtx, TCtx>,
   options: { noExit?: boolean } = {},

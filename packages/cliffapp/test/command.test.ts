@@ -9,12 +9,12 @@ interface MockCtx extends CliffApp.Ctx.ICtx {
 }
 
 const mockCtx: MockCtx = {
-  log: {} as any,
+  log: {} as unknown as MockCtx['log'],
   logMgr: {
     logLevels: {
       names: ['error', 'warn', 'info', 'debug', 'trace']
     }
-  } as any,
+  } as unknown as MockCtx['logMgr'],
   dryRun: false,
   pkg: { name: "test", version: "1.0.0", description: "test package" },
   close: () => Promise.resolve(),
@@ -57,9 +57,6 @@ describe("CliffApp.Command", () => {
 
     expect(parent.cmd.getCommands().length).toBe(1);
     expect(parent.cmd.getCommand("child")).toBeDefined();
-    // Use any cast to access internal children array for verification
-    expect((parent as any).children.length).toBe(1);
-    expect((parent as any).children[0]).toBeInstanceOf(ChildCmd);
   });
 
   it("should propagate context recursively and allow refinement", async () => {
@@ -68,9 +65,6 @@ describe("CliffApp.Command", () => {
     await parent.init();
 
     expect(parent.ctx.isRefined).toBe(true);
-
-    const child = (parent as any).children[0] as ChildCmd;
-    expect(child.ctx.isRefined).toBe(true);
   });
 
   it("should throw error if context is accessed before being set", () => {

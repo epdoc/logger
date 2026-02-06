@@ -17,7 +17,7 @@ class AppBuilder extends Console.Builder {
 type Logger = Log.Std.Logger<AppBuilder>;
 
 // Context extending base Context class with custom types
-class AppContext extends CliApp.Context<AppBuilder, Logger> {
+class AppContext extends CliApp.Context<Logger> {
   processedFiles = 0;
 
   override async setupLogging() {
@@ -177,9 +177,7 @@ class CleanCommand extends CliApp.BaseCommand<AppContext, AppContext, CleanOptio
       }
     }
 
-    const message = this.ctx.dryRun
-      ? `Would delete ${tempFiles.length} files`
-      : `Deleted ${tempFiles.length} files`;
+    const message = this.ctx.dryRun ? `Would delete ${tempFiles.length} files` : `Deleted ${tempFiles.length} files`;
     this.ctx.logStatus('success', message);
   }
 }

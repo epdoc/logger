@@ -5,10 +5,6 @@ import pkg from '../cliapp/deno.json' with { type: 'json' };
 
 // Define project-specific logging methods
 class AppBuilder extends Console.Builder {
-  constructor(emitter: Log.IEmitter) {
-    super(emitter as any);
-  }
-
   fileOp(operation: string, path: string) {
     return this.text('📁 ').text(operation).text(' ').path(path);
   }
@@ -25,22 +21,17 @@ class AppBuilder extends Console.Builder {
 
 type Logger = Log.Std.Logger<AppBuilder>;
 
-interface ProcessOptions {
+interface ProcessOptions extends CliApp.CmdOptions {
   verbose?: boolean;
 }
 
-class AppContext extends CliApp.Ctx.Base<Logger> {
+class AppContext extends CliApp.Context<Logger> {
   // Add application state
   processedFiles = 0;
 
-  constructor() {
-    super(pkg);
-    this.setupLogging();
-  }
-
-  async setupLogging() {
+  override async setupLogging() {
     this.logMgr = new Log.Mgr<AppBuilder>();
-    this.logMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter as any);
+    this.logMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter);
     this.logMgr.initLevels(Log.Std.factoryMethods);
     this.logMgr.threshold = 'info';
     this.log = await this.logMgr.getLogger<Logger>();
@@ -53,51 +44,65 @@ class AppContext extends CliApp.Ctx.Base<Logger> {
   }
 }
 
-// Use the bundled type for commands
-class ProcessCmd extends CliApp.Cmd.Sub<CliApp.Cmd.ContextBundle<AppContext>, ProcessOptions> {
-  constructor(ctx: AppContext) {
-    super(ctx, 'process', 'Process files');
+class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, { verbose?: boolean } & CliApp.CmdOptions> {
+  constructor(initialContext: AppContext) {
+    super(undefined, initialContext, true);
   }
 
-  protected override addArguments(): void {
-    this.cmd.argument('[files...]', 'Files to process');
+  defineMetadata(): void {
+    this.commander.name(pkg.name);
+    this.commander.version(pkg.version);
+    this.commander.description('Custom Message Builder Example');
   }
 
-  protected override addOptions(): void {
-    this.cmd.option('--verbose', 'Verbose output');
+  defineOptions(): void {}
+
+  createContext(parent?: AppContext): AppContext {
+    return parent || this.parentContext!;
   }
 
-  protected override executeAction(_args: string[], _opts: ProcessOptions): Promise<void> {
-    for (const file of _args) {
-      this.ctx.logFileOperation('PROCESS', file);
-    }
-    this.ctx.log.info.progress(_args.length, _args.length).emit();
-    return Promise.resolve();
-  }
-}
+  hydrateContext(): void {}
 
-class AppRootCmd extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<AppContext>, { verbose?: boolean }> {
-  constructor(ctx: AppContext) {
-    super(ctx, ctx.pkg);
-  }
-
-  protected override async addCommands(): Promise<void> {
-    const processCmd = new ProcessCmd(this.ctx);
-    this.cmd.addCommand(await processCmd.init());
-  }
-
-  protected override executeAction(_args: string[], _opts: { verbose?: boolean }): Promise<void> {
+  execute(): void {
     this.ctx.log.info.h1('Custom Message Builder Example')
       .text('Use --help for commands')
       .emit();
-    return Promise.resolve();
+  }
+
+  protected override getSubCommands(): CliApp.BaseCommand<AppContext, AppContext>[] {
+    return [new ProcessCmd()];
+  }
+}
+
+class ProcessCmd extends CliApp.BaseCommand<AppContext, AppContext, ProcessOptions> {
+  defineMetadata(): void {
+    this.commander.name('process');
+    this.commander.description('Process files');
+  }
+
+  defineOptions(): void {
+    this.commander.argument('[files...]', 'Files to process');
+    this.commander.option('--verbose', 'Verbose output');
+  }
+
+  createContext(parent?: AppContext): AppContext {
+    return parent!;
+  }
+
+  hydrateContext(): void {}
+
+  execute(opts: ProcessOptions, args: string[]): void {
+    for (const file of args) {
+      this.ctx.logFileOperation('PROCESS', file);
+    }
+    this.ctx.log.info.progress(args.length, args.length).emit();
   }
 }
 
 if (import.meta.main) {
-  const ctx = new AppContext();
+  const ctx = new AppContext(pkg);
   await ctx.setupLogging();
-  const rootCmd = new AppRootCmd(ctx);
-  const cmd = await rootCmd.init();
-  await cmd.parseAsync();
+
+  const rootCmd = new RootCommand(ctx);
+  await CliApp.run(ctx, rootCmd);
 }

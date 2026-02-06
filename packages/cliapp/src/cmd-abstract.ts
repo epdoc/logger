@@ -47,7 +47,7 @@ import { configureLogging } from './utils.ts';
  */
 export abstract class BaseCommand<
   TContext extends TParentContext,
-  TParentContext extends Ctx.ICtx<any, any> = Ctx.ICtx,
+  TParentContext extends Ctx.ICtx = Ctx.ICtx,
   TOpts extends CliApp.CmdOptions = CliApp.CmdOptions,
 > {
   /** The underlying Commander.js Command instance */

@@ -170,8 +170,25 @@ Root commands automatically get logging options:
 ## Examples
 
 See working examples in [packages/examples/](../../examples/):
-- `cliapp.04.run.ts` - Class-based approach
+- `cliapp.01.run.ts` - Class-based approach
 - `cliapp.03.run.ts` - Declarative approach
+- `custom.msgbuilder.run.ts` - Custom message builder example
+
+## Generics and Variance
+
+This library uses advanced TypeScript generics to provide type-safe access to loggers and message builders. 
+
+### Logger Invariance
+
+TypeScript loggers in `@epdoc/logger` are **invariant** in their message builder type. This means that a `Logger<AppBuilder>` is not assignable to a `Logger<ConsoleMsgBuilder>`, even if `AppBuilder` extends `ConsoleMsgBuilder`.
+
+### The Workaround
+
+To support custom message builders while maintaining a clean API, we use `any` in a few specific internal type constraints (specifically in `Context` and `ICtx`). This is a intentional technical decision to work around TypeScript's invariance rules.
+
+Specifically, the `Context` class is defined with `L extends Log.Std.Logger<any>`. This allows the context to accept any logger implementation, but then uses conditional types (`ExtractMsgBuilder<L>`) to recover the specific builder type for use in `logMgr`.
+
+## API
 
 Run examples:
 ```bash
