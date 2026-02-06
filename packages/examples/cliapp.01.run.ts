@@ -1,110 +1,104 @@
-import * as CliApp from '@epdoc/cliapp';
-import * as Log from '@epdoc/logger';
-import type { Console } from '@epdoc/msgbuilder';
+import * as CliApp from '../cliapp/src/mod.ts';
+import type * as Log from '../logger/src/mod.ts';
+import pkg from './deno.json' with { type: 'json' };
 
-// 1. Define types once per project
-type MsgBuilder = Console.Builder;
-type Logger = Log.Std.Logger<MsgBuilder>;
+// Define your contexts
+class RootContext extends CliApp.Ctx.Context {
+  debugMode = false;
+}
 
-// 2. Create your context
-class AppContext extends CliApp.Ctx.Base<Logger> {
-  constructor() {
-    super({
-      name: 'cliapp.01.run.ts',
-      version: '0.1.0',
-      description: 'CliApp Example 01 - Context and a Root Commmand',
-    });
-  }
+class ChildContext extends RootContext {
+  processedFiles = 0;
 
-  async setupLogging() {
-    this.logMgr = new Log.Mgr<Console.Builder>();
-    this.log = await this.logMgr.getLogger<Logger>();
+  constructor(parent: RootContext, params?: Log.IGetChildParams) {
+    super(parent, params);
+    // Inherit custom properties from parent
+    this.debugMode = parent.debugMode;
   }
 }
 
-// 3. Define options interface
-type AppOptions = CliApp.LogOptions & {
-  verbose?: boolean;
-  output?: string;
-};
+type RootOptions = CliApp.LogOptions & { rootOption: boolean };
+type SubOptions = { subOption: boolean };
 
-// 4. Define your root command
-class AppRootCmd extends CliApp.Cmd.Root<CliApp.Cmd.ContextBundle<AppContext>, AppOptions> {
-  constructor(ctx: AppContext) {
-    super(ctx, ctx.pkg);
+// Define your commands using BaseCommand
+class RootCommand extends CliApp.BaseCommand<RootContext, RootContext, RootOptions> {
+  constructor(initialContext: RootContext) {
+    super(undefined, initialContext, true); // Mark as root
   }
 
-  get log(): Logger {
-    return this.ctx.log;
+  defineMetadata(): void {
+    this.commander.name(pkg.name);
+    this.commander.version(pkg.version);
+    this.commander.description(pkg.description);
   }
 
-  // Add arguments, if you have any
-  protected override addArguments(): void {
-    this.cmd.argument('[files...]', 'Files to process');
+  defineOptions(): void {
+    this.commander.option('--root-option', 'Example root command option');
   }
 
-  // Add options, including the standard CliApp logging options
-  protected override addOptions(): void {
-    this.cmd
-      .addLogging(this.ctx)
-      .option('--output <dir>', 'Output directory');
+  createContext(parent?: RootContext): RootContext {
+    // Use the initial context passed in constructor
+    return parent || this.parentContext!;
   }
 
-  // Add extras is where logging options are applied
-  protected override addExtras(): void {
-    this.cmd.hook('preAction', (cmd) => {
-      const opts = cmd.optsWithGlobals() as AppOptions;
-      // Configure the logging options before any subcommands are executed
-      CliApp.configureLogging(this.ctx, opts);
-
-      // this.log.info.section('CliApp Example 01 - Context and a Root Commmand').emit();
-
-      // const transports = this.ctx.logMgr.transportMgr.transports.map((transport) => transport.toString());
-      // this.log.info.label('Transports:').value(transports.join(', ')).emit();
-      // this.log.info.label('Threshold:').value(this.ctx.logMgr.threshold).value(
-      //   this.ctx.logMgr.logLevels.asName(this.ctx.logMgr.threshold),
-      // ).emit();
-      // this.log.info.label('Show:').value(JSON.stringify(this.ctx.logMgr.show)).emit();
-      // this.log.error.error('This is an error message').emit();
-      // this.log.debug.text('This is a debug message').emit();
-      // this.log.verbose.text('This is a verbose message').emit();
-      // this.log.spam.text('This is a spam message').emit();
-    });
+  hydrateContext(options: RootOptions): void {
+    this.ctx.debugMode = options.rootOption;
   }
 
-  protected override executeAction(
-    args: string[],
-    opts: AppOptions,
-  ): Promise<void> {
-    this.log.info.section('CliApp Example 01 - Context and a Root Commmand').emit();
+  execute(_opts: RootOptions, _args: CliApp.CmdArgs): void {
+    // Root command with no subcommand - show help
+    this.commander.help();
+  }
 
-    const transports = this.ctx.logMgr.transportMgr.transports.map((transport) => transport.toString());
-    this.log.info.label('Transports:').value(transports.join(', ')).emit();
-    this.log.info.label('Threshold:').value(this.ctx.logMgr.threshold).value(
-      this.ctx.logMgr.logLevels.asName(this.ctx.logMgr.threshold),
-    ).emit();
-    this.log.info.label('Show:').value(JSON.stringify(this.ctx.logMgr.show)).emit();
-    this.log.error.error('This is an error message').emit();
-    this.log.debug.text('This is a debug message').emit();
-    this.log.verbose.text('This is a verbose message').emit();
-    this.log.spam.text('This is a spam message').emit();
-
-    this.ctx.log.info.section('Processing Files').emit();
-    this.ctx.log.info.label('Files:').value(args.join(', '))
-      .label('Output:').value(opts.output || 'default')
-      .emit();
-    return Promise.resolve();
+  protected override getSubCommands(): CliApp.BaseCommand<ChildContext, RootContext>[] {
+    return [new SubCommand()];
   }
 }
 
-// 5. Run it
+class SubCommand extends CliApp.BaseCommand<ChildContext, RootContext, SubOptions> {
+  defineMetadata(): void {
+    this.commander.name('process');
+    this.commander.description('Process files');
+  }
+
+  defineOptions(): void {
+    this.commander.argument('<files...>', 'Files to process');
+    this.commander.option('--sub-option', 'Example subcommand option');
+  }
+
+  createContext(parent?: RootContext): ChildContext {
+    if (!parent) {
+      throw new Error('SubCommand requires parent context');
+    }
+    return new ChildContext(parent, { pkg: 'child' });
+  }
+
+  hydrateContext(_options: SubOptions): void {
+    // No additional hydration needed for this subcommand
+  }
+
+  execute(opts: SubOptions, args: CliApp.CmdArgs): void {
+    const files = args;
+
+    this.ctx.log.info.h1('Processing:').emit();
+    this.ctx.log.indent();
+    this.ctx.log.info.label('Sub option:').value(opts.subOption).emit();
+    this.ctx.log.info.label('Files:').count(files.length).value('file').emit();
+    this.ctx.log.debug.label('Root option (from parent):').value(this.ctx.debugMode).emit();
+    this.ctx.log.outdent();
+
+    // Process files...
+    this.ctx.processedFiles = files.length;
+  }
+}
+
+// Run your application
 if (import.meta.main) {
-  // Create context and setup logging
-  const ctx = new AppContext();
-  await ctx.setupLogging();
-  // Create our root command and initialize
-  const rootCmd = new AppRootCmd(ctx);
-  const cmd = await rootCmd.init();
-  // Wrap "await cmd.parseAsync()" in CliApp.run to cleanly handle errors, shutdown, etc.
-  await CliApp.run(ctx, () => cmd.parseAsync());
+  // Create initial context for logging setup
+  const initialCtx = new RootContext(pkg);
+  await initialCtx.setupLogging();
+
+  const rootCmd = new RootCommand(initialCtx);
+
+  await CliApp.run(initialCtx, rootCmd);
 }

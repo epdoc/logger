@@ -4,6 +4,8 @@
  */
 
 import * as Commander from 'commander';
+import type * as Log from '@epdoc/logger';
+import type { Console } from '@epdoc/msgbuilder';
 import type * as Ctx from './context.ts';
 import type * as CliApp from './types.ts';
 import { config } from './config.ts';
@@ -47,7 +49,7 @@ import { configureLogging } from './utils.ts';
  */
 export abstract class BaseCommand<
   TContext extends TParentContext,
-  TParentContext extends Ctx.ICtx = Ctx.ICtx,
+  TParentContext extends Ctx.ICtx<Console.Builder, any> = Ctx.ICtx,
   TOpts extends CliApp.CmdOptions = CliApp.CmdOptions,
 > {
   /** The underlying Commander.js Command instance */
@@ -59,7 +61,6 @@ export abstract class BaseCommand<
   /** The parent context passed during construction */
   protected parentContext?: TParentContext;
 
-  #isRoot = false;
   #subCommands?: BaseCommand<TContext, TContext>[];
 
   /**
@@ -67,8 +68,9 @@ export abstract class BaseCommand<
    *
    * @param name - Optional command name
    * @param initialContext - Optional initial context for root commands
+   * @param isRoot - Whether this is a root command (required for root commands to get logging options)
    */
-  constructor(name?: string, initialContext?: TParentContext) {
+  constructor(name?: string, initialContext?: TParentContext, isRoot = false) {
     this.commander = new Commander.Command(name);
     this.parentContext = initialContext;
 
@@ -79,16 +81,13 @@ export abstract class BaseCommand<
     this.defineMetadata();
     this.defineOptions();
 
-    // Detect if this is a root command
-    this.#isRoot = !this.commander.parent;
-
-    // Add logging options for root commands
-    if (this.#isRoot) {
-      this.#addLoggingOptions();
-    }
-
     // Register subcommands early so they're available for parsing
     this.registerSubCommands();
+
+    // Add logging options for root commands
+    if (isRoot) {
+      this.#addLoggingOptions();
+    }
 
     // The middleware chain - runs after parsing, before action
     this.commander.hook('preAction', (_thisCommand: Commander.Command, _actionCommand: Commander.Command) => {
@@ -99,8 +98,8 @@ export abstract class BaseCommand<
       const opts = this.commander.opts() as TOpts;
       this.hydrateContext(opts);
 
-      // 3. Configure logging for root commands
-      if (this.#isRoot) {
+      // 3. Configure logging for root commands (check if we have logging options)
+      if ('logLevel' in opts || 'verbose' in opts || 'debug' in opts) {
         configureLogging(this.ctx, opts as CliApp.LogOptions);
       }
 

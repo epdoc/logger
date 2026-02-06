@@ -54,7 +54,9 @@ const RootCommand = CliApp.createCommand<RootContext, RootContext, RootOptions>(
       }) as CliApp.CommandNode<ChildContext>['action'],
     }),
   },
-});
+},
+  true, // Mark as root
+);
 
 // Run your application
 if (import.meta.main) {

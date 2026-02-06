@@ -3,6 +3,7 @@
  * @description Factory function to create BaseCommand subclasses from CommandNode configuration
  */
 
+import type { Console } from '@epdoc/msgbuilder';
 import { BaseCommand } from './cmd-abstract.ts';
 import type * as Ctx from './context.ts';
 import type * as CliApp from './types.ts';
@@ -36,15 +37,16 @@ import type * as CliApp from './types.ts';
  */
 export function createCommand<
   TContext extends TParentContext,
-  TParentContext extends Ctx.ICtx = Ctx.ICtx,
+  TParentContext extends Ctx.ICtx<Console.Builder, any> = Ctx.ICtx,
   TOpts extends CliApp.CmdOptions = CliApp.CmdOptions,
 >(
   node: CliApp.CommandNode<TContext>,
+  isRoot = false,
 ): new (initialContext?: TParentContext) => BaseCommand<TContext, TParentContext, TOpts> {
   // Return an anonymous class that extends BaseCommand
   return class extends BaseCommand<TContext, TParentContext, TOpts> {
     constructor(initialContext?: TParentContext) {
-      super(node.name, initialContext);
+      super(node.name, initialContext, isRoot);
     }
 
     defineMetadata(): void {

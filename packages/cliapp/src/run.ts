@@ -6,6 +6,7 @@
  */
 
 import * as _ from '@epdoc/type';
+import type { Console } from '@epdoc/msgbuilder';
 import type { BaseCommand } from './cmd-abstract.ts';
 import type { ICtx, ISilentError } from './types.ts';
 
@@ -34,8 +35,8 @@ import type { ICtx, ISilentError } from './types.ts';
  * });
  * ```
  */
-export async function run(
-  ctx: ICtx,
+export async function run<TCtx extends ICtx<Console.Builder, any> = ICtx>(
+  ctx: TCtx,
   appFn: () => Promise<unknown>,
   options?: { noExit?: boolean },
 ): Promise<void>;
@@ -58,15 +59,15 @@ export async function run(
  * await run(ctx, cmd); // Automatic logging configuration
  * ```
  */
-export async function run(
-  ctx: ICtx,
-  command: BaseCommand<ICtx, ICtx>,
+export async function run<TCtx extends ICtx<Console.Builder, any> = ICtx>(
+  ctx: TCtx,
+  command: BaseCommand<TCtx, TCtx>,
   options?: { noExit?: boolean },
 ): Promise<void>;
 
-export async function run(
-  ctx: ICtx,
-  appFnOrCommand: (() => Promise<unknown>) | BaseCommand<ICtx, ICtx>,
+export async function run<TCtx extends ICtx<Console.Builder, any> = ICtx>(
+  ctx: TCtx,
+  appFnOrCommand: (() => Promise<unknown>) | BaseCommand<TCtx, TCtx>,
   options: { noExit?: boolean } = {},
 ): Promise<void> {
   const t0 = performance.now();
