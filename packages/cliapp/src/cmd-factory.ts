@@ -46,7 +46,7 @@ export function createCommand<
   // Return an anonymous class that extends BaseCommand
   return class extends BaseCommand<TContext, TParentContext, TOpts> {
     constructor(initialContext?: TParentContext) {
-      super(node.name, initialContext, isRoot, addDryRun);
+      super(node.name, initialContext, { root: isRoot, dryRun: addDryRun });
     }
 
     defineMetadata(): void {

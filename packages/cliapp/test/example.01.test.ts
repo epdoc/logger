@@ -1,6 +1,6 @@
-import * as Log from "@epdoc/logger";
-import pkg from "../deno.json" with { type: "json" };
-import * as CliApp from "../src/mod.ts";
+import * as Log from '@epdoc/logger';
+import pkg from '../deno.json' with { type: 'json' };
+import * as CliApp from '../src/mod.ts';
 
 // Define your contexts
 class RootContext extends CliApp.Context {
@@ -9,7 +9,7 @@ class RootContext extends CliApp.Context {
   async setupLogging() {
     this.logMgr = new Log.Mgr<CliApp.Ctx.MsgBuilder>();
     this.logMgr.initLevels();
-    this.logMgr.threshold = "info";
+    this.logMgr.threshold = 'info';
     this.log = await this.logMgr.getLogger<CliApp.Ctx.Logger>();
   }
 }
@@ -28,10 +28,9 @@ type RootOptions = CliApp.LogOptions & { rootOption: boolean };
 type SubOptions = { subOption: boolean };
 
 // Define your commands using BaseCommand
-class RootCommand
-  extends CliApp.BaseCommand<RootContext, RootContext, RootOptions> {
+class RootCommand extends CliApp.BaseCommand<RootContext, RootContext, RootOptions> {
   constructor(initialContext: RootContext) {
-    super(undefined, initialContext, true); // Mark as root
+    super(undefined, initialContext, { root: true }); // Mark as root
   }
 
   defineMetadata(): void {
@@ -41,7 +40,7 @@ class RootCommand
   }
 
   defineOptions(): void {
-    this.commander.option("--root-option", "Example root command option");
+    this.commander.option('--root-option', 'Example root command option');
   }
 
   createContext(parent?: RootContext): RootContext {
@@ -66,23 +65,22 @@ class RootCommand
   }
 }
 
-class SubCommand
-  extends CliApp.BaseCommand<ChildContext, RootContext, SubOptions> {
+class SubCommand extends CliApp.BaseCommand<ChildContext, RootContext, SubOptions> {
   defineMetadata(): void {
-    this.commander.name("process");
-    this.commander.description("Process files");
+    this.commander.name('process');
+    this.commander.description('Process files');
   }
 
   defineOptions(): void {
-    this.commander.argument("<files...>", "Files to process");
-    this.commander.option("--sub-option", "Example subcommand option");
+    this.commander.argument('<files...>', 'Files to process');
+    this.commander.option('--sub-option', 'Example subcommand option');
   }
 
   createContext(parent?: RootContext): ChildContext {
     if (!parent) {
-      throw new Error("SubCommand requires parent context");
+      throw new Error('SubCommand requires parent context');
     }
-    return new ChildContext(parent, { pkg: "child" });
+    return new ChildContext(parent, { pkg: 'child' });
   }
 
   hydrateContext(_options: SubOptions): void {
@@ -92,11 +90,11 @@ class SubCommand
   execute(opts: SubOptions, args: CliApp.CmdArgs): void {
     const files = args;
 
-    this.ctx.log.info.h1("Processing:").emit();
+    this.ctx.log.info.h1('Processing:').emit();
     this.ctx.log.indent();
-    this.ctx.log.info.label("Sub option:").value(opts.subOption).emit();
-    this.ctx.log.info.label("Files:").count(files.length).value("file").emit();
-    this.ctx.log.debug.label("Root option (from parent):").value(
+    this.ctx.log.info.label('Sub option:').value(opts.subOption).emit();
+    this.ctx.log.info.label('Files:').count(files.length).value('file').emit();
+    this.ctx.log.debug.label('Root option (from parent):').value(
       this.ctx.debugMode,
     ).emit();
     this.ctx.log.outdent();

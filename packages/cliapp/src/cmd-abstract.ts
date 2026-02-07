@@ -69,7 +69,11 @@ export abstract class BaseCommand<
    * @param isRoot - Whether this is a root command (required for root commands to get logging options)
    * @param addDryRun - Whether to add --dry-run option (only for root commands)
    */
-  constructor(name?: string, initialContext?: TParentContext, isRoot = false, addDryRun = false) {
+  constructor(
+    name?: string,
+    initialContext?: TParentContext,
+    params: CliApp.CmdParams = { root: false, dryRun: false },
+  ) {
     this.commander = new Commander.Command(name);
     this.parentContext = initialContext;
 
@@ -84,11 +88,11 @@ export abstract class BaseCommand<
     this.registerSubCommands();
 
     // Add logging options for root commands
-    if (isRoot) {
+    if (params.root) {
       this.#addLoggingOptions();
-      if (addDryRun) {
-        this.commander.option('--dry-run', 'Perform a dry run without making changes');
-      }
+    }
+    if (params.dryRun) {
+      this.commander.option('--dry-run', 'Perform a dry run without making changes');
     }
 
     // The middleware chain - runs after parsing, before action

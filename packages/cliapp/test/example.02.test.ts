@@ -1,16 +1,16 @@
-import * as Log from "@epdoc/logger";
-import { Console } from "@epdoc/msgbuilder";
-import pkg from "../deno.json" with { type: "json" };
-import * as CliApp from "../src/mod.ts";
+import * as Log from '@epdoc/logger';
+import { Console } from '@epdoc/msgbuilder';
+import pkg from '../deno.json' with { type: 'json' };
+import * as CliApp from '../src/mod.ts';
 
 // Custom MsgBuilder with additional methods
 class AppBuilder extends Console.Builder {
   fileOp(operation: string, path: string) {
-    return this.text("📁 ").text(operation).text(" ").value(path);
+    return this.text('📁 ').text(operation).text(' ').value(path);
   }
-  status(type: "success" | "error" | "info") {
-    const icon = type === "success" ? "✅" : type === "error" ? "❌" : "ℹ️";
-    return this.text(icon).text(" ");
+  status(type: 'success' | 'error' | 'info') {
+    const icon = type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️';
+    return this.text(icon).text(' ');
   }
 }
 
@@ -31,7 +31,7 @@ class AppContext extends CliApp.Context<Logger> {
     this.processedFiles++;
   }
 
-  logStatus(type: "success" | "error" | "info", message: string) {
+  logStatus(type: 'success' | 'error' | 'info', message: string) {
     this.log.info.status(type).text(message).emit();
   }
 }
@@ -55,10 +55,9 @@ type CleanOptions = {
 };
 
 // Root command
-class RootCommand
-  extends CliApp.BaseCommand<AppContext, AppContext, RootOptions> {
+class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, RootOptions> {
   constructor(initialContext?: AppContext) {
-    super(undefined, initialContext, true, true); // Mark as root, add dry-run
+    super(undefined, initialContext, { root: true, dryRun: true }); // Mark as root, add dry-run
   }
 
   defineMetadata() {
@@ -68,8 +67,8 @@ class RootCommand
   }
 
   defineOptions() {
-    this.commander.option("--config <file>", "Configuration file");
-    this.commander.option("--quiet", "Suppress output");
+    this.commander.option('--config <file>', 'Configuration file');
+    this.commander.option('--quiet', 'Suppress output');
   }
 
   createContext(parent?: AppContext) {
@@ -78,7 +77,7 @@ class RootCommand
 
   hydrateContext(options: RootOptions) {
     if (options.quiet) {
-      this.ctx.logMgr.threshold = "error";
+      this.ctx.logMgr.threshold = 'error';
     }
     if (options.dryRun) {
       this.ctx.dryRun = true;
@@ -86,8 +85,8 @@ class RootCommand
   }
 
   execute() {
-    this.ctx.log.info.h1("File Processor").emit();
-    this.ctx.logStatus("info", "Use subcommands: process, clean");
+    this.ctx.log.info.h1('File Processor').emit();
+    this.ctx.logStatus('info', 'Use subcommands: process, clean');
   }
 
   protected override getSubCommands() {
@@ -96,18 +95,17 @@ class RootCommand
 }
 
 // Process command
-class ProcessCommand
-  extends CliApp.BaseCommand<AppContext, AppContext, ProcessOptions> {
+class ProcessCommand extends CliApp.BaseCommand<AppContext, AppContext, ProcessOptions> {
   defineMetadata() {
-    this.commander.name("process");
-    this.commander.description("Process files in a directory");
+    this.commander.name('process');
+    this.commander.description('Process files in a directory');
   }
 
   defineOptions() {
-    this.commander.argument("[files...]", "Files to process");
-    this.commander.option("--input <dir>", "Input directory", ".");
-    this.commander.option("--pattern <glob>", "File pattern", "*.txt");
-    this.commander.option("--verbose", "Verbose output");
+    this.commander.argument('[files...]', 'Files to process');
+    this.commander.option('--input <dir>', 'Input directory', '.');
+    this.commander.option('--pattern <glob>', 'File pattern', '*.txt');
+    this.commander.option('--verbose', 'Verbose output');
   }
 
   createContext(parent?: AppContext) {
@@ -116,47 +114,44 @@ class ProcessCommand
 
   hydrateContext(options: ProcessOptions) {
     if (options.verbose) {
-      this.ctx.logMgr.threshold = "debug";
+      this.ctx.logMgr.threshold = 'debug';
     }
   }
 
   execute(opts: ProcessOptions, files: string[]) {
-    this.ctx.log.info.h1("File Processing")
-      .label("Directory:").value(opts.input || ".")
-      .label("Pattern:").value(opts.pattern || "*.txt")
+    this.ctx.log.info.h1('File Processing')
+      .label('Directory:').value(opts.input || '.')
+      .label('Pattern:').value(opts.pattern || '*.txt')
       .emit();
 
-    const filesToProcess = files.length > 0
-      ? files
-      : ["file1.txt", "file2.txt"];
+    const filesToProcess = files.length > 0 ? files : ['file1.txt', 'file2.txt'];
     this.ctx.log.info.text(`Processing ${filesToProcess.length} files...`)
       .emit();
 
     for (const file of filesToProcess) {
-      this.ctx.logFileOperation("PROCESS", `${opts.input || "."}/${file}`);
+      this.ctx.logFileOperation('PROCESS', `${opts.input || '.'}/${file}`);
       if (opts.verbose) {
         this.ctx.log.debug.text(`Processing details for ${file}`).emit();
       }
     }
 
     this.ctx.logStatus(
-      "success",
+      'success',
       `Processed ${this.ctx.processedFiles} files successfully`,
     );
   }
 }
 
 // Clean command
-class CleanCommand
-  extends CliApp.BaseCommand<AppContext, AppContext, CleanOptions> {
+class CleanCommand extends CliApp.BaseCommand<AppContext, AppContext, CleanOptions> {
   defineMetadata() {
-    this.commander.name("clean");
-    this.commander.description("Clean temporary files");
+    this.commander.name('clean');
+    this.commander.description('Clean temporary files');
   }
 
   defineOptions() {
-    this.commander.argument("[target]", "Target directory", ".");
-    this.commander.option("--force", "Force deletion");
+    this.commander.argument('[target]', 'Target directory', '.');
+    this.commander.option('--force', 'Force deletion');
   }
 
   createContext(parent?: AppContext) {
@@ -168,29 +163,27 @@ class CleanCommand
   }
 
   execute(opts: CleanOptions, target: string[]) {
-    const targetDir = target[0] || ".";
-    this.ctx.log.info.h1("Cleanup Operation")
-      .label("Target:").value(targetDir)
-      .label("Force:").value(opts.force ? "Yes" : "No")
-      .label("Dry Run:").value(this.ctx.dryRun ? "Yes" : "No")
+    const targetDir = target[0] || '.';
+    this.ctx.log.info.h1('Cleanup Operation')
+      .label('Target:').value(targetDir)
+      .label('Force:').value(opts.force ? 'Yes' : 'No')
+      .label('Dry Run:').value(this.ctx.dryRun ? 'Yes' : 'No')
       .emit();
 
-    const tempFiles = ["temp1.tmp", "temp2.tmp", "cache.dat"];
+    const tempFiles = ['temp1.tmp', 'temp2.tmp', 'cache.dat'];
 
     for (const file of tempFiles) {
       const fullPath = `${targetDir}/${file}`;
       if (this.ctx.dryRun) {
-        this.ctx.log.info.text("Would delete: ").fileOp("DELETE", fullPath)
+        this.ctx.log.info.text('Would delete: ').fileOp('DELETE', fullPath)
           .emit();
       } else {
-        this.ctx.logFileOperation("DELETE", fullPath);
+        this.ctx.logFileOperation('DELETE', fullPath);
       }
     }
 
-    const message = this.ctx.dryRun
-      ? `Would delete ${tempFiles.length} files`
-      : `Deleted ${tempFiles.length} files`;
-    this.ctx.logStatus("success", message);
+    const message = this.ctx.dryRun ? `Would delete ${tempFiles.length} files` : `Deleted ${tempFiles.length} files`;
+    this.ctx.logStatus('success', message);
   }
 }
 

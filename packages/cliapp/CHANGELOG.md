@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] - 2026-02-07
+
+- Moved root and dryRun command params into a generic object
+
 ## [1.1.22] - 2026-02-03
 
 - Updated dependencies

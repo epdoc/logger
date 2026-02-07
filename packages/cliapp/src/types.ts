@@ -84,6 +84,11 @@ export interface ISilentError extends Error {
   silent: boolean;
 }
 
+export type CmdParams = {
+  root?: boolean;
+  dryRun?: boolean;
+};
+
 /**
  * Declarative command node configuration for configuration-based commands
  */

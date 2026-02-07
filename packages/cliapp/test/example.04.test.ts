@@ -50,7 +50,7 @@ class RootCommand extends CliApp.BaseCommand<
   { verbose?: boolean } & CliApp.CmdOptions
 > {
   constructor(initialContext: AppContext) {
-    super(undefined, initialContext, true);
+    super(undefined, initialContext, { root: true });
   }
 
   defineMetadata(): void {
