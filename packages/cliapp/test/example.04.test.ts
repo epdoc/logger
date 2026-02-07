@@ -1,7 +1,7 @@
-import * as CliApp from '@epdoc/cliapp';
 import * as Log from '@epdoc/logger';
 import { Console } from '@epdoc/msgbuilder';
-import pkg from '../cliapp/deno.json' with { type: 'json' };
+import pkg from '../deno.json' with { type: 'json' };
+import * as CliApp from '../src/mod.ts';
 
 // Define project-specific logging methods
 class AppBuilder extends Console.Builder {
@@ -44,7 +44,11 @@ class AppContext extends CliApp.Context<Logger> {
   }
 }
 
-class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, { verbose?: boolean } & CliApp.CmdOptions> {
+class RootCommand extends CliApp.BaseCommand<
+  AppContext,
+  AppContext,
+  { verbose?: boolean } & CliApp.CmdOptions
+> {
   constructor(initialContext: AppContext) {
     super(undefined, initialContext, true);
   }
@@ -69,7 +73,10 @@ class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, { verbose?:
       .emit();
   }
 
-  protected override getSubCommands(): CliApp.BaseCommand<AppContext, AppContext>[] {
+  protected override getSubCommands(): CliApp.BaseCommand<
+    AppContext,
+    AppContext
+  >[] {
     return [new ProcessCmd()];
   }
 }
@@ -91,7 +98,7 @@ class ProcessCmd extends CliApp.BaseCommand<AppContext, AppContext, ProcessOptio
 
   hydrateContext(): void {}
 
-  execute(opts: ProcessOptions, args: string[]): void {
+  execute(_opts: ProcessOptions, args: string[]): void {
     for (const file of args) {
       this.ctx.logFileOperation('PROCESS', file);
     }

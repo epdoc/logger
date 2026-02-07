@@ -6,14 +6,17 @@
   "tasks": {
     "dev": "deno test --watch",
     "test": "deno test -A test/*.test.ts",
-    "lint": "deno lint src test/*.test.ts ../examples/cliapp*.ts",
-    "check": "deno check src test/*.test.ts ../examples/cliapp*.ts",
-    "examples": "./examples/run.sh"
+    "lint": "deno lint src test/*.test.ts",
+    "check": "deno check src test/*.test.ts",
+    "example:01": "deno run -A test/example.01.test.ts",
+    "example:02": "deno run -A test/example.02.test.ts",
+    "example:03": "deno run -A test/example.03.test.ts",
+    "example:04": "deno run -A test/example.04.test.ts"
   },
   "license": "MIT",
   "imports": {
-    "@epdoc/logger": "jsr:@epdoc/logger@^1003.2.11",
-    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.1",
+    "@epdoc/logger": "../logger/src/mod.ts",
+    "@epdoc/msgbuilder": "../msgbuilder/src/mod.ts",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.4",
     "@std/assert": "jsr:@std/assert@^1.0.18",
     "@std/expect": "jsr:@std/expect@^1.0.17",
@@ -24,8 +27,7 @@
   "lint": {
     "include": [
       "src",
-      "test/*.ts",
-      "../examples/cliapp*.ts"
+      "test/*.ts"
     ]
   },
   "fmt": {
