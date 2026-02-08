@@ -1,4 +1,4 @@
-import type * as Log from '@epdoc/logger';
+import * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
 import type { DenoPkg } from './pkg-type.ts';
 
@@ -13,8 +13,7 @@ export type ExtractMsgBuilder<L> = L extends Log.Std.Logger<infer M> ? M : MsgBu
 /**
  * Clean context interface - much simpler than the old complex system
  */
-// deno-lint-ignore no-explicit-any -- Required for TypeScript variance: default must accept any builder type
-export interface ICtx<M extends Console.Builder = any, L = Log.Std.Logger<M>> {
+export interface ICtx<M extends MsgBuilder, L extends Logger = Logger> {
   /** The logger instance for the application. */
   log: L;
   /** The log manager coordinating loggers and transports. */
@@ -51,6 +50,10 @@ export interface ICtx<M extends Console.Builder = any, L = Log.Std.Logger<M>> {
  * }
  * ```
  */
+
+const logMgr: Log.Mgr<MsgBuilder> = new Log.Mgr<MsgBuilder>().initLevels();
+logMgr.threshold = 'info';
+
 /**
  * Abstract class for the application context.
  *
@@ -60,10 +63,9 @@ export interface ICtx<M extends Console.Builder = any, L = Log.Std.Logger<M>> {
  * To work around this and allow custom builders, we use `any` in the L constraint below.
  * We then use `ExtractMsgBuilder<L>` to recover the actual builder type.
  */
-// deno-lint-ignore no-explicit-any -- Required for TypeScript variance: must accept Log.Std.Logger<any builder type>
-export abstract class Context<L extends Log.Std.Logger<any> = Logger> implements ICtx<ExtractMsgBuilder<L>, L> {
+export abstract class Context<M extends MsgBuilder = MsgBuilder, L extends Logger = Logger> implements ICtx<M, L> {
   log!: L;
-  logMgr!: Log.Mgr<ExtractMsgBuilder<L>>;
+  logMgr: Log.Mgr<M> = logMgr as unknown as Log.Mgr<M>;
   dryRun = false;
   pkg: DenoPkg;
 
@@ -72,7 +74,7 @@ export abstract class Context<L extends Log.Std.Logger<any> = Logger> implements
    * For root contexts, you must call setupLogging() after construction.
    * For child contexts, logging is inherited from the parent.
    */
-  constructor(pkg: DenoPkg | Context<L>, params: Log.IGetChildParams = {}) {
+  constructor(pkg: DenoPkg | Context<M, L>, params: Log.IGetChildParams = {}) {
     if (pkg instanceof Context) {
       // Child context - inherit from parent
       this.log = pkg.log.getChild(params) as L;

@@ -27,7 +27,7 @@ import { configureLogging } from './utils.ts';
  */
 export abstract class BaseCommand<
   TContext extends TParentContext,
-  TParentContext extends Ctx.ICtx = Ctx.ICtx,
+  TParentContext extends Ctx.Context,
   TOpts extends CliApp.CmdOptions = CliApp.CmdOptions,
 > {
   /** The underlying Commander.js Command instance */
@@ -124,7 +124,8 @@ export abstract class BaseCommand<
 
       // 2. Hydrate context using parsed options for this command
       const opts = this.commander.opts() as TOpts;
-      this.hydrateContext(opts);
+      const args = this.commander.args as CliApp.CmdArgs;
+      this.hydrateContext(opts, args);
 
       // 3. Configure logging for root commands
       if (
@@ -186,19 +187,24 @@ export abstract class BaseCommand<
    *
    * @param parent - The parent context instance.
    */
-  abstract createContext(parent?: TParentContext): Promise<TContext> | TContext;
+  createContext(parent?: TParentContext): Promise<TContext> | TContext {
+    return parent as TContext;
+  }
 
   /**
    * Update the context with parsed command-line options.
    *
    * Called during the preAction hook after {@link createContext}.
    */
-  hydrateContext(_options: TOpts): void {}
+  hydrateContext(_options: TOpts, _args: CliApp.CmdArgs): void {}
 
   /**
    * Primary command logic implementation.
    */
-  abstract execute(opts: TOpts, args: CliApp.CmdArgs): Promise<void> | void;
+  execute(_opts: TOpts, _args: CliApp.CmdArgs): Promise<void> | void {
+    this.commander.help();
+    return Promise.resolve();
+  }
 
   /**
    * Override to return an array of subcommand instances.

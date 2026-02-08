@@ -7,7 +7,8 @@
 
 import * as _ from '@epdoc/type';
 import type { BaseCommand } from './cmd-abstract.ts';
-import type { ICtx, ISilentError } from './types.ts';
+import type * as Ctx from './context.ts';
+import type { ISilentError } from './types.ts';
 
 /**
  * Runs a CLI application with comprehensive lifecycle management
@@ -34,7 +35,7 @@ import type { ICtx, ISilentError } from './types.ts';
  * });
  * ```
  */
-export async function run<TCtx extends ICtx = ICtx>(
+export async function run<TCtx extends Ctx.Context = Ctx.Context>(
   ctx: TCtx,
   appFn: () => Promise<unknown>,
   options?: { noExit?: boolean },
@@ -58,13 +59,13 @@ export async function run<TCtx extends ICtx = ICtx>(
  * await run(ctx, cmd); // Automatic logging configuration
  * ```
  */
-export async function run<TCtx extends ICtx = ICtx>(
+export async function run<TCtx extends Ctx.Context = Ctx.Context>(
   ctx: TCtx,
   command: BaseCommand<TCtx, TCtx>,
   options?: { noExit?: boolean },
 ): Promise<void>;
 
-export async function run<TCtx extends ICtx = ICtx>(
+export async function run<TCtx extends Ctx.Context = Ctx.Context>(
   ctx: TCtx,
   appFnOrCommand: (() => Promise<unknown>) | BaseCommand<TCtx, TCtx>,
   options: { noExit?: boolean } = {},

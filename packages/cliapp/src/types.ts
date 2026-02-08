@@ -15,7 +15,7 @@ export type { DenoPkg } from './pkg-type.ts';
 
 // Local imports for use in this file
 import type { BaseCommand } from './cmd-abstract.ts';
-import type { ICtx } from './context.ts';
+import type * as Ctx from './context.ts';
 import type { CmdMetadata } from './pkg-type.ts';
 
 /**
@@ -96,7 +96,7 @@ export type CmdParams = Partial<CmdMetadata> & {
 /**
  * Declarative command node configuration for configuration-based commands
  */
-export interface CommandNode<TContext extends ICtx = ICtx> {
+export interface CommandNode<TContext extends Ctx.Context = Ctx.Context> {
   /** Command name (optional if provided via CmdParams) */
   name?: string;
   /** Command description */
@@ -122,6 +122,6 @@ export interface CommandNode<TContext extends ICtx = ICtx> {
 /**
  * Constructor type for Command classes
  */
-export interface CommandConstructor<TContext extends ICtx = ICtx> {
+export interface CommandConstructor<TContext extends Ctx.Context = Ctx.Context> {
   new (initialContext?: TContext): BaseCommand<TContext, TContext>;
 }

@@ -27,7 +27,7 @@ import type * as CliApp from './types.ts';
  */
 export function createCommand<
   TContext extends TParentContext,
-  TParentContext extends Ctx.ICtx = Ctx.ICtx,
+  TParentContext extends Ctx.Context = Ctx.Context,
   TOpts extends CliApp.CmdOptions = CliApp.CmdOptions,
 >(
   node: CliApp.CommandNode<TContext>,
