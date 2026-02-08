@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.3] - 2026-02-08
+
+- Updated deno.json
+
 ## [2.0.2] - 2026-02-08
 
 - Replace hardwired imports with proper imports in deno.json

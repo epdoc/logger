@@ -1,7 +1,7 @@
 {
   "name": "@epdoc/cliapp",
   "description": "A CLI application template for @epdoc/logger",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "exports": "./src/mod.ts",
   "tasks": {
     "dev": "deno test --watch",
@@ -9,8 +9,6 @@
     "check": "deno check src test/*.test.ts",
     "test": "deno test -A test/*.test.ts",
     "prepublish": "deno fmt && deno task lint && deno task check && deno task test",
-    "lock": "deno cache --lock-write src/main.ts",
-    "publish": "deno prepublish && deno task lock && deno publish",
     "example:01": "deno run -A test/example.01.test.ts",
     "example:02": "deno run -A test/example.02.test.ts",
     "example:03": "deno run -A test/example.03.test.ts",
