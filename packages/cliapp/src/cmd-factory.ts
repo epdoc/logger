@@ -13,26 +13,17 @@ import type * as CliApp from './types.ts';
  * The factory returns a class (not an instance) that extends BaseCommand.
  * You can then instantiate it: `new MyCommand(initialContext)`
  *
- * @param node - Declarative command configuration
- * @returns A class extending BaseCommand that implements the configuration
- *
- * @example
- * ```typescript
- * const ProcessCommand = createCommand<ChildContext, RootContext>({
- *   name: 'process',
- *   description: 'Process files',
- *   arguments: ['<files...>'],
- *   options: {
- *     '-f, --force': 'Force processing'
- *   },
- *   action: async (ctx, opts, ...files) => {
- *     ctx.log.info.text(`Processing ${files.length} files`).emit();
- *   }
- * });
- *
- * // Later, instantiate it:
- * const cmd = new ProcessCommand();
- * ```
+ * @param node - Declarative command configuration. Supports `name`, `description`,
+ * `version`, `aliases`, `options`, `arguments`, `refineContext`, `hydrate`, `action`,
+ * and `subCommands`.
+ * @param params - Optional command parameters. Values here override those in `node`.
+ * @param params.name - Command name.
+ * @param params.description - Command description.
+ * @param params.version - Command version (applied if root=true).
+ * @param params.aliases - Command aliases (for subcommands).
+ * @param params.root - Set to true for root command.
+ * @param params.dryRun - Set to true to add --dry-run option.
+ * @returns A class extending BaseCommand.
  */
 export function createCommand<
   TContext extends TParentContext,
@@ -40,23 +31,26 @@ export function createCommand<
   TOpts extends CliApp.CmdOptions = CliApp.CmdOptions,
 >(
   node: CliApp.CommandNode<TContext>,
-  isRoot = false,
-  addDryRun = false,
+  params: CliApp.CmdParams = {},
 ): new (initialContext?: TParentContext) => BaseCommand<TContext, TParentContext, TOpts> {
   // Return an anonymous class that extends BaseCommand
   return class extends BaseCommand<TContext, TParentContext, TOpts> {
     constructor(initialContext?: TParentContext) {
-      super(initialContext!, {
-        name: node.name,
-        description: node.description,
-        version: node.version,
-        aliases: node.aliases,
-        root: isRoot,
-        dryRun: addDryRun,
-      });
+      super(initialContext!, params);
     }
 
-    override defineOptions(): void {
+    override async init(): Promise<this> {
+      // Apply node metadata if not overridden by params
+      if (!this.params.name) this.params.name = node.name;
+      if (!this.params.description) this.params.description = node.description;
+      if (!this.params.version) this.params.version = node.version;
+      if (!this.params.aliases) this.params.aliases = node.aliases;
+
+      return await super.init();
+    }
+
+    override async defineOptions(): Promise<void> {
+      await Promise.resolve();
       if (node.arguments) {
         for (const arg of node.arguments) {
           this.commander.argument(arg);

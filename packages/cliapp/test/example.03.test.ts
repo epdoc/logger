@@ -66,7 +66,7 @@ const RootCommand = CliApp.createCommand<RootContext, RootContext, RootOptions>(
       }),
     },
   },
-  true, // Mark as root
+  { root: true }, // Mark as root
 );
 
 // Run your application

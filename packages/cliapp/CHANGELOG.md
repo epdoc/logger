@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.6-alpha.0] - 2026-02-08
+
+- feat: refactor command lifecycle with async init() and JSDoc audit
+
 ## [2.0.5] - 2026-02-08
 
 - Added missing -n to dry run command

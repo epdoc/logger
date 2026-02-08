@@ -31,6 +31,7 @@ describe('BaseCommand', () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
     const cmd = new MyCommand(ctx);
+    await cmd.init();
 
     assertEquals(cmd.commander.name(), 'test-app');
     assertEquals(cmd.commander.version(), '1.2.3');
@@ -61,6 +62,8 @@ describe('BaseCommand', () => {
     await ctx.setupLogging();
     const root = new RootCmd(ctx);
     const sub = new SubCmd(ctx);
+    await root.init();
+    await sub.init();
 
     assertEquals(root.commander.aliases(), []);
     assertEquals(sub.commander.aliases(), ['s']);
@@ -80,6 +83,7 @@ describe('BaseCommand', () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
     const root = new RootCmd(ctx);
+    await root.init();
     const options = root.commander.options;
 
     assertExists(options.find((o) => o.long === '--log-level'));
@@ -112,6 +116,7 @@ describe('BaseCommand', () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
     const root = new RootCmd(ctx);
+    await root.init();
 
     assertExists(root.commander.commands.find((c) => c.name() === 'sub'));
   });
@@ -130,6 +135,7 @@ describe('BaseCommand', () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
     const cmd = new SimpleCmd(ctx);
+    await cmd.init();
     assertExists(cmd);
   });
 });

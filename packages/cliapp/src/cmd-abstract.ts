@@ -13,37 +13,17 @@ import { configureLogging } from './utils.ts';
  * Abstract base class for creating CLI commands with automatic context flow
  *
  * Provides lifecycle management, context inheritance, and Commander.js integration.
- * Extend this class and implement the abstract methods to create commands.
+ *
+ * ### Command Lifecycle
+ * 1. **constructor**: Sets up basic Commander.js state and stores parameters.
+ * 2. **init()**: (Async) Configures metadata, options, and subcommands.
+ * 3. **CliApp.run()**: The entry point that initializes the tree and parses the CLI.
+ * 4. **preAction Hook**: Internal hook that creates and hydrates the context.
+ * 5. **execute()**: Performs the primary command logic.
  *
  * @template TContext - The context type for this command
  * @template TParentContext - The parent context type (defaults to TContext)
  * @template TOpts - The options type for this command
- *
- * @example
- * ```typescript
- * class MyCommand extends BaseCommand<MyContext, ParentContext, MyOptions> {
- *   defineMetadata() {
- *     this.commander.name('mycommand');
- *     this.commander.description('My command description');
- *   }
- *
- *   defineOptions() {
- *     this.commander.option('--my-option', 'My option description');
- *   }
- *
- *   createContext(parent?) {
- *     return new MyContext(parent);
- *   }
- *
- *   hydrateContext(options) {
- *     this.ctx.myValue = options.myOption;
- *   }
- *
- *   execute(opts, args) {
- *     this.ctx.log.info.text('Executing').emit();
- *   }
- * }
- * ```
  */
 export abstract class BaseCommand<
   TContext extends TParentContext,
@@ -59,47 +39,82 @@ export abstract class BaseCommand<
   /** The parent context passed during construction */
   protected parentContext?: TParentContext;
 
+  /** Command parameters stored from constructor */
+  protected params: CliApp.CmdParams;
+
+  /** Whether the command has been initialized */
+  protected initialized = false;
+
   #subCommands?: BaseCommand<TContext, TContext>[];
 
   /**
-   * Create a new command instance
+   * Initializes basic Commander.js state and stores constructor parameters.
    *
-   * @param name - Optional command name
-   * @param initialContext - Optional initial context for root commands
-   * @param isRoot - Whether this is a root command (required for root commands to get logging options)
-   * @param addDryRun - Whether to add --dry-run option (only for root commands)
+   * @param initialContext - Optional initial context for root commands.
+   * @param params - Configuration parameters.
+   * @param params.name - Command name.
+   * @param params.description - Brief command summary.
+   * @param params.version - Version string (only applied if root=true).
+   * @param params.aliases - Command aliases (only for subcommands).
+   * @param params.root - Set to true for the root command to enable global flags.
+   * @param params.dryRun - Set to true to include the global --dry-run option.
    */
   constructor(
     initialContext?: TParentContext,
     params: CliApp.CmdParams = {},
   ) {
+    this.params = params;
     this.commander = new Commander.Command(params.name);
     this.parentContext = initialContext;
 
     // Configure help and output formatting
     this.commander.configureHelp(config.help);
     this.commander.configureOutput(config.output);
+  }
 
-    if (params.root && params.version) {
-      this.commander.version(params.version);
+  /**
+   * Performs asynchronous command initialization.
+   *
+   * This method applies metadata (name, description, version, aliases),
+   * sets up command options via {@link defineOptions}, and recursively
+   * initializes subcommands.
+   *
+   * Metadata provided in the constructor {@link params} (or via the
+   * declarative {@link createCommand} `node`) takes precedence over values
+   * set programmatically in {@link defineMetadata}.
+   *
+   * @returns A promise that resolves to the command instance.
+   */
+  public async init(): Promise<this> {
+    if (this.initialized) return this;
+    this.initialized = true;
+
+    // Subclasses can apply additional metadata here FIRST
+    await this.defineMetadata();
+
+    // THEN apply constructor params (which override defineMetadata)
+    if (this.params.name) {
+      this.commander.name(this.params.name);
     }
-    if (params.description) this.commander.description(params.description);
-    if (!params.root && params.aliases) {
-      this.commander.aliases(params.aliases);
+    if (this.params.root && this.params.version) {
+      this.commander.version(this.params.version);
+    }
+    if (this.params.description) {
+      this.commander.description(this.params.description);
+    }
+    if (!this.params.root && this.params.aliases) {
+      this.commander.aliases(this.params.aliases);
     }
 
-    this.defineMetadata();
-    this.defineOptions();
+    // Subclasses define their CLI interface here
+    await this.defineOptions();
 
-    // Register subcommands early so they're available for parsing
-    this.registerSubCommands();
+    // Register and initialize subcommands
+    await this.registerSubCommands();
 
     // Add logging options for root commands
-    if (params.root) {
+    if (this.params.root) {
       this.#addLoggingOptions();
-    }
-    if (params.dryRun) {
-      this.commander.option('-n, --dry-run', 'Perform a dry run without making changes');
     }
 
     // The middleware chain - runs after parsing, before action
@@ -111,7 +126,7 @@ export abstract class BaseCommand<
       const opts = this.commander.opts() as TOpts;
       this.hydrateContext(opts);
 
-      // 3. Configure logging for root commands (check if we have any logging options)
+      // 3. Configure logging for root commands
       if (
         'logLevel' in opts || 'verbose' in opts || 'debug' in opts || 'trace' in opts || 'spam' in opts ||
         'logShow' in opts || 'logShowAll' in opts || 'color' in opts
@@ -126,128 +141,67 @@ export abstract class BaseCommand<
       });
     });
 
-    // Final execution
+    // Final execution handler
     this.commander.action(async (...params: unknown[]) => {
-      // Commander.js passes: ...args, options, command
-      // For variadic args like <files...>, they come as a single array parameter
-      // We want: options, args (flattened)
       const opts = params[params.length - 2] as TOpts;
       const rawArgs = params.slice(0, -2);
-      // Flatten if first arg is an array (variadic argument)
       const args = (rawArgs.length === 1 && Array.isArray(rawArgs[0])) ? rawArgs[0] as string[] : rawArgs as string[];
       await this.execute(opts, args);
     });
+
+    return this;
   }
 
-  // --- Abstract methods to be implemented by subclasses ---
-
   /**
-   * Define command metadata (name, description, version, aliases)
+   * Override to define additional command metadata.
    *
-   * Called during construction to set up the command's basic information.
-   *
-   * @example
-   * ```typescript
-   * defineMetadata() {
-   *   this.commander.name('mycommand');
-   *   this.commander.description('Does something useful');
-   *   this.commander.version('1.0.0');
-   * Define command metadata (name, description, version)
-   *
-   * By default, this method does nothing as basic metadata (name, description, version)
-   * is automatically applied from the constructor's `params` argument.
-   * Override this to fetch metadata from an external source or set additional metadata.
+   * Called during {@link init}. Values set here may be overridden by
+   * constructor {@link params}.
    */
-  defineMetadata(): void {}
+  async defineMetadata(): Promise<void> {
+    await Promise.resolve();
+  }
 
   /**
-   * Define command options and arguments
+   * Override to define command-specific options and arguments.
    *
-   * Called during construction to set up the command's CLI interface.
+   * Called during {@link init} using the {@link commander} instance.
    *
    * @example
    * ```typescript
-   * defineOptions() {
-   *   this.commander.option('--force', 'Force the operation');
-   *   this.commander.argument('<file>', 'File to process');
+   * override async defineOptions() {
+   *   this.commander.option('-f, --file <path>', 'Path to file');
    * }
    * ```
    */
-  defineOptions(): void {}
+  async defineOptions(): Promise<void> {
+    await Promise.resolve();
+  }
 
   /**
-   * Create a context instance for this command
+   * Create a context instance for this command level.
    *
-   * Called during the preAction hook to create the context.
-   * For root commands, parent will be undefined - use initialContext.
-   * For subcommands, parent will be the hydrated parent context.
+   * Called during the preAction hook. For root commands, `parent` will be
+   * undefined. Subcommands receive the hydrated parent context.
    *
-   * @param parent - The parent context (undefined for root commands)
-   * @returns The context instance for this command (or a Promise that resolves to it)
-   *
-   * @example
-   * ```typescript
-   * createContext(parent?) {
-   *   if (!parent) return this.parentContext!; // Root
-   *   return new ChildContext(parent); // Child
-   * }
-   * ```
+   * @param parent - The parent context instance.
    */
   abstract createContext(parent?: TParentContext): Promise<TContext> | TContext;
 
   /**
-   * Hydrate the context with parsed command-line options
+   * Update the context with parsed command-line options.
    *
-   * Called during the preAction hook after createContext.
-   * Use this to populate context properties from parsed options.
-   *
-   * @param options - The parsed command-line options
-   *
-   * @example
-   * ```typescript
-   * hydrateContext(options) {
-   *   this.ctx.apiUrl = options.apiUrl;
-   *   this.ctx.verbose = options.verbose;
-   * }
-   * ```
+   * Called during the preAction hook after {@link createContext}.
    */
   hydrateContext(_options: TOpts): void {}
 
   /**
-   * Execute the command with parsed options and arguments
-   *
-   * Called when the command is invoked. Implement your command logic here.
-   * The context is fully initialized and hydrated at this point.
-   *
-   * @param opts - The parsed command-line options
-   * @param args - The parsed command-line arguments
-   *
-   * @example
-   * ```typescript
-   * execute(opts, args) {
-   *   this.ctx.log.info.text(`Processing ${args.length} files`).emit();
-   *   if (opts.force) {
-   *     // Force processing
-   *   }
-   * }
-   * ```
+   * Primary command logic implementation.
    */
   abstract execute(opts: TOpts, args: CliApp.CmdArgs): Promise<void> | void;
 
   /**
-   * Get subcommand instances
-   *
-   * Override this method to return an array of subcommand instances.
-   * Called during construction to register subcommands.
-   *
-   * @returns Array of subcommand instances
-   *
-   * @example
-   * ```typescript
-   * protected override getSubCommands() {
-   *   return [new ProcessCommand(), new ListCommand()];
-   * }
-   * ```
+   * Override to return an array of subcommand instances.
    */
   protected getSubCommands(): BaseCommand<TContext, TContext>[] {
     return [];
@@ -266,12 +220,17 @@ export abstract class BaseCommand<
     return this.#subCommands;
   }
 
-  public registerSubCommands() {
+  /**
+   * Registers and initializes all declared subcommands.
+   * @internal
+   */
+  public async registerSubCommands(): Promise<void> {
     const subCommands = this.#getCachedSubCommands();
-    subCommands.forEach((sub) => {
-      sub.registerSubCommands(); // Recursive registration
+    for (const sub of subCommands) {
+      // Recursive initialization
+      await sub.init();
       this.commander.addCommand(sub.commander);
-    });
+    }
   }
 
   #addLoggingOptions(): void {
@@ -288,6 +247,10 @@ export abstract class BaseCommand<
       new Commander.Option('-A, --log-show-all', 'Shortcut for --log_show all'),
       new Commander.Option('--no-color', 'Do not show color in output'),
     ];
+
+    if (this.params.dryRun) {
+      options.push(new Commander.Option('-n, --dry-run', 'Perform a dry run without making changes'));
+    }
 
     for (const option of options) {
       this.commander.addOption(option);

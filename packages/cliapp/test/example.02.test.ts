@@ -60,7 +60,8 @@ class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, RootOptions
     super(initialContext, { ...pkg, root: true, dryRun: true }); // Mark as root, add dry-run
   }
 
-  override defineOptions() {
+  override async defineOptions(): Promise<void> {
+    await Promise.resolve();
     this.commander.option('--config <file>', 'Configuration file');
     this.commander.option('--quiet', 'Suppress output');
   }
@@ -93,7 +94,8 @@ class ProcessCommand extends CliApp.BaseCommand<AppContext, AppContext, ProcessO
   constructor() {
     super(undefined, { name: 'process' });
   }
-  override defineOptions() {
+  override async defineOptions(): Promise<void> {
+    await Promise.resolve();
     this.commander.argument('[files...]', 'Files to process');
     this.commander.option('--input <dir>', 'Input directory', '.');
     this.commander.option('--pattern <glob>', 'File pattern', '*.txt');
@@ -139,7 +141,8 @@ class CleanCommand extends CliApp.BaseCommand<AppContext, AppContext, CleanOptio
   constructor() {
     super(undefined, { name: 'clean' });
   }
-  override defineOptions() {
+  override async defineOptions(): Promise<void> {
+    await Promise.resolve();
     this.commander.argument('[target]', 'Target directory', '.');
     this.commander.option('--force', 'Force deletion');
   }

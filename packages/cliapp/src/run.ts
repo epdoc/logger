@@ -95,7 +95,8 @@ export async function run<TCtx extends ICtx = ICtx>(
       // Original function-based approach
       await appFnOrCommand();
     } else {
-      // BaseCommand - use its commander property to parse
+      // BaseCommand - initialize and then use its commander property to parse
+      await appFnOrCommand.init();
       await appFnOrCommand.commander.parseAsync();
     }
   } catch (error) {

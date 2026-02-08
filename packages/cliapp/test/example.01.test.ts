@@ -33,7 +33,8 @@ class RootCommand extends CliApp.BaseCommand<RootContext, RootContext, RootOptio
     super(initialContext, { ...pkg, root: true }); // Mark as root
   }
 
-  override defineOptions(): void {
+  override async defineOptions(): Promise<void> {
+    await Promise.resolve();
     this.commander.option('--root-option', 'Example root command option');
   }
 
@@ -63,7 +64,8 @@ class SubCommand extends CliApp.BaseCommand<ChildContext, RootContext, SubOption
   constructor(parent: RootContext) {
     super(parent, { name: 'process' });
   }
-  override defineOptions(): void {
+  override async defineOptions(): Promise<void> {
+    await Promise.resolve();
     this.commander.argument('<files...>', 'Files to process');
     this.commander.option('--sub-option', 'Example subcommand option');
   }

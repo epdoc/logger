@@ -53,7 +53,9 @@ class RootCommand extends CliApp.BaseCommand<
     super(initialContext, { ...pkg, description: 'Custom Message Builder Example', root: true });
   }
 
-  override defineOptions(): void {}
+  override async defineOptions(): Promise<void> {
+    await Promise.resolve();
+  }
 
   override createContext(parent?: AppContext): AppContext {
     return parent || this.parentContext!;
@@ -79,7 +81,8 @@ class ProcessCmd extends CliApp.BaseCommand<AppContext, AppContext, ProcessOptio
   constructor(parent: AppContext) {
     super(parent, { name: 'process' });
   }
-  override defineOptions(): void {
+  override async defineOptions(): Promise<void> {
+    await Promise.resolve();
     this.commander.argument('[files...]', 'Files to process');
     this.commander.option('--verbose', 'Verbose output');
   }

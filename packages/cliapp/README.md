@@ -20,10 +20,14 @@ deno add @epdoc/cliapp @epdoc/logger @epdoc/msgbuilder
 
 ### Class-Based Pattern
 
-```typescript
+```typescript A
 import * as CliApp from '@epdoc/cliapp';
 import * as Log from '@epdoc/logger';
-import pkg from './deno.json' with { type: 'json' };
+const pkg = { name: 'myapp', version: '1.0.0', description: 'My app' };
+
+class AppOptions extends CliApp.CmdOptions {
+  force?: boolean;
+}
 
 class AppContext extends CliApp.Context {
   override async setupLogging() {
@@ -33,8 +37,22 @@ class AppContext extends CliApp.Context {
   }
 }
 
-class RootCommand extends CliApp.BaseCommand<AppContext, AppContext> {
-  override execute() {
+class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, CliApp.CmdOptions> {
+  constructor(ctx: AppContext) {
+    super(ctx, { name: 'myapp', root: true, version: pkg.version });
+  }
+
+  override createContext(parent?: AppContext): AppContext {
+    return parent || this.parentContext!;
+  }
+
+  override async defineOptions(): Promise<void> {
+    this.commander.option('-f, --force', 'Force operation');
+    this.commander.argument('[files...]', 'Files to process');
+    await Promise.resolve();
+  }
+
+  override execute(opts: AppOptions, args: string[]) {
     this.ctx.log.info.text('Hello World').emit();
   }
 }
@@ -48,11 +66,14 @@ if (import.meta.main) {
 
 ### Declarative Pattern
 
-```typescript
-const HelloCmd = CliApp.createCommand({
-  name: 'hello',
-  action: (ctx) => ctx.log.info.text('Hello').emit(),
-});
+```typescript A
+const node: CliApp.CommandNode<AppContext> = {
+  action: (ctx) => {
+    ctx.log.info.text('Hello').emit();
+  },
+};
+
+const RootCmd = CliApp.createCommand(node, { ...pkg, root: true });
 ```
 
 ---
@@ -71,7 +92,7 @@ The root context MUST implement `setupLogging()`.
 > The abstract `Context` class does NOT initialize `logMgr` by default. You must do this in your root context's
 > `setupLogging` method using the appropriate generics for your logger and message builder.
 
-```typescript
+```typescript B
 import * as CliApp from '@epdoc/cliapp';
 import * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
@@ -98,7 +119,7 @@ context object.
 
 ### 2. The Main Entry Point (`main.ts`)
 
-```typescript
+```typescript C
 import * as CliApp from '@epdoc/cliapp';
 import { AppContext } from './src/context.ts';
 import { RootCommand } from './src/cmds/root.ts';
@@ -116,8 +137,8 @@ if (import.meta.main) {
 
 Passing `root: true` to the constructor enables global flags like `--log-level` and `--no-color`.
 
-```typescript
-export class RootCommand extends CliApp.BaseCommand<AppContext, AppContext> {
+```typescript C
+export class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, CliApp.CmdOptions> {
   constructor(ctx: AppContext) {
     super(ctx, {
       name: 'myapp',
@@ -126,12 +147,13 @@ export class RootCommand extends CliApp.BaseCommand<AppContext, AppContext> {
     });
   }
 
-  override defineOptions() {
+  override async defineOptions(): Promise<void> {
+    await Promise.resolve();
     this.commander.option('-u, --url <url>', 'Override API URL');
   }
 
-  override hydrateContext(options: any) {
-    if (options.url) this.ctx.apiUrl = options.url;
+  override hydrateContext(options: CliApp.CmdOptions) {
+    if (options.url) this.ctx.apiUrl = options.url as string;
   }
 
   override execute() {
@@ -148,8 +170,8 @@ export class RootCommand extends CliApp.BaseCommand<AppContext, AppContext> {
 
 A command class is decoupled from its hierarchy. The parent command determines if it's a root or a child.
 
-```typescript
-export class SyncCommand extends CliApp.BaseCommand<AppContext, AppContext> {
+```typescript C
+export class SyncCommand extends CliApp.BaseCommand<AppContext, AppContext, CliApp.CmdOptions> {
   constructor(ctx?: AppContext) {
     super(ctx, { name: 'sync', description: 'Synchronize data' });
   }
@@ -172,10 +194,11 @@ export class SyncCommand extends CliApp.BaseCommand<AppContext, AppContext> {
 
 ### Lifecycle
 
-1. **Construction**: Sets metadata and options.
-2. **Parsing**: Commander.js parses the CLI.
-3. **PreAction Hook**: Context is created and hydrated.
-4. **Execution**: `execute(options, args)` runs.
+1. **Construction**: Basic Commander.js setup and parameter storage.
+2. **init()**: (Async) Recursive call to `defineMetadata()`, `defineOptions()`, and subcommand registration.
+3. **CliApp.run()**: Orchestrates initialization and calls `commander.parseAsync()`.
+4. **PreAction Hook**: Context creation and hydration.
+5. **Execution**: `execute(options, args)` runs command logic.
 
 ### Built-in Logging
 

@@ -97,8 +97,8 @@ export type CmdParams = Partial<CmdMetadata> & {
  * Declarative command node configuration for configuration-based commands
  */
 export interface CommandNode<TContext extends ICtx = ICtx> {
-  /** Command name */
-  name: string;
+  /** Command name (optional if provided via CmdParams) */
+  name?: string;
   /** Command description */
   description?: string;
   /** Command version */

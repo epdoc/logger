@@ -27,11 +27,12 @@ describe('createCommand factory', () => {
       refineContext: (ctx) => ctx,
     };
 
-    const HelloCmd = CliApp.createCommand(node, true);
+    const HelloCmd = CliApp.createCommand(node, { root: true });
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
 
     const cmd = new HelloCmd(ctx);
+    await cmd.init();
 
     assertEquals(cmd.commander.name(), 'hello');
     assertEquals(cmd.commander.description(), 'Say hello');
@@ -52,6 +53,7 @@ describe('createCommand factory', () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
     const cmd = new TestCmd(ctx);
+    await cmd.init();
 
     assertExists(cmd.commander.options.find((o) => o.long === '--save'));
     assertExists(cmd.commander.registeredArguments.find((a) => a.name() === 'input'));
@@ -74,6 +76,7 @@ describe('createCommand factory', () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
     const root = new RootCmd(ctx);
+    await root.init();
 
     // deno-lint-ignore no-explicit-any
     const child = root.commander.commands.find((c: any) => c.name() === 'child');
@@ -108,8 +111,23 @@ describe('createCommand factory', () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
     const root = new RootCmd(ctx);
+    await root.init();
 
     assertExists(root.commander.commands.find((c) => c.name() === 'node-sub'));
     assertExists(root.commander.commands.find((c) => c.name() === 'class-sub'));
+  });
+
+  it('should override node metadata with CmdParams', async () => {
+    const node: CliApp.CommandNode<TestContext> = {
+      name: 'node-name',
+      version: '1.0.0',
+    };
+    const ParamsCmd = CliApp.createCommand(node, { name: 'param-name', version: '2.0.0', root: true });
+    const ctx = new TestContext(pkg);
+    await ctx.setupLogging();
+    const cmd = new ParamsCmd(ctx);
+    await cmd.init();
+    assertEquals(cmd.commander.name(), 'param-name');
+    assertEquals(cmd.commander.version(), '2.0.0');
   });
 });
