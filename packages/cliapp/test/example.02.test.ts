@@ -57,25 +57,19 @@ type CleanOptions = {
 // Root command
 class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, RootOptions> {
   constructor(initialContext?: AppContext) {
-    super(undefined, initialContext, { root: true, dryRun: true }); // Mark as root, add dry-run
+    super(initialContext, { ...pkg, root: true, dryRun: true }); // Mark as root, add dry-run
   }
 
-  defineMetadata() {
-    this.commander.name(pkg.name);
-    this.commander.version(pkg.version);
-    this.commander.description(pkg.description);
-  }
-
-  defineOptions() {
+  override defineOptions() {
     this.commander.option('--config <file>', 'Configuration file');
     this.commander.option('--quiet', 'Suppress output');
   }
 
-  createContext(parent?: AppContext) {
+  override createContext(parent?: AppContext) {
     return parent || this.parentContext!;
   }
 
-  hydrateContext(options: RootOptions) {
+  override hydrateContext(options: RootOptions) {
     if (options.quiet) {
       this.ctx.logMgr.threshold = 'error';
     }
@@ -84,7 +78,7 @@ class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, RootOptions
     }
   }
 
-  execute() {
+  override execute() {
     this.ctx.log.info.h1('File Processor').emit();
     this.ctx.logStatus('info', 'Use subcommands: process, clean');
   }
@@ -96,29 +90,27 @@ class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, RootOptions
 
 // Process command
 class ProcessCommand extends CliApp.BaseCommand<AppContext, AppContext, ProcessOptions> {
-  defineMetadata() {
-    this.commander.name('process');
-    this.commander.description('Process files in a directory');
+  constructor() {
+    super(undefined, { name: 'process' });
   }
-
-  defineOptions() {
+  override defineOptions() {
     this.commander.argument('[files...]', 'Files to process');
     this.commander.option('--input <dir>', 'Input directory', '.');
     this.commander.option('--pattern <glob>', 'File pattern', '*.txt');
     this.commander.option('--verbose', 'Verbose output');
   }
 
-  createContext(parent?: AppContext) {
+  override createContext(parent?: AppContext) {
     return parent!;
   }
 
-  hydrateContext(options: ProcessOptions) {
+  override hydrateContext(options: ProcessOptions) {
     if (options.verbose) {
       this.ctx.logMgr.threshold = 'debug';
     }
   }
 
-  execute(opts: ProcessOptions, files: string[]) {
+  override execute(opts: ProcessOptions, files: string[]) {
     this.ctx.log.info.h1('File Processing')
       .label('Directory:').value(opts.input || '.')
       .label('Pattern:').value(opts.pattern || '*.txt')
@@ -144,25 +136,23 @@ class ProcessCommand extends CliApp.BaseCommand<AppContext, AppContext, ProcessO
 
 // Clean command
 class CleanCommand extends CliApp.BaseCommand<AppContext, AppContext, CleanOptions> {
-  defineMetadata() {
-    this.commander.name('clean');
-    this.commander.description('Clean temporary files');
+  constructor() {
+    super(undefined, { name: 'clean' });
   }
-
-  defineOptions() {
+  override defineOptions() {
     this.commander.argument('[target]', 'Target directory', '.');
     this.commander.option('--force', 'Force deletion');
   }
 
-  createContext(parent?: AppContext) {
+  override createContext(parent?: AppContext) {
     return parent!;
   }
 
-  hydrateContext(_options: CleanOptions) {
+  override hydrateContext(_options: CleanOptions) {
     // Inherit dry-run from parent context
   }
 
-  execute(opts: CleanOptions, target: string[]) {
+  override execute(opts: CleanOptions, target: string[]) {
     const targetDir = target[0] || '.';
     this.ctx.log.info.h1('Cleanup Operation')
       .label('Target:').value(targetDir)

@@ -50,24 +50,18 @@ class RootCommand extends CliApp.BaseCommand<
   { verbose?: boolean } & CliApp.CmdOptions
 > {
   constructor(initialContext: AppContext) {
-    super(undefined, initialContext, { root: true });
+    super(initialContext, { ...pkg, description: 'Custom Message Builder Example', root: true });
   }
 
-  defineMetadata(): void {
-    this.commander.name(pkg.name);
-    this.commander.version(pkg.version);
-    this.commander.description('Custom Message Builder Example');
-  }
+  override defineOptions(): void {}
 
-  defineOptions(): void {}
-
-  createContext(parent?: AppContext): AppContext {
+  override createContext(parent?: AppContext): AppContext {
     return parent || this.parentContext!;
   }
 
-  hydrateContext(): void {}
+  override hydrateContext(): void {}
 
-  execute(): void {
+  override execute(): void {
     this.ctx.log.info.h1('Custom Message Builder Example')
       .text('Use --help for commands')
       .emit();
@@ -77,28 +71,26 @@ class RootCommand extends CliApp.BaseCommand<
     AppContext,
     AppContext
   >[] {
-    return [new ProcessCmd()];
+    return [new ProcessCmd(this.parentContext!)];
   }
 }
 
 class ProcessCmd extends CliApp.BaseCommand<AppContext, AppContext, ProcessOptions> {
-  defineMetadata(): void {
-    this.commander.name('process');
-    this.commander.description('Process files');
+  constructor(parent: AppContext) {
+    super(parent, { name: 'process' });
   }
-
-  defineOptions(): void {
+  override defineOptions(): void {
     this.commander.argument('[files...]', 'Files to process');
     this.commander.option('--verbose', 'Verbose output');
   }
 
-  createContext(parent?: AppContext): AppContext {
+  override createContext(parent?: AppContext): AppContext {
     return parent!;
   }
 
-  hydrateContext(): void {}
+  override hydrateContext(): void {}
 
-  execute(_opts: ProcessOptions, args: string[]): void {
+  override execute(_opts: ProcessOptions, args: string[]): void {
     for (const file of args) {
       this.ctx.logFileOperation('PROCESS', file);
     }

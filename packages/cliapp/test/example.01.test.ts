@@ -30,29 +30,23 @@ type SubOptions = { subOption: boolean };
 // Define your commands using BaseCommand
 class RootCommand extends CliApp.BaseCommand<RootContext, RootContext, RootOptions> {
   constructor(initialContext: RootContext) {
-    super(undefined, initialContext, { root: true }); // Mark as root
+    super(initialContext, { ...pkg, root: true }); // Mark as root
   }
 
-  defineMetadata(): void {
-    this.commander.name(pkg.name);
-    this.commander.version(pkg.version);
-    this.commander.description(pkg.description);
-  }
-
-  defineOptions(): void {
+  override defineOptions(): void {
     this.commander.option('--root-option', 'Example root command option');
   }
 
-  createContext(parent?: RootContext): RootContext {
+  override createContext(parent?: RootContext): RootContext {
     // Use the initial context passed in constructor
     return parent || this.parentContext!;
   }
 
-  hydrateContext(options: RootOptions): void {
+  override hydrateContext(options: RootOptions): void {
     this.ctx.debugMode = options.rootOption;
   }
 
-  execute(_opts: RootOptions, _args: CliApp.CmdArgs): void {
+  override execute(_opts: RootOptions, _args: CliApp.CmdArgs): void {
     // Root command with no subcommand - show help
     this.commander.help();
   }
@@ -61,33 +55,31 @@ class RootCommand extends CliApp.BaseCommand<RootContext, RootContext, RootOptio
     ChildContext,
     RootContext
   >[] {
-    return [new SubCommand()];
+    return [new SubCommand(this.parentContext!)];
   }
 }
 
 class SubCommand extends CliApp.BaseCommand<ChildContext, RootContext, SubOptions> {
-  defineMetadata(): void {
-    this.commander.name('process');
-    this.commander.description('Process files');
+  constructor(parent: RootContext) {
+    super(parent, { name: 'process' });
   }
-
-  defineOptions(): void {
+  override defineOptions(): void {
     this.commander.argument('<files...>', 'Files to process');
     this.commander.option('--sub-option', 'Example subcommand option');
   }
 
-  createContext(parent?: RootContext): ChildContext {
+  override createContext(parent?: RootContext): ChildContext {
     if (!parent) {
       throw new Error('SubCommand requires parent context');
     }
     return new ChildContext(parent, { pkg: 'child' });
   }
 
-  hydrateContext(_options: SubOptions): void {
+  override hydrateContext(_options: SubOptions): void {
     // No additional hydration needed for this subcommand
   }
 
-  execute(opts: SubOptions, args: CliApp.CmdArgs): void {
+  override execute(opts: SubOptions, args: CliApp.CmdArgs): void {
     const files = args;
 
     this.ctx.log.info.h1('Processing:').emit();

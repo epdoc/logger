@@ -46,15 +46,17 @@ export function createCommand<
   // Return an anonymous class that extends BaseCommand
   return class extends BaseCommand<TContext, TParentContext, TOpts> {
     constructor(initialContext?: TParentContext) {
-      super(node.name, initialContext, { root: isRoot, dryRun: addDryRun });
+      super(initialContext!, {
+        name: node.name,
+        description: node.description,
+        version: node.version,
+        aliases: node.aliases,
+        root: isRoot,
+        dryRun: addDryRun,
+      });
     }
 
-    defineMetadata(): void {
-      if (node.description) this.commander.description(node.description);
-      if (node.aliases) this.commander.aliases(node.aliases);
-    }
-
-    defineOptions(): void {
+    override defineOptions(): void {
       if (node.arguments) {
         for (const arg of node.arguments) {
           this.commander.argument(arg);
@@ -69,7 +71,7 @@ export function createCommand<
       }
     }
 
-    createContext(parent?: TParentContext): Promise<TContext> | TContext {
+    override createContext(parent?: TParentContext): Promise<TContext> | TContext {
       if (node.refineContext && parent) {
         // Call refineContext to create the child context
         // Note: opts/args not available yet, will be hydrated later
@@ -78,14 +80,14 @@ export function createCommand<
       return (parent || this.parentContext) as TContext;
     }
 
-    hydrateContext(options: TOpts): void {
+    override hydrateContext(options: TOpts): void {
       // Allow declarative hydration via a callback
       if (node.hydrate) {
         node.hydrate(this.ctx, options);
       }
     }
 
-    execute(opts: TOpts, args: CliApp.CmdArgs): void | Promise<void> {
+    override execute(opts: TOpts, args: CliApp.CmdArgs): void | Promise<void> {
       if (node.action) {
         return node.action(this.ctx, opts, ...args);
       }

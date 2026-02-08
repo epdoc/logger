@@ -70,16 +70,23 @@ export abstract class BaseCommand<
    * @param addDryRun - Whether to add --dry-run option (only for root commands)
    */
   constructor(
-    name?: string,
     initialContext?: TParentContext,
-    params: CliApp.CmdParams = { root: false, dryRun: false },
+    params: CliApp.CmdParams = {},
   ) {
-    this.commander = new Commander.Command(name);
+    this.commander = new Commander.Command(params.name);
     this.parentContext = initialContext;
 
     // Configure help and output formatting
     this.commander.configureHelp(config.help);
     this.commander.configureOutput(config.output);
+
+    if (params.root && params.version) {
+      this.commander.version(params.version);
+    }
+    if (params.description) this.commander.description(params.description);
+    if (!params.root && params.aliases) {
+      this.commander.aliases(params.aliases);
+    }
 
     this.defineMetadata();
     this.defineOptions();
@@ -145,10 +152,13 @@ export abstract class BaseCommand<
    *   this.commander.name('mycommand');
    *   this.commander.description('Does something useful');
    *   this.commander.version('1.0.0');
-   * }
-   * ```
+   * Define command metadata (name, description, version)
+   *
+   * By default, this method does nothing as basic metadata (name, description, version)
+   * is automatically applied from the constructor's `params` argument.
+   * Override this to fetch metadata from an external source or set additional metadata.
    */
-  abstract defineMetadata(): void;
+  defineMetadata(): void {}
 
   /**
    * Define command options and arguments
@@ -163,7 +173,7 @@ export abstract class BaseCommand<
    * }
    * ```
    */
-  abstract defineOptions(): void;
+  defineOptions(): void {}
 
   /**
    * Create a context instance for this command
@@ -201,7 +211,7 @@ export abstract class BaseCommand<
    * }
    * ```
    */
-  abstract hydrateContext(options: TOpts): void;
+  hydrateContext(_options: TOpts): void {}
 
   /**
    * Execute the command with parsed options and arguments

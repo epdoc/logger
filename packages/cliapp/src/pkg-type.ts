@@ -7,13 +7,17 @@
  * const context = new AppContext(pkg);
  * ```
  */
-export type DenoPkg = {
-  /** Package name */
+
+export type CmdMetadata = {
+  /** Package or command name */
   name: string;
   /** Semantic version string */
   version: string;
-  /** Package description */
+  /** Package or command description */
   description: string;
+};
+
+export type DenoPkg = CmdMetadata & {
   /** Optional author information */
   author?: { name?: string; email?: string };
   /** Workspace configuration for monorepos */

@@ -39,7 +39,7 @@ export function configureLogging(ctx: ICtx, opts: LogOptions): void {
     logOptions.push(`--log-level ${opts.logLevel}`);
   }
   if (opts.verbose) {
-    threshold = 'verbose';
+    threshold = 'info';
     logOptions.push('--verbose');
   }
   if (opts.debug) {
@@ -144,7 +144,7 @@ function setAllShow(show: Log.EmitterShowOpts) {
  * ```
  */
 export function commaList(val: string): string[] {
-  return val.split(',');
+  return val ? val.split(',') : [];
 }
 
 /**

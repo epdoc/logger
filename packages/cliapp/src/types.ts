@@ -16,6 +16,7 @@ export type { DenoPkg } from './pkg-type.ts';
 // Local imports for use in this file
 import type { BaseCommand } from './cmd-abstract.ts';
 import type { ICtx } from './context.ts';
+import type { CmdMetadata } from './pkg-type.ts';
 
 /**
  * Base message builder type for CLI applications
@@ -42,23 +43,25 @@ export type CmdArgs = string[];
  */
 export type LogOptions = CmdOptions & {
   /** Log level threshold (e.g., 'info', 'debug', 'error') */
-  logLevel: string;
+  logLevel?: string;
   /** Shortcut to set logLevel to verbose */
-  verbose: boolean;
+  verbose?: boolean;
   /** Shortcut to set logLevel to debug */
-  debug: boolean;
+  debug?: boolean;
   /** Shortcut to set logLevel to trace */
-  trace: boolean;
+  trace?: boolean;
   /** Shortcut to set logLevel to spam (the lowest log level) */
-  spam: boolean;
+  spam?: boolean;
   /** Array of log properties to display (e.g., 'level', 'timestamp'). Empty shows only the message.  */
-  logShow: string[] | boolean | undefined;
+  logShow?: string[] | boolean | undefined;
   /** Show all available log properties */
-  logShowAll: boolean;
+  logShowAll?: boolean;
   /** Display color output */
-  color: boolean;
+  color?: boolean;
+  /** Disable color output */
+  noColor?: boolean;
   /** Dry-run mode - show what would be done without executing */
-  dryRun: boolean;
+  dryRun?: boolean;
 };
 
 /**
@@ -84,9 +87,10 @@ export interface ISilentError extends Error {
   silent: boolean;
 }
 
-export type CmdParams = {
+export type CmdParams = Partial<CmdMetadata> & {
   root?: boolean;
   dryRun?: boolean;
+  aliases?: string[];
 };
 
 /**
@@ -97,6 +101,8 @@ export interface CommandNode<TContext extends ICtx = ICtx> {
   name: string;
   /** Command description */
   description?: string;
+  /** Command version */
+  version?: string;
   /** Command aliases */
   aliases?: string[];
   /** Command options */

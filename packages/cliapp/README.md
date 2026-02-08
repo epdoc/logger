@@ -16,246 +16,207 @@ Type-safe CLI framework with automatic context flow, built on Commander.js and i
 deno add @epdoc/cliapp @epdoc/logger @epdoc/msgbuilder
 ```
 
-## Quick Start - Class-Based
+## Quick Start
+
+### Class-Based Pattern
 
 ```typescript
 import * as CliApp from '@epdoc/cliapp';
+import * as Log from '@epdoc/logger';
 import pkg from './deno.json' with { type: 'json' };
 
-// Define contexts
-class RootContext extends CliApp.Context {
-  apiUrl = '';
-
-  setupLogging() {
+class AppContext extends CliApp.Context {
+  override async setupLogging() {
+    // Root contexts MUST initialize logMgr and log with appropriate generics
     this.logMgr = new Log.Mgr<CliApp.Ctx.MsgBuilder>();
-    this.logMgr.initLevels();
-    this.log = this.logMgr.getLogger<CliApp.Ctx.Logger>();
+    this.log = await this.logMgr.getLogger<CliApp.Ctx.Logger>();
   }
 }
 
-class ChildContext extends RootContext {
-  processedFiles = 0;
-
-  constructor(parent: RootContext, params?: Log.IGetChildParams) {
-    super(parent, params);
-    this.apiUrl = parent.apiUrl; // Inherit from parent
+class RootCommand extends CliApp.BaseCommand<AppContext, AppContext> {
+  override execute() {
+    this.ctx.log.info.text('Hello World').emit();
   }
 }
 
-// Define commands
-class RootCommand extends CliApp.BaseCommand<RootContext, RootContext> {
-  constructor(ctx: RootContext) {
-    super(undefined, ctx, true); // Mark as root
+if (import.meta.main) {
+  const ctx = new AppContext(pkg);
+  await ctx.setupLogging();
+  await CliApp.run(ctx, new RootCommand(ctx));
+}
+```
+
+### Declarative Pattern
+
+```typescript
+const HelloCmd = CliApp.createCommand({
+  name: 'hello',
+  action: (ctx) => ctx.log.info.text('Hello').emit(),
+});
+```
+
+---
+
+## Guide: Building a CLI Step-by-Step
+
+### 1. The Context Layer
+
+The **Context** object is passed from the root application down through every subcommand.
+
+#### The Root Context
+
+The root context MUST implement `setupLogging()`.
+
+> [!IMPORTANT]
+> The abstract `Context` class does NOT initialize `logMgr` by default. You must do this in your root context's
+> `setupLogging` method using the appropriate generics for your logger and message builder.
+
+```typescript
+import * as CliApp from '@epdoc/cliapp';
+import * as Log from '@epdoc/logger';
+import type { Console } from '@epdoc/msgbuilder';
+
+type M = Console.Builder;
+type L = Log.Std.Logger<M>;
+
+export class AppContext extends CliApp.Context<L> {
+  // Shared state
+  public apiUrl: string = 'https://api.example.com';
+
+  override async setupLogging() {
+    this.logMgr = new Log.Mgr<M>();
+    // Configure transports here
+    this.log = await this.logMgr.getLogger<L>();
+  }
+}
+```
+
+#### Context Refinement (Optional)
+
+Refinement is **completely optional**. If a subcommand doesn't implement `createContext`, it simply reuses the parent's
+context object.
+
+### 2. The Main Entry Point (`main.ts`)
+
+```typescript
+import * as CliApp from '@epdoc/cliapp';
+import { AppContext } from './src/context.ts';
+import { RootCommand } from './src/cmds/root.ts';
+import pkg from './deno.json' with { type: 'json' };
+
+if (import.meta.main) {
+  const ctx = new AppContext(pkg);
+  await ctx.setupLogging();
+  const rootCmd = new RootCommand(ctx);
+  await CliApp.run(ctx, rootCmd);
+}
+```
+
+### 3. Creating the Root Command
+
+Passing `root: true` to the constructor enables global flags like `--log-level` and `--no-color`.
+
+```typescript
+export class RootCommand extends CliApp.BaseCommand<AppContext, AppContext> {
+  constructor(ctx: AppContext) {
+    super(ctx, {
+      name: 'myapp',
+      version: pkg.version,
+      root: true,
+    });
   }
 
-  defineMetadata() {
-    this.commander.name(pkg.name);
-    this.commander.description(pkg.description);
+  override defineOptions() {
+    this.commander.option('-u, --url <url>', 'Override API URL');
   }
 
-  defineOptions() {
-    this.commander.option('--api-url <url>', 'API URL');
+  override hydrateContext(options: any) {
+    if (options.url) this.ctx.apiUrl = options.url;
   }
 
-  createContext(parent?: RootContext) {
-    return parent || this.parentContext!;
-  }
-
-  hydrateContext(options) {
-    this.ctx.apiUrl = options.apiUrl;
-  }
-
-  execute() {
+  override execute() {
     this.commander.help();
   }
 
   protected override getSubCommands() {
-    return [new ProcessCommand()];
+    return [new SyncCommand()];
   }
-}
-
-class ProcessCommand extends CliApp.BaseCommand<ChildContext, RootContext> {
-  defineMetadata() {
-    this.commander.name('process');
-    this.commander.description('Process files');
-  }
-
-  defineOptions() {
-    this.commander.argument('<files...>', 'Files to process');
-  }
-
-  createContext(parent: RootContext) {
-    return new ChildContext(parent, { pkg: 'process' });
-  }
-
-  hydrateContext() {}
-
-  execute(opts, files) {
-    this.ctx.log.info.text(`Processing ${files.length} files`).emit();
-    this.ctx.log.info.text(`API: ${this.ctx.apiUrl}`).emit();
-  }
-}
-
-// Run
-if (import.meta.main) {
-  const ctx = new RootContext(pkg);
-  await ctx.setupLogging();
-  const cmd = new RootCommand(ctx);
-  await CliApp.run(ctx, cmd);
 }
 ```
 
-## Quick Start - Declarative
+### 4. Subcommand Reuse
+
+A command class is decoupled from its hierarchy. The parent command determines if it's a root or a child.
 
 ```typescript
-import * as CliApp from '@epdoc/cliapp';
-import pkg from './deno.json' with { type: 'json' };
+export class SyncCommand extends CliApp.BaseCommand<AppContext, AppContext> {
+  constructor(ctx?: AppContext) {
+    super(ctx, { name: 'sync', description: 'Synchronize data' });
+  }
 
-// Define contexts (same as above)
-class RootContext extends CliApp.Context {
-  apiUrl = '';
-  setupLogging() {/* ... see above ... */}
-}
-
-// Create commands declaratively
-const RootCommand = CliApp.createCommand({
-  name: pkg.name,
-  description: pkg.description,
-  options: {
-    '--api-url <url>': 'API URL',
-  },
-  hydrate: (ctx, opts) => {
-    ctx.apiUrl = opts.apiUrl;
-  },
-  subCommands: {
-    process: CliApp.createCommand({
-      name: 'process',
-      description: 'Process files',
-      arguments: ['<files...>'],
-      action: (ctx, opts, ...files) => {
-        ctx.log.info.text(`Processing ${files.length} files`).emit();
-        ctx.log.info.text(`API: ${ctx.apiUrl}`).emit();
-      },
-    }),
-  },
-});
-
-// Run
-if (import.meta.main) {
-  const ctx = new RootContext(pkg);
-  await ctx.setupLogging();
-  const cmd = new RootCommand(ctx);
-  await CliApp.run(ctx, cmd);
+  override execute() {
+    this.ctx.log.info.text('Syncing with ').text(this.ctx.apiUrl).emit();
+  }
 }
 ```
+
+---
 
 ## Key Concepts
 
 ### Context Flow
 
-Context automatically flows from parent to child:
-
-1. Parent command's `hydrateContext()` runs with parent options
-2. Child command's `createContext()` receives hydrated parent context
-3. Child inherits parent state via constructor
+1. Parent command's `hydrateContext()` runs with parsed options.
+2. Child command's `createContext()` receives the hydrated parent context.
+3. Child inherits state via its own constructor if needed.
 
 ### Lifecycle
 
-Commands follow this lifecycle:
-
-1. **Construction** - `new Command()` creates instance, sets metadata/options
-2. **Metadata** - `defineMetadata()` sets name, description
-3. **Options** - `defineOptions()` adds options and arguments
-4. **Parsing** - Commander.js parses command line
-5. **PreAction Hook** - Context created and hydrated
-6. **Execution** - `execute()` runs with parsed options
+1. **Construction**: Sets metadata and options.
+2. **Parsing**: Commander.js parses the CLI.
+3. **PreAction Hook**: Context is created and hydrated.
+4. **Execution**: `execute(options, args)` runs.
 
 ### Built-in Logging
 
-Root commands (when `isRoot` is set in constructor) automatically get:
+Root commands automatically receive:
 
-- `--log-level <level>` - Set log threshold
-- `--verbose`, `--debug`, `--trace`, `--spam` - Shortcuts
-- `--log-show [props]` - Configure log output (level, pkg, etc.)
-- `--no-color` - Disable ANSI color output
+- `--log-level <level>`: error, warn, info, debug, trace, spam.
+- `--verbose`, `--debug`: level shortcuts.
+- `--no-color`: Disables ANSI colors.
+- `--dry-run`: Sets `ctx.dryRun = true`.
 
-## Examples
-
-See verified examples in [packages/cliapp/test/](./test/):
-
-- [example.01.test.ts](./test/example.01.test.ts) - **Class-Based Pattern**: Demonstrates extending `BaseCommand` and
-  `Context` for a traditional OOP approach.
-- [example.02.test.ts](./test/example.02.test.ts) - **Advanced Logging Control**: shows how to handle quiet modes,
-  custom status icons, and dry-run flags.
-- [example.03.test.ts](./test/example.03.test.ts) - **Declarative Pattern**: Demonstrates using `createCommand` factory
-  for configuration-driven CLI development.
-- [example.04.test.ts](./test/example.04.test.ts) - **Custom Message Builders**: Shows how to add project-specific
-  logging methods (e.g., `fileOp`, `apiCall`) with full type safety.
-
-## Running the Examples
-
-From the `packages/cliapp` directory:
-
-```bash
-deno task example:01 --help
-deno task example:01 process file1.txt file2.txt
-```
+---
 
 ## API Reference
 
-### BaseCommand
+### BaseCommand<TContext, TParentContext>
 
-Abstract class for creating commands.
-
-**Abstract Methods:**
-
-- `defineMetadata()` - Set command name, description, version
-- `defineOptions()` - Add options and arguments
-- `createContext(parent?)` - Create context instance
-- `hydrateContext(options)` - Populate context from parsed options
-- `execute(options, args)` - Run command logic
-
-**Override Methods:**
-
-- `getSubCommands()` - Return array of subcommand instances (called during registration)
+- `defineMetadata()`: Set name, description, version.
+- `defineOptions()`: Add commander options/arguments.
+- `createContext(parent?)`: Create context instance.
+- `hydrateContext(options)`: Map options to context.
+- `execute(options, args)`: Run command logic.
+- `getSubCommands()`: Return array of subcommand instances.
 
 ### createCommand(node)
 
-Factory function to create commands from declarative configuration.
-
-**CommandNode Properties:**
-
-- `name` - Command name
-- `description` - Command description
-- `options` - Object mapping flags to descriptions
-- `arguments` - Array of argument specifications
-- `hydrate(ctx, opts)` - Hydrate context callback
-- `action(ctx, opts, ...args)` - Command action
-- `subCommands` - Object mapping names to subcommands
-
-### Context
-
-Abstract base context class with logging support.
-
-**Constructor:**
-
-- `new Context(pkg)` - Create root context
-- `new Context(parent, params?)` - Create child context
-
-**Methods:**
-
-- `setupLogging()` - Initialize logging (must be implemented by root)
-- `close()` - Gracefully shut down logging and resources
-
-**Properties:**
-
-- `log` - Logger instance
-- `logMgr` - Log manager
-- `pkg` - Package metadata (deno.json)
+Factory for creating commands from a declarative `CommandNode`.
 
 ### run(ctx, command | appFn, options?)
 
-Run application with lifecycle management. Handles SIGINT and errors.
+The entry point that handles SIGINT, error logging, and cleanup.
+
+---
+
+## Examples
+
+See verified examples in [test/](./test/):
+
+- [example.01.test.ts](./test/example.01.test.ts) - **Class-Based Pattern**
+- [example.02.test.ts](./test/example.02.test.ts) - **Advanced Logging & Dry-Run**
+- [example.03.test.ts](./test/example.03.test.ts) - **Declarative Pattern**
+- [example.04.test.ts](./test/example.04.test.ts) - **Custom Message Builders**
 
 ## License
 

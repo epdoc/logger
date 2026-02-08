@@ -17,7 +17,7 @@ export { run } from './run.ts';
 export * from './types.ts';
 
 // Utility functions
-export { commaList, configureLogging } from './utils.ts';
+export { commaList, configureLogging, SilentError } from './utils.ts';
 
 // Re-export Commander.js for convenience
 export * as Commander from 'commander';
