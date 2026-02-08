@@ -21,11 +21,8 @@
     "./packages/demo-cliapp-v2"
   ],
   "fmt": {
-    "include": [
-      "packages",
-      "deno.json",
-      "launch.config.json"
-    ],
+    "include": ["packages", "deno.json", "launch.config.json"],
+    "exclude": ["packages/logdy", "packages/examples/logdy.run.ts", "packages/logjava"],
     "singleQuote": true,
     "lineWidth": 120
   },
