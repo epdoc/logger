@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.2] - 2026-02-08
+
+- Replace hardwired imports with proper imports in deno.json
+
 ## [2.0.1] - 2026-02-07
 
 - Moved root and dryRun command params into a generic object
@@ -121,6 +125,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+
 - **Declarative Command API**: New simplified API for defining CLI commands with minimal boilerplate
   - `defineCommand()` and `defineRootCommand()` factory functions
   - `option` helpers for common option types (string, number, boolean, date, path, array)
@@ -131,6 +136,7 @@ All notable changes to this project will be documented in this file.
   - Full backward compatibility with existing imperative API
 
 ### Changed
+
 - Updated README with declarative API examples and migration guide
 - Added comprehensive examples in `../examples/declarative.ts`
 

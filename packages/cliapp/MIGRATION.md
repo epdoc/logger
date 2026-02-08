@@ -1,10 +1,12 @@
 # Migration Guide: CliApp v1.x → v2.0
 
-This guide helps you migrate from CliApp v1.x to the new v2.0 architecture with automatic context flow and declarative configuration.
+This guide helps you migrate from CliApp v1.x to the new v2.0 architecture with automatic context flow and declarative
+configuration.
 
 ## Overview of Changes
 
-CliApp v2.0 introduces a cleaner architecture inspired by modern CLI frameworks, eliminating the painful context setup while maintaining full type safety and adding powerful new features.
+CliApp v2.0 introduces a cleaner architecture inspired by modern CLI frameworks, eliminating the painful context setup
+while maintaining full type safety and adding powerful new features.
 
 ### Key Improvements
 
@@ -19,6 +21,7 @@ CliApp v2.0 introduces a cleaner architecture inspired by modern CLI frameworks,
 ### 1. Context System Overhaul
 
 **v1.x (Complex):**
+
 ```typescript
 // Multiple files and complex setup
 import * as Ctx from '@epdoc/cliapp/context';
@@ -36,6 +39,7 @@ cmd.init(ctx);
 ```
 
 **v2.0 (Clean):**
+
 ```typescript
 // Single import, simple setup
 import { Context } from '@epdoc/cliapp';
@@ -52,11 +56,13 @@ cmd.addLogging(); // Uses this.ctx automatically
 ### 2. Command Class Generics
 
 **v1.x:**
+
 ```typescript
 class MyCommand extends Command<MyBuilder, MyLogger>
 ```
 
 **v2.0:**
+
 ```typescript
 class MyCommand extends Command<AppContext, ChildContext, Options>
 ```
@@ -64,15 +70,17 @@ class MyCommand extends Command<AppContext, ChildContext, Options>
 ### 3. Method Signatures
 
 **v1.x:**
+
 ```typescript
-cmd.addLogging(ctx);           // Pass context
-cmd.init(ctx);                 // Pass context
+cmd.addLogging(ctx); // Pass context
+cmd.init(ctx); // Pass context
 ```
 
 **v2.0:**
+
 ```typescript
-await cmd.init(ctx);           // One-time setup
-cmd.addLogging();              // Uses this.ctx
+await cmd.init(ctx); // One-time setup
+cmd.addLogging(); // Uses this.ctx
 ```
 
 ## Step-by-Step Migration
@@ -80,16 +88,17 @@ cmd.addLogging();              // Uses this.ctx
 ### Step 1: Update Context
 
 **Before:**
+
 ```typescript
 import * as Ctx from '@epdoc/cliapp/context';
 
 class AppContext extends Ctx.Base.Context<Console.Builder, Log.Std.Logger> {
   debugMode = false;
-  
+
   constructor(pkg: DenoPkg) {
     super(pkg);
   }
-  
+
   async setupLogging() {
     // Complex setup...
   }
@@ -97,6 +106,7 @@ class AppContext extends Ctx.Base.Context<Console.Builder, Log.Std.Logger> {
 ```
 
 **After:**
+
 ```typescript
 import { Context } from '@epdoc/cliapp';
 
@@ -109,27 +119,29 @@ class AppContext extends Context {
 ### Step 2: Update Command Classes
 
 **Before:**
+
 ```typescript
 class RootCommand extends Command<Console.Builder, Log.Std.Logger> {
   constructor(pkg: DenoPkg) {
     super(pkg);
   }
-  
+
   init(ctx: AppContext) {
     super.init(ctx);
-    this.addLogging(ctx);  // Pass context
+    this.addLogging(ctx); // Pass context
     return this;
   }
 }
 ```
 
 **After:**
+
 ```typescript
 class RootCommand extends Command<AppContext, ChildContext> {
   constructor() {
     super(pkg);
   }
-  
+
   // Context flows automatically - no manual passing needed!
   protected async deriveChildContext(ctx: AppContext): Promise<ChildContext> {
     const child = new ChildContext(ctx);
@@ -142,6 +154,7 @@ class RootCommand extends Command<AppContext, ChildContext> {
 ### Step 3: Update Subcommand Registration
 
 **Before:**
+
 ```typescript
 // Manual subcommand registration
 const root = new RootCommand(pkg);
@@ -153,21 +166,23 @@ root.addCommand(sub);
 ```
 
 **After:**
+
 ```typescript
 // Automatic subcommand registration
 class RootCommand extends Command<AppContext, ChildContext> {
   protected subCommands = {
-    sub: SubCommand,  // Automatic registration and context flow
+    sub: SubCommand, // Automatic registration and context flow
   };
 }
 
 const root = new RootCommand();
-await root.init(ctx);  // Subcommands auto-registered with derived context
+await root.init(ctx); // Subcommands auto-registered with derived context
 ```
 
 ### Step 4: Update Application Initialization
 
 **Before:**
+
 ```typescript
 const ctx = new AppContext(pkg);
 await ctx.setupLogging();
@@ -184,6 +199,7 @@ await run(ctx, async () => {
 ```
 
 **After:**
+
 ```typescript
 const ctx = new AppContext(pkg);
 await ctx.setupLogging();
@@ -206,20 +222,20 @@ class RootCommand extends Command<AppContext> {
   protected subCommands = {
     // Class-based command
     advanced: AdvancedCommand,
-    
+
     // Declarative command - no class needed!
     simple: {
       name: 'simple',
       description: 'Simple command',
       options: {
         '--count <n>': 'Number of items',
-        '--force': { description: 'Force execution', default: false }
+        '--force': { description: 'Force execution', default: false },
       },
       arguments: ['<input>'],
       action: (ctx, opts, input) => {
         ctx.log.info.text(`Processing ${input} with count ${opts.count}`);
-      }
-    }
+      },
+    },
   };
 }
 ```
@@ -231,9 +247,9 @@ Transform context types as they flow to child commands:
 ```typescript
 class RootCommand extends Command<AppContext, ProcessingContext> {
   protected async deriveChildContext(
-    ctx: AppContext, 
-    opts: RootOptions, 
-    args: string[]
+    ctx: AppContext,
+    opts: RootOptions,
+    args: string[],
   ): Promise<ProcessingContext> {
     const child = new ProcessingContext(ctx);
     child.inputFiles = args;
@@ -269,6 +285,7 @@ await run(ctx, () => cmd.parseAsync(), { noExit: true });
 **Error:** Complex TypeScript errors about generic constraints.
 
 **Solution:** Update your command class generics:
+
 ```typescript
 // Old
 class MyCommand extends Command<MyBuilder, MyLogger>
@@ -282,6 +299,7 @@ class MyCommand extends Command<MyContext, MyChildContext>
 **Error:** `addLogging` expects no parameters but you're passing context.
 
 **Solution:** Remove the context parameter:
+
 ```typescript
 // Old
 cmd.addLogging(ctx);
@@ -308,4 +326,5 @@ If you encounter issues during migration:
 2. Review the [API documentation](./README.md)
 3. Compare your code with the patterns shown in this guide
 
-The v2.0 architecture is significantly cleaner and more powerful while maintaining full backward compatibility where possible.
+The v2.0 architecture is significantly cleaner and more powerful while maintaining full backward compatibility where
+possible.

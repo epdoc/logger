@@ -362,6 +362,8 @@
     "members": {
       "packages/cliapp": {
         "dependencies": [
+          "jsr:@epdoc/logger@^1003.2.11",
+          "jsr:@epdoc/msgbuilder@~0.1.1",
           "jsr:@epdoc/type@^1.2.4",
           "jsr:@std/assert@^1.0.18",
           "jsr:@std/expect@^1.0.17",

@@ -4,7 +4,9 @@ This document describes the complete lifecycle of command execution in cliapp, f
 
 ## Key Constraint
 
-**Commander.js requires all options to be declared before parsing.** Unlike Cliffy, you cannot dynamically add options based on parsed values. This means:
+**Commander.js requires all options to be declared before parsing.** Unlike Cliffy, you cannot dynamically add options
+based on parsed values. This means:
+
 - All command and subcommand options must be set up during initialization
 - Context derivation happens at execution time, not setup time
 - Subcommand options cannot depend on parent's parsed options
@@ -12,6 +14,7 @@ This document describes the complete lifecycle of command execution in cliapp, f
 ## Initialization Phase (Setup Time)
 
 ### 1. Main Entry Point
+
 ```typescript
 // User code in main
 const rootCtx = new RootContext(pkg);
@@ -61,6 +64,7 @@ protected setupOptions(): void {
 ```
 
 **User overrides `setupCommandOptions()`:**
+
 ```typescript
 class RootCommand extends Command<RootContext, RootOptions, ChildContext> {
   protected override setupCommandOptions(): void {
@@ -72,6 +76,7 @@ class RootCommand extends Command<RootContext, RootOptions, ChildContext> {
 ### 4. Configure Global Hooks (`configureGlobalHooks()`)
 
 Currently empty, available for override. Could be used for:
+
 - Pre-action hooks
 - Post-action hooks
 - Validation hooks
@@ -106,7 +111,8 @@ protected async setupSubcommands(): Promise<void> {
 }
 ```
 
-**Problem:** Currently we're calling `child.init(ctx)` which requires context, but we don't need context to set up options. We need to refactor this.
+**Problem:** Currently we're calling `child.init(ctx)` which requires context, but we don't need context to set up
+options. We need to refactor this.
 
 ### 6. Setup Action (`setupAction()`)
 
@@ -125,6 +131,7 @@ protected setupAction(): void {
 ### 7. Parse Arguments (`run()` calls `command.parseAsync()`)
 
 Commander.js:
+
 1. Parses command line arguments
 2. Matches options to registered options
 3. Identifies which command to execute (root or subcommand)
@@ -139,13 +146,14 @@ If no subcommand specified:
 ```typescript
 // Commander.js calls the action we registered in setupAction()
 action(async (...args) => {
-  const opts = this.opts();  // { debugMode: true, logLevel: 'DEBUG', ... }
-  const cmdArgs = args;       // []
+  const opts = this.opts(); // { debugMode: true, logLevel: 'DEBUG', ... }
+  const cmdArgs = args; // []
   await this.execute(opts, cmdArgs);
 });
 ```
 
 **User's `execute()` method:**
+
 ```typescript
 class RootCommand extends Command<RootContext, RootOptions, ChildContext> {
   protected override execute(opts: RootOptions) {
@@ -158,6 +166,7 @@ class RootCommand extends Command<RootContext, RootOptions, ChildContext> {
 ### 9. Subcommand Execution
 
 **IMPORTANT:** When a subcommand is invoked, Commander.js:
+
 - Parses parent options and makes them available via `parent.opts()`
 - **Does NOT call the parent's action**
 - Only calls the subcommand's action
@@ -171,31 +180,32 @@ child.action(async (...args) => {
   // - Parent's execute() has NOT run (parent action is skipped)
   // - Parent's options are available via parent.opts()
   // - We need to derive child context from parent context + parent opts + child opts
-  
-  const parentOpts = this.opts();   // Parent's parsed options
-  const childOpts = child.opts();   // { force: true }
-  const childArgs = args;           // ['file1.txt']
-  
+
+  const parentOpts = this.opts(); // Parent's parsed options
+  const childOpts = child.opts(); // { force: true }
+  const childArgs = args; // ['file1.txt']
+
   // Derive child context from parent context + parent opts + child opts
   const childCtx = await this.deriveChildContext(this.ctx, parentOpts, childOpts, childArgs);
   (child as any)._ctx = childCtx;
-  
+
   await child.execute(childOpts, childArgs);
 });
 ```
 
 **User's subcommand `execute()` method:**
+
 ```typescript
 class SubCommand extends Command<ChildContext, SubOptions, ChildContext> {
   override execute(opts: SubOptions, files: CmdArgs) {
     // Access parent state from context (derived from parent opts)
     this.ctx.log.debug.label('Debug mode:').value(this.ctx.debugMode).emit();
-    
+
     // Use child options
     if (opts.force) {
       // Force processing
     }
-    
+
     // Update child context
     this.ctx.processedFiles = files.length;
   }
@@ -228,11 +238,15 @@ IF subcommand:
 
 ## Open Issues
 
-1. **Subcommand initialization requires context** - Currently `setupSubcommands()` calls `child.init(ctx)` but we don't need context to set up options. Need to refactor to separate option setup from context initialization.
+1. **Subcommand initialization requires context** - Currently `setupSubcommands()` calls `child.init(ctx)` but we don't
+   need context to set up options. Need to refactor to separate option setup from context initialization.
 
-2. **deriveChildContext signature** - Currently takes `(ctx, opts, args)`. Should be `(ctx, parentOpts, childOpts, childArgs)` since:
+2. **deriveChildContext signature** - Currently takes `(ctx, opts, args)`. Should be
+   `(ctx, parentOpts, childOpts, childArgs)` since:
    - Parent's action doesn't run when subcommand is invoked
    - Parent opts need to be explicitly passed to derive child context
    - Child opts are needed to configure child context
 
-3. **Parent execute() never runs for subcommands** - The parent's `execute()` method is designed to attach options to context, but it never runs when a subcommand is invoked. We need to handle parent option attachment in `deriveChildContext()` instead.
+3. **Parent execute() never runs for subcommands** - The parent's `execute()` method is designed to attach options to
+   context, but it never runs when a subcommand is invoked. We need to handle parent option attachment in
+   `deriveChildContext()` instead.

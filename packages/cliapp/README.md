@@ -1,12 +1,10 @@
 # @epdoc/cliapp
 
-Type-safe CLI framework with automatic context flow, built on Commander.js and
-integrated with @epdoc/logger.
+Type-safe CLI framework with automatic context flow, built on Commander.js and integrated with @epdoc/logger.
 
 ## Features
 
-- **Automatic Context Flow** - Parent context flows to child commands
-  automatically
+- **Automatic Context Flow** - Parent context flows to child commands automatically
 - **Class-Based or Declarative** - Choose your style or mix both
 - **Built-in Logging** - Integrated @epdoc/logger with automatic configuration
 - **Type-Safe** - Full TypeScript support with generic constraints
@@ -21,12 +19,12 @@ deno add @epdoc/cliapp @epdoc/logger @epdoc/msgbuilder
 ## Quick Start - Class-Based
 
 ```typescript
-import * as CliApp from "@epdoc/cliapp";
-import pkg from "./deno.json" with { type: "json" };
+import * as CliApp from '@epdoc/cliapp';
+import pkg from './deno.json' with { type: 'json' };
 
 // Define contexts
 class RootContext extends CliApp.Context {
-  apiUrl = "";
+  apiUrl = '';
 
   setupLogging() {
     this.logMgr = new Log.Mgr<CliApp.Ctx.MsgBuilder>();
@@ -56,7 +54,7 @@ class RootCommand extends CliApp.BaseCommand<RootContext, RootContext> {
   }
 
   defineOptions() {
-    this.commander.option("--api-url <url>", "API URL");
+    this.commander.option('--api-url <url>', 'API URL');
   }
 
   createContext(parent?: RootContext) {
@@ -78,16 +76,16 @@ class RootCommand extends CliApp.BaseCommand<RootContext, RootContext> {
 
 class ProcessCommand extends CliApp.BaseCommand<ChildContext, RootContext> {
   defineMetadata() {
-    this.commander.name("process");
-    this.commander.description("Process files");
+    this.commander.name('process');
+    this.commander.description('Process files');
   }
 
   defineOptions() {
-    this.commander.argument("<files...>", "Files to process");
+    this.commander.argument('<files...>', 'Files to process');
   }
 
   createContext(parent: RootContext) {
-    return new ChildContext(parent, { pkg: "process" });
+    return new ChildContext(parent, { pkg: 'process' });
   }
 
   hydrateContext() {}
@@ -110,12 +108,12 @@ if (import.meta.main) {
 ## Quick Start - Declarative
 
 ```typescript
-import * as CliApp from "@epdoc/cliapp";
-import pkg from "./deno.json" with { type: "json" };
+import * as CliApp from '@epdoc/cliapp';
+import pkg from './deno.json' with { type: 'json' };
 
 // Define contexts (same as above)
 class RootContext extends CliApp.Context {
-  apiUrl = "";
+  apiUrl = '';
   setupLogging() {/* ... see above ... */}
 }
 
@@ -124,16 +122,16 @@ const RootCommand = CliApp.createCommand({
   name: pkg.name,
   description: pkg.description,
   options: {
-    "--api-url <url>": "API URL",
+    '--api-url <url>': 'API URL',
   },
   hydrate: (ctx, opts) => {
     ctx.apiUrl = opts.apiUrl;
   },
   subCommands: {
     process: CliApp.createCommand({
-      name: "process",
-      description: "Process files",
-      arguments: ["<files...>"],
+      name: 'process',
+      description: 'Process files',
+      arguments: ['<files...>'],
       action: (ctx, opts, ...files) => {
         ctx.log.info.text(`Processing ${files.length} files`).emit();
         ctx.log.info.text(`API: ${ctx.apiUrl}`).emit();
@@ -185,10 +183,14 @@ Root commands (when `isRoot` is set in constructor) automatically get:
 
 See verified examples in [packages/cliapp/test/](./test/):
 
-- [example.01.test.ts](./test/example.01.test.ts) - **Class-Based Pattern**: Demonstrates extending `BaseCommand` and `Context` for a traditional OOP approach.
-- [example.02.test.ts](./test/example.02.test.ts) - **Advanced Logging Control**: shows how to handle quiet modes, custom status icons, and dry-run flags.
-- [example.03.test.ts](./test/example.03.test.ts) - **Declarative Pattern**: Demonstrates using `createCommand` factory for configuration-driven CLI development.
-- [example.04.test.ts](./test/example.04.test.ts) - **Custom Message Builders**: Shows how to add project-specific logging methods (e.g., `fileOp`, `apiCall`) with full type safety.
+- [example.01.test.ts](./test/example.01.test.ts) - **Class-Based Pattern**: Demonstrates extending `BaseCommand` and
+  `Context` for a traditional OOP approach.
+- [example.02.test.ts](./test/example.02.test.ts) - **Advanced Logging Control**: shows how to handle quiet modes,
+  custom status icons, and dry-run flags.
+- [example.03.test.ts](./test/example.03.test.ts) - **Declarative Pattern**: Demonstrates using `createCommand` factory
+  for configuration-driven CLI development.
+- [example.04.test.ts](./test/example.04.test.ts) - **Custom Message Builders**: Shows how to add project-specific
+  logging methods (e.g., `fileOp`, `apiCall`) with full type safety.
 
 ## Running the Examples
 
@@ -215,8 +217,7 @@ Abstract class for creating commands.
 
 **Override Methods:**
 
-- `getSubCommands()` - Return array of subcommand instances (called during
-  registration)
+- `getSubCommands()` - Return array of subcommand instances (called during registration)
 
 ### createCommand(node)
 
