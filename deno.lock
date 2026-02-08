@@ -405,11 +405,6 @@
           "jsr:@std/fmt@^1.0.8"
         ]
       },
-      "packages/examples": {
-        "dependencies": [
-          "jsr:@epdoc/type@^1.2.4"
-        ]
-      },
       "packages/logger": {
         "dependencies": [
           "jsr:@epdoc/datetime@^2.0.14",

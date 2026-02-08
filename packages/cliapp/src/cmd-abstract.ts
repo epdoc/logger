@@ -92,7 +92,7 @@ export abstract class BaseCommand<
       this.#addLoggingOptions();
     }
     if (params.dryRun) {
-      this.commander.option('--dry-run', 'Perform a dry run without making changes');
+      this.commander.option('-n, --dry-run', 'Perform a dry run without making changes');
     }
 
     // The middleware chain - runs after parsing, before action

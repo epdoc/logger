@@ -15,7 +15,6 @@
     "./packages/logger",
     "./packages/cliapp",
     "./packages/demo",
-    "./packages/examples",
     "./packages/cliffapp",
     "./packages/demo-cliffy",
     "./packages/demo-cliapp-v2"

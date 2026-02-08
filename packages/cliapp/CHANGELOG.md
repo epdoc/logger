@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.5] - 2026-02-08
+
+- Added missing -n to dry run command
+
 ## [2.0.4] - 2026-02-08
 
 - Updated deno.json, fixed bump cache issue so rerunning
