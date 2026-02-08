@@ -5,8 +5,8 @@
  * OTEL_DENO=true OTEL_SERVICE_NAME=demo-service deno run logger.otlp.run.ts
  */
 
+import * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
-import * as Log from '../logger/src/mod.ts';
 
 // const otelEnabled = Deno.env.get('OTEL_DENO') === 'true';
 const showOpts: Log.EmitterShowOpts = { level: true, timestamp: 'local', data: true, color: true };
