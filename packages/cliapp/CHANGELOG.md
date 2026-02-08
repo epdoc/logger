@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.4] - 2026-02-08
+
+- Updated deno.json, fixed bump cache issue so rerunning
+
 ## [2.0.3] - 2026-02-08
 
 - Updated deno.json
