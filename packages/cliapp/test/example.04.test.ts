@@ -26,13 +26,8 @@ interface ProcessOptions extends CliApp.CmdOptions {
 }
 
 class AppContext extends CliApp.Context<AppBuilder, Logger> {
-  // Add application state
   processedFiles = 0;
-
-  override async setupLogging(level: string = 'info') {
-    await super.setupLogging(level);
-    this.logMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter);
-  }
+  protected override builderClass = AppBuilder;
 
   // Helper methods using custom msgbuilder
   logFileOperation(op: string, path: string) {

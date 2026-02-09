@@ -18,14 +18,9 @@ class AppBuilder extends CliApp.Ctx.MsgBuilder {
 
 type Logger = Log.Std.Logger<AppBuilder>;
 
-// Context extending base Context class with custom types
 class AppContext extends CliApp.Context<AppBuilder, Logger> {
   processedFiles = 0;
-
-  override async setupLogging(level: string = 'info') {
-    await super.setupLogging(level);
-    this.logMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter);
-  }
+  protected override builderClass = AppBuilder;
 
   logFileOperation(op: string, path: string) {
     this.log.info.fileOp(op, path).emit();

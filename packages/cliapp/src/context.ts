@@ -73,6 +73,13 @@ export abstract class Context<M extends MsgBuilder = any, L extends Logger = any
   pkg: DenoPkg;
 
   /**
+   * Optional builder class that can be specified by subclasses to automatically
+   * configure the msgBuilderFactory.
+   */
+  // deno-lint-ignore no-explicit-any
+  protected builderClass?: new (emitter: any) => M;
+
+  /**
    * Create a root context using pkg, or a child context using the parent context.
    * For root contexts, you must call setupLogging() after construction.
    * For child contexts, logging is inherited from the parent.
@@ -96,6 +103,9 @@ export abstract class Context<M extends MsgBuilder = any, L extends Logger = any
    * Call this method after constructing a root context.
    */
   async setupLogging(level: string = 'info'): Promise<void> {
+    if (this.builderClass) {
+      this.logMgr.msgBuilderFactory = (emitter) => new this.builderClass!(emitter);
+    }
     this.logMgr.initLevels();
     this.logMgr.threshold = level;
     this.log = await this.logMgr.getLogger<L>();

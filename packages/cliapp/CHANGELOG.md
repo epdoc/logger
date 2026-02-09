@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.6-alpha.2] - 2026-02-08
+
+- modified: simplify Context logging setup and custom MsgBuilder registration
+
 ## [2.0.6-alpha.1] - 2026-02-08
 
 - Tweaking context types
