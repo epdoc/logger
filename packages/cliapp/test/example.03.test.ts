@@ -1,4 +1,4 @@
-import * as Log from '@epdoc/logger';
+import type * as Log from '@epdoc/logger';
 import pkg from '../deno.json' with { type: 'json' };
 import * as CliApp from '../src/mod.ts';
 
@@ -6,12 +6,7 @@ import * as CliApp from '../src/mod.ts';
 class RootContext extends CliApp.Context {
   debugMode = false;
 
-  async setupLogging() {
-    this.logMgr = new Log.Mgr<CliApp.Ctx.MsgBuilder>();
-    this.logMgr.initLevels();
-    this.logMgr.threshold = 'info';
-    this.log = await this.logMgr.getLogger<CliApp.Ctx.Logger>();
-  }
+  // Use default setupLogging
 }
 
 class ChildContext extends RootContext {

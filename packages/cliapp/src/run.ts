@@ -92,7 +92,7 @@ export async function run<TCtx extends Ctx.Context = Ctx.Context>(
 
   try {
     // Handle both function and Command overloads
-    if (_.isFunction(appFnOrCommand)) {
+    if (typeof appFnOrCommand === 'function') {
       // Original function-based approach
       await appFnOrCommand();
     } else {

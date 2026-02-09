@@ -63,6 +63,8 @@ deno add @epdoc/logger
 
 The easiest way to get started is with the `createLogManager` helper:
 
+DEPRECATED createLogManager
+
 ```typescript
 import * as Log from '@epdoc/logger';
 import { Console } from '@epdoc/msgbuilder';

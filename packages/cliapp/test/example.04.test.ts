@@ -1,4 +1,4 @@
-import * as Log from '@epdoc/logger';
+import type * as Log from '@epdoc/logger';
 import { Console } from '@epdoc/msgbuilder';
 import pkg from '../deno.json' with { type: 'json' };
 import * as CliApp from '../src/mod.ts';
@@ -25,16 +25,13 @@ interface ProcessOptions extends CliApp.CmdOptions {
   verbose?: boolean;
 }
 
-class AppContext extends CliApp.Context<Logger> {
+class AppContext extends CliApp.Context<AppBuilder, Logger> {
   // Add application state
   processedFiles = 0;
 
-  override async setupLogging() {
-    this.logMgr = new Log.Mgr<AppBuilder>();
+  override async setupLogging(level: string = 'info') {
+    await super.setupLogging(level);
     this.logMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter);
-    this.logMgr.initLevels(Log.Std.factoryMethods);
-    this.logMgr.threshold = 'info';
-    this.log = await this.logMgr.getLogger<Logger>();
   }
 
   // Helper methods using custom msgbuilder

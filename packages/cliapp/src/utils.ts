@@ -1,6 +1,7 @@
 import * as Log from '@epdoc/logger';
 import * as _ from '@epdoc/type';
-import type { ICtx, LogOptions } from './types.ts';
+import type * as Ctx from './context.ts';
+import type { LogOptions } from './types.ts';
 
 const REG = {
   levelType: new RegExp(/^level(:(icon|\d{1,2}|\-\d{1,2}))?$/),
@@ -24,7 +25,7 @@ const REG = {
  * configureLogging(ctx, opts);
  * ```
  */
-export function configureLogging(ctx: ICtx, opts: LogOptions): void {
+export function configureLogging(ctx: Ctx.Context, opts: LogOptions): void {
   if (opts.dryRun) {
     ctx.dryRun = true;
   }

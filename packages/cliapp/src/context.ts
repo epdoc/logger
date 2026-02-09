@@ -1,9 +1,11 @@
 import * as Log from '@epdoc/logger';
-import type { Console } from '@epdoc/msgbuilder';
+import { Console } from '@epdoc/msgbuilder';
 import type { DenoPkg } from './pkg-type.ts';
 
+export const MsgBuilder = Console.Builder;
 export type MsgBuilder = Console.Builder;
-export type Logger = Log.Std.Logger<MsgBuilder>;
+// deno-lint-ignore no-explicit-any
+export type Logger = Log.Std.Logger<any>;
 
 /**
  * Extract MsgBuilder type from Logger type using conditional types.
@@ -63,9 +65,10 @@ logMgr.threshold = 'info';
  * To work around this and allow custom builders, we use `any` in the L constraint below.
  * We then use `ExtractMsgBuilder<L>` to recover the actual builder type.
  */
-export abstract class Context<M extends MsgBuilder = MsgBuilder, L extends Logger = Logger> implements ICtx<M, L> {
+// deno-lint-ignore no-explicit-any
+export abstract class Context<M extends MsgBuilder = any, L extends Logger = any> implements ICtx<M, L> {
   log!: L;
-  logMgr: Log.Mgr<M> = logMgr as unknown as Log.Mgr<M>;
+  logMgr: Log.Mgr<M>;
   dryRun = false;
   pkg: DenoPkg;
 
@@ -84,14 +87,19 @@ export abstract class Context<M extends MsgBuilder = MsgBuilder, L extends Logge
     } else {
       // Root context - setupLogging must be called
       this.pkg = pkg;
+      this.logMgr = new Log.Mgr<M>();
     }
   }
 
   /**
-   * Setup logging for root context - must be implemented by subclasses.
+   * Setup logging for root context.
    * Call this method after constructing a root context.
    */
-  abstract setupLogging(): void | Promise<void>;
+  async setupLogging(level: string = 'info'): Promise<void> {
+    this.logMgr.initLevels();
+    this.logMgr.threshold = level;
+    this.log = await this.logMgr.getLogger<L>();
+  }
 
   async close() {
     await this.logMgr?.close();

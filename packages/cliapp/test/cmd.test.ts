@@ -1,13 +1,12 @@
 import * as Log from '@epdoc/logger';
-import type { Console } from '@epdoc/msgbuilder';
 import { assertEquals, assertExists } from '@std/assert';
 import { describe, it } from '@std/testing/bdd';
 import * as CliApp from '../src/mod.ts';
 
-type M = Console.Builder;
-type L = Log.Std.Logger<M>;
+type M = CliApp.Ctx.MsgBuilder;
+type L = CliApp.Ctx.Logger;
 
-class TestContext extends CliApp.Context<L> {
+class TestContext extends CliApp.Context<M, L> {
   override async setupLogging() {
     this.logMgr = new Log.Mgr<M>();
     this.log = await this.logMgr.getLogger<L>();

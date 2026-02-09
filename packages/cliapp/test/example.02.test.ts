@@ -1,10 +1,12 @@
-import * as Log from '@epdoc/logger';
-import { Console } from '@epdoc/msgbuilder';
+import type * as Log from '@epdoc/logger';
 import pkg from '../deno.json' with { type: 'json' };
 import * as CliApp from '../src/mod.ts';
 
+type M = CliApp.Ctx.MsgBuilder;
+type L = CliApp.Ctx.Logger;
+
 // Custom MsgBuilder with additional methods
-class AppBuilder extends Console.Builder {
+class AppBuilder extends CliApp.Ctx.MsgBuilder {
   fileOp(operation: string, path: string) {
     return this.text('📁 ').text(operation).text(' ').value(path);
   }
@@ -17,13 +19,12 @@ class AppBuilder extends Console.Builder {
 type Logger = Log.Std.Logger<AppBuilder>;
 
 // Context extending base Context class with custom types
-class AppContext extends CliApp.Context<Logger> {
+class AppContext extends CliApp.Context<AppBuilder, Logger> {
   processedFiles = 0;
 
-  override async setupLogging() {
-    this.logMgr = new Log.Mgr<AppBuilder>();
+  override async setupLogging(level: string = 'info') {
+    await super.setupLogging(level);
     this.logMgr.msgBuilderFactory = (emitter) => new AppBuilder(emitter);
-    this.log = await this.logMgr.getLogger<Logger>();
   }
 
   logFileOperation(op: string, path: string) {
