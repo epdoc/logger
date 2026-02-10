@@ -3,9 +3,9 @@
  * @description Factory function to create BaseCommand subclasses from CommandNode configuration
  */
 
-import { BaseCommand } from './cmd-abstract.ts';
-import type * as Ctx from './context.ts';
-import type * as CliApp from './types.ts';
+import type * as Ctx from '../context.ts';
+import type * as CliApp from '../types.ts';
+import { AbstractCommand } from './abstract.ts';
 
 /**
  * Create a command class from declarative CommandNode configuration
@@ -27,14 +27,14 @@ import type * as CliApp from './types.ts';
  */
 export function createCommand<
   TContext extends TParentContext,
-  TParentContext extends Ctx.Context = Ctx.Context,
+  TParentContext extends Ctx.AbstractBase = Ctx.AbstractBase,
   TOpts extends CliApp.CmdOptions = CliApp.CmdOptions,
 >(
   node: CliApp.CommandNode<TContext>,
   params: CliApp.CmdParams = {},
-): new (initialContext?: TParentContext) => BaseCommand<TContext, TParentContext, TOpts> {
+): new (initialContext?: TParentContext) => AbstractCommand<TContext, TParentContext, TOpts> {
   // Return an anonymous class that extends BaseCommand
-  return class extends BaseCommand<TContext, TParentContext, TOpts> {
+  return class extends AbstractCommand<TContext, TParentContext, TOpts> {
     constructor(initialContext?: TParentContext) {
       super(initialContext!, params);
     }
@@ -88,7 +88,7 @@ export function createCommand<
       this.commander.help();
     }
 
-    protected override getSubCommands(): BaseCommand<TContext, TContext>[] {
+    protected override getSubCommands(): AbstractCommand<TContext, TContext>[] {
       if (!node.subCommands) return [];
 
       return Object.entries(node.subCommands).map(([_name, subConfig]) => {

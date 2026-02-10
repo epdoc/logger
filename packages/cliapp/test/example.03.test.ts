@@ -3,7 +3,7 @@ import pkg from '../deno.json' with { type: 'json' };
 import * as CliApp from '../src/mod.ts';
 
 // Define your contexts
-class RootContext extends CliApp.Context {
+class RootContext extends CliApp.Ctx.AbstractBase {
   debugMode = false;
 
   // Use default setupLogging
@@ -23,7 +23,7 @@ type RootOptions = CliApp.LogOptions & { rootOption: boolean };
 type SubOptions = { subOption: boolean };
 
 // Define commands using 100% declarative approach
-const RootCommand = CliApp.createCommand<RootContext, RootContext, RootOptions>(
+const RootCommand = CliApp.Cmd.create<RootContext, RootContext, RootOptions>(
   {
     name: pkg.name,
     description: pkg.description,
@@ -34,7 +34,7 @@ const RootCommand = CliApp.createCommand<RootContext, RootContext, RootOptions>(
       ctx.debugMode = (opts as RootOptions).rootOption;
     },
     subCommands: {
-      process: CliApp.createCommand<ChildContext, RootContext, SubOptions>({
+      process: CliApp.Cmd.create<ChildContext, RootContext, SubOptions>({
         name: 'process',
         description: 'Process files',
         arguments: ['<files...>'],

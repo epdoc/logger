@@ -1,84 +1,50 @@
 import * as CliApp from '@epdoc/cliapp';
 import pkg from '../../deno.json' with { type: 'json' };
-import { type AppContext, ChildContext } from '../context.ts';
+import { AppContext } from '../context.ts';
 import { SubCommand } from './sub.ts';
 
-type RootOpts = CliApp.CmdOptions & { debugMode: boolean };
+type RootOpts = CliApp.CmdOptions & { debugMode?: boolean };
 
-export class RootCommand2 extends CliApp.Command<AppContext, RootOpts, ChildContext> {
-  // Static subcommands for testing
-  protected override subCommands = {
-    sub: SubCommand,
-  };
-
-  protected override deriveChildContext(ctx: AppContext, opts: RootOpts, _args: string[]): Promise<ChildContext> {
-    const childCtx: ChildContext = new ChildContext(ctx) as ChildContext;
-    childCtx.name = 'main_class';
-
-    if (opts.debugMode) {
-      childCtx.debugMode = true;
-      ctx.log.info.text('Refining context: setting debugMode = true').emit();
-    }
-
-    return Promise.resolve(childCtx);
-  }
-
+export class RootCommand extends CliApp.Cmd.AbstractBase<AppContext, AppContext, RootOpts> {
   constructor() {
-    super(pkg);
-    this
-      .description('Demo of enhanced CliApp v2.0')
-      .option('--debug-mode', 'Enable special debug mode for context refinement demo')
-      .action((...args: RootOpts[]) => {
-        const opts = this.opts();
-        // Show help when no subcommand is provided
-        this.ctx.log.info.text('Root command options:').emit();
-        this.ctx.log.indent();
-        this.ctx.log.info.label('debugMode').value(opts.debugMode).emit();
-        this.ctx.log.info.label('noColor').value(opts.noColor).emit();
-        this.ctx.log.info.label('logLevel').value(opts.logLevel).emit();
-        this.ctx.log.info.label('args:').value(args.join(',')).emit();
-        this.ctx.log.outdent();
-        if (args.length === 0) {
-          this.help();
-        }
-      });
-  }
-}
-
-export class RootCommand extends CliApp.BaseCommand<ChildContext, AppContext> {
-  defineMetadata() {
-    this.commander.name(pkg.name).version(pkg.version).description(pkg.description);
+    super(undefined, {
+      name: pkg.name,
+      version: pkg.version,
+      description: pkg.description,
+      root: true,
+      dryRun: true,
+    });
   }
 
-  defineOptions() {
-    // Make these global so subcommands can see them if needed
+  override async defineOptions(): Promise<void> {
+    await Promise.resolve();
     this.commander.option('--debug-mode', 'Enable special debug mode for context refinement demo');
   }
 
-  async createContext(): Promise<void> {
-    this.ctx = new AppContext(); // Starts fresh
-    await this.ctx.setupLogging();
+  override createContext(_parent?: AppContext): AppContext {
+    const ctx = new AppContext(pkg);
+    return ctx;
   }
 
-  hydrateContext(opts: RootOpts) {
+  override async hydrateContext(opts: RootOpts, _args: CliApp.CmdArgs): Promise<void> {
+    await this.ctx.setupLogging();
     if (opts.debugMode) {
       this.ctx.debugMode = true;
+      this.ctx.log.info.text('Debug mode enabled').emit();
     }
-    this.ctx.log.info.text('Hydrated Root command options:').emit();
-    this.ctx.log.indent();
-    this.ctx.log.info.label('debugMode').value(opts.debugMode).emit();
-    this.ctx.log.info.label('noColor').value(opts.noColor).emit();
-    this.ctx.log.info.label('logLevel').value(opts.logLevel).emit();
-    this.ctx.log.info.label('args:').value(args.join(',')).emit();
-    this.ctx.log.outdent();
   }
 
-  // If no subcommands are called, help is the default
-  execute() {
+  override execute(_opts: RootOpts, _args: CliApp.CmdArgs): void {
+    this.ctx.log.info.text('Root command options:').emit();
+    this.ctx.log.indent();
+    // Demonstrate using the custom params() method from CustomMsgBuilder
+    this.ctx.log.info.params(this.ctx).emit();
+    this.ctx.log.info.label('dryRun').value(this.ctx.dryRun).emit();
+    this.ctx.log.outdent();
     this.commander.help();
   }
 
-  protected getSubCommands() {
+  protected override getSubCommands(): CliApp.Cmd.AbstractBase<AppContext, AppContext>[] {
     return [new SubCommand()];
   }
 }

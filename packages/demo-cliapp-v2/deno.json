@@ -5,8 +5,15 @@
   "exports": "./main_class.ts",
   "imports": {
     "@epdoc/cliapp": "../cliapp/src/mod.ts",
-    "@epdoc/logger": "jsr:@epdoc/logger@^1003.2.8",
-    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.0",
-    "@std/fmt": "jsr:@std/fmt@^1.0.8"
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.2.11",
+    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.1",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.4",
+    "@std/fmt": "jsr:@std/fmt@^1.0.9"
+  },
+  "tasks": {
+    "test": "echo 'No tests yet'",
+    "lint": "deno lint *.ts *.json src",
+    "check": "deno check *.ts *.json src",
+    "prepublish": "deno fmt *.ts *.json src && deno task lint && deno task check"
   }
 }

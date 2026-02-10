@@ -6,7 +6,7 @@ import * as CliApp from '../src/mod.ts';
 
 type M = Console.Builder;
 type L = Log.Std.Logger<M>;
-class TestContext extends CliApp.Context<M, L> {
+class TestContext extends CliApp.Ctx.AbstractBase<M, L> {
   // Use default setupLogging
 }
 
@@ -24,7 +24,7 @@ describe('createCommand factory', () => {
       refineContext: (ctx) => ctx,
     };
 
-    const HelloCmd = CliApp.createCommand(node, { root: true });
+    const HelloCmd = CliApp.Cmd.create(node, { root: true });
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
 
@@ -46,7 +46,7 @@ describe('createCommand factory', () => {
       refineContext: (ctx) => ctx,
     };
 
-    const TestCmd = CliApp.createCommand(node);
+    const TestCmd = CliApp.Cmd.create(node);
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
     const cmd = new TestCmd(ctx);
@@ -69,7 +69,7 @@ describe('createCommand factory', () => {
       },
     };
 
-    const RootCmd = CliApp.createCommand(node);
+    const RootCmd = CliApp.Cmd.create(node);
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
     const root = new RootCmd(ctx);
@@ -82,7 +82,7 @@ describe('createCommand factory', () => {
   });
 
   it('should support mix of Nodes and Classes in subCommands', async () => {
-    class MySubCmd extends CliApp.BaseCommand<TestContext, TestContext> {
+    class MySubCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx?: TestContext) {
         super(ctx, { name: 'class-sub' });
       }
@@ -104,7 +104,7 @@ describe('createCommand factory', () => {
       },
     };
 
-    const RootCmd = CliApp.createCommand(node);
+    const RootCmd = CliApp.Cmd.create(node);
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
     const root = new RootCmd(ctx);
@@ -119,7 +119,7 @@ describe('createCommand factory', () => {
       name: 'node-name',
       version: '1.0.0',
     };
-    const ParamsCmd = CliApp.createCommand(node, { name: 'param-name', version: '2.0.0', root: true });
+    const ParamsCmd = CliApp.Cmd.create(node, { name: 'param-name', version: '2.0.0', root: true });
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
     const cmd = new ParamsCmd(ctx);

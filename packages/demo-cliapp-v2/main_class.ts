@@ -1,28 +1,25 @@
+import * as CliApp from '@epdoc/cliapp';
 import pkg from './deno.json' with { type: 'json' };
-import { run } from '@epdoc/cliapp';
 import { RootCommand } from './src/commands/root.ts';
-import { AppContext } from './src/context.ts';
+import * as App from './src/mod.ts';
 
 /**
  * Demo: Enhanced CliApp v2.0 with automatic context flow
- * 
+ *
  * Demonstrates:
- * - Clean context inheritance
+ * - Clean context inheritance using AbstractBase
  * - Automatic subcommand registration
  * - Type-safe context transformation
  * - Commander.js stability
  * - Automatic logging configuration
+ * - Custom message builder with params() method
  */
 if (import.meta.main) {
-  const ctx = new AppContext(pkg);
+  const ctx = new App.Ctx.AppContext(pkg);
   await ctx.setupLogging();
 
-  // Instantiate and initialize root command
   const rootCmd = new RootCommand();
-  
-  // Clean initialization - context flows automatically, logging added automatically
-  await rootCmd.init(ctx);
+  await rootCmd.init();
 
-  // Enhanced run with automatic logging configuration
-  await run(ctx, rootCmd);
+  CliApp.run(ctx, rootCmd);
 }

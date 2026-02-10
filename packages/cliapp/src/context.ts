@@ -8,11 +8,6 @@ export type MsgBuilder = Console.Builder;
 export type Logger = Log.Std.Logger<any>;
 
 /**
- * Extract MsgBuilder type from Logger type using conditional types.
- */
-export type ExtractMsgBuilder<L> = L extends Log.Std.Logger<infer M> ? M : MsgBuilder;
-
-/**
  * Clean context interface - much simpler than the old complex system
  */
 export interface ICtx<M extends MsgBuilder, L extends Logger = Logger> {
@@ -66,7 +61,7 @@ logMgr.threshold = 'info';
  * We then use `ExtractMsgBuilder<L>` to recover the actual builder type.
  */
 // deno-lint-ignore no-explicit-any
-export abstract class Context<M extends MsgBuilder = any, L extends Logger = any> implements ICtx<M, L> {
+export abstract class AbstractBase<M extends MsgBuilder = any, L extends Logger = any> implements ICtx<M, L> {
   log!: L;
   logMgr: Log.Mgr<M>;
   dryRun = false;
@@ -84,8 +79,8 @@ export abstract class Context<M extends MsgBuilder = any, L extends Logger = any
    * For root contexts, you must call setupLogging() after construction.
    * For child contexts, logging is inherited from the parent.
    */
-  constructor(pkg: DenoPkg | Context<M, L>, params: Log.IGetChildParams = {}) {
-    if (pkg instanceof Context) {
+  constructor(pkg: DenoPkg | AbstractBase<M, L>, params: Log.IGetChildParams = {}) {
+    if (pkg instanceof AbstractBase) {
       // Child context - inherit from parent
       this.log = pkg.log.getChild(params) as L;
       this.logMgr = pkg.logMgr;
@@ -99,8 +94,8 @@ export abstract class Context<M extends MsgBuilder = any, L extends Logger = any
   }
 
   /**
-   * Setup logging for root context.
-   * Call this method after constructing a root context.
+   * Setup logging for root context. This separate step is necessary because getLogger() may block
+   * with some transports. Call this method after constructing a root context.
    */
   async setupLogging(level: string = 'info'): Promise<void> {
     if (this.builderClass) {

@@ -80,6 +80,8 @@ const RootCmd = CliApp.createCommand(node, { ...pkg, root: true });
 
 ## Guide: Building a CLI Step-by-Step
 
+### 0. Creating your Project
+
 ### 1. The Context Layer
 
 The **Context** object is passed from the root application down through every subcommand.

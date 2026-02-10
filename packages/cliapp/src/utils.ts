@@ -25,7 +25,7 @@ const REG = {
  * configureLogging(ctx, opts);
  * ```
  */
-export function configureLogging(ctx: Ctx.Context, opts: LogOptions): void {
+export function configureLogging(ctx: Ctx.AbstractBase, opts: LogOptions): void {
   if (opts.dryRun) {
     ctx.dryRun = true;
   }

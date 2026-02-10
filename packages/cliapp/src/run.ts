@@ -6,7 +6,7 @@
  */
 
 import * as _ from '@epdoc/type';
-import type { BaseCommand } from './cmd-abstract.ts';
+import type * as Cmd from './cmd/mod.ts';
 import type * as Ctx from './context.ts';
 import type { ISilentError } from './types.ts';
 
@@ -35,7 +35,7 @@ import type { ISilentError } from './types.ts';
  * });
  * ```
  */
-export async function run<TCtx extends Ctx.Context = Ctx.Context>(
+export async function run<TCtx extends Ctx.AbstractBase = Ctx.AbstractBase>(
   ctx: TCtx,
   appFn: () => Promise<unknown>,
   options?: { noExit?: boolean },
@@ -59,15 +59,15 @@ export async function run<TCtx extends Ctx.Context = Ctx.Context>(
  * await run(ctx, cmd); // Automatic logging configuration
  * ```
  */
-export async function run<TCtx extends Ctx.Context = Ctx.Context>(
+export async function run<TCtx extends Ctx.AbstractBase = Ctx.AbstractBase>(
   ctx: TCtx,
-  command: BaseCommand<TCtx, TCtx>,
+  command: Cmd.AbstractBase<TCtx, TCtx>,
   options?: { noExit?: boolean },
 ): Promise<void>;
 
-export async function run<TCtx extends Ctx.Context = Ctx.Context>(
+export async function run<TCtx extends Ctx.AbstractBase = Ctx.AbstractBase>(
   ctx: TCtx,
-  appFnOrCommand: (() => Promise<unknown>) | BaseCommand<TCtx, TCtx>,
+  appFnOrCommand: (() => Promise<unknown>) | Cmd.AbstractBase<TCtx, TCtx>,
   options: { noExit?: boolean } = {},
 ): Promise<void> {
   const t0 = performance.now();

@@ -18,7 +18,7 @@ class AppBuilder extends CliApp.Ctx.MsgBuilder {
 
 type Logger = Log.Std.Logger<AppBuilder>;
 
-class AppContext extends CliApp.Context<AppBuilder, Logger> {
+class AppContext extends CliApp.Ctx.AbstractBase<AppBuilder, Logger> {
   processedFiles = 0;
   protected override builderClass = AppBuilder;
 
@@ -51,7 +51,7 @@ type CleanOptions = {
 };
 
 // Root command
-class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, RootOptions> {
+class RootCommand extends CliApp.Cmd.AbstractBase<AppContext, AppContext, RootOptions> {
   constructor(initialContext?: AppContext) {
     super(initialContext, { ...pkg, root: true, dryRun: true }); // Mark as root, add dry-run
   }
@@ -86,7 +86,7 @@ class RootCommand extends CliApp.BaseCommand<AppContext, AppContext, RootOptions
 }
 
 // Process command
-class ProcessCommand extends CliApp.BaseCommand<AppContext, AppContext, ProcessOptions> {
+class ProcessCommand extends CliApp.Cmd.AbstractBase<AppContext, AppContext, ProcessOptions> {
   constructor() {
     super(undefined, { name: 'process' });
   }
@@ -133,7 +133,7 @@ class ProcessCommand extends CliApp.BaseCommand<AppContext, AppContext, ProcessO
 }
 
 // Clean command
-class CleanCommand extends CliApp.BaseCommand<AppContext, AppContext, CleanOptions> {
+class CleanCommand extends CliApp.Cmd.AbstractBase<AppContext, AppContext, CleanOptions> {
   constructor() {
     super(undefined, { name: 'clean' });
   }

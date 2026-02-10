@@ -4,10 +4,10 @@
  */
 
 import * as Commander from 'commander';
-import { config } from './config.ts';
-import type * as Ctx from './context.ts';
-import type * as CliApp from './types.ts';
-import { configureLogging } from './utils.ts';
+import { config } from '../config.ts';
+import type * as Ctx from '../context.ts';
+import type * as CliApp from '../types.ts';
+import { configureLogging } from '../utils.ts';
 
 /**
  * Abstract base class for creating CLI commands with automatic context flow
@@ -25,9 +25,9 @@ import { configureLogging } from './utils.ts';
  * @template TParentContext - The parent context type (defaults to TContext)
  * @template TOpts - The options type for this command
  */
-export abstract class BaseCommand<
+export abstract class AbstractCommand<
   TContext extends TParentContext,
-  TParentContext extends Ctx.Context,
+  TParentContext extends Ctx.AbstractBase,
   TOpts extends CliApp.CmdOptions = CliApp.CmdOptions,
 > {
   /** The underlying Commander.js Command instance */
@@ -45,7 +45,7 @@ export abstract class BaseCommand<
   /** Whether the command has been initialized */
   protected initialized = false;
 
-  #subCommands?: BaseCommand<TContext, TContext>[];
+  #subCommands?: AbstractCommand<TContext, TContext>[];
 
   /**
    * Initializes basic Commander.js state and stores constructor parameters.
@@ -209,7 +209,7 @@ export abstract class BaseCommand<
   /**
    * Override to return an array of subcommand instances.
    */
-  protected getSubCommands(): BaseCommand<TContext, TContext>[] {
+  protected getSubCommands(): AbstractCommand<TContext, TContext>[] {
     return [];
   }
 
@@ -219,7 +219,7 @@ export abstract class BaseCommand<
     this.parentContext = ctx;
   }
 
-  #getCachedSubCommands(): BaseCommand<TContext, TContext>[] {
+  #getCachedSubCommands(): AbstractCommand<TContext, TContext>[] {
     if (!this.#subCommands) {
       this.#subCommands = this.getSubCommands();
     }

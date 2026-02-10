@@ -1,4 +1,3 @@
-import * as Log from '@epdoc/logger';
 import { assertEquals, assertExists } from '@std/assert';
 import { describe, it } from '@std/testing/bdd';
 import * as CliApp from '../src/mod.ts';
@@ -6,18 +5,14 @@ import * as CliApp from '../src/mod.ts';
 type M = CliApp.Ctx.MsgBuilder;
 type L = CliApp.Ctx.Logger;
 
-class TestContext extends CliApp.Context<M, L> {
-  override async setupLogging() {
-    this.logMgr = new Log.Mgr<M>();
-    this.log = await this.logMgr.getLogger<L>();
-  }
+class TestContext extends CliApp.Ctx.AbstractBase<M, L> {
 }
 
 const pkg = { name: 'test-app', version: '1.2.3', description: 'Test description' };
 
 describe('BaseCommand', () => {
   it('should apply metadata from params in constructor', async () => {
-    class MyCommand extends CliApp.BaseCommand<TestContext, TestContext> {
+    class MyCommand extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
         super(ctx, { ...pkg, root: true });
       }
@@ -38,7 +33,7 @@ describe('BaseCommand', () => {
   });
 
   it('should apply aliases to subcommands but not root', async () => {
-    class RootCmd extends CliApp.BaseCommand<TestContext, TestContext> {
+    class RootCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
         super(ctx, { name: 'root', aliases: ['r'], root: true });
       }
@@ -47,7 +42,7 @@ describe('BaseCommand', () => {
       }
       override execute() {}
     }
-    class SubCmd extends CliApp.BaseCommand<TestContext, TestContext> {
+    class SubCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
         super(ctx, { name: 'sub', aliases: ['s'] });
       }
@@ -69,7 +64,7 @@ describe('BaseCommand', () => {
   });
 
   it('should add logging options and dry-run when requested', async () => {
-    class RootCmd extends CliApp.BaseCommand<TestContext, TestContext> {
+    class RootCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
         super(ctx, { root: true, dryRun: true });
       }
@@ -90,7 +85,7 @@ describe('BaseCommand', () => {
   });
 
   it('should register subcommands from getSubCommands', async () => {
-    class SubCmd extends CliApp.BaseCommand<TestContext, TestContext> {
+    class SubCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx?: TestContext) {
         super(ctx, { name: 'sub' });
       }
@@ -99,7 +94,7 @@ describe('BaseCommand', () => {
       }
       override execute() {}
     }
-    class RootCmd extends CliApp.BaseCommand<TestContext, TestContext> {
+    class RootCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
         super(ctx, { name: 'root' });
       }
@@ -121,7 +116,7 @@ describe('BaseCommand', () => {
   });
 
   it('should allow omitting defineOptions and hydrateContext', async () => {
-    class SimpleCmd extends CliApp.BaseCommand<TestContext, TestContext> {
+    class SimpleCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
         super(ctx, { name: 'simple' });
       }

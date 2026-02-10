@@ -4,22 +4,13 @@
  * @module
  */
 
-// Core functionality
-export { BaseCommand } from './cmd-abstract.ts';
-export { createCommand } from './cmd-factory.ts';
-export { Context, type ICtx } from './context.ts';
+export * as Cmd from './cmd/mod.ts';
+export * as Ctx from './context.ts';
 export { FluentOptionBuilder } from './option.ts';
-
-// Application lifecycle management
+export * from './pkg-type.ts';
 export { run } from './run.ts';
-
-// Type definitions
 export * from './types.ts';
-
-// Utility functions
-export { commaList, configureLogging, SilentError } from './utils.ts';
+export * from './utils.ts';
 
 // Re-export Commander.js for convenience
 export * as Commander from 'commander';
-
-export * as Ctx from './context.ts';

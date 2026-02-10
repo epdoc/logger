@@ -25,7 +25,7 @@ interface ProcessOptions extends CliApp.CmdOptions {
   verbose?: boolean;
 }
 
-class AppContext extends CliApp.Context<AppBuilder, Logger> {
+class AppContext extends CliApp.Ctx.AbstractBase<AppBuilder, Logger> {
   processedFiles = 0;
   protected override builderClass = AppBuilder;
 
@@ -36,7 +36,7 @@ class AppContext extends CliApp.Context<AppBuilder, Logger> {
   }
 }
 
-class RootCommand extends CliApp.BaseCommand<
+class RootCommand extends CliApp.Cmd.AbstractBase<
   AppContext,
   AppContext,
   { verbose?: boolean } & CliApp.CmdOptions
@@ -61,7 +61,7 @@ class RootCommand extends CliApp.BaseCommand<
       .emit();
   }
 
-  protected override getSubCommands(): CliApp.BaseCommand<
+  protected override getSubCommands(): CliApp.Cmd.AbstractBase<
     AppContext,
     AppContext
   >[] {
@@ -69,7 +69,7 @@ class RootCommand extends CliApp.BaseCommand<
   }
 }
 
-class ProcessCmd extends CliApp.BaseCommand<AppContext, AppContext, ProcessOptions> {
+class ProcessCmd extends CliApp.Cmd.AbstractBase<AppContext, AppContext, ProcessOptions> {
   constructor(parent: AppContext) {
     super(parent, { name: 'process' });
   }

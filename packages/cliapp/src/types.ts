@@ -8,13 +8,8 @@ import type * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
 import type { Dict } from '@epdoc/type';
 
-// Clean imports - respecting circular dependency separation
-export type { BaseCommand } from './cmd-abstract.ts';
-export type { Context, ICtx } from './context.ts';
-export type { DenoPkg } from './pkg-type.ts';
-
 // Local imports for use in this file
-import type { BaseCommand } from './cmd-abstract.ts';
+import type * as Cmd from './cmd/mod.ts';
 import type * as Ctx from './context.ts';
 import type { CmdMetadata } from './pkg-type.ts';
 
@@ -96,7 +91,7 @@ export type CmdParams = Partial<CmdMetadata> & {
 /**
  * Declarative command node configuration for configuration-based commands
  */
-export interface CommandNode<TContext extends Ctx.Context = Ctx.Context> {
+export interface CommandNode<TContext extends Ctx.AbstractBase = Ctx.AbstractBase> {
   /** Command name (optional if provided via CmdParams) */
   name?: string;
   /** Command description */
@@ -122,6 +117,6 @@ export interface CommandNode<TContext extends Ctx.Context = Ctx.Context> {
 /**
  * Constructor type for Command classes
  */
-export interface CommandConstructor<TContext extends Ctx.Context = Ctx.Context> {
-  new (initialContext?: TContext): BaseCommand<TContext, TContext>;
+export interface CommandConstructor<TContext extends Ctx.AbstractBase = Ctx.AbstractBase> {
+  new (initialContext?: TContext): Cmd.AbstractBase<TContext, TContext>;
 }

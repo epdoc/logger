@@ -392,9 +392,10 @@
       },
       "packages/demo-cliapp-v2": {
         "dependencies": [
-          "jsr:@epdoc/logger@^1003.2.8",
-          "jsr:@epdoc/msgbuilder@0.1",
-          "jsr:@std/fmt@^1.0.8"
+          "jsr:@epdoc/logger@^1003.2.11",
+          "jsr:@epdoc/msgbuilder@~0.1.1",
+          "jsr:@epdoc/type@^1.2.4",
+          "jsr:@std/fmt@^1.0.9"
         ]
       },
       "packages/demo-cliffy": {

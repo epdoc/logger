@@ -7,7 +7,7 @@ import * as CliApp from '../src/mod.ts';
 type M = Console.Builder;
 type L = Log.Std.Logger<M>;
 
-class TestContext extends CliApp.Context<M, L> {
+class TestContext extends CliApp.Ctx.AbstractBase<M, L> {
   // Use default setupLogging
 }
 
