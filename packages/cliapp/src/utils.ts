@@ -1,4 +1,5 @@
 import * as Log from '@epdoc/logger';
+import type { Integer } from '@epdoc/type';
 import * as _ from '@epdoc/type';
 import type * as Ctx from './context.ts';
 import type { LogOptions } from './types.ts';
@@ -146,6 +147,14 @@ function setAllShow(show: Log.EmitterShowOpts) {
  */
 export function commaList(val: string): string[] {
   return val ? val.split(',') : [];
+}
+
+export function asNumber(val: string): number {
+  return _.asFloat(val);
+}
+
+export function asInt(val: string): Integer {
+  return _.asInt(val);
 }
 
 /**

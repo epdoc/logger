@@ -68,6 +68,7 @@ export interface OptionConfig {
   required?: boolean;
   hidden?: boolean;
   collect?: boolean;
+  argParser?: (val: string) => unknown;
 }
 
 /**
@@ -89,9 +90,25 @@ export type CmdParams = Partial<CmdMetadata> & {
 };
 
 /**
+ * Position for help text injection
+ */
+export type AddHelpTextPosition = 'beforeAll' | 'before' | 'after' | 'afterAll';
+
+/**
+ * Configuration for adding custom help text
+ */
+export interface HelpTextConfig {
+  text: string;
+  position?: AddHelpTextPosition;
+}
+
+/**
  * Declarative command node configuration for configuration-based commands
  */
-export interface CommandNode<TContext extends Ctx.AbstractBase = Ctx.AbstractBase> {
+export interface CommandNode<
+  TContext extends Ctx.AbstractBase = Ctx.AbstractBase,
+  TOpts extends CmdOptions = CmdOptions,
+> {
   /** Command name (optional if provided via CmdParams) */
   name?: string;
   /** Command description */
@@ -104,19 +121,26 @@ export interface CommandNode<TContext extends Ctx.AbstractBase = Ctx.AbstractBas
   options?: OptionsMap;
   /** Command arguments */
   arguments?: string[];
+  /** Custom help text to display */
+  helpText?: HelpTextConfig[];
   /** Command action handler */
-  action?: (ctx: TContext, opts: CmdOptions, ...args: CmdArgs) => Promise<void> | void;
-  /** Context refinement function for transforming parent context to child context */
-  refineContext?: (ctx: TContext, opts: CmdOptions, args: CmdArgs) => Promise<TContext> | TContext;
+  action?(ctx: TContext, opts: TOpts, args: CmdArgs): Promise<void> | void;
+  /** Context creation function for transforming parent context to child context. Options can be
+   * applied to context here, or in hydrateContext, or in action */
+  createContext?(ctx: TContext, opts: TOpts, args: CmdArgs): Promise<TContext> | TContext;
   /** Hydrate context with parsed options */
-  hydrate?: (ctx: TContext, opts: CmdOptions) => void;
+  hydrateContext?(ctx: TContext, opts: TOpts): void;
   /** Subcommands */
-  subCommands?: Record<string, CommandConstructor<TContext> | CommandNode<TContext>>;
+  // See packages/cliapp/DESIGN.md
+  // deno-lint-ignore no-explicit-any
+  subCommands?: Record<string, CommandConstructor<TContext> | CommandNode<any, any>>;
 }
 
 /**
  * Constructor type for Command classes
  */
 export interface CommandConstructor<TContext extends Ctx.AbstractBase = Ctx.AbstractBase> {
-  new (initialContext?: TContext): Cmd.AbstractBase<TContext, TContext>;
+  // See packages/cliapp/DESIGN.md
+  // deno-lint-ignore no-explicit-any
+  new (initialContext?: TContext): Cmd.AbstractBase<any, TContext>;
 }

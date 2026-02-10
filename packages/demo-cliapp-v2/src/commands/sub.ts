@@ -23,21 +23,18 @@ export class SubCommand extends CliApp.Cmd.AbstractBase<AppContext, AppContext, 
   override execute(opts: SubOpts, args: CliApp.CmdArgs): void {
     const input = args[0];
 
-    this.ctx.log.info.h1('Subcommand Execution').emit();
+    this.ctx.log.info.section('Subcommand Execution').emit();
     this.ctx.log.indent();
     // Demonstrate using the custom params() method from CustomMsgBuilder
-    this.ctx.log.info.params(this.ctx).emit();
-    this.ctx.log.info
-      .label('Input').value(JSON.stringify(input))
-      .label('Force').value(opts.force ? 'Yes' : 'No')
-      .label('Dry Run').value(this.ctx.dryRun ? 'Yes' : 'No')
-      .emit();
-    this.ctx.log.outdent();
-
+    this.ctx.log.info.label('Input').value(JSON.stringify(input)).emit();
+    this.ctx.log.info.label('Force').value(opts.force ? 'Yes' : 'No').emit();
+    this.ctx.log.info.label('Dry Run').value(this.ctx.dryRun ? 'Yes' : 'No').emit();
     if (this.ctx.dryRun) {
       this.ctx.log.warn.text('Dry run enabled, skipping actual work').emit();
     } else {
       this.ctx.log.info.text('Performing actual work...').emit();
     }
+    this.ctx.log.info.section().emit();
+    this.ctx.log.outdent();
   }
 }

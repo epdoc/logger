@@ -21,7 +21,7 @@ describe('createCommand factory', () => {
       action: (ctx) => {
         ctx.log.info.text('Hello').emit();
       },
-      refineContext: (ctx) => ctx,
+      createContext: (ctx) => ctx,
     };
 
     const HelloCmd = CliApp.Cmd.create(node, { root: true });
@@ -43,7 +43,7 @@ describe('createCommand factory', () => {
       options: {
         '--save': 'Save result',
       },
-      refineContext: (ctx) => ctx,
+      createContext: (ctx) => ctx,
     };
 
     const TestCmd = CliApp.Cmd.create(node);
@@ -59,12 +59,12 @@ describe('createCommand factory', () => {
   it('should support nested subcommands (Node within Node)', async () => {
     const node: CliApp.CommandNode<TestContext> = {
       name: 'root',
-      refineContext: (ctx) => ctx,
+      createContext: (ctx) => ctx,
       subCommands: {
         child: {
           name: 'child',
           description: 'Child command',
-          refineContext: (ctx) => ctx,
+          createContext: (ctx) => ctx,
         },
       },
     };
@@ -94,11 +94,11 @@ describe('createCommand factory', () => {
 
     const node: CliApp.CommandNode<TestContext> = {
       name: 'root',
-      refineContext: (ctx) => ctx,
+      createContext: (ctx) => ctx,
       subCommands: {
         nodeSub: {
           name: 'node-sub',
-          refineContext: (ctx) => ctx,
+          createContext: (ctx) => ctx,
         },
         classSub: MySubCmd,
       },

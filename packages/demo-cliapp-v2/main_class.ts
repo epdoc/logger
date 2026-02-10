@@ -18,7 +18,7 @@ if (import.meta.main) {
   const ctx = new App.Ctx.AppContext(pkg);
   await ctx.setupLogging();
 
-  const rootCmd = new RootCommand();
+  const rootCmd = new RootCommand(ctx);
   await rootCmd.init();
 
   CliApp.run(ctx, rootCmd);

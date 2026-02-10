@@ -82,6 +82,9 @@ export abstract class AbstractBase<M extends MsgBuilder = any, L extends Logger 
   constructor(pkg: DenoPkg | AbstractBase<M, L>, params: Log.IGetChildParams = {}) {
     if (pkg instanceof AbstractBase) {
       // Child context - inherit from parent
+      // Note: We cannot use Object.assign(this, pkg) here because field initializers
+      // in the subclass run AFTER this constructor returns, forcing default values
+      // to overwrite inherited values. Use copyProperties(pkg) in the subclass instead.
       this.log = pkg.log.getChild(params) as L;
       this.logMgr = pkg.logMgr;
       this.dryRun = pkg.dryRun;
@@ -91,6 +94,25 @@ export abstract class AbstractBase<M extends MsgBuilder = any, L extends Logger 
       this.pkg = pkg;
       this.logMgr = new Log.Mgr<M>();
     }
+  }
+
+  /**
+   * Helper to copy properties from a parent context.
+   * Call this in your subclass constructor *after* super() to ensure inherited values
+   * overwrite default field initializers.
+   *
+   * @example
+   * ```typescript
+   * constructor(parent: AppContext) {
+   *   super(parent);
+   *   this.copyProperties(parent);
+   * }
+   * ```
+   */
+  // deno-lint-ignore no-explicit-any
+  protected copyProperties(parent: AbstractBase<any, any>): void {
+    const { log: _log, logMgr: _logMgr, dryRun: _dryRun, pkg: _pkg, ...rest } = parent as unknown as AbstractBase;
+    Object.assign(this, rest);
   }
 
   /**

@@ -3,6 +3,7 @@
  * @description Abstract base class that handles command lifecycle, context flow, and Commander.js integration
  */
 
+import { FluentOptionBuilder } from '@epdoc/cliapp';
 import * as Commander from 'commander';
 import { config } from '../config.ts';
 import type * as Ctx from '../context.ts';
@@ -45,7 +46,9 @@ export abstract class AbstractCommand<
   /** Whether the command has been initialized */
   protected initialized = false;
 
-  #subCommands?: AbstractCommand<TContext, TContext>[];
+  // See packages/cliapp/DESIGN.md
+  // deno-lint-ignore no-explicit-any
+  #subCommands?: AbstractCommand<any, TContext>[];
 
   /**
    * Initializes basic Commander.js state and stores constructor parameters.
@@ -175,9 +178,7 @@ export abstract class AbstractCommand<
    * }
    * ```
    */
-  async defineOptions(): Promise<void> {
-    await Promise.resolve();
-  }
+  defineOptions(): void | Promise<void> {}
 
   /**
    * Create a context instance for this command level.
@@ -209,7 +210,9 @@ export abstract class AbstractCommand<
   /**
    * Override to return an array of subcommand instances.
    */
-  protected getSubCommands(): AbstractCommand<TContext, TContext>[] {
+  // See packages/cliapp/DESIGN.md
+  // deno-lint-ignore no-explicit-any
+  protected getSubCommands(): AbstractCommand<any, TContext>[] {
     return [];
   }
 
@@ -219,7 +222,9 @@ export abstract class AbstractCommand<
     this.parentContext = ctx;
   }
 
-  #getCachedSubCommands(): AbstractCommand<TContext, TContext>[] {
+  // See packages/cliapp/DESIGN.md
+  // deno-lint-ignore no-explicit-any
+  #getCachedSubCommands(): AbstractCommand<any, TContext>[] {
     if (!this.#subCommands) {
       this.#subCommands = this.getSubCommands();
     }
@@ -239,27 +244,36 @@ export abstract class AbstractCommand<
     }
   }
 
+  option(flags: string, description: string): FluentOptionBuilder<this> {
+    return new FluentOptionBuilder(this, flags, description);
+  }
+
   #addLoggingOptions(): void {
-    const options: Commander.Option[] = [
-      new Commander.Option('--log-level <level>', 'Set the threshold log output level.')
-        .choices(['FATAL', 'CRITICAL', 'ERROR', 'WARN', 'INFO', 'VERBOSE', 'DEBUG', 'TRACE', 'SPAM', 'SILLY'])
-        .argParser((val) => val.toUpperCase()),
-      new Commander.Option('--verbose', 'Shortcut for --log verbose'),
-      new Commander.Option('-D, --debug', 'Shortcut for --log debug'),
-      new Commander.Option('-T, --trace', 'Shortcut for --log trace'),
-      new Commander.Option('-S, --spam', 'Shortcut for --log spam'),
-      new Commander.Option('--log_show [show]', 'Enable log message output properties')
-        .default('level'),
-      new Commander.Option('-A, --log-show-all', 'Shortcut for --log_show all'),
-      new Commander.Option('--no-color', 'Do not show color in output'),
-    ];
+    this.option('--log-level <level>', 'Set the threshold log output level.')
+      .choices(['FATAL', 'CRITICAL', 'ERROR', 'WARN', 'INFO', 'VERBOSE', 'DEBUG', 'TRACE', 'SPAM', 'SILLY'])
+      .argParser((val) => val.toUpperCase()).emit();
+    this.option('--verbose', 'Shortcut for --log verbose').emit();
+    this.option('-D, --debug', 'Shortcut for --log debug').emit();
+    this.option('-T, --trace', 'Shortcut for --log trace').emit();
+    this.option('-S, --spam', 'Shortcut for --log spam').emit();
+    this.option('--log_show [show]', 'Enable log message output properties')
+      .default('level').emit();
+    this.option('-A, --log-show-all', 'Shortcut for --log_show all').emit();
+    this.option('--no-color', 'Do not show color in output').emit();
 
     if (this.params.dryRun) {
-      options.push(new Commander.Option('-n, --dry-run', 'Perform a dry run without making changes'));
+      this.option('-n, --dry-run', 'Perform a dry run without making changes').emit();
     }
+  }
 
-    for (const option of options) {
-      this.commander.addOption(option);
-    }
+  /**
+   * Add custom help text to the command.
+   *
+   * @param text - The help text to add
+   * @param position - Position of the text relative to the help output (default: 'after')
+   */
+  public addHelpText(text: string, position: CliApp.AddHelpTextPosition = 'after'): this {
+    this.commander.addHelpText(position, text);
+    return this;
   }
 }

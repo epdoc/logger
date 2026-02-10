@@ -30,7 +30,7 @@ const RootCommand = CliApp.Cmd.create<RootContext, RootContext, RootOptions>(
     options: {
       '--root-option': 'Example root command option',
     },
-    hydrate: (ctx, opts) => {
+    hydrateContext: (ctx, opts) => {
       ctx.debugMode = (opts as RootOptions).rootOption;
     },
     subCommands: {
@@ -41,10 +41,10 @@ const RootCommand = CliApp.Cmd.create<RootContext, RootContext, RootOptions>(
         options: {
           '--sub-option': 'Example subcommand option',
         },
-        refineContext: (parent: RootContext) => {
+        createContext: (parent: RootContext) => {
           return new ChildContext(parent, { pkg: 'child' });
         },
-        action: ((ctx: ChildContext, opts, ...files: string[]) => {
+        action: ((ctx: ChildContext, opts, files: string[]) => {
           ctx.log.info.h1('Processing:').emit();
           ctx.log.indent();
           ctx.log.info.label('Sub option:').value(
@@ -57,7 +57,7 @@ const RootCommand = CliApp.Cmd.create<RootContext, RootContext, RootOptions>(
 
           // Process files...
           ctx.processedFiles = files.length;
-        }) as CliApp.CommandNode<ChildContext>['action'],
+        }) as CliApp.CommandNode<ChildContext, SubOptions>['action'],
       }),
     },
   },
