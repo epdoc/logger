@@ -24,6 +24,7 @@ export class CustomMsgBuilder extends CliApp.Ctx.MsgBuilder {
     return this.label('Options:').value(JSON.stringify(opts));
   }
   demo(ctx: RootContext): this {
+    // deno-lint-ignore no-explicit-any
     const id = (ctx as any).__uid ??= crypto.randomUUID().slice(0, 8); // First 8 chars
     return this.label('name:').value(ctx.constructor.name)
       .label('id:').value(id) // Shows "a1b2c3d4"

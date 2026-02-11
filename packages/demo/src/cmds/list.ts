@@ -12,7 +12,7 @@ export class ListCommand extends Ctx.BaseRootCmdClass<ListCmdOpts> {
   }
 
   override defineOptions() {
-    const ctx = this.ctx || this.parentContext;
+    const ctx = this.activeContext()!;
     ctx.log.info.section('ListCommand defineOptions').emit();
     this.option('-h --humanize', 'Human size output').emit();
     this.argument('[files...]', 'Files to list sizes of').emit();

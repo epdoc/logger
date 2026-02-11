@@ -36,11 +36,24 @@ export abstract class AbstractCommand<
   /** The underlying Commander.js Command instance */
   public commander: Commander.Command;
 
-  /** The current context instance (available after preAction hook) */
-  protected ctx!: TContext;
+  /**
+   * The current context instance for this command.
+   * Available after preAction hook runs.
+   */
+  public ctx!: TContext;
 
-  /** The parent context passed during construction */
-  protected parentContext?: TParentContext;
+  /**
+   * The parent command's context.
+   * For root commands: set to grandparentContext in constructor.
+   * For subcommands: set by setParentContext() during parent's preAction hook.
+   */
+  public parentContext?: TParentContext;
+
+  /**
+   * The initial context passed to the constructor.
+   * Never changes after construction.
+   */
+  public grandpaContext?: TParentContext;
 
   /** Command parameters stored from constructor */
   protected params: CliApp.CmdParams;
@@ -70,7 +83,14 @@ export abstract class AbstractCommand<
   ) {
     this.params = params;
     this.commander = new Commander.Command(params.name);
-    this.parentContext = initialContext;
+    this.grandpaContext = initialContext;
+
+    // For root commands, there is no parent command to call setParentContext(),
+    // so we initialize parentContext to grandparentContext here.
+    // For subcommands, parentContext will be set later by setParentContext().
+    if (params.root) {
+      this.parentContext = this.grandpaContext;
+    }
 
     // Configure help and output formatting
     this.commander.configureHelp(config.help);
@@ -107,7 +127,7 @@ export abstract class AbstractCommand<
     if (this.params.description) {
       this.commander.description(this.params.description);
     }
-    if (!this.params.aliases && _.isNonEmptyArray(this.params.aliases)) {
+    if (!this.params.root && _.isNonEmptyArray(this.params.aliases)) {
       this.commander.aliases(this.params.aliases);
     }
 
@@ -170,6 +190,8 @@ export abstract class AbstractCommand<
    *
    * Called during {@link init}. Values set here may be overridden by
    * constructor {@link params}.
+   *
+   * **Available contexts**: `grandparentContext`, `parentContext` (root only)
    */
   defineMetadata(): void | Promise<void> {}
 
@@ -188,6 +210,8 @@ export abstract class AbstractCommand<
    *
    * Called during {@link init} using the {@link commander} instance.
    *
+   * **Available contexts**: `grandparentContext`, `parentContext` (root only)
+   *
    * @example
    * ```typescript
    * override async defineOptions() {
@@ -203,7 +227,27 @@ export abstract class AbstractCommand<
    * Called during the preAction hook. For root commands, `parent` will be
    * undefined. Subcommands receive the hydrated parent context.
    *
+   * By default, this returns the parent context as-is. Override this method
+   * to create a child context using `parent.getChild()` when you need context
+   * isolation or want to add command-specific tracking (pkg, reqId, sid).
+   *
+   * **Available contexts**: `grandparentContext`, `parentContext`
+   *
    * @param parent - The parent context instance.
+   *
+   * @example
+   * ```typescript
+   * // Reuse parent context (default behavior)
+   * override createContext(parent?: AppContext): AppContext {
+   *   return parent ?? this.parentContext!;
+   * }
+   *
+   * // Create child context with automatic pkg from command name
+   * override createContext(parent?: AppContext): AppContext {
+   *   if (!parent) return this.parentContext!;
+   *   return parent.getChild({ pkg: this.params.name });
+   * }
+   * ```
    */
   createContext(parent?: TParentContext): TContext | Promise<TContext> {
     return parent as TContext;
@@ -213,11 +257,15 @@ export abstract class AbstractCommand<
    * Update the context with parsed command-line options.
    *
    * Called during the preAction hook after {@link createContext}.
+   *
+   * **Available contexts**: `grandparentContext`, `parentContext`, `ctx`
    */
   hydrateContext(_options: TOpts, _args: CliApp.CmdArgs): void {}
 
   /**
    * Primary command logic implementation.
+   *
+   * **Available contexts**: `grandparentContext`, `parentContext`, `ctx`
    */
   execute(_opts: TOpts, _args: CliApp.CmdArgs): void | Promise<void> {
     this.commander.help();
@@ -226,11 +274,27 @@ export abstract class AbstractCommand<
 
   /**
    * Override to return an array of subcommand instances.
+   *
+   * **Available contexts**: `grandparentContext`, `parentContext` (root only)
    */
   // See packages/cliapp/DESIGN.md
   // deno-lint-ignore no-explicit-any
   protected getSubCommands(): AbstractCommand<any, TContext>[] {
     return [];
+  }
+
+  /**
+   * Returns the most recent (youngest) available context.
+   *
+   * Checks contexts in order: `ctx` → `parentContext` → `grandparentContext`.
+   * Returns the first one that is defined, or undefined if none are available.
+   *
+   * Use `instanceof` to verify the context type before using it.
+   *
+   * @returns The youngest available context, or undefined
+   */
+  public activeContext(): TContext | TParentContext | undefined {
+    return this.ctx ?? this.parentContext ?? this.grandpaContext;
   }
 
   // --- Internal Wiring ---

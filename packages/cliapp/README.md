@@ -188,11 +188,70 @@ export class SyncCommand extends CliApp.BaseCommand<AppContext, AppContext, CliA
 
 ## Key Concepts
 
-### Context Flow
+### Context Flow and Hierarchy
 
-1. Parent command's `hydrateContext()` runs with parsed options.
-2. Child command's `createContext()` receives the hydrated parent context.
-3. Child inherits state via its own constructor if needed.
+Each command has access to three context properties that become available at different stages of the command lifecycle:
+
+- **`grandparentContext`** - The initial context passed to the constructor, never changes
+- **`parentContext`** - For root commands: set to `grandparentContext` in constructor. For subcommands: set by parent's
+  `preAction` hook
+- **`ctx`** - The command's own context, created during the `preAction` hook
+
+#### Context Availability by Lifecycle Stage
+
+| Method             | Available Contexts                                |
+| ------------------ | ------------------------------------------------- |
+| `constructor()`    | `grandparentContext`                              |
+| `defineMetadata()` | `grandparentContext`, `parentContext` (root only) |
+| `defineOptions()`  | `grandparentContext`, `parentContext` (root only) |
+| `getSubCommands()` | `grandparentContext`, `parentContext` (root only) |
+| `createContext()`  | `grandparentContext`, `parentContext`             |
+| `hydrateContext()` | `grandparentContext`, `parentContext`, `ctx`      |
+| `execute()`        | `grandparentContext`, `parentContext`, `ctx`      |
+
+#### Using `activeContext()`
+
+The `activeContext()` method returns the youngest available context at any point in the lifecycle:
+
+```typescript
+override defineOptions() {
+  const ctx = this.activeContext()!; // Returns grandparentContext for subcommands
+  ctx.log.info.text('Defining options').emit();
+}
+```
+
+Use `instanceof` to verify the context type if needed:
+
+```typescript
+const ctx = this.activeContext();
+if (ctx instanceof MyCustomContext) {
+  // Use custom context features
+}
+```
+
+#### Passing Context to Subcommands
+
+In `getSubCommands()`, pass `this.parentContext` to subcommand constructors:
+
+```typescript
+protected override getSubCommands() {
+  return [
+    new SubCommand(this.parentContext),
+    new AnotherCommand(this.parentContext)
+  ];
+}
+```
+
+The framework will later call `setParentContext()` on each subcommand during the parent's `preAction` hook, giving them
+access to the parent's hydrated context.
+
+#### Context Flow Example
+
+1. Root command receives initial context in constructor → stored as `grandparentContext`
+2. Root command sets `parentContext = grandparentContext` (no parent to call `setParentContext()`)
+3. Root's `preAction` creates `ctx` via `createContext(parentContext)`
+4. Root's `preAction` calls `subcommand.setParentContext(this.ctx)` on each child
+5. Subcommand's `preAction` creates its own `ctx` via `createContext(parentContext)`
 
 ### Lifecycle
 

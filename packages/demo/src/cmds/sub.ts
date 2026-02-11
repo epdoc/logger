@@ -6,11 +6,9 @@ type SubOpts = CliApp.CmdOptions & {
 };
 
 export class SubCommand extends CliApp.Cmd.AbstractBase<RootContext, RootContext, SubOpts> {
-  constructor() {
-    super(undefined, {
-      name: 'sub',
-      description: 'A sample subcommand',
-    });
+  override defineMetadata() {
+    this.name = 'sub';
+    this.description = 'A sample subcommand';
   }
 
   override async defineOptions(): Promise<void> {

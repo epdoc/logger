@@ -1,12 +1,12 @@
-import * as CliApp from '@epdoc/cliapp';
-import type * as Ctx from '../context.ts';
+import type * as CliApp from '@epdoc/cliapp';
+import * as Ctx from '../context.ts';
 import { ListCommand } from './list.ts';
 import { ProcessCommand } from './process.ts';
 import { SubCommand } from './sub.ts';
 
-type RootOpts = CliApp.CmdOptions & { happyMode?: boolean; name?: string };
+type RootCmdOpts = CliApp.CmdOptions & { happyMode?: boolean; name?: string };
 
-export class RootCommand extends CliApp.Cmd.AbstractBase<Ctx.RootContext, Ctx.RootContext, RootOpts> {
+export class RootCommand extends Ctx.BaseRootCmdClass<RootCmdOpts> {
   constructor(ctx: Ctx.RootContext) {
     super(ctx, { root: true, dryRun: true });
   }
@@ -16,7 +16,7 @@ export class RootCommand extends CliApp.Cmd.AbstractBase<Ctx.RootContext, Ctx.Ro
   }
 
   override defineOptions(): void {
-    const ctx = this.ctx || this.parentContext;
+    const ctx = this.activeContext()!;
     ctx.log.info.section('RootCommand defineOptions').emit();
     this.option('--happy-mode', 'Enable special happy mode on the RootCommand')
       .emit();
@@ -28,7 +28,7 @@ export class RootCommand extends CliApp.Cmd.AbstractBase<Ctx.RootContext, Ctx.Ro
   }
 
   override createContext(parent?: Ctx.RootContext): Ctx.RootContext {
-    const ctx = this.ctx || this.parentContext;
+    const ctx = this.activeContext()!;
     ctx.log.info.section('RootCommand createContext').emit();
     const result = parent ?? this.ctx;
     result.log.info.demo(result).emit();
@@ -37,7 +37,7 @@ export class RootCommand extends CliApp.Cmd.AbstractBase<Ctx.RootContext, Ctx.Ro
     return result;
   }
 
-  override hydrateContext(opts: RootOpts, _args: CliApp.CmdArgs): void {
+  override hydrateContext(opts: RootCmdOpts, _args: CliApp.CmdArgs): void {
     this.info.section('RootCommand hydrateContext').emit();
     // We can apply the options to the context here, or in the action method
     this.ctx.name = opts.name ? opts.name : undefined;
@@ -51,7 +51,7 @@ export class RootCommand extends CliApp.Cmd.AbstractBase<Ctx.RootContext, Ctx.Ro
     this.info.section().emit();
   }
 
-  override execute(_opts: RootOpts, _args: CliApp.CmdArgs): void {
+  override execute(_opts: RootCmdOpts, _args: CliApp.CmdArgs): void {
     this.info.section('Root command execute').emit();
     this.info.demo(this.ctx).emit();
     this.info.h2('Only executed when no subcommand is specified.').emit();
@@ -60,10 +60,11 @@ export class RootCommand extends CliApp.Cmd.AbstractBase<Ctx.RootContext, Ctx.Ro
     // this.commander.help();
   }
 
-  protected override getSubCommands(): CliApp.Cmd.AbstractBase<
-    Ctx.RootContext,
-    Ctx.RootContext
-  >[] {
-    return [new SubCommand(), new ProcessCommand(this.ctx), new ListCommand(this.ctx)];
+  protected override getSubCommands() {
+    return [
+      new SubCommand(this.parentContext),
+      new ProcessCommand(this.parentContext),
+      new ListCommand(this.parentContext),
+    ];
   }
 }
