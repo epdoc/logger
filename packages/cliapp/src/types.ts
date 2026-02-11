@@ -4,24 +4,10 @@
  * @module
  */
 
-import type * as Log from '@epdoc/logger';
-import type { Console } from '@epdoc/msgbuilder';
 import type { Dict } from '@epdoc/type';
-
-// Local imports for use in this file
 import type * as Cmd from './cmd/mod.ts';
 import type * as Ctx from './context.ts';
 import type { CmdMetadata } from './pkg-type.ts';
-
-/**
- * Base message builder type for CLI applications
- */
-export type MsgBuilder = Console.Builder;
-
-/**
- * Generic logger type
- */
-export type Logger<M extends MsgBuilder = MsgBuilder> = Log.Std.Logger<M>;
 
 /**
  * Command-line options dictionary
