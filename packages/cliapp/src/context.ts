@@ -1,5 +1,6 @@
 import * as Log from '@epdoc/logger';
 import { Console } from '@epdoc/msgbuilder';
+import { _ } from '@epdoc/type';
 import type { DenoPkg } from './pkg-type.ts';
 
 export const MsgBuilder = Console.Builder;
@@ -76,8 +77,8 @@ export abstract class AbstractBase<M extends MsgBuilder = any, L extends Logger 
 
   /**
    * Create a root context using pkg, or a child context using the parent context.
-   * For root contexts, you must call setupLogging() after construction.
-   * For child contexts, logging is inherited from the parent.
+   * For root contexts, you must call setupLogging() after construction, and set IGetChildParams there.
+   * For child contexts, logging is inherited from the parent, and params are applied here in the constructor.
    */
   constructor(pkg: DenoPkg | AbstractBase<M, L>, params: Log.IGetChildParams = {}) {
     if (pkg instanceof AbstractBase) {
@@ -118,14 +119,22 @@ export abstract class AbstractBase<M extends MsgBuilder = any, L extends Logger 
   /**
    * Setup logging for root context. This separate step is necessary because getLogger() may block
    * with some transports. Call this method after constructing a root context.
+   * @param [levelOrParams='info'] - Log level string or params object
+   * @param [params] - [Root contexts only] This is where you set pkg, reqId or sid for a root context
    */
-  async setupLogging(level: string = 'info'): Promise<void> {
+  async setupLogging(
+    levelOrParams: string | Log.IGetChildParams = 'info',
+    params?: Log.IGetChildParams,
+  ): Promise<void> {
+    const level = _.isString(levelOrParams) ? levelOrParams : 'info';
+    const actualParams = _.isString(levelOrParams) ? (params ?? {}) : levelOrParams;
+
     if (this.builderClass) {
       this.logMgr.msgBuilderFactory = (emitter) => new this.builderClass!(emitter);
     }
     this.logMgr.initLevels();
     this.logMgr.threshold = level;
-    this.log = await this.logMgr.getLogger<L>();
+    this.log = await this.logMgr.getLogger<L>(actualParams);
   }
 
   async close() {

@@ -1,6 +1,5 @@
 import * as CliApp from '@epdoc/cliapp';
 import pkg from './deno.json' with { type: 'json' };
-import { RootCommand } from './src/commands/root.ts';
 import * as App from './src/mod.ts';
 
 /**
@@ -15,10 +14,10 @@ import * as App from './src/mod.ts';
  * - Custom message builder with params() method
  */
 if (import.meta.main) {
-  const ctx = new App.Ctx.AppContext(pkg);
+  const ctx = new App.Ctx.RootContext(pkg, { pkg: 'app' });
   await ctx.setupLogging();
 
-  const rootCmd = new RootCommand(ctx);
+  const rootCmd = new App.Cmd.Root(ctx);
   await rootCmd.init();
 
   CliApp.run(ctx, rootCmd);

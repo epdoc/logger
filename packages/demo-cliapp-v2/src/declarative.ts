@@ -15,7 +15,7 @@ import * as Ctx from './context.ts';
 type DeclarativeOpts = CliApp.CmdOptions & { name?: string; 'happy-mode'?: boolean };
 type HelloOpts = { time: number };
 
-export const TREE: CliApp.CommandNode<Ctx.AppContext, DeclarativeOpts> = {
+export const TREE: CliApp.CommandNode<Ctx.RootContext, DeclarativeOpts> = {
   name: 'main_declarative',
   description: 'A Purely Declarative Demo',
   options: {
@@ -26,7 +26,7 @@ export const TREE: CliApp.CommandNode<Ctx.AppContext, DeclarativeOpts> = {
     { text: '\nThis is help text for the root command.' },
     { text: 'This is more help text for the root command.' },
   ],
-  hydrateContext(ctx: Ctx.AppContext, opts: DeclarativeOpts): void {
+  hydrateContext(ctx: Ctx.RootContext, opts: DeclarativeOpts): void {
     ctx.log.info.section('main_declarative hydrateContext').emit();
     // We can apply the options to the context here, or in the action method
     ctx.name = opts.name ? opts.name : undefined;
@@ -62,7 +62,7 @@ export const TREE: CliApp.CommandNode<Ctx.AppContext, DeclarativeOpts> = {
         },
       },
       helpText: [{ text: '\nThis is help text for the hello command.' }],
-      createContext: (ctx: Ctx.AppContext): Ctx.ChildContext => {
+      createContext: (ctx: Ctx.RootContext): Ctx.ChildContext => {
         ctx.log.info.section('hello createContext').emit();
         const result = new Ctx.ChildContext(ctx);
         ctx.log.info.context(result).emit();
@@ -72,7 +72,7 @@ export const TREE: CliApp.CommandNode<Ctx.AppContext, DeclarativeOpts> = {
         ctx.log.info.section().emit();
         return result;
       },
-      hydrateContext: (ctx: Ctx.AppContext, opts: HelloOpts) => {
+      hydrateContext: (ctx: Ctx.RootContext, opts: HelloOpts) => {
         ctx.log.info.section('hello hydrateContext').emit();
         if (ctx instanceof Ctx.ChildContext) {
           ctx.time = opts.time;
@@ -96,7 +96,7 @@ export const TREE: CliApp.CommandNode<Ctx.AppContext, DeclarativeOpts> = {
     goodbye: {
       description: 'This command will say goodbye to a file',
       arguments: ['<filename>'],
-      action: (ctx: Ctx.AppContext, opts: CliApp.CmdOptions, args: CliApp.CmdArgs) => {
+      action: (ctx: Ctx.RootContext, opts: CliApp.CmdOptions, args: CliApp.CmdArgs) => {
         ctx.log.info.section('goodbye action').emit();
         ctx.log.info.text(`Goodbye, ${ctx.name ?? 'World'}!`).emit();
         ctx.log.info.happy(ctx).emit();

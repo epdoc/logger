@@ -3,10 +3,10 @@ import pkg from './deno.json' with { type: 'json' };
 import * as App from './src/mod.ts';
 
 if (import.meta.main) {
-  const ctx = new App.Ctx.AppContext(pkg);
-  await ctx.setupLogging();
+  const ctx = new App.Ctx.RootContext(pkg);
+  await ctx.setupLogging('info', { pkg: 'app' });
 
-  const RootCommand = CliApp.Cmd.create<App.Ctx.AppContext, App.Ctx.AppContext>(
+  const RootCommand = CliApp.Cmd.create<App.Ctx.RootContext, App.Ctx.RootContext>(
     App.Decl.TREE,
     { root: true, dryRun: true, version: pkg.version },
   );

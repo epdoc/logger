@@ -14,7 +14,7 @@ export class CustomMsgBuilder extends CliApp.Ctx.MsgBuilder {
    * @param ctx - The application context
    * @returns This builder for chaining
    */
-  happy(ctx: AppContext): this {
+  happy(ctx: RootContext): this {
     return ctx.happyMode ? this.success('We are HAPPY!') : this.error('It is a sad day');
   }
 
@@ -26,7 +26,7 @@ export class CustomMsgBuilder extends CliApp.Ctx.MsgBuilder {
     return this;
   }
 
-  context(ctx: AppContext): this {
+  context(ctx: RootContext): this {
     return this.label(ctx.constructor.name).value(JSON.stringify(_.omit(ctx, ['log', 'logMgr', 'pkg'])));
   }
 }
@@ -39,19 +39,16 @@ type CustomLogger = CliApp.Ctx.Logger;
  * Extends AbstractBase from cliapp to inherit all standard context functionality
  * including logging setup, dry-run support, and package information.
  */
-export class AppContext extends CliApp.Ctx.AbstractBase<CustomMsgBuilder, CustomLogger> {
+export class RootContext extends CliApp.Ctx.AbstractBase<CustomMsgBuilder, CustomLogger> {
   isApp = true;
   name?: string;
   happyMode = false;
 
   protected override builderClass = CustomMsgBuilder;
 
-  constructor(
-    pkg: CliApp.DenoPkg | AppContext,
-    params: Log.IGetChildParams = {},
-  ) {
+  constructor(pkg: CliApp.DenoPkg | RootContext, params: Log.IGetChildParams = {}) {
     super(pkg, params);
-    if (pkg instanceof AppContext) {
+    if (pkg instanceof RootContext) {
       this.copyProperties(pkg);
     }
   }
@@ -60,11 +57,11 @@ export class AppContext extends CliApp.Ctx.AbstractBase<CustomMsgBuilder, Custom
 /**
  * Child context demonstrating context inheritance.
  */
-export class ChildContext extends AppContext {
+export class ChildContext extends RootContext {
   isChild = true;
   time: Integer = 0;
 
-  constructor(parent: AppContext, params: Log.IGetChildParams = {}) {
+  constructor(parent: RootContext, params: Log.IGetChildParams = { pkg: 'child' }) {
     super(parent, params);
   }
 }

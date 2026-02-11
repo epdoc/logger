@@ -8,7 +8,7 @@ import * as Commander from 'commander';
 import { config } from '../config.ts';
 import type * as Ctx from '../context.ts';
 import type * as CliApp from '../types.ts';
-import { configureLogging } from '../utils.ts';
+import { commaList, configureLogging } from '../utils.ts';
 
 /**
  * Abstract base class for creating CLI commands with automatic context flow
@@ -256,8 +256,8 @@ export abstract class AbstractCommand<
     this.option('-D, --debug', 'Shortcut for --log debug').emit();
     this.option('-T, --trace', 'Shortcut for --log trace').emit();
     this.option('-S, --spam', 'Shortcut for --log spam').emit();
-    this.option('--log_show [show]', 'Enable log message output properties')
-      .default('level').emit();
+    this.option('--log-show [show]', 'Enable log message output properties')
+      .default('level').argParser(commaList).emit();
     this.option('-A, --log-show-all', 'Shortcut for --log_show all').emit();
     this.option('--no-color', 'Do not show color in output').emit();
 

@@ -1,11 +1,11 @@
 import * as CliApp from '@epdoc/cliapp';
-import type { AppContext } from '../context.ts';
+import type { RootContext } from '../context.ts';
 
 type SubOpts = CliApp.CmdOptions & {
   force?: boolean;
 };
 
-export class SubCommand extends CliApp.Cmd.AbstractBase<AppContext, AppContext, SubOpts> {
+export class SubCommand extends CliApp.Cmd.AbstractBase<RootContext, RootContext, SubOpts> {
   constructor() {
     super(undefined, {
       name: 'sub',

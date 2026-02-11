@@ -1,7 +1,7 @@
 import * as CliApp from '@epdoc/cliapp';
 import pkg from './deno.json' with { type: 'json' };
-import * as App from './src/mod.ts';
 import { SubCommand } from './src/commands/sub.ts';
+import * as App from './src/mod.ts';
 
 /**
  * Demo: Hybrid Implementation
@@ -11,7 +11,7 @@ import { SubCommand } from './src/commands/sub.ts';
  * - Class-based root with declarative leaves
  */
 
-export class HybridRoot extends CliApp.Cmd.AbstractBase<App.Ctx.AppContext, App.Ctx.AppContext> {
+export class HybridRoot extends CliApp.Cmd.AbstractBase<App.Ctx.RootContext, App.Ctx.RootContext> {
   constructor() {
     super(undefined, {
       name: pkg.name,
@@ -22,8 +22,8 @@ export class HybridRoot extends CliApp.Cmd.AbstractBase<App.Ctx.AppContext, App.
     });
   }
 
-  override createContext(_parent?: App.Ctx.AppContext): App.Ctx.AppContext {
-    const ctx = new App.Ctx.AppContext(pkg);
+  override createContext(_parent?: App.Ctx.RootContext): App.Ctx.RootContext {
+    const ctx = new App.Ctx.RootContext(pkg);
     return ctx;
   }
 
@@ -35,9 +35,9 @@ export class HybridRoot extends CliApp.Cmd.AbstractBase<App.Ctx.AppContext, App.
     this.commander.help();
   }
 
-  protected override getSubCommands(): CliApp.Cmd.AbstractBase<App.Ctx.AppContext, App.Ctx.AppContext>[] {
+  protected override getSubCommands(): CliApp.Cmd.AbstractBase<App.Ctx.RootContext, App.Ctx.RootContext>[] {
     // Mix class-based and declarative subcommands
-    const DeclarativeCmd = CliApp.Cmd.create<App.Ctx.AppContext, App.Ctx.AppContext>({
+    const DeclarativeCmd = CliApp.Cmd.create<App.Ctx.RootContext, App.Ctx.RootContext>({
       name: 'declarative',
       description: 'A declarative leaf in a class-based tree',
       options: {
@@ -66,7 +66,7 @@ export class HybridRoot extends CliApp.Cmd.AbstractBase<App.Ctx.AppContext, App.
 }
 
 if (import.meta.main) {
-  const ctx = new App.Ctx.AppContext(pkg);
+  const ctx = new App.Ctx.RootContext(pkg);
   await ctx.setupLogging();
 
   const rootCmd = new HybridRoot();
