@@ -1,9 +1,13 @@
-import { Cmd, Ctx } from './src/mod.ts';
+import * as CliApp from '@epdoc/cliapp';
+import pkg from './deno.json' with { type: 'json' };
+import * as App from './src/mod.ts';
 
 if (import.meta.main) {
-  const ctx = new Ctx.Context();
+  const ctx = new App.Ctx.RootContext(pkg, { pkg: 'app' });
   await ctx.setupLogging();
-  const rootCmd = new Cmd.Root(ctx);
-  const cmd = await rootCmd.init();
-  await cmd.parseAsync();
+
+  const rootCmd = new App.Cmd.Root(ctx);
+  await rootCmd.init();
+
+  CliApp.run(ctx, rootCmd);
 }

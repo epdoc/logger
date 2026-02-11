@@ -1,6 +1,6 @@
 export type ListOpts = {
   humanize: boolean;
-  size: boolean;
+  files: string[];
 };
 
 export type ProcessOpts = {
