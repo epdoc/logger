@@ -4,6 +4,7 @@
  */
 
 import { FluentOptionBuilder } from '@epdoc/cliapp';
+import { _ } from '@epdoc/type';
 import * as Commander from 'commander';
 import { FluentArgumentBuilder } from '../argument.ts';
 import { config } from '../config.ts';
@@ -106,7 +107,7 @@ export abstract class AbstractCommand<
     if (this.params.description) {
       this.commander.description(this.params.description);
     }
-    if (!this.params.root && this.params.aliases) {
+    if (!this.params.aliases && _.isNonEmptyArray(this.params.aliases)) {
       this.commander.aliases(this.params.aliases);
     }
 
@@ -171,6 +172,16 @@ export abstract class AbstractCommand<
    * constructor {@link params}.
    */
   defineMetadata(): void | Promise<void> {}
+
+  set description(val: string) {
+    this.params.description = val;
+  }
+  set name(val: string) {
+    this.params.name = val;
+  }
+  set aliases(val: string | string[]) {
+    this.params.aliases = _.isArray(val) ? val : [val];
+  }
 
   /**
    * Override to define command-specific options and arguments.
