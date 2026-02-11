@@ -1,5 +1,5 @@
 {
-  "name": "@epdoc/demo-cliapp-v2",
+  "name": "@epdoc/demo-cliapp",
   "version": "0.1.0",
   "description": "Demo of enhanced CliApp v2.0 with automatic context flow",
   "exports": "./main_class.ts",
