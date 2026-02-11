@@ -390,7 +390,7 @@
           "jsr:@std/assert@^1.0.16"
         ]
       },
-      "packages/demo-cliapp-v2": {
+      "packages/demo-cliapp": {
         "dependencies": [
           "jsr:@epdoc/logger@^1003.2.11",
           "jsr:@epdoc/msgbuilder@~0.1.1",

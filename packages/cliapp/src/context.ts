@@ -61,8 +61,12 @@ logMgr.threshold = 'info';
  * To work around this and allow custom builders, we use `any` in the L constraint below.
  * We then use `ExtractMsgBuilder<L>` to recover the actual builder type.
  */
-// deno-lint-ignore no-explicit-any
-export abstract class AbstractBase<M extends MsgBuilder = any, L extends Logger = any> implements ICtx<M, L> {
+export abstract class AbstractBase<
+  // deno-lint-ignore no-explicit-any
+  M extends MsgBuilder = any,
+  // deno-lint-ignore no-explicit-any
+  L extends Logger = any,
+> implements ICtx<M, L> {
   log!: L;
   logMgr: Log.Mgr<M>;
   dryRun = false;
@@ -80,7 +84,10 @@ export abstract class AbstractBase<M extends MsgBuilder = any, L extends Logger 
    * For root contexts, you must call setupLogging() after construction, and set IGetChildParams there.
    * For child contexts, logging is inherited from the parent, and params are applied here in the constructor.
    */
-  constructor(pkg: DenoPkg | AbstractBase<M, L>, params: Log.IGetChildParams = {}) {
+  constructor(
+    pkg: DenoPkg | AbstractBase<M, L>,
+    params: Log.IGetChildParams = {},
+  ) {
     if (pkg instanceof AbstractBase) {
       // Child context - inherit from parent
       // Note: We cannot use Object.assign(this, pkg) here because field initializers

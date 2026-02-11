@@ -17,17 +17,25 @@
     "./packages/demo",
     "./packages/cliffapp",
     "./packages/demo-cliffy",
-    "./packages/demo-cliapp-v2"
+    "./packages/demo-cliapp"
   ],
   "fmt": {
     "include": ["packages", "deno.json", "launch.config.json"],
-    "exclude": ["packages/logdy", "packages/examples/logdy.run.ts", "packages/logjava"],
+    "exclude": [
+      "packages/logdy",
+      "packages/examples/logdy.run.ts",
+      "packages/logjava"
+    ],
     "singleQuote": true,
     "lineWidth": 120
   },
   "lint": {
     "include": ["packages"],
-    "exclude": ["packages/logdy", "packages/examples/logdy.run.ts", "packages/logjava"]
+    "exclude": [
+      "packages/logdy",
+      "packages/examples/logdy.run.ts",
+      "packages/logjava"
+    ]
   },
   "test": {
     "include": ["packages/**/*.test.ts"],

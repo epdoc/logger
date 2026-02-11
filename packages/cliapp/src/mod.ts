@@ -4,6 +4,7 @@
  * @module
  */
 
+export * from './base.ts';
 export * as Cmd from './cmd/mod.ts';
 export * as Ctx from './context.ts';
 export { FluentOptionBuilder } from './option.ts';

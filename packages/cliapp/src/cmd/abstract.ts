@@ -5,6 +5,7 @@
 
 import { FluentOptionBuilder } from '@epdoc/cliapp';
 import * as Commander from 'commander';
+import { FluentArgumentBuilder } from '../argument.ts';
 import { config } from '../config.ts';
 import type * as Ctx from '../context.ts';
 import type * as CliApp from '../types.ts';
@@ -121,29 +122,36 @@ export abstract class AbstractCommand<
     }
 
     // The middleware chain - runs after parsing, before action
-    this.commander.hook('preAction', async (_thisCommand: Commander.Command, _actionCommand: Commander.Command) => {
-      // 1. Create the context instance for this specific level
-      this.ctx = await this.createContext(this.parentContext);
+    this.commander.hook(
+      'preAction',
+      async (
+        _thisCommand: Commander.Command,
+        _actionCommand: Commander.Command,
+      ) => {
+        // 1. Create the context instance for this specific level
+        this.ctx = await this.createContext(this.parentContext);
 
-      // 2. Hydrate context using parsed options for this command
-      const opts = this.commander.opts() as TOpts;
-      const args = this.commander.args as CliApp.CmdArgs;
-      this.hydrateContext(opts, args);
+        // 2. Hydrate context using parsed options for this command
+        const opts = this.commander.opts() as TOpts;
+        const args = this.commander.args as CliApp.CmdArgs;
+        this.hydrateContext(opts, args);
 
-      // 3. Configure logging for root commands
-      if (
-        'logLevel' in opts || 'verbose' in opts || 'debug' in opts || 'trace' in opts || 'spam' in opts ||
-        'logShow' in opts || 'logShowAll' in opts || 'color' in opts
-      ) {
-        configureLogging(this.ctx, opts as CliApp.LogOptions);
-      }
+        // 3. Configure logging for root commands
+        if (
+          'logLevel' in opts || 'verbose' in opts || 'debug' in opts ||
+          'trace' in opts || 'spam' in opts ||
+          'logShow' in opts || 'logShowAll' in opts || 'color' in opts
+        ) {
+          configureLogging(this.ctx, opts as CliApp.LogOptions);
+        }
 
-      // 4. Pass this context down to subcommands so they can inherit
-      const subCommands = this.#getCachedSubCommands();
-      subCommands.forEach((sub) => {
-        sub.setParentContext(this.ctx);
-      });
-    });
+        // 4. Pass this context down to subcommands so they can inherit
+        const subCommands = this.#getCachedSubCommands();
+        subCommands.forEach((sub) => {
+          sub.setParentContext(this.ctx);
+        });
+      },
+    );
 
     // Final execution handler
     this.commander.action(async (...params: unknown[]) => {
@@ -162,9 +170,7 @@ export abstract class AbstractCommand<
    * Called during {@link init}. Values set here may be overridden by
    * constructor {@link params}.
    */
-  async defineMetadata(): Promise<void> {
-    await Promise.resolve();
-  }
+  defineMetadata(): void | Promise<void> {}
 
   /**
    * Override to define command-specific options and arguments.
@@ -174,7 +180,7 @@ export abstract class AbstractCommand<
    * @example
    * ```typescript
    * override async defineOptions() {
-   *   this.commander.option('-f, --file <path>', 'Path to file');
+   *   this.option('-f, --file <path>', 'Path to file').default(".").emit();
    * }
    * ```
    */
@@ -188,7 +194,7 @@ export abstract class AbstractCommand<
    *
    * @param parent - The parent context instance.
    */
-  createContext(parent?: TParentContext): Promise<TContext> | TContext {
+  createContext(parent?: TParentContext): TContext | Promise<TContext> {
     return parent as TContext;
   }
 
@@ -202,7 +208,7 @@ export abstract class AbstractCommand<
   /**
    * Primary command logic implementation.
    */
-  execute(_opts: TOpts, _args: CliApp.CmdArgs): Promise<void> | void {
+  execute(_opts: TOpts, _args: CliApp.CmdArgs): void | Promise<void> {
     this.commander.help();
     return Promise.resolve();
   }
@@ -248,9 +254,24 @@ export abstract class AbstractCommand<
     return new FluentOptionBuilder(this, flags, description);
   }
 
+  argument(flags: string, description: string): FluentArgumentBuilder<this> {
+    return new FluentArgumentBuilder(this, flags, description);
+  }
+
   #addLoggingOptions(): void {
     this.option('--log-level <level>', 'Set the threshold log output level.')
-      .choices(['FATAL', 'CRITICAL', 'ERROR', 'WARN', 'INFO', 'VERBOSE', 'DEBUG', 'TRACE', 'SPAM', 'SILLY'])
+      .choices([
+        'FATAL',
+        'CRITICAL',
+        'ERROR',
+        'WARN',
+        'INFO',
+        'VERBOSE',
+        'DEBUG',
+        'TRACE',
+        'SPAM',
+        'SILLY',
+      ])
       .argParser((val) => val.toUpperCase()).emit();
     this.option('--verbose', 'Shortcut for --log verbose').emit();
     this.option('-D, --debug', 'Shortcut for --log debug').emit();
@@ -262,7 +283,8 @@ export abstract class AbstractCommand<
     this.option('--no-color', 'Do not show color in output').emit();
 
     if (this.params.dryRun) {
-      this.option('-n, --dry-run', 'Perform a dry run without making changes').emit();
+      this.option('-n, --dry-run', 'Perform a dry run without making changes')
+        .emit();
     }
   }
 
@@ -272,7 +294,10 @@ export abstract class AbstractCommand<
    * @param text - The help text to add
    * @param position - Position of the text relative to the help output (default: 'after')
    */
-  public addHelpText(text: string, position: CliApp.AddHelpTextPosition = 'after'): this {
+  public addHelpText(
+    text: string,
+    position: CliApp.AddHelpTextPosition = 'after',
+  ): this {
     this.commander.addHelpText(position, text);
     return this;
   }
