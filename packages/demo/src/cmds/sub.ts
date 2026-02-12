@@ -12,17 +12,20 @@ export class SubCommand extends CliApp.Cmd.AbstractBase<RootContext, RootContext
   }
 
   override async defineOptions(): Promise<void> {
+    this.log.info.section('SubCommand defineOptions').emit();
     await Promise.resolve();
     this.commander
       .argument('<input>', 'Input argument')
       .option('-f, --force', 'Force execution');
+    this.log.info.h2('We added the sub options and arguments.').emit();
+    this.log.info.section().emit();
   }
 
   override execute(opts: SubOpts, args: CliApp.CmdArgs): void {
     const input = args[0];
 
     this.ctx.log.info.section('Subcommand Execution').emit();
-    this.ctx.log.indent();
+    this.log.info.demo(this.ctx).emit();
     // Demonstrate using the custom params() method from CustomMsgBuilder
     this.ctx.log.info.label('Input').value(JSON.stringify(input)).emit();
     this.ctx.log.info.label('Force').value(opts.force ? 'Yes' : 'No').emit();
@@ -30,9 +33,8 @@ export class SubCommand extends CliApp.Cmd.AbstractBase<RootContext, RootContext
     if (this.ctx.dryRun) {
       this.ctx.log.warn.text('Dry run enabled, skipping actual work').emit();
     } else {
-      this.ctx.log.info.text('Performing actual work...').emit();
+      this.ctx.log.info.text('Sub does not do anything').emit();
     }
     this.ctx.log.info.section().emit();
-    this.ctx.log.outdent();
   }
 }

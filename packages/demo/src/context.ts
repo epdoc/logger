@@ -1,7 +1,7 @@
 import * as CliApp from '@epdoc/cliapp';
 import * as FS from '@epdoc/fs/fs';
 import type * as Log from '@epdoc/logger';
-import { _, type Dict, type Integer } from '@epdoc/type';
+import { _, type Dict } from '@epdoc/type';
 import * as App from './app/mod.ts';
 
 /**
@@ -20,8 +20,12 @@ export class CustomMsgBuilder extends CliApp.Ctx.MsgBuilder {
     return this; // Always return this for method chaining
   }
 
-  opts(opts: Dict): this {
-    return this.label('Options:').value(JSON.stringify(opts));
+  logShow(ctx: RootContext): this {
+    return this.label(ctx.constructor.name).label('logMgr.show').value(JSON.stringify(ctx.logMgr.show));
+  }
+
+  opts(opts: Dict, name?: string): this {
+    return this.label(name ? name + ':' : 'Options:').value(JSON.stringify(opts));
   }
   demo(ctx: RootContext): this {
     // deno-lint-ignore no-explicit-any
@@ -65,13 +69,14 @@ export class RootContext extends CliApp.Ctx.AbstractBase<CustomMsgBuilder, Custo
  * Child context demonstrating context inheritance.
  * If you are happy using just one context class, you can skip this.
  */
-export class ChildContext extends RootContext {
-  isChild = true;
-  time: Integer = 0;
+export class QueryContext extends RootContext {
+  isProcess = true;
+  more = false;
+  apis: App.Api[] = [];
 
   constructor(
     parent: RootContext,
-    params: Log.IGetChildParams = { pkg: 'child' },
+    params: Log.IGetChildParams = { pkg: 'query' },
   ) {
     super(parent, params);
   }
@@ -81,3 +86,9 @@ export abstract class BaseClass extends CliApp.BaseClass<RootContext, CustomMsgB
 
 export abstract class BaseRootCmdClass<TOpts extends CliApp.CmdOptions>
   extends CliApp.Cmd.AbstractBase<RootContext, RootContext, TOpts> {}
+
+export type QueryCmdOpts = {
+  more: boolean;
+};
+
+export abstract class BaseQueryCmdClass extends CliApp.Cmd.AbstractBase<QueryContext, RootContext, QueryCmdOpts> {}
