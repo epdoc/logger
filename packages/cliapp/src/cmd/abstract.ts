@@ -158,11 +158,7 @@ export abstract class AbstractCommand<
         this.hydrateContext(opts, args);
 
         // 3. Configure logging for root commands
-        if (
-          'logLevel' in opts || 'verbose' in opts || 'debug' in opts ||
-          'trace' in opts || 'spam' in opts ||
-          'logShow' in opts || 'logShowAll' in opts || 'color' in opts
-        ) {
+        if (this.params.root) {
           configureLogging(this.ctx, opts as CliApp.LogOptions);
         }
 
@@ -352,8 +348,8 @@ export abstract class AbstractCommand<
     this.option('-D, --debug', 'Shortcut for --log debug').emit();
     this.option('-T, --trace', 'Shortcut for --log trace').emit();
     this.option('-S, --spam', 'Shortcut for --log spam').emit();
-    this.option('--log-show [show]', 'Enable log message output properties')
-      .default('level').argParser(commaList).emit();
+    this.option('--log-show [show]', 'Enable log message output properties').argParser(commaList)
+      .emit();
     this.option('-A, --log-show-all', 'Shortcut for --log_show all').emit();
     this.option('--no-color', 'Do not show color in output').emit();
 

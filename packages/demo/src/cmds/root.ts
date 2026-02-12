@@ -42,7 +42,6 @@ export class RootCommand extends Ctx.BaseRootCmdClass<RootCmdOpts> {
     // We can apply the options to the context here, or in the action method
     this.ctx.name = opts.name ? opts.name : undefined;
     this.ctx.happyMode = opts.happyMode ? true : false;
-    this.info.label('name').value(this.ctx.name).emit();
     this.info.demo(this.ctx).emit();
     this.info.h2('Our RootContext is now hydrated.').emit();
     this.info.h2(
