@@ -85,21 +85,21 @@ export abstract class AbstractBase<
    * For child contexts, logging is inherited from the parent, and params are applied here in the constructor.
    */
   constructor(
-    pkg: DenoPkg | AbstractBase<M, L>,
+    arg: DenoPkg | AbstractBase<M, L>,
     params: Log.IGetChildParams = {},
   ) {
-    if (pkg instanceof AbstractBase) {
+    if (arg instanceof AbstractBase) {
       // Child context - inherit from parent
       // Note: We cannot use Object.assign(this, pkg) here because field initializers
       // in the subclass run AFTER this constructor returns, forcing default values
       // to overwrite inherited values. Use copyProperties(pkg) in the subclass instead.
-      this.log = pkg.log.getChild(params) as L;
-      this.logMgr = pkg.logMgr;
-      this.dryRun = pkg.dryRun;
-      this.pkg = pkg.pkg;
+      this.log = arg.log.getChild(params) as L;
+      this.logMgr = arg.logMgr;
+      this.dryRun = arg.dryRun;
+      this.pkg = arg.pkg;
     } else {
       // Root context - setupLogging must be called
-      this.pkg = pkg;
+      this.pkg = arg;
       this.logMgr = new Log.Mgr<M>();
     }
   }

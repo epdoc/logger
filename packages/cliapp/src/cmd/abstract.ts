@@ -5,6 +5,7 @@
 
 import { FluentOptionBuilder } from '@epdoc/cliapp';
 import { _ } from '@epdoc/type';
+import { assert } from '@std/assert/assert';
 import * as Commander from 'commander';
 import { FluentArgumentBuilder } from '../argument.ts';
 import { config } from '../config.ts';
@@ -291,6 +292,15 @@ export abstract class AbstractCommand<
    */
   public activeContext(): TContext | TParentContext | undefined {
     return this.ctx ?? this.parentContext ?? this.grandpaContext;
+  }
+
+  /**
+   * Retrieves the logger from the active context for use in command methods.
+   */
+  get log(): Ctx.Logger {
+    const activeCtx = this.activeContext();
+    assert(activeCtx, 'No context available for logging');
+    return activeCtx.log;
   }
 
   // --- Internal Wiring ---
