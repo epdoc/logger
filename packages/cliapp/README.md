@@ -83,15 +83,15 @@ Each command has access to three context properties:
 
 ### Context Availability
 
-| Method             | Available Contexts                                |
-| ------------------ | ------------------------------------------------- |
-| `constructor()`    | `grandpaContext`                                  |
-| `defineMetadata()` | `grandpaContext`, `parentContext` (root only)     |
-| `defineOptions()`  | `grandpaContext`, `parentContext` (root only)     |
-| `getSubCommands()` | `grandpaContext`, `parentContext` (root only)     |
-| `createContext()`  | `grandpaContext`, `parentContext`                 |
-| `hydrateContext()` | `grandpaContext`, `parentContext`, `ctx`          |
-| `execute()`        | `grandpaContext`, `parentContext`, `ctx`          |
+| Method             | Available Contexts                            |
+| ------------------ | --------------------------------------------- |
+| `constructor()`    | `grandpaContext`                              |
+| `defineMetadata()` | `grandpaContext`, `parentContext` (root only) |
+| `defineOptions()`  | `grandpaContext`, `parentContext` (root only) |
+| `getSubCommands()` | `grandpaContext`, `parentContext` (root only) |
+| `createContext()`  | `grandpaContext`, `parentContext`             |
+| `hydrateContext()` | `grandpaContext`, `parentContext`, `ctx`      |
+| `execute()`        | `grandpaContext`, `parentContext`, `ctx`      |
 
 Use `activeContext()` to get the youngest available context at any point.
 
@@ -115,6 +115,7 @@ Root commands automatically include:
 Base context class that all contexts extend.
 
 **Key Methods:**
+
 - `setupLogging(levelOrParams?, params?)` - Initialize logging for root context
 - `getChild(params)` - Create child context (inherited from logger)
 - `close()` - Cleanup and close logger
@@ -124,6 +125,7 @@ Base context class that all contexts extend.
 Base command class for all commands.
 
 **Lifecycle Methods:**
+
 - `defineMetadata()` - Set command metadata
 - `defineOptions()` - Define CLI options/arguments
 - `createContext(parent?)` - Create context instance
@@ -132,6 +134,7 @@ Base command class for all commands.
 - `getSubCommands()` - Return subcommand instances
 
 **Helper Methods:**
+
 - `option(flags, description)` - Add option (returns fluent builder)
 - `argument(flags, description)` - Add argument (returns fluent builder)
 - `addHelpText(text, position?)` - Add custom help text
@@ -142,6 +145,7 @@ Base command class for all commands.
 Entry point that handles initialization, parsing, error handling, and cleanup.
 
 **Parameters:**
+
 - `ctx` - Root context
 - `command` - Root command instance
 - `options` - Optional configuration (e.g., `{ noExit: true }` for testing)
