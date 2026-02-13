@@ -43,3 +43,4 @@ cov_profile
 _test
 docs/
 .vscode/
+.claude/
