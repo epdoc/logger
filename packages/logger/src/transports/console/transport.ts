@@ -27,6 +27,7 @@ export class ConsoleTransport extends Base.Transport {
   protected _levelWidth: Integer = 5;
   protected _format: OutputFormatType = OutputFormat.TEXT;
   protected _color: boolean = true;
+  protected _useStderr: boolean = false;
 
   /**
    * Creates an instance of the `Console` transport.
@@ -43,6 +44,7 @@ export class ConsoleTransport extends Base.Transport {
       this._format = opts.format;
     }
     this._color = opts.color ?? true;
+    this._useStderr = opts.useStderr ?? false;
     this._bReady = true;
   }
 
@@ -194,7 +196,11 @@ export class ConsoleTransport extends Base.Transport {
    * @returns {Promise<void>} A promise that resolves when the output is complete.
    */
   output(str: string, _levelValue: Level.Value): Promise<void> {
-    console.log(str);
+    if (this._useStderr) {
+      console.error(str);
+    } else {
+      console.log(str);
+    }
     return Promise.resolve();
   }
 
