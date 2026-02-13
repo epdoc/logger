@@ -9,6 +9,20 @@ export type MsgBuilder = Console.Builder;
 export type Logger = Log.Std.Logger<any>;
 
 /**
+ * Interface for the MCP result collector. Commands use this to emit structured
+ * output intended for the MCP tool response, separate from diagnostic logging.
+ *
+ * In CLI mode this property is typically undefined. In MCP mode it is set by
+ * the MCP server before command execution.
+ */
+export interface IMcpResult {
+  /** Emit a text result. */
+  text(value: string): this;
+  /** Emit structured data as JSON. */
+  data(value: unknown, indent?: number): this;
+}
+
+/**
  * Clean context interface - much simpler than the old complex system
  */
 export interface ICtx<M extends MsgBuilder, L extends Logger = Logger> {
@@ -22,6 +36,12 @@ export interface ICtx<M extends MsgBuilder, L extends Logger = Logger> {
   pkg: DenoPkg;
   /** Gracefully shut down the application and its logger. */
   close: () => Promise<void>;
+  /**
+   * Optional MCP result collector. When present (MCP mode), commands should use
+   * this to emit output intended as the tool response. When absent (CLI mode),
+   * commands output normally via logging or console.
+   */
+  mcpResult?: IMcpResult;
 }
 
 /**
@@ -71,6 +91,7 @@ export abstract class AbstractBase<
   logMgr: Log.Mgr<M>;
   dryRun = false;
   pkg: DenoPkg;
+  mcpResult?: IMcpResult;
 
   /**
    * Optional builder class that can be specified by subclasses to automatically
