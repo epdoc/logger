@@ -5,7 +5,7 @@
  * @module
  */
 
-import type { JsonRpcRequest, JsonRpcResponse } from './types.ts';
+import type * as Mcp from './types.ts';
 
 /**
  * Reads a single MCP message from stdin using Content-Length framing.
@@ -25,7 +25,7 @@ import type { JsonRpcRequest, JsonRpcResponse } from './types.ts';
 export async function readMessage(
   reader: ReadableStreamDefaultReader<Uint8Array>,
   buffer: { data: Uint8Array },
-): Promise<JsonRpcRequest | null> {
+): Promise<Mcp.JsonRpcRequest | null> {
   const decoder = new TextDecoder();
 
   while (true) {
@@ -56,7 +56,7 @@ export async function readMessage(
       buffer.data = buffer.data.slice(totalNeeded);
 
       const json = decoder.decode(body);
-      return JSON.parse(json) as JsonRpcRequest;
+      return JSON.parse(json) as Mcp.JsonRpcRequest;
     }
 
     // Need more data
@@ -71,7 +71,7 @@ export async function readMessage(
  *
  * @param msg - The JSON-RPC response to send
  */
-export async function writeMessage(msg: JsonRpcResponse): Promise<void> {
+export async function writeMessage(msg: Mcp.JsonRpcResponse): Promise<void> {
   const encoder = new TextEncoder();
   const json = JSON.stringify(msg);
   const bodyBytes = encoder.encode(json);
@@ -121,4 +121,3 @@ function concatUint8Arrays(a: Uint8Array, b: Uint8Array): Uint8Array {
   result.set(b, a.length);
   return result;
 }
-

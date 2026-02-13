@@ -62,7 +62,7 @@ export interface ToolDefinition {
  * });
  * ```
  */
-export interface McpServeOptions<TCtx extends Ctx.AbstractBase = Ctx.AbstractBase> {
+export interface ServerOptions<TCtx extends Ctx.AbstractBase = Ctx.AbstractBase> {
   /** Factory to create a fresh root command for each tool call. Do not call init(). */
   // deno-lint-ignore no-explicit-any
   createCommand: (ctx: TCtx) => Cmd.AbstractBase<any, TCtx>;
@@ -91,7 +91,7 @@ export interface JsonRpcResponse {
 /**
  * Parameters for the tools/call MCP request.
  */
-export interface McpToolCallParams {
+export interface ToolCallParams {
   name: string;
   arguments?: Record<string, unknown>;
 }
@@ -99,7 +99,7 @@ export interface McpToolCallParams {
 /**
  * Content item in an MCP tool call result.
  */
-export interface McpTextContent {
+export interface TextContent {
   type: 'text';
   text: string;
 }
@@ -107,7 +107,7 @@ export interface McpTextContent {
 /**
  * Result returned from an MCP tool call.
  */
-export interface McpToolResult {
-  content: McpTextContent[];
+export interface ToolResult {
+  content: TextContent[];
   isError?: boolean;
 }

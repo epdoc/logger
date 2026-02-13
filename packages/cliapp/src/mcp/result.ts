@@ -8,7 +8,7 @@
  * @module
  */
 
-import type { McpTextContent } from './types.ts';
+import type * as Mcp from './types.ts';
 
 /**
  * Collects output intended for the MCP tool response.
@@ -27,7 +27,7 @@ import type { McpTextContent } from './types.ts';
  * ```
  */
 export class McpResultCollector {
-  #entries: McpTextContent[] = [];
+  #entries: Mcp.TextContent[] = [];
   #mode: 'buffer' | 'stdout';
 
   /**
@@ -75,7 +75,7 @@ export class McpResultCollector {
    *
    * @returns Array of MCP text content items
    */
-  getEntries(): McpTextContent[] {
+  getEntries(): Mcp.TextContent[] {
     return [...this.#entries];
   }
 

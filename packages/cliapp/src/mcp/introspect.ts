@@ -6,7 +6,7 @@
  */
 
 import type * as Commander from 'commander';
-import type { JsonSchema, JsonSchemaProperty, ToolDefinition } from './types.ts';
+import type * as Mcp from './types.ts';
 
 /**
  * Set of option attribute names that are internal cliapp logging controls.
@@ -36,8 +36,8 @@ const LOGGING_OPTIONS = new Set([
  * @param rootCmd - The initialized root Commander.Command to introspect
  * @returns Array of MCP tool definitions
  */
-export function extractToolDefinitions(rootCmd: Commander.Command): ToolDefinition[] {
-  const tools: ToolDefinition[] = [];
+export function extractToolDefinitions(rootCmd: Commander.Command): Mcp.ToolDefinition[] {
+  const tools: Mcp.ToolDefinition[] = [];
   walkCommands(rootCmd, [], tools);
   return tools;
 }
@@ -52,7 +52,7 @@ export function extractToolDefinitions(rootCmd: Commander.Command): ToolDefiniti
 function walkCommands(
   cmd: Commander.Command,
   path: string[],
-  tools: ToolDefinition[],
+  tools: Mcp.ToolDefinition[],
 ): void {
   const name = cmd.name();
   const currentPath = name ? [...path, name] : path;
@@ -91,8 +91,8 @@ function walkCommands(
 function buildInputSchema(
   cmd: Commander.Command,
   _isRoot: boolean,
-): { schema: JsonSchema; argumentNames: string[] } {
-  const properties: Record<string, JsonSchemaProperty> = {};
+): { schema: Mcp.JsonSchema; argumentNames: string[] } {
+  const properties: Record<string, Mcp.JsonSchemaProperty> = {};
   const required: string[] = [];
   const argumentNames: string[] = [];
 
@@ -108,7 +108,7 @@ function buildInputSchema(
     // Skip negated options (--no-*)
     if (opt.negate) continue;
 
-    const prop: JsonSchemaProperty = {
+    const prop: Mcp.JsonSchemaProperty = {
       type: inferOptionType(opt),
       description: opt.description,
     };
@@ -132,7 +132,7 @@ function buildInputSchema(
     const argName = arg.name();
     argumentNames.push(argName);
 
-    const prop: JsonSchemaProperty = {
+    const prop: Mcp.JsonSchemaProperty = {
       type: arg.variadic ? 'array' : 'string',
       description: arg.description,
     };
@@ -154,7 +154,7 @@ function buildInputSchema(
     }
   }
 
-  const schema: JsonSchema = { type: 'object', properties };
+  const schema: Mcp.JsonSchema = { type: 'object', properties };
   if (required.length > 0) {
     schema.required = required;
   }

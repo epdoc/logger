@@ -9,16 +9,6 @@
  */
 
 export { extractToolDefinitions } from './introspect.ts';
-export { McpResultCollector } from './result.ts';
-export { serve } from './serve.ts';
-export type {
-  JsonRpcRequest,
-  JsonRpcResponse,
-  JsonSchema,
-  JsonSchemaProperty,
-  McpServeOptions,
-  McpTextContent,
-  McpToolCallParams,
-  McpToolResult,
-  ToolDefinition,
-} from './types.ts';
+export { McpResultCollector as ResultCollector } from './result.ts';
+export { McpServer as Server } from './server.ts';
+export type * from './types.ts';
