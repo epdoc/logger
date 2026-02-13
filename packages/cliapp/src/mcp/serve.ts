@@ -2,6 +2,15 @@
  * @file MCP server entry point for cliapp-based applications
  * @description Launches a cliapp command tree as an MCP server, allowing
  * CLI commands to be invoked as MCP tools by AI assistants.
+ *
+ * The caller creates and configures the root context (including logging,
+ * transports, and thresholds) the same way they would for CLI mode. The
+ * serve function then:
+ * 1. Adds a BufferTransport (once) for capturing per-call output
+ * 2. Disables any ConsoleTransport (stdout is reserved for MCP protocol)
+ * 3. Introspects the command tree to build MCP tool definitions
+ * 4. For each tool call, creates a child context with unique reqId
+ *
  * @module
  */
 
@@ -28,78 +37,82 @@ import type {
  * becomes an MCP tool with its options and arguments exposed as the tool's
  * input schema.
  *
- * The server handles the full MCP lifecycle:
- * 1. Responds to `initialize` with server capabilities
- * 2. Responds to `tools/list` with tool definitions derived from the command tree
- * 3. Responds to `tools/call` by executing the corresponding command with a
- *    fresh context, capturing log output via {@link Log.Transport.Buffer.Transport}
+ * The caller configures the context the same way as for CLI mode. The serve
+ * function manages the MCP protocol, creating child contexts per tool call.
  *
- * @param opts - Configuration for the MCP server
- * @param opts.pkg - Package metadata (name, version) for the MCP server info
- * @param opts.createContext - Factory to create a fresh context per tool call
- * @param opts.createCommand - Factory to create a fresh root command per tool call
+ * @param ctx - Fully configured root context (with logging already set up)
+ * @param opts - MCP server options including the command factory
  *
  * @example
  * ```typescript
- * // mcp-main.ts
- * import * as CliApp from '@epdoc/cliapp';
- * import pkg from './deno.json' with { type: 'json' };
- * import * as App from './src/mod.ts';
- *
- * if (import.meta.main) {
- *   await CliApp.Mcp.serve({
- *     pkg,
- *     createContext: () => new App.Ctx.RootContext(pkg),
- *     createCommand: (ctx) => new App.Cmd.Root(ctx),
+ * // main.ts — single entry point for both CLI and MCP modes
+ * if (Deno.args.includes('--mcp')) {
+ *   const ctx = new App.Ctx.RootContext(pkg);
+ *   await ctx.setupLogging({ pkg: 'mcp' });
+ *   await CliApp.Mcp.serve(ctx, {
+ *     createCommand: (childCtx) => new App.Cmd.Root(childCtx),
  *   });
+ * } else {
+ *   const ctx = new App.Ctx.RootContext(pkg);
+ *   await ctx.setupLogging({ pkg: 'app' });
+ *   const rootCmd = new App.Cmd.Root(ctx);
+ *   await CliApp.run(ctx, rootCmd);
  * }
  * ```
  */
 export async function serve<TCtx extends Ctx.AbstractBase>(
+  ctx: TCtx,
   opts: McpServeOptions<TCtx>,
 ): Promise<void> {
-  // 1. Create a temporary instance to introspect the command tree for tool definitions
-  const introspectCtx = opts.createContext();
-  await introspectCtx.setupLogging('warn');
-  const introspectCmd = opts.createCommand(introspectCtx);
+  // 1. Disable any console transports — stdout is reserved for MCP protocol.
+  //    In the future, a ConsoleTransport configured for stderr would remain enabled.
+  for (const transport of ctx.logMgr.transportMgr.transports) {
+    if (transport.type === 'console') {
+      transport.setEnabled(false);
+    }
+  }
+
+  // 2. Add a BufferTransport (once) for capturing per-call output
+  const bufferTransport = new Log.Transport.Buffer.Transport(ctx.logMgr, { maxEntries: 10000 });
+  await ctx.logMgr.addTransport(bufferTransport);
+
+  // 3. Introspect the command tree for tool definitions using the root context
+  const introspectCmd = opts.createCommand(ctx);
   await introspectCmd.init();
   const tools = extractToolDefinitions(introspectCmd.commander);
-  await introspectCtx.close();
 
-  // Log server startup info to stderr (stdout is reserved for MCP protocol)
-  console.error(`[MCP] Server "${opts.pkg.name}" v${opts.pkg.version} starting`);
-  console.error(`[MCP] Registered ${tools.length} tool(s): ${tools.map((t) => t.name).join(', ')}`);
+  ctx.log.info.text(`MCP server starting`).emit();
+  ctx.log.info.text(`Registered ${tools.length} tool(s): ${tools.map((t) => t.name).join(', ')}`).emit();
 
-  // 2. Start the MCP protocol loop
+  // 4. Start the MCP protocol loop
   const reader = Deno.stdin.readable.getReader();
-  const buffer = { data: new Uint8Array(0) };
+  const readBuffer = { data: new Uint8Array(0) };
 
   while (true) {
-    const request = await readMessage(reader, buffer);
+    const request = await readMessage(reader, readBuffer);
     if (request === null) {
-      console.error('[MCP] stdin closed, shutting down');
+      ctx.log.info.text('stdin closed, shutting down').emit();
       break;
     }
 
-    const response = await handleRequest(request, opts, tools);
+    const response = await handleRequest(request, ctx, opts, tools, bufferTransport);
     if (response) {
       await writeMessage(response);
     }
   }
+
+  await ctx.close();
 }
 
 /**
  * Dispatches an incoming JSON-RPC request to the appropriate handler.
- *
- * @param request - The incoming JSON-RPC request
- * @param opts - Server configuration with context/command factories
- * @param tools - Pre-computed tool definitions from command introspection
- * @returns JSON-RPC response, or null for notifications
  */
 async function handleRequest<TCtx extends Ctx.AbstractBase>(
   request: JsonRpcRequest,
+  ctx: TCtx,
   opts: McpServeOptions<TCtx>,
   tools: ToolDefinition[],
+  bufferTransport: Log.Transport.Buffer.Transport,
 ): Promise<JsonRpcResponse | null> {
   // Notifications (no id) don't need responses
   if (request.id === undefined) {
@@ -113,7 +126,7 @@ async function handleRequest<TCtx extends Ctx.AbstractBase>(
       result: {
         protocolVersion: '2024-11-05',
         capabilities: { tools: {} },
-        serverInfo: { name: opts.pkg.name, version: opts.pkg.version },
+        serverInfo: { name: ctx.pkg.name, version: ctx.pkg.version },
       },
     };
   }
@@ -132,7 +145,7 @@ async function handleRequest<TCtx extends Ctx.AbstractBase>(
 
   if (request.method === 'tools/call') {
     const params = request.params as unknown as McpToolCallParams;
-    const result = await executeToolCall(params, opts, tools);
+    const result = await executeToolCall(params, ctx, opts, tools, bufferTransport);
     return { jsonrpc: '2.0', id: request.id, result };
   }
 
@@ -145,24 +158,21 @@ async function handleRequest<TCtx extends Ctx.AbstractBase>(
 }
 
 /**
- * Executes an MCP tool call by mapping it to the corresponding cliapp command.
+ * Executes an MCP tool call by creating a child context and running the command.
  *
  * For each tool call:
- * 1. Creates a fresh context with a unique reqId
- * 2. Configures logging with a BufferTransport to capture output
- * 3. Constructs synthetic CLI arguments from the MCP parameters
- * 4. Initializes and executes the command via Commander.js parseAsync
- * 5. Collects the captured log output as the tool result
- *
- * @param params - The MCP tool call parameters (tool name + arguments)
- * @param opts - Server configuration with context/command factories
- * @param tools - Tool definitions for validation
- * @returns MCP tool result with captured output
+ * 1. Clears the shared BufferTransport
+ * 2. Creates a child context from the root with a unique reqId
+ * 3. Attaches an McpResultCollector for explicit result output
+ * 4. Constructs synthetic CLI arguments and executes via Commander.js
+ * 5. Collects results from McpResultCollector or BufferTransport fallback
  */
 async function executeToolCall<TCtx extends Ctx.AbstractBase>(
   params: McpToolCallParams,
+  rootCtx: TCtx,
   opts: McpServeOptions<TCtx>,
   tools: ToolDefinition[],
+  bufferTransport: Log.Transport.Buffer.Transport,
 ): Promise<McpToolResult> {
   const tool = tools.find((t) => t.name === params.name);
   if (!tool) {
@@ -173,47 +183,46 @@ async function executeToolCall<TCtx extends Ctx.AbstractBase>(
   }
 
   const reqId = crypto.randomUUID().slice(0, 8);
-  console.error(`[MCP] Executing tool: ${params.name} (reqId: ${reqId})`);
 
   try {
-    // 1. Create fresh context and configure logging with BufferTransport
-    const ctx = opts.createContext();
-    const bufferTransport = new Log.Transport.Buffer.Transport(ctx.logMgr, { maxEntries: 10000 });
-    await ctx.logMgr.transportMgr.add(bufferTransport);
-    await ctx.setupLogging({ pkg: 'mcp', reqId });
+    // 1. Clear the buffer from any previous call
+    bufferTransport.clear();
 
-    // 2. Attach an McpResultCollector so commands can emit structured results
+    // 2. Create a child context with unique reqId (inherits logMgr + transports)
+    const childCtx = new (rootCtx.constructor as { new (parent: TCtx, params: Log.IGetChildParams): TCtx })(
+      rootCtx,
+      { pkg: params.name, reqId },
+    );
+
+    // 3. Attach McpResultCollector for explicit response output
     const resultCollector = new McpResultCollector('buffer');
-    ctx.mcpResult = resultCollector;
+    childCtx.mcpResult = resultCollector;
 
-    // 3. Create and initialize a fresh command tree
-    const rootCmd = opts.createCommand(ctx);
+    rootCtx.log.debug.text(`Executing tool: ${params.name}`).emit();
+
+    // 4. Create and initialize a fresh command tree with the child context
+    const rootCmd = opts.createCommand(childCtx);
     await rootCmd.init();
-
-    // 4. Prevent Commander.js from calling process.exit
     rootCmd.commander.exitOverride();
 
-    // 5. Construct synthetic argv from tool name and MCP arguments
-    const argv = buildSyntheticArgv(params, tool, opts.pkg.name);
+    // 5. Construct synthetic argv and execute
+    const argv = buildSyntheticArgv(params, tool, rootCtx.pkg.name);
 
-    // 6. Execute via Commander.js
     try {
       await rootCmd.commander.parseAsync(argv, { from: 'user' });
     } catch (err) {
-      // Commander throws on --help or exitOverride; capture as error
       const error = err as Error & { exitCode?: number };
       if (error.exitCode !== undefined && error.exitCode === 0) {
-        // Help output or version - not an error
+        // Help or version output — not an error
       } else {
         throw err;
       }
     }
 
-    // 7. Collect results — prefer explicit mcpResult content over log output
+    // 6. Collect results — prefer explicit mcpResult content over log output
     const content: McpTextContent[] = [];
 
     if (resultCollector.hasEntries) {
-      // Commands explicitly provided MCP result content
       content.push(...resultCollector.getEntries());
     } else {
       // Fall back to captured log output (for commands not yet MCP-aware)
@@ -222,7 +231,6 @@ async function executeToolCall<TCtx extends Ctx.AbstractBase>(
         content.push({ type: 'text', text: logText });
       }
 
-      // Include structured data from log entries if present
       const entries = bufferTransport.getEntries();
       const dataEntries: unknown[] = [];
       for (const entry of entries) {
@@ -235,18 +243,14 @@ async function executeToolCall<TCtx extends Ctx.AbstractBase>(
       }
     }
 
-    // Ensure we always return some content
     if (content.length === 0) {
       content.push({ type: 'text', text: 'Command completed successfully.' });
     }
 
-    // 8. Clean up
-    await ctx.close();
-
     return { content };
   } catch (err) {
     const error = err as Error;
-    console.error(`[MCP] Tool error: ${params.name} - ${error.message}`);
+    rootCtx.log.error.text(`Tool error: ${params.name}`).err(error).emit();
     return {
       content: [{ type: 'text', text: `Error executing ${params.name}: ${error.message}` }],
       isError: true,

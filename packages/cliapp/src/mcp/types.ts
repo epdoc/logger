@@ -4,8 +4,8 @@
  * @module
  */
 
-import type * as Ctx from '../context.ts';
 import type * as Cmd from '../cmd/mod.ts';
+import type * as Ctx from '../context.ts';
 
 /**
  * JSON Schema property definition used in MCP tool inputSchema.
@@ -46,23 +46,24 @@ export interface ToolDefinition {
 /**
  * Configuration for launching a cliapp-based MCP server.
  *
+ * The context is created and configured by the caller (same as CLI mode),
+ * giving full control over logging setup, transports, and thresholds.
+ * The serve function creates child contexts from this root for each tool call.
+ *
  * @template TCtx - The application context type
  *
  * @example
  * ```typescript
- * await CliApp.Mcp.serve({
- *   pkg,
- *   createContext: () => new App.Ctx.RootContext(pkg),
- *   createCommand: (ctx) => new App.Cmd.Root(ctx),
+ * const ctx = new App.Ctx.RootContext(pkg);
+ * await ctx.setupLogging({ pkg: 'mcp' });
+ *
+ * await CliApp.Mcp.serve(ctx, {
+ *   createCommand: (childCtx) => new App.Cmd.Root(childCtx),
  * });
  * ```
  */
 export interface McpServeOptions<TCtx extends Ctx.AbstractBase = Ctx.AbstractBase> {
-  /** Package metadata providing server name and version. */
-  pkg: { name: string; version: string };
-  /** Factory to create a fresh context for each tool call. Do not call setupLogging. */
-  createContext: () => TCtx;
-  /** Factory to create a fresh root command from a context. Do not call init(). */
+  /** Factory to create a fresh root command for each tool call. Do not call init(). */
   // deno-lint-ignore no-explicit-any
   createCommand: (ctx: TCtx) => Cmd.AbstractBase<any, TCtx>;
 }
