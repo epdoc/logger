@@ -38,7 +38,10 @@ while (true) {
         sepLength = 2;
         break;
       }
-      if (i < buffer.length - 3 && buffer[i] === 13 && buffer[i + 1] === 10 && buffer[i + 2] === 13 && buffer[i + 3] === 10) {
+      if (
+        i < buffer.length - 3 && buffer[i] === 13 && buffer[i + 1] === 10 && buffer[i + 2] === 13 &&
+        buffer[i + 3] === 10
+      ) {
         headerEnd = i;
         sepLength = 4;
         break;
@@ -72,8 +75,13 @@ while (true) {
 
   if (req.method === 'initialize') {
     await writeMsg({
-      jsonrpc: '2.0', id: req.id,
-      result: { protocolVersion: '2024-11-05', capabilities: { tools: {} }, serverInfo: { name: 'test', version: '0.1' } },
+      jsonrpc: '2.0',
+      id: req.id,
+      result: {
+        protocolVersion: '2024-11-05',
+        capabilities: { tools: {} },
+        serverInfo: { name: 'test', version: '0.1' },
+      },
     });
   } else if (req.method === 'ping') {
     await writeMsg({ jsonrpc: '2.0', id: req.id, result: {} });

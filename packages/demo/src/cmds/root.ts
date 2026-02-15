@@ -1,7 +1,7 @@
 import type * as CliApp from '@epdoc/cliapp';
 import * as Ctx from '../context.ts';
 import { ListCommand } from './list.ts';
-import { QueryCommand } from './process.ts';
+import { QueryCommand } from './query.ts';
 import { SubCommand } from './sub.ts';
 
 type RootCmdOpts = CliApp.CmdOptions & { happyMode?: boolean; name?: string };

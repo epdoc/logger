@@ -7,7 +7,8 @@
   "tasks": {
     "lint": "deno lint packages deno.json launch.config.json",
     "check": "deno check packages",
-    "test:demo": "cd packages/demo && deno test --allow-all"
+    "test:demo": "cd packages/demo && deno test --allow-all",
+    "docs": "deno doc --json packages/loglevels/src/mod.ts > packages/loglevels/library-docs.json && deno doc --json packages/msgbuilder/src/mod.ts > packages/msgbuilder/library-docs.json && deno doc --json packages/logger/src/mod.ts > packages/logger/library-docs.json && deno doc --json packages/cliapp/src/mod.ts > packages/cliapp/library-docs.json"
   },
   "workspace": [
     "./packages/loglevels",
