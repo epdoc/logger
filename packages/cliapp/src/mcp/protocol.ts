@@ -30,18 +30,21 @@ export async function readMessage(
 
   while (true) {
     // Look for the header/body separator in the buffer
-    const headerEnd = findHeaderEnd(buffer.data);
-    if (headerEnd >= 0) {
+    const headerInfo = findHeader(buffer.data);
+    if (headerInfo) {
+      const headerEnd = headerInfo.index;
+      const sepLength = headerInfo.length;
+
       // Parse the Content-Length header
       const headerStr = decoder.decode(buffer.data.slice(0, headerEnd));
       const contentLength = parseContentLength(headerStr);
       if (contentLength === null) {
         // Malformed header, skip to next message
-        buffer.data = buffer.data.slice(headerEnd + 4);
+        buffer.data = buffer.data.slice(headerEnd + sepLength);
         continue;
       }
 
-      const bodyStart = headerEnd + 4; // past \r\n\r\n
+      const bodyStart = headerEnd + sepLength;
       const totalNeeded = bodyStart + contentLength;
 
       // Read more data if we don't have the full body yet
@@ -88,17 +91,23 @@ export async function writeMessage(msg: Mcp.JsonRpcResponse): Promise<void> {
 }
 
 /**
- * Finds the position of the \r\n\r\n header separator in a Uint8Array.
+ * Finds the position and length of the header/body separator in a Uint8Array.
+ * Supports both \r\n\r\n and \n\n.
  *
- * @returns The index of the first \r in the separator, or -1 if not found
+ * @returns Object with index and length, or null if not found
  */
-function findHeaderEnd(data: Uint8Array): number {
-  for (let i = 0; i < data.length - 3; i++) {
-    if (data[i] === 13 && data[i + 1] === 10 && data[i + 2] === 13 && data[i + 3] === 10) {
-      return i;
+function findHeader(data: Uint8Array): { index: number; length: number } | null {
+  for (let i = 0; i < data.length - 1; i++) {
+    // Check for \n\n
+    if (data[i] === 10 && data[i + 1] === 10) {
+      return { index: i, length: 2 };
+    }
+    // Check for \r\n\r\n
+    if (i < data.length - 3 && data[i] === 13 && data[i + 1] === 10 && data[i + 2] === 13 && data[i + 3] === 10) {
+      return { index: i, length: 4 };
     }
   }
-  return -1;
+  return null;
 }
 
 /**

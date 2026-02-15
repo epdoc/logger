@@ -1,0 +1,47 @@
+{
+  "package": "@epdoc/cliapp",
+  "version": "2.0.0",
+  "purpose": "Type-safe CLI framework supporting commanderjs-base command hierarchies, with integrated logging, context flow, and MCP server support",
+  "quickStart": "class RootCmd extends CliApp.Cmd.Root<AppContext> {\n  async execute() {\n    this.info.text('Hello').emit();\n  }\n}\nawait CliApp.run(ctx, new RootCmd(ctx));",
+  "exampleFile": "../../packages/demo/main.ts",
+  "keyExports": [
+    "Cmd.Root - Root command base class",
+    "Cmd.AbstractBase - Base command with lifecycle hooks",
+    "Ctx.AbstractBase - Base context with logging",
+    "run() - Application runner with error handling",
+    "Mcp.McpServer - MCP server for exposing commands as tools",
+    "BaseClass - Convenience base with logging shortcuts"
+  ],
+  "dependencies": {
+    "internal": ["@epdoc/logger", "@epdoc/msgbuilder"],
+    "external": ["commander (npm)"]
+  },
+  "keyPatterns": [
+    {
+      "name": "Basic CLI command",
+      "file": "../../packages/demo/src/commands/query.ts",
+      "description": "Complete command with options and execution"
+    },
+    {
+      "name": "Child context per command",
+      "file": "../../packages/demo/src/commands/root.ts",
+      "lines": "25-30",
+      "description": "Creating child context with package name"
+    },
+    {
+      "name": "MCP server mode",
+      "file": "../../packages/demo/main-mcp.ts",
+      "lines": "8-15"
+    },
+    {
+      "name": "Logging shortcuts via BaseClass",
+      "file": "../../packages/demo/src/services/example-service.ts",
+      "description": "Using this.info, this.debug shortcuts"
+    }
+  ],
+  "architecture": {
+    "flow": "Command → createContext() → hydrateContext() → execute()",
+    "keyDesign": "Context flows from parent to child commands; MCP introspects command tree to generate tool definitions",
+    "mcpIntegration": "Leaf commands become MCP tools; options map to JSON Schema; synthetic argv constructed from tool arguments"
+  }
+}

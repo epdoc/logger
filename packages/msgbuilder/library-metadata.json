@@ -1,0 +1,44 @@
+{
+  "package": "@epdoc/msgbuilder",
+  "version": "2.0.0",
+  "purpose": "Fluent message builder for creating styled, structured log messages with chainable API",
+  "quickStart": "import { Console } from '@epdoc/msgbuilder';\nconst builder = new Console.Builder();\nbuilder.text('Hello').bold('World').emit();",
+  "exampleFile": "../../packages/examples/msgbuilder.01.run.ts",
+  "keyExports": [
+    "Console.Builder - Console message builder with ANSI color support",
+    "Console.extender - Create custom builders with additional methods",
+    "Abstract - Base message builder class",
+    "IEmitter - Interface for log emission",
+    "ConsoleEmitter - Simple console output emitter",
+    "TestEmitter - Testing emitter that captures output"
+  ],
+  "dependencies": {
+    "internal": [],
+    "external": ["@std/fmt/colors"]
+  },
+  "keyPatterns": [
+    {
+      "name": "Basic styled message",
+      "file": "../../packages/examples/msgbuilder.01.run.ts",
+      "lines": "8-10"
+    },
+    {
+      "name": "Conditional content",
+      "file": "../../packages/examples/msgbuilder.02.run.ts",
+      "lines": "12-15"
+    },
+    {
+      "name": "Custom builder with new methods",
+      "file": "../../packages/examples/msgbuilder.03.run.ts",
+      "lines": "5-20"
+    },
+    {
+      "name": "Standalone formatting (no logger)",
+      "file": "../../packages/examples/msgbuilder.04.run.ts",
+      "lines": "8-11"
+    }
+  ],
+  "architecture": {
+    "keyDesign": "Fluent builder pattern with optional IEmitter for integration with logging systems or standalone use"
+  }
+}

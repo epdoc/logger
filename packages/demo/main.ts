@@ -9,6 +9,7 @@ if (import.meta.main) {
     // MCP server mode — expose CLI commands as MCP tools over stdio. Redirects console log messages
     // to stderr to avoid interfering with the MCP JSON-RPC stream on stdout.
     const ctx = new App.Ctx.RootContext(pkg);
+    ctx.logMgr.initLevels();
     const consoleTransport = new Log.Transport.Console.Transport(ctx.logMgr, { color: false, useStderr: true });
     await ctx.logMgr.addTransport(consoleTransport);
     await ctx.setupLogging({ pkg: 'mcp' });

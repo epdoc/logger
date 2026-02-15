@@ -44,3 +44,6 @@ _test
 docs/
 .vscode/
 .claude/
+
+# Machine-generated API documentation (regenerate with: deno doc --json src/mod.ts > library-docs.json)
+library-docs.json
