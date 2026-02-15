@@ -18,30 +18,49 @@
   },
   "keyPatterns": [
     {
+      "name": "Basic main.ts structure",
+      "file": "../../packages/demo/main.ts",
+      "lines": "25-28",
+      "description": "Typical main.ts structure with context creation and app runner, including error handling and exit code management."
+    },
+    {
+      "name": "MCP server mode",
+      "file": "../../packages/demo/main.ts",
+      "lines": "8-22",
+      "description": "Adding MCP support by creating an McpServer instance and passing it to the app runner. This allows the CLI commands to be exposed as tools in an MCP environment."
+    },
+    {
+      "name": "Basic context setup",
+      "file": "../../packages/demo/src/context.ts",
+      "lines": "1-67",
+      "description": "This pattern can be used in a custom project context.ts file."
+    },
+    {
+      "name": "Declare aliases in context.ts to hide generics",
+      "file": "../../packages/demo/src/context.ts",
+      "lines": "85-94",
+      "description": "These declarations make writing commands and classes easier. If you only have a single context, use it twice."
+    },
+    {
+      "name": "Child context",
+      "file": "../../packages/demo/src/context.ts",
+      "lines": "72-83",
+      "description": "Creating child context with package name. Child context inherits logger and can have its own state."
+    },
+    {
       "name": "Basic CLI command",
       "file": "../../packages/demo/src/commands/query.ts",
       "description": "Complete command with options and execution"
     },
     {
-      "name": "Child context per command",
-      "file": "../../packages/demo/src/commands/root.ts",
-      "lines": "25-30",
-      "description": "Creating child context with package name"
-    },
-    {
-      "name": "MCP server mode",
-      "file": "../../packages/demo/main-mcp.ts",
-      "lines": "8-15"
-    },
-    {
-      "name": "Logging shortcuts via BaseClass",
-      "file": "../../packages/demo/src/services/example-service.ts",
-      "description": "Using this.info, this.debug shortcuts"
+      "name": "Declarative CLI command",
+      "file": "../../packages/demo-cliapp/src/declarative.ts",
+      "description": "Commands can also be defined declaratively with a schema. This is ideal for MCP tools, but can also be used in regular CLI apps."
     }
   ],
   "architecture": {
     "flow": "Command → createContext() → hydrateContext() → execute()",
-    "keyDesign": "Context flows from parent to child commands; MCP introspects command tree to generate tool definitions",
+    "keyDesign": "Context flows from parent to child commands, or just use a single Context definition; MCP introspects command tree to generate tool definitions",
     "mcpIntegration": "Leaf commands become MCP tools; options map to JSON Schema; synthetic argv constructed from tool arguments"
   }
 }
