@@ -10,15 +10,16 @@ import * as Commander from 'commander';
  *
  * @example
  * ```typescript
- * this.cmd
- *   .opt('-l --lines [num]', 'Number of lines')
+ * // Inside defineOptions() on a command:
+ * this.option('-l, --lines [num]', 'Number of lines')
  *   .default(10)
- *   .argParser(_.asInt)
- *   .done()
- *   .opt('--format <type>', 'Output format')
+ *   .argParser(parseInt)
+ *   .emit(); // registers the option and returns back to the command
+ *
+ * this.option('--format <type>', 'Output format')
  *   .choices(['json', 'yaml', 'table'])
  *   .default('table')
- *   .done();
+ *   .emit();
  * ```
  */
 export class FluentOptionBuilder<T> {

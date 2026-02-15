@@ -18,4 +18,10 @@ export interface Options extends Base.Options {
    * @default true
    */
   color?: boolean;
+  /**
+   * Whether to write output to stderr instead of stdout. This is necessary for some environments
+   * (like mcp) where stdout is not available.
+   * @default false
+   */
+  useStderr?: boolean;
 }

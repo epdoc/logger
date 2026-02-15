@@ -149,10 +149,24 @@ export function commaList(val: string): string[] {
   return val ? val.split(',') : [];
 }
 
+/**
+ * Parses a string argument as a floating-point number.
+ * Convenience wrapper for use as a Commander.js `argParser`.
+ *
+ * @param val - String value from the CLI
+ * @returns Parsed float
+ */
 export function asNumber(val: string): number {
   return _.asFloat(val);
 }
 
+/**
+ * Parses a string argument as an integer.
+ * Convenience wrapper for use as a Commander.js `argParser`.
+ *
+ * @param val - String value from the CLI
+ * @returns Parsed integer
+ */
 export function asInt(val: string): Integer {
   return _.asInt(val);
 }

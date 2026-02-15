@@ -9,6 +9,20 @@ export type MsgBuilder = Console.Builder;
 export type Logger = Log.Std.Logger<any>;
 
 /**
+ * Interface for the MCP result collector. Commands use this to emit structured
+ * output intended for the MCP tool response, separate from diagnostic logging.
+ *
+ * In CLI mode this property is typically undefined. In MCP mode it is set by
+ * the MCP server before command execution.
+ */
+export interface IMcpResult {
+  /** Emit a text result. */
+  text(value: string): this;
+  /** Emit structured data as JSON. */
+  data(value: unknown, indent?: number): this;
+}
+
+/**
  * Clean context interface - much simpler than the old complex system
  */
 export interface ICtx<M extends MsgBuilder, L extends Logger = Logger> {
@@ -22,6 +36,12 @@ export interface ICtx<M extends MsgBuilder, L extends Logger = Logger> {
   pkg: DenoPkg;
   /** Gracefully shut down the application and its logger. */
   close: () => Promise<void>;
+  /**
+   * Optional MCP result collector. When present (MCP mode), commands should use
+   * this to emit output intended as the tool response. When absent (CLI mode),
+   * commands output normally via logging or console.
+   */
+  mcpResult?: IMcpResult;
 }
 
 /**
@@ -53,7 +73,58 @@ const logMgr: Log.Mgr<MsgBuilder> = new Log.Mgr<MsgBuilder>().initLevels();
 logMgr.threshold = 'info';
 
 /**
- * Abstract class for the application context.
+ * Abstract base class for all application contexts.
+ *
+ * The context is the central state object passed through the entire command tree. It holds the
+ * logger, log manager, dry-run flag, and any application-specific state.
+ *
+ * There are two construction modes:
+ * - **Root context**: Pass a `DenoPkg` object. You must call {@link setupLogging} before using the
+ *   logger or calling {@link run}.
+ * - **Child context**: Pass a parent `AbstractBase` instance. Logging is inherited from the parent
+ *   automatically. Call {@link copyProperties} in the subclass constructor to copy custom fields.
+ *
+ * @template M - Message builder type (defaults to `Console.Builder`)
+ * @template L - Logger type (defaults to `Std.Logger<Console.Builder>`)
+ *
+ * @example Root context with default MsgBuilder
+ * ```typescript
+ * class AppContext extends CliApp.Ctx.AbstractBase {
+ *   configFile?: string;
+ * }
+ * const ctx = new AppContext(pkg);
+ * await ctx.setupLogging({ pkg: 'app' });
+ * ```
+ *
+ * @example Root context with custom MsgBuilder
+ * ```typescript
+ * class AppBuilder extends Console.Builder {
+ *   fileOp(op: string, path: string) { return this.label(op).value(path); }
+ * }
+ * type AppLogger = Log.Std.Logger<AppBuilder>;
+ *
+ * class AppContext extends CliApp.Ctx.AbstractBase<AppBuilder, AppLogger> {
+ *   protected override builderClass = AppBuilder;
+ * }
+ * const ctx = new AppContext(pkg);
+ * await ctx.setupLogging({ pkg: 'app' });
+ * ```
+ *
+ * @example Child context (per-subcommand isolation)
+ * ```typescript
+ * class ChildContext extends AppContext {
+ *   processedFiles = 0;
+ *
+ *   constructor(parent: AppContext, params?: Log.IGetChildParams) {
+ *     super(parent, params);
+ *     this.copyProperties(parent); // copy custom fields after super()
+ *   }
+ * }
+ * // In a subcommand's createContext():
+ * override createContext(parent?: AppContext): ChildContext {
+ *   return new ChildContext(parent!, { pkg: 'process' });
+ * }
+ * ```
  *
  * NOTE ON GENERICS AND VARIANCE:
  * TypeScript's Log.Std.Logger is invariant in its message builder type.
@@ -71,6 +142,7 @@ export abstract class AbstractBase<
   logMgr: Log.Mgr<M>;
   dryRun = false;
   pkg: DenoPkg;
+  mcpResult?: IMcpResult;
 
   /**
    * Optional builder class that can be specified by subclasses to automatically
@@ -124,10 +196,24 @@ export abstract class AbstractBase<
   }
 
   /**
-   * Setup logging for root context. This separate step is necessary because getLogger() may block
-   * with some transports. Call this method after constructing a root context.
-   * @param [levelOrParams='info'] - Log level string or params object
-   * @param [params] - [Root contexts only] This is where you set pkg, reqId or sid for a root context
+   * Initializes logging for the root context.
+   *
+   * Must be called after constructing a root context and before calling {@link run} or accessing
+   * `this.log`. This step is separate from the constructor because `getLogger()` is async (some
+   * transports require async initialization).
+   *
+   * Has no effect when called on a child context — logging is inherited from the parent.
+   *
+   * @param [levelOrParams='info'] - Initial log level threshold (e.g. `'info'`, `'debug'`), or a
+   *   params object if you want to set `pkg`, `reqId`, or `sid` without changing the default level.
+   * @param [params] - Context params (`pkg`, `reqId`, `sid`) when `levelOrParams` is a string.
+   *
+   * @example
+   * ```typescript
+   * const ctx = new AppContext(pkg);
+   * await ctx.setupLogging({ pkg: 'app' });          // default 'info' level
+   * await ctx.setupLogging('debug', { pkg: 'app' }); // explicit level + pkg
+   * ```
    */
   async setupLogging(
     levelOrParams: string | Log.IGetChildParams = 'info',

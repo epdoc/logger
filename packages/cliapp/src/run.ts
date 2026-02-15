@@ -11,27 +11,29 @@ import type * as Ctx from './context.ts';
 import type { ISilentError } from './types.ts';
 
 /**
- * Runs a CLI application with comprehensive lifecycle management
+ * Runs a CLI application with comprehensive lifecycle management.
  *
- * Provides production-ready application wrapper that handles:
- * - SIGINT (Ctrl-C) signal handling for graceful shutdown
- * - Error handling with appropriate logging and exit codes
- * - Resource cleanup via ctx.close()
- * - Performance timing and reporting
- * - Stack trace management based on log level
- * - Silent error handling for user-friendly messages
+ * This overload accepts an async function as the application entry point. Use the
+ * command-based overload (below) for the common case of passing a root command directly.
+ *
+ * Handles:
+ * - SIGINT (Ctrl-C) signal for graceful shutdown
+ * - Error logging with stack traces (shown at debug level, suppressed otherwise)
+ * - {@link ISilentError} for user-friendly messages without stack traces
+ * - `ctx.close()` for resource cleanup in all exit paths
+ * - `Deno.exit()` with the appropriate exit code
  *
  * @param ctx - Application context for logging and resource management
- * @param appFn - Main application function to execute
- * @param options - Configuration options for the runner
- * @param options.noExit - If true, don't call Deno.exit() (useful for testing)
+ * @param appFn - Async function containing the application logic
+ * @param options - Configuration options
+ * @param [options.noExit] - If `true`, suppress `Deno.exit()`. Useful in tests.
  *
  * @example
  * ```typescript
  * await run(ctx, async () => {
- *   const cmd = new Command(pkg);
- *   await cmd.init(ctx);
- *   await cmd.parseAsync();
+ *   const cmd = new RootCommand(ctx);
+ *   await cmd.init();
+ *   await cmd.commander.parseAsync();
  * });
  * ```
  */

@@ -1,0 +1,30 @@
+{
+  "package": "@epdoc/loglevels",
+  "version": "2.0.0",
+  "purpose": "Log level definitions and management for structured logging systems",
+  "quickStart": "import { StdLevels } from '@epdoc/loglevels';\nconst levels = new StdLevels();\nconst infoValue = levels.toValue('INFO');",
+  "exampleFile": null,
+  "keyExports": [
+    "StdLevels - Standard log levels (FATAL, ERROR, WARN, INFO, DEBUG, TRACE, SPAM)",
+    "Level.IBasic - Interface for level systems",
+    "Level.Name - Type for level names",
+    "Level.Value - Type for level numeric values"
+  ],
+  "dependencies": {
+    "internal": [],
+    "external": []
+  },
+  "keyPatterns": [
+    {
+      "name": "Check if level meets threshold",
+      "description": "Compare log levels numerically"
+    },
+    {
+      "name": "Convert between name and value",
+      "description": "Map level names to numeric values and back"
+    }
+  ],
+  "architecture": {
+    "keyDesign": "Provides numeric values for log levels enabling efficient threshold comparisons"
+  }
+}

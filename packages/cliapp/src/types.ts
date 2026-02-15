@@ -69,9 +69,24 @@ export interface ISilentError extends Error {
   silent: boolean;
 }
 
+/**
+ * Constructor parameters for {@link Cmd.AbstractBase}.
+ *
+ * @example
+ * ```typescript
+ * // Root command with dry-run support
+ * super(ctx, { ...pkg, root: true, dryRun: true });
+ *
+ * // Subcommand
+ * super(undefined, { name: 'process', description: 'Process files' });
+ * ```
+ */
 export type CmdParams = Partial<CmdMetadata> & {
+  /** Set `true` on the root command to enable logging options and the version flag. */
   root?: boolean;
+  /** Set `true` to include a `--dry-run` / `-n` option on the root command. */
   dryRun?: boolean;
+  /** Aliases for this command (subcommands only). */
   aliases?: string[];
 };
 

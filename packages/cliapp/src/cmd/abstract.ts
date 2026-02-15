@@ -205,64 +205,120 @@ export abstract class AbstractCommand<
   /**
    * Override to define command-specific options and arguments.
    *
-   * Called during {@link init} using the {@link commander} instance.
+   * Called during {@link init}. Use `this.commander` to call Commander.js methods directly,
+   * or use the fluent `this.option()` / `this.argument()` helpers for cleaner chaining.
    *
-   * **Available contexts**: `grandparentContext`, `parentContext` (root only)
+   * **Available contexts**: `grandpaContext`, `parentContext` (root commands only)
    *
-   * @example
+   * @example Using fluent helpers
    * ```typescript
-   * override async defineOptions() {
-   *   this.option('-f, --file <path>', 'Path to file').default(".").emit();
+   * override defineOptions() {
+   *   this.option('-f, --file <path>', 'Path to input file')
+   *     .default('.')
+   *     .emit();
+   *   this.argument('[files...]', 'Files to process').emit();
    * }
    * ```
+   *
+   * @example Using Commander.js directly
+   * ```typescript
+   * override defineOptions() {
+   *   this.commander.option('--format <type>', 'Output format');
+   *   this.commander.argument('[files...]', 'Files to process');
+   * }
+   * ```
+   *
+   * @see example.01.test.ts, example.02.test.ts for complete working examples
    */
   defineOptions(): void | Promise<void> {}
 
   /**
-   * Create a context instance for this command level.
+   * Create or select the context instance for this command.
    *
-   * Called during the preAction hook. For root commands, `parent` will be
-   * undefined. Subcommands receive the hydrated parent context.
+   * Called during the preAction hook. For root commands, `parent` will be `undefined` on the first
+   * call (the root command's context is the one constructed before `run()`). For subcommands,
+   * `parent` is the hydrated context from the parent command.
    *
-   * By default, this returns the parent context as-is. Override this method
-   * to create a child context using `parent.getChild()` when you need context
-   * isolation or want to add command-specific tracking (pkg, reqId, sid).
+   * **Common patterns:**
+   * - **Reuse parent context** (most subcommands): `return parent!;`
+   * - **Create a child context** (when isolation is needed): `return new ChildContext(parent!, { pkg: 'name' });`
    *
-   * **Available contexts**: `grandparentContext`, `parentContext`
+   * The default implementation returns the parent as-is, which is correct for subcommands that
+   * share context with their parent.
    *
-   * @param parent - The parent context instance.
+   * **Available contexts**: `grandpaContext`, `parentContext`
    *
-   * @example
+   * @param parent - The parent command's hydrated context, or `undefined` for root commands.
+   *
+   * @example Reuse parent context
    * ```typescript
-   * // Reuse parent context (default behavior)
    * override createContext(parent?: AppContext): AppContext {
    *   return parent ?? this.parentContext!;
    * }
+   * ```
    *
-   * // Create child context with automatic pkg from command name
-   * override createContext(parent?: AppContext): AppContext {
-   *   if (!parent) return this.parentContext!;
-   *   return parent.getChild({ pkg: this.params.name });
+   * @example Create an isolated child context
+   * ```typescript
+   * override createContext(parent?: AppContext): ChildContext {
+   *   if (!parent) throw new Error('SubCommand requires parent context');
+   *   return new ChildContext(parent, { pkg: this.params.name });
    * }
    * ```
+   *
+   * @see example.01.test.ts for a complete example with child context isolation
    */
   createContext(parent?: TParentContext): TContext | Promise<TContext> {
     return parent as TContext;
   }
 
   /**
-   * Update the context with parsed command-line options.
+   * Apply parsed command-line options to the context.
    *
-   * Called during the preAction hook after {@link createContext}.
+   * Called during the preAction hook immediately after {@link createContext}. Use this method to
+   * transfer CLI option values onto the context so that `execute()` and any downstream subcommands
+   * can read them from `ctx` instead of re-parsing the raw options.
    *
-   * **Available contexts**: `grandparentContext`, `parentContext`, `ctx`
+   * **Available contexts**: `grandpaContext`, `parentContext`, `ctx`
+   *
+   * @param _options - Parsed options for this command
+   * @param _args - Positional arguments for this command
+   *
+   * @example
+   * ```typescript
+   * override hydrateContext(opts: RootOptions): void {
+   *   if (opts.dryRun) this.ctx.dryRun = true;
+   *   if (opts.quiet)  this.ctx.logMgr.threshold = 'error';
+   * }
+   * ```
    */
   hydrateContext(_options: TOpts, _args: CliApp.CmdArgs): void {}
 
   /**
-   * Primary command logic implementation.
+   * Primary command logic. Override to implement what this command does.
    *
-   * **Available contexts**: `grandparentContext`, `parentContext`, `ctx`
+   * Called after `createContext()` and `hydrateContext()` have run. All three context properties
+   * (`grandpaContext`, `parentContext`, `ctx`) are available. Access the logger via `this.ctx.log`
+   * or the convenience getter `this.log`.
+   *
+   * The default implementation calls `this.commander.help()`, which is appropriate for root
+   * commands that do nothing when invoked without a subcommand.
+   *
+   * **Available contexts**: `grandpaContext`, `parentContext`, `ctx`
+   *
+   * @param _opts - Parsed options for this command
+   * @param _args - Positional arguments for this command
+   *
+   * @example
+   * ```typescript
+   * override execute(opts: ProcessOptions, args: CliApp.CmdArgs): void {
+   *   this.ctx.log.info.h1('Processing').count(args.length).text('files').emit();
+   *   for (const file of args) {
+   *     // process each file...
+   *   }
+   * }
+   * ```
+   *
+   * @see example.01.test.ts, example.02.test.ts for complete working examples
    */
   execute(_opts: TOpts, _args: CliApp.CmdArgs): void | Promise<void> {
     this.commander.help();

@@ -1,0 +1,45 @@
+{
+  "package": "@epdoc/logger",
+  "version": "2.0.0",
+  "purpose": "Core logging infrastructure with transports, message builders, and hierarchical context tracking",
+  "quickStart": "const logMgr = new Log.Mgr();\nconst logger = await logMgr.getLogger();\nlogger.info.text('Hello').emit();",
+  "exampleFile": "../../packages/examples/logger.01.run.ts",
+  "keyExports": [
+    "Mgr - Central logging manager",
+    "Std.Logger - Standard logger with level methods (fatal, error, warn, info, debug, trace, spam)",
+    "Transport.Console - Console output transport",
+    "Transport.File - File output transport",
+    "Transport.Buffer - In-memory buffer for testing",
+    "Emitter - Direct transport emitter (internal)"
+  ],
+  "dependencies": {
+    "internal": ["@epdoc/msgbuilder", "@epdoc/loglevels"],
+    "external": ["@std/assert"]
+  },
+  "keyPatterns": [
+    {
+      "name": "Basic setup",
+      "file": "../../packages/examples/logger.01.run.ts",
+      "lines": "10-12"
+    },
+    {
+      "name": "Child logger with context",
+      "file": "../../packages/examples/logger.02.run.ts",
+      "lines": "15-17"
+    },
+    {
+      "name": "Performance timing",
+      "file": "../../packages/examples/logger.03.run.ts",
+      "lines": "20-23"
+    },
+    {
+      "name": "Custom message builder",
+      "file": "../../packages/examples/logger.04.run.ts",
+      "lines": "8-10"
+    }
+  ],
+  "architecture": {
+    "flow": "Logger → Emitter → TransportMgr → Transport(s)",
+    "keyDesign": "Emitter provides direct Logger-to-Transport communication, bypassing LogMgr for performance"
+  }
+}

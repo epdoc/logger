@@ -7,6 +7,7 @@
 export * from './base.ts';
 export * as Cmd from './cmd/mod.ts';
 export * as Ctx from './context.ts';
+export * as Mcp from './mcp/mod.ts';
 export { FluentOptionBuilder } from './option.ts';
 export * from './pkg-type.ts';
 export { run } from './run.ts';
