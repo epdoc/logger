@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.0.13] - 2026-02-16
+
+- updated dependencies
+
 ## [0.0.12] - 2026-02-15
 
 - Renamed process.ts to query.ts
