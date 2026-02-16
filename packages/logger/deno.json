@@ -11,6 +11,9 @@
     "test": "deno test -A",
     "lint": "deno lint",
     "check": "deno check src test",
+    "docs": "deno doc --json src/mod.ts > library-docs.json",
+    "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs",
+
     "publish": "deno publish"
   },
   "exports": "./src/mod.ts",

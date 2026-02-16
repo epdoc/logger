@@ -71,6 +71,7 @@ export const enable = {
   error: set.redText, // Changed from bold + brightRed to just red
   success: set.brightGreenText, // bright green for success
   strikethru: set.inverse,
+  dim: set.grayText, // gray for dimmed text
   _reqId: set.brightYellowText,
   _sid: set.underline + set.brightYellowText,
   _package: set.brightGreenText,
@@ -100,6 +101,7 @@ export const disable = {
   error: reset.fg, // Changed from fg + bold to just fg
   success: reset.fg,
   strikethru: reset.inverse,
+  dim: reset.fg,
   _reqId: reset.fg,
   _sid: reset.fg + reset.underline,
   _package: reset.fg,

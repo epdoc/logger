@@ -1,10 +1,10 @@
 import { _, type Integer } from '@epdoc/type';
-import os from 'node:os'; // Used for homedir in `relative`
+import os from 'node:os';
 import { relative } from 'node:path';
 import { AbstractMsgBuilder } from '../abstract.ts';
 import type * as MsgBuilder from '../types.ts';
 import { consoleStyleFormatters } from './const.ts';
-import type { IConsoleErrOpts, IConsoleMsgBuilder } from './types.ts';
+import type { ConsoleStyleMap, IConsoleErrOpts, IConsoleMsgBuilder } from './types.ts';
 
 const home = os.userInfo().homedir;
 
@@ -12,11 +12,32 @@ const home = os.userInfo().homedir;
  * A message builder for creating styled console messages.
  *
  * @remarks
- * This class extends {@link Base.Builder} to provide a fluent interface for
- * building complex, styled log messages. It supports various formatting
- * options, including headers, labels, values, and error messages.
+ * This class extends {@link AbstractMsgBuilder} to provide a fluent interface
+ * for building complex, styled log messages. It supports various formatting
+ * options including headers, labels, values, paths, icons, and error messages.
  *
- * @example <caption>Basic Logging</caption>
+ * ### Theming
+ *
+ * The active style map is held on the static `styleFormatters` property and
+ * defaults to {@link consoleStyleFormatters}. You can swap themes globally or
+ * per subclass:
+ *
+ * ```ts
+ * // Global theme change
+ * import { Console } from '@epdoc/msgbuilder';
+ * Console.Builder.styleFormatters = Console.styleFormattersV2;
+ *
+ * // Per-subclass theme
+ * class MyBuilder extends Console.Builder {
+ *   static override styleFormatters = Console.styleFormattersV1;
+ * }
+ * ```
+ *
+ * Individual builder methods always read from `this.styles`, which resolves to
+ * the class-level `styleFormatters` — so a subclass override is automatically
+ * respected without overriding any methods.
+ *
+ * @example <caption>Basic logging</caption>
  * ```ts
  * import { Log } from '@epdoc/logger';
  *
@@ -24,184 +45,314 @@ const home = os.userInfo().homedir;
  * log.info.h1('Hello').text('World').emit();
  * ```
  *
- * @example <caption>Standalone Usage</caption>
+ * @example <caption>Standalone usage</caption>
  * ```ts
- * import { ConsoleMsgBuilder } from '@epdoc/logger/message/console';
+ * import { Console } from '@epdoc/msgbuilder';
  *
- * const builder = new ConsoleMsgBuilder();
- * const formattedString = builder.h1('Standalone').value(123).format(false);
- * // formattedString is "Standalone 123"
+ * const builder = new Console.Builder();
+ * const str = builder.h1('Standalone').value(123).format({ color: false });
+ * // str === 'Standalone 123'
  * ```
  */
 export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsgBuilder {
   /**
-   * A map of style formatters for different message parts.
+   * The active style map for this class.
+   *
+   * Assign a different {@link ConsoleStyleMap} here to change the theme for
+   * all instances of this class (or its subclasses, unless they declare their
+   * own `static styleFormatters`).
+   *
+   * @example
+   * ```ts
+   * import { Console } from '@epdoc/msgbuilder';
+   * Console.Builder.styleFormatters = Console.styleFormattersV2;
+   * ```
    */
-  static readonly styleFormatters = consoleStyleFormatters;
-  protected _nextPartPluralize: boolean | undefined; // true for plural, false for singular, undefined for no effect
+  static styleFormatters: ConsoleStyleMap = consoleStyleFormatters;
+
+  protected _nextPartPluralize: boolean | undefined;
 
   /**
-   * Returns the style formatter for elapsed time display.
-   * @returns {MsgBuilder.StyleFormatterFn} The elapsed time style formatter.
+   * Returns the style map for the current class.
+   *
+   * Reading via `this.constructor` ensures subclasses that declare their own
+   * `static styleFormatters` use their own theme without overriding any
+   * instance methods.
    */
-  protected override getElapsedTimeStyle(): MsgBuilder.StyleFormatterFn {
-    return consoleStyleFormatters._elapsed;
+  protected get styles(): ConsoleStyleMap {
+    return (this.constructor as typeof ConsoleMsgBuilder).styleFormatters;
   }
 
   /**
-   * Factory method for creating a new `ConsoleMsgBuilder` instance.
-   *
-   * @param {Level.Name} [level] - The log level.
-   * @param {Logger.Base.IEmitter} [emitter] - The log emitter. If not provided, the builder runs in standalone mode.
-   * @param {boolean} [meetsThreshold=true] - Whether the log level meets the threshold.
-   * @returns {ConsoleMsgBuilder} A new `ConsoleMsgBuilder` instance.
+   * Returns the style formatter used for elapsed-time display.
+   * @returns {MsgBuilder.StyleFormatterFn} The dim style formatter.
+   */
+  protected override getElapsedTimeStyle(): MsgBuilder.StyleFormatterFn {
+    return this.styles.dim;
+  }
+
+  /**
+   * Factory method for creating a new {@link ConsoleMsgBuilder} instance.
+   * @param {MsgBuilder.IEmitter} emitter - The log emitter.
+   * @returns {ConsoleMsgBuilder} A new instance.
    */
   static create(emitter: MsgBuilder.IEmitter): ConsoleMsgBuilder {
     return new ConsoleMsgBuilder(emitter);
   }
 
+  // ─── Text hierarchy ────────────────────────────────────────────────────────
+
   /**
-   * Appends styled text to the message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
+   * Appends styled body text to the message.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
    */
   public text(...args: MsgBuilder.StyleArg[]): this {
     const processedArgs = this._applyPluralization(args);
-    return this.stylize(consoleStyleFormatters.text, ...processedArgs);
+    return this.stylize(this.styles.text, ...processedArgs);
   }
 
   /**
    * Appends a top-level heading (h1) to the message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
    */
   public h1(...args: MsgBuilder.StyleArg[]): this {
     const processedArgs = this._applyPluralization(args);
-    return this.stylize(consoleStyleFormatters.h1, ...processedArgs);
+    return this.stylize(this.styles.h1, ...processedArgs);
   }
 
   /**
    * Appends a secondary heading (h2) to the message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
    */
   public h2(...args: MsgBuilder.StyleArg[]): this {
     const processedArgs = this._applyPluralization(args);
-    return this.stylize(consoleStyleFormatters.h2, ...processedArgs);
+    return this.stylize(this.styles.h2, ...processedArgs);
   }
 
   /**
    * Appends a tertiary heading (h3) to the message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
    */
   public h3(...args: MsgBuilder.StyleArg[]): this {
     const processedArgs = this._applyPluralization(args);
-    return this.stylize(consoleStyleFormatters.h3, ...processedArgs);
+    return this.stylize(this.styles.h3, ...processedArgs);
   }
 
+  // ─── Semantic styles ───────────────────────────────────────────────────────
+
   /**
-   * Appends an action-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
+   * Appends an action-styled message (e.g. a verb or command).
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
    */
   public action(...args: MsgBuilder.StyleArg[]): this {
-    // Action is not typically pluralized based on a count, so no _applyPluralization here.
-    return this.stylize(consoleStyleFormatters.action, ...args);
+    return this.stylize(this.styles.action, ...args);
   }
 
   /**
-   * Sets a flag for the next chained method to apply pluralization logic, and outputs the provided
-   * number with 'value' styling.
-   *
-   * If the next chained method has one string parameter, an 's' will be added to the parameter to
-   * pluralize. If the next chained method has two parameters, the first should be the singular
-   * string, and the second the plural string.
-   * @param {Integer} num - The number to display and use for pluralization determination.
-   * @returns {this} The current instance for method chaining.
-   * @example
-   * ```ts
-   * log.info.text('Found').count(activities.length).text('activity', 'activities').emit();
-   * ```
-   */
-  public count(num: Integer): this {
-    // First, output the number itself using the base stylize method.
-    // This ensures the number itself is not subject to pluralization logic.
-    super.stylize(consoleStyleFormatters.value, num);
-
-    // Now, set the flag for the *next* chained method.
-    this._nextPartPluralize = _.isInteger(num) ? num !== 1 : undefined;
-    return this;
-  }
-
-  /**
-   * Appends a label-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
+   * Appends a label-styled message (e.g. a key name).
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
    */
   public label(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(consoleStyleFormatters.label, ...args);
+    return this.stylize(this.styles.label, ...args);
   }
 
   /**
-   * Appends a highlighted message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
+   * Appends a highlighted (emphasized) message.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
    */
   public highlight(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(consoleStyleFormatters.highlight, ...args);
+    return this.stylize(this.styles.highlight, ...args);
   }
 
   /**
    * Appends a value-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
    */
   public value(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(consoleStyleFormatters.value, ...args);
+    return this.stylize(this.styles.value, ...args);
   }
 
   /**
-   * Appends a path-styled message. Use for displaying file paths or filenames.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
+   * Appends a dimmed (de-emphasized) message. Useful for secondary or
+   * supplementary information.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
+   */
+  public dim(...args: MsgBuilder.StyleArg[]): this {
+    return this.stylize(this.styles.dim, ...args);
+  }
+
+  // ─── Navigation / references ───────────────────────────────────────────────
+
+  /**
+   * Appends a path-styled message. Use for file paths or filenames.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
    */
   public path(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(consoleStyleFormatters.path, ...args);
-  }
-
-  public url(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(consoleStyleFormatters.url, ...args);
+    return this.stylize(this.styles.path, ...args);
   }
 
   /**
-   * Appends a styled file or folder path, displaying the path relative to the
-   * user's home directory. Use for displaying file paths or filenames.
-   * @param {string} path - The path to be stylized.
-   * @returns {this} The current instance for method chaining.
+   * Appends a URL-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
+   */
+  public url(...args: MsgBuilder.StyleArg[]): this {
+    return this.stylize(this.styles.url, ...args);
+  }
+
+  /**
+   * Appends a file path relative to the user's home directory.
+   * @param {string} path - The absolute path to display as a relative path.
+   * @returns {this}
    */
   relative(path: string): this {
     const s = '~/' + relative(home, path);
     return this.path(s);
   }
 
+  // ─── Data types ────────────────────────────────────────────────────────────
+
   /**
    * Appends a date-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
    */
   public date(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(consoleStyleFormatters.date, ...args);
-  }
-
-  public code(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(consoleStyleFormatters.code, ...args);
+    return this.stylize(this.styles.date, ...args);
   }
 
   /**
-   * Appends a section divider with an optional title.
-   * @param {string} [str=''] - The title of the section.
-   * @returns {this} The current instance for method chaining.
+   * Appends a code-styled message. Use for inline code snippets or identifiers.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
+   */
+  public code(...args: MsgBuilder.StyleArg[]): this {
+    return this.stylize(this.styles.code, ...args);
+  }
+
+  // ─── Status ────────────────────────────────────────────────────────────────
+
+  /**
+   * Appends a warning-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
+   */
+  public warn(...args: MsgBuilder.StyleArg[]): this {
+    return this._allow ? this.stylize(this.styles.warn, ...args) : this;
+  }
+
+  /**
+   * Appends an error-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
+   */
+  public error(...args: MsgBuilder.StyleArg[]): this {
+    return this._allow ? this.stylize(this.styles.error, ...args) : this;
+  }
+
+  /**
+   * Appends a success-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
+   */
+  public success(...args: MsgBuilder.StyleArg[]): this {
+    return this._allow ? this.stylize(this.styles.success, ...args) : this;
+  }
+
+  /**
+   * Appends a strikethrough-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args
+   * @returns {this}
+   */
+  public strikethru(...args: MsgBuilder.StyleArg[]): this {
+    return this._allow ? this.stylize(this.styles.strikethru, ...args) : this;
+  }
+
+  // ─── Icon methods ──────────────────────────────────────────────────────────
+
+  /**
+   * Appends a checkmark icon (✓). Defaults to `success` style.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   */
+  public icheck(color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.success, '✓');
+  }
+
+  /**
+   * Appends a warning icon (⚠). Defaults to `warn` style.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   */
+  public ialert(color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.warn, '⚠');
+  }
+
+  /**
+   * Appends a cross icon (✗). Defaults to `error` style.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   */
+  public ierror(color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.error, '✗');
+  }
+
+  /**
+   * Appends a right-arrow icon (→). Defaults to `value` style.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   */
+  public iarrow(color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.value, '→');
+  }
+
+  /**
+   * Appends a star icon (★). Defaults to `highlight` style.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   */
+  public istar(color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.highlight, '★');
+  }
+
+  // ─── Composite helpers ─────────────────────────────────────────────────────
+
+  /**
+   * Sets a pluralization flag for the next chained method and outputs the
+   * provided number with `value` styling.
+   *
+   * If the next chained method receives one string argument, an `'s'` suffix
+   * is added when `num !== 1`. If it receives two string arguments, the first
+   * is used for singular and the second for plural.
+   *
+   * @param {Integer} num - The number to display.
+   * @returns {this}
+   *
+   * @example
+   * ```ts
+   * log.info.text('Found').count(activities.length).text('activity', 'activities').emit();
+   * ```
+   */
+  public count(num: Integer): this {
+    super.stylize(this.styles.value, num);
+    this._nextPartPluralize = _.isInteger(num) ? num !== 1 : undefined;
+    return this;
+  }
+
+  /**
+   * Appends a horizontal section divider with an optional title.
+   * @param {string} [str] - The section title.
+   * @returns {this}
    */
   public section(str?: string): this {
     if (!this._allow) return this;
@@ -216,15 +367,15 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   /**
    * Appends a formatted error message.
    *
-   * If the provided `error` is not an `Error` object, it will be converted to one.
+   * If `error` is not an `Error` instance it will be coerced into one.
    *
-   * @param {unknown} error - The error object or value to be logged.
-   * @param {IConsoleErrOpts} [opts={}] - Options for formatting the error message.
-   * @param {boolean} [opts.code=false] - Whether to include the error code if available.
-   * @param {boolean} [opts.cause=true] - Whether to include the error cause if available.
-   * @param {boolean} [opts.path=true] - Whether to include the error path if available.
-   * @param {boolean} [opts.stack=false] - Whether to include the stack trace (overrides emitter stackEnabled setting when true).
-   * @returns {this} The current instance for method chaining.
+   * @param {unknown} error - The error object or value to log.
+   * @param {IConsoleErrOpts} [opts={}] - Formatting options.
+   * @param {boolean} [opts.code=false] - Include the error `code` property if present.
+   * @param {boolean} [opts.cause=true] - Include the error `cause` if present.
+   * @param {boolean} [opts.path=true] - Include the error `path` if present.
+   * @param {boolean} [opts.stack=false] - Include the stack trace (overrides `emitter.stackEnabled` when `true`).
+   * @returns {this}
    */
   public err(error: unknown, opts: IConsoleErrOpts = {}): this {
     if (!this._allow) return this;
@@ -245,54 +396,24 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
     return this;
   }
 
-  /**
-   * Appends a warning-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  public warn(...args: MsgBuilder.StyleArg[]): this {
-    return this._allow ? this.stylize(consoleStyleFormatters.warn, ...args) : this;
-  }
-
-  /**
-   * Appends an error-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  public error(...args: MsgBuilder.StyleArg[]): this {
-    return this._allow ? this.stylize(consoleStyleFormatters.error, ...args) : this;
-  }
-
-  public success(...args: MsgBuilder.StyleArg[]): this {
-    return this._allow ? this.stylize(consoleStyleFormatters.success, ...args) : this;
-  }
-
-  /**
-   * Appends a strikethrough-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
-   * @returns {this} The current instance for method chaining.
-   */
-  public strikethru(...args: MsgBuilder.StyleArg[]): this {
-    return this._allow ? this.stylize(consoleStyleFormatters.strikethru, ...args) : this;
-  }
+  // ─── Internal ──────────────────────────────────────────────────────────────
 
   /**
    * Applies pluralization to the given arguments based on the `_nextPartPluralize` flag.
    *
-   * This method modifies the arguments for a styling method to handle plural forms.
-   * It is called internally and consumes the `_nextPartPluralize` flag after use.
+   * Consumes and resets the flag after use.
    *
-   * @param {MsgBuilder.StyleArg[]} args - The original arguments passed to a styling method.
-   * @returns {MsgBuilder.StyleArg[]} The potentially modified arguments after applying pluralization.
+   * @param {MsgBuilder.StyleArg[]} args
+   * @returns {MsgBuilder.StyleArg[]}
    * @protected
    */
   protected _applyPluralization(args: MsgBuilder.StyleArg[]): MsgBuilder.StyleArg[] {
     if (this._nextPartPluralize === undefined) {
-      return args; // No pluralization context
+      return args;
     }
 
     const isPlural = this._nextPartPluralize;
-    this._nextPartPluralize = undefined; // Consume and reset the flag for the next call
+    this._nextPartPluralize = undefined;
 
     if (args.length === 1 && _.isNonEmptyString(args[0])) {
       const originalStr = String(args[0]);
@@ -300,6 +421,6 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
     } else if (args.length === 2 && _.isNonEmptyString(args[0]) && _.isNonEmptyString(args[1])) {
       return [isPlural ? String(args[1]) : String(args[0])];
     }
-    return args; // No pluralization applied for other arg patterns or non-string args
+    return args;
   }
 }

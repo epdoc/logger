@@ -2,8 +2,8 @@ import { assertEquals } from '@std/assert';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import os from 'node:os';
-import * as MsgBuilder from '../src/mod.ts';
 import { disable, enable } from '../../../test-utils/color-map.ts';
+import * as MsgBuilder from '../src/mod.ts';
 
 const home = os.userInfo().homedir;
 
@@ -164,6 +164,63 @@ describe('MsgBuilder.Console', () => {
       const result = msgBuilder.success('Operation completed').format({ color: true });
       assertEquals(result, enable.success + 'Operation completed' + disable.success);
     });
+    test('dim', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.dim('secondary info').format({ color: true });
+      assertEquals(result, enable.dim + 'secondary info' + disable.dim);
+    });
+  });
+  describe('icon methods', () => {
+    test('icheck with default color (success)', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.icheck().format({ color: true });
+      assertEquals(result, enable.success + '✓' + disable.success);
+    });
+    test('icheck with custom color', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.icheck((s: string) => '\x1b[94m' + s + '\x1b[39m').format({ color: true });
+      assertEquals(result, '\x1b[94m✓\x1b[39m');
+    });
+    test('ialert with default color (warn)', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.ialert().format({ color: true });
+      assertEquals(result, enable.warn + '⚠' + disable.warn);
+    });
+    test('ialert with custom color', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.ialert((s: string) => '\x1b[95m' + s + '\x1b[39m').format({ color: true });
+      assertEquals(result, '\x1b[95m⚠\x1b[39m');
+    });
+    test('ierror with default color (error)', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.ierror().format({ color: true });
+      assertEquals(result, enable.error + '✗' + disable.error);
+    });
+    test('ierror with custom color', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.ierror((s: string) => '\x1b[96m' + s + '\x1b[39m').format({ color: true });
+      assertEquals(result, '\x1b[96m✗\x1b[39m');
+    });
+    test('iarrow with default color (value)', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.iarrow().format({ color: true });
+      assertEquals(result, enable.value + '→' + disable.value);
+    });
+    test('iarrow with custom color', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.iarrow((s: string) => '\x1b[92m' + s + '\x1b[39m').format({ color: true });
+      assertEquals(result, '\x1b[92m→\x1b[39m');
+    });
+    test('istar with default color (highlight)', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.istar().format({ color: true });
+      assertEquals(result, enable.highlight + '★' + disable.highlight);
+    });
+    test('istar with custom color', () => {
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.istar((s: string) => '\x1b[93m' + s + '\x1b[39m').format({ color: true });
+      assertEquals(result, '\x1b[93m★\x1b[39m');
+    });
   });
   describe('err method', () => {
     const err = new Error('message');
@@ -301,6 +358,46 @@ describe('MsgBuilder.Console', () => {
         expect(result.formatter).toBeInstanceOf(MsgBuilder.Console.Builder);
         expect(tester.output).toEqual('test');
       }
+    });
+  });
+  describe('style map configuration', () => {
+    const originalStyles = MsgBuilder.Console.Builder.styleFormatters;
+
+    test('can swap global style theme', () => {
+      // Save original
+      const _originalH1 = MsgBuilder.Console.Builder.styleFormatters.h1;
+
+      // Swap to V1 theme
+      MsgBuilder.Console.Builder.styleFormatters = MsgBuilder.Console.styleFormattersV1;
+
+      // Verify V1 is now active (h1 uses bold + magenta in V1)
+      const msgBuilder = new MsgBuilder.Console.Builder();
+      const result = msgBuilder.h1('test').format({ color: false });
+      assertEquals(result, 'test');
+
+      // The static property was changed
+      assertEquals(
+        MsgBuilder.Console.Builder.styleFormatters,
+        MsgBuilder.Console.styleFormattersV1,
+      );
+
+      // Restore original
+      MsgBuilder.Console.Builder.styleFormatters = originalStyles;
+    });
+
+    test('subclass can have its own style theme', () => {
+      // Create a subclass with V2 theme
+      class V2Builder extends MsgBuilder.Console.Builder {
+        static override styleFormatters = MsgBuilder.Console.styleFormattersV2;
+      }
+
+      // Verify subclass has V2
+      const subclassBuilder = new V2Builder();
+      const result = subclassBuilder.h1('test').format({ color: false });
+      assertEquals(result, 'test');
+
+      // Verify parent still has original
+      assertEquals(MsgBuilder.Console.Builder.styleFormatters, originalStyles);
     });
   });
 });

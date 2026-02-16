@@ -451,7 +451,7 @@
         "dependencies": [
           "jsr:@epdoc/duration@~0.3.7",
           "jsr:@epdoc/string@~0.1.16",
-          "jsr:@epdoc/type@^1.2.4",
+          "jsr:@epdoc/type@^1.2.6",
           "jsr:@std/assert@^1.0.18",
           "jsr:@std/expect@^1.0.17",
           "jsr:@std/fmt@^1.0.9",

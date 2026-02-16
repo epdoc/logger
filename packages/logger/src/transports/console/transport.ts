@@ -7,6 +7,7 @@ import * as Base from '../base/mod.ts';
 import { OutputFormat } from '../consts.ts';
 import type { ILogMgrTransportContext, OutputFormatType, TransportEntry } from '../types.ts';
 import { consoleStyleFormatters } from './consts.ts';
+import type { TransportStyleMap } from './types.ts';
 import type * as Console from './types.ts';
 
 /**
@@ -14,6 +15,18 @@ import type * as Console from './types.ts';
  *
  * This class provides a flexible way to output log entries to the console,
  * with support for different formats and color-coded output.
+ *
+ * ### Theming Column Styles
+ *
+ * The active style map for metadata columns is held on the static
+ * `columnStyles` property and defaults to {@link consoleStyleFormatters}.
+ * Override this to theme transport columns (e.g. session ID, request ID,
+ * elapsed time):
+ *
+ * ```ts
+ * import { Console } from '@epdoc/logger/transports';
+ * Console.Transport.columnStyles = myCustomStyles;
+ * ```
  *
  * @example
  * ```ts
@@ -28,6 +41,21 @@ export class ConsoleTransport extends Base.Transport {
   protected _format: OutputFormatType = OutputFormat.TEXT;
   protected _color: boolean = true;
   protected _useStderr: boolean = false;
+
+  /**
+   * The active style map for metadata columns.
+   *
+   * Assign a different {@link TransportStyleMap} here to change the theme for
+   * all instances of this class (or its subclasses, unless they declare their
+   * own `static columnStyles`).
+   *
+   * @example
+   * ```ts
+   * import { Console } from '@epdoc/logger/transports';
+   * Console.Transport.columnStyles = myCustomStyles;
+   * ```
+   */
+  static columnStyles: TransportStyleMap = consoleStyleFormatters;
 
   /**
    * Creates an instance of the `Console` transport.
@@ -46,6 +74,16 @@ export class ConsoleTransport extends Base.Transport {
     this._color = opts.color ?? true;
     this._useStderr = opts.useStderr ?? false;
     this._bReady = true;
+  }
+
+  /**
+   * Returns the style map for the current class.
+   *
+   * Reading via `this.constructor` ensures subclasses that declare their own
+   * `static columnStyles` use their own theme without overriding any methods.
+   */
+  protected get _columnStyles(): TransportStyleMap {
+    return (this.constructor as typeof ConsoleTransport).columnStyles;
   }
 
   /**
@@ -271,8 +309,8 @@ export class ConsoleTransport extends Base.Transport {
         s += opts.post;
       }
     }
-    if (this.useColor && consoleStyleFormatters[colorFn]) {
-      return (consoleStyleFormatters as Console.StyleFormatterMap)[colorFn](s);
+    if (this.useColor && this._columnStyles[colorFn]) {
+      return this._columnStyles[colorFn](s);
     }
     return s;
   }

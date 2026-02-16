@@ -1,11 +1,19 @@
 import * as colors from '@std/fmt/colors';
-import type * as Console from './types.ts';
+import type { TransportStyleMap } from './types.ts';
 
 /**
- * A record of style formatters for the columns for console messages.
- * Each key corresponds to a style, and the value is a function that applies the style to a string.
+ * Default styles for formatting metadata columns in {@link ConsoleTransport}.
+ *
+ * These styles are applied to transport columns (e.g. session ID, request ID,
+ * elapsed time) rather than the message content itself. All keys from
+ * {@link TransportStyleMap} are defined here.
+ *
+ * Override on the transport class for custom theming:
+ * ```ts
+ * Console.Transport.columnStyles = myCustomStyles;
+ * ```
  */
-export const consoleStyleFormatters: Console.StyleFormatterMap = {
+export const consoleStyleFormatters: TransportStyleMap = {
   _reqId: colors.brightYellow,
   _sid: (str: string) => colors.underline(colors.yellow(str)),
   _package: colors.green,
@@ -23,4 +31,4 @@ export const consoleStyleFormatters: Console.StyleFormatterMap = {
   _sillyPrefix: colors.gray,
   _httpPrefix: colors.gray,
   _timePrefix: colors.gray,
-} as const;
+};

@@ -150,23 +150,4 @@ export type FactoryMethod = (
   emitter: IEmitter,
 ) => AbstractMsgBuilder;
 
-// /**
-//  * A factory method for creating a message builder instance.
-//  * @param {LevelName} level - The log level.
-//  * @param {Logger.IEmitter} emitter - The log emitter.
-//  * @param {boolean} meetsThreshold - Whether the log level meets the threshold.
-//  * @param {boolean} meetsFlushThreshold - Whether the log level meets the flush threshold.
-//  * @returns {Base.Builder} A new message builder instance.
-//  */
-// export type FactoryMethod = (
-//   level: LevelName,
-//   emitter: Logger.Base.IEmitter,
-//   meetsThreshold: boolean,
-//   meetsFlushThreshold: boolean,
-// ) => Base.Builder;
-
-// /**
-//  * A constructor for a message builder class.
-//  * @template M - The type of the message builder.
-//  */
-// export type ClassConstructor<M> = new (level: string, logger: Logger.Base.IEmitter) => M;
+export type StyleMap = Record<string, StyleFormatterFn>;

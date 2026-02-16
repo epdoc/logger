@@ -14,6 +14,7 @@
     "test": "echo 'No tests yet'",
     "lint": "deno lint *.ts *.json src",
     "check": "deno check *.ts *.json src",
-    "prepublish": "deno fmt *.ts *.json src && deno task lint && deno task check"
+    "docs": "deno doc --json src/mod.ts > library-docs.json",
+    "prepublish": "deno fmt *.ts *.json src && deno task lint && deno task check && deno task docs"
   }
 }

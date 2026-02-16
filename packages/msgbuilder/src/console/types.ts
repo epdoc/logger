@@ -1,4 +1,40 @@
+import type { StyleFormatterFn } from '../types.ts';
 import type * as MsgBuilder from '../types.ts';
+
+/**
+ * The complete set of style keys required by {@link ConsoleMsgBuilder} methods.
+ *
+ * Every {@link ConsoleStyleMap} must define all of these keys. Additional keys
+ * are allowed and can be accessed via {@link ConsoleMsgBuilder.styles} in
+ * subclasses.
+ */
+export type ConsoleStyleKey =
+  | 'text'
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'action'
+  | 'label'
+  | 'highlight'
+  | 'value'
+  | 'path'
+  | 'url'
+  | 'date'
+  | 'code'
+  | 'warn'
+  | 'error'
+  | 'success'
+  | 'strikethru'
+  | 'dim';
+
+/**
+ * A style map that satisfies all keys required by {@link ConsoleMsgBuilder}.
+ *
+ * The intersection with `Record<string, StyleFormatterFn>` allows extra keys
+ * (e.g. custom theme additions) while the `Record<ConsoleStyleKey, ...>` part
+ * ensures that all required keys are present at compile time.
+ */
+export type ConsoleStyleMap = Record<ConsoleStyleKey, StyleFormatterFn> & Record<string, StyleFormatterFn>;
 
 /**
  * Interface for a console message builder that provides methods for styling
@@ -54,11 +90,17 @@ export interface IConsoleMsgBuilder {
    */
   value(...args: MsgBuilder.StyleArg[]): this;
   /**
-   * Appends a path-styled message.
+   * Appends a path-styled message. Use for displaying file paths or filenames.
    * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   path(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a URL-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
+  url(...args: MsgBuilder.StyleArg[]): this;
   /**
    * Appends a path relative to the home directory.
    * @param {string} path - The path to be made relative.
@@ -72,18 +114,24 @@ export interface IConsoleMsgBuilder {
    */
   date(...args: MsgBuilder.StyleArg[]): this;
   /**
-   * Appends a section divider with an optional title.
-   * @param {string} str - The title of the section.
+   * Appends a code-styled message. Use for inline code snippets.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
-  section(str: string): this;
+  code(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a section divider with an optional title.
+   * @param {string} [str] - The title of the section.
+   * @returns {this} The current instance for method chaining.
+   */
+  section(str?: string): this;
   /**
    * Appends a formatted error message.
    * @param {unknown} error - The error to be formatted.
-   * @param {ConsoleErrOpts} opts - Options for formatting the error.
+   * @param {IConsoleErrOpts} [opts] - Options for formatting the error.
    * @returns {this} The current instance for method chaining.
    */
-  err(error: unknown, opts: IConsoleErrOpts): this;
+  err(error: unknown, opts?: IConsoleErrOpts): this;
   /**
    * Appends a warning-styled message.
    * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
@@ -97,11 +145,53 @@ export interface IConsoleMsgBuilder {
    */
   error(...args: MsgBuilder.StyleArg[]): this;
   /**
+   * Appends a success-styled message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
+  success(...args: MsgBuilder.StyleArg[]): this;
+  /**
    * Appends a strikethrough-styled message.
    * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
    * @returns {this} The current instance for method chaining.
    */
   strikethru(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a dimmed (de-emphasized) message.
+   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * @returns {this} The current instance for method chaining.
+   */
+  dim(...args: MsgBuilder.StyleArg[]): this;
+  /**
+   * Appends a green checkmark icon (✓). Defaults to `success` style.
+   * @param {StyleFormatterFn} [color] - Optional style override.
+   * @returns {this} The current instance for method chaining.
+   */
+  icheck(color?: StyleFormatterFn): this;
+  /**
+   * Appends a yellow warning icon (⚠). Defaults to `warn` style.
+   * @param {StyleFormatterFn} [color] - Optional style override.
+   * @returns {this} The current instance for method chaining.
+   */
+  ialert(color?: StyleFormatterFn): this;
+  /**
+   * Appends a red cross icon (✗). Defaults to `error` style.
+   * @param {StyleFormatterFn} [color] - Optional style override.
+   * @returns {this} The current instance for method chaining.
+   */
+  ierror(color?: StyleFormatterFn): this;
+  /**
+   * Appends a right arrow icon (→). Defaults to `value` style.
+   * @param {StyleFormatterFn} [color] - Optional style override.
+   * @returns {this} The current instance for method chaining.
+   */
+  iarrow(color?: StyleFormatterFn): this;
+  /**
+   * Appends a star icon (★). Defaults to `highlight` style.
+   * @param {StyleFormatterFn} [color] - Optional style override.
+   * @returns {this} The current instance for method chaining.
+   */
+  istar(color?: StyleFormatterFn): this;
 }
 
 /**
