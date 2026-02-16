@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logger",
-  "version": "1003.2.13",
+  "version": "1003.2.12",
   "description": "Logging module with chainable formatting, middleware mixins and extendable transports",
   "author": {
     "name": "James Pravetz",
@@ -13,6 +13,7 @@
     "check": "deno check src test",
     "docs": "deno doc --json src/mod.ts > library-docs.json",
     "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs",
+
     "publish": "deno publish"
   },
   "exports": "./src/mod.ts",

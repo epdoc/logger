@@ -8,6 +8,10 @@ import * as Log from '../src/mod.ts';
 
 type M = MsgBuilder.Console.Builder;
 
+// Pin tests to the V0 (original) style map so that the hardcoded ANSI
+// sequences in color-map.ts continue to match.
+MsgBuilder.Console.Builder.styleFormatters = MsgBuilder.Console.styleFormattersV0;
+
 const logMgr = new Log.Mgr<M>();
 
 describe('MsgBuilder.Console', () => {
