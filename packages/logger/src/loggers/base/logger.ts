@@ -283,13 +283,18 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
 
   /**
    * Checks if a given log level meets the effective threshold.
-   * @internal
    */
-  meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean {
+  isEnabledFor(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean {
     if (threshold !== undefined) {
       return this.logLevels.meetsThreshold(level, threshold);
     }
     return this._logMgr.meetsThreshold(level, this._threshold);
+  }
+  /**
+   * /** Alias for {@link isEnabledFor}.
+   */
+  meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean {
+    return this.isEnabledFor(level, threshold);
   }
 
   /**

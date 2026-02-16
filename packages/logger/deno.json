@@ -11,7 +11,6 @@
     "test": "deno test -A",
     "lint": "deno lint",
     "check": "deno check src test",
-    "prepublish": "deno publish --dry-run",
     "publish": "deno publish"
   },
   "exports": "./src/mod.ts",

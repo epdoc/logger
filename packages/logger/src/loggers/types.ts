@@ -56,12 +56,16 @@ export interface IEmitter extends IMark {
    */
   get threshold(): Level.Value;
   /**
+   * /** Alias for {@link meetsThreshold}.
+   */
+  meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean;
+  /**
    * Checks if a log level meets the specified threshold.
    * @param {Level.Value | Level.Name} level - The level to check.
    * @param {Level.Value | Level.Name} [threshold] - An optional, overriding threshold.
    * @returns {boolean} `true` if the level meets the threshold.
    */
-  meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean;
+  isEnabledFor(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean;
 }
 
 /**
@@ -114,12 +118,16 @@ export interface ILevels {
    */
   get threshold(): Level.Value;
   /**
+   * /** Alias for {@link meetsThreshold}.
+   */
+  meetsThreshold(level: Level.Value | Level.Name, threshold: Level.Value | Level.Name): boolean;
+  /**
    * Checks if a log level meets a given threshold.
    * @param {Level.Value | Level.Name} level - The level to check.
    * @param {Level.Value | Level.Name} threshold - The threshold to check against.
    * @returns {boolean} `true` if the level meets the threshold.
    */
-  meetsThreshold(level: Level.Value | Level.Name, threshold: Level.Value | Level.Name): boolean;
+  isEnabledFor(level: Level.Value | Level.Name, threshold: Level.Value | Level.Name): boolean;
   /**
    * Checks if a log level meets the immediate flush threshold.
    * @param {Level.Value | Level.Name} level - The level to check.
