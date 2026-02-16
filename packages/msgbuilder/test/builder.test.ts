@@ -7,6 +7,10 @@ import * as MsgBuilder from '../src/mod.ts';
 
 const home = os.userInfo().homedir;
 
+// Pin tests to the V0 (original) style map so that the hardcoded ANSI
+// sequences in color-map.ts continue to match.
+MsgBuilder.Console.Builder.styleFormatters = MsgBuilder.Console.styleFormattersV0;
+
 describe('MsgBuilder.Console', () => {
   describe('general', () => {
     test('display applyColors', () => {
@@ -364,9 +368,6 @@ describe('MsgBuilder.Console', () => {
     const originalStyles = MsgBuilder.Console.Builder.styleFormatters;
 
     test('can swap global style theme', () => {
-      // Save original
-      const _originalH1 = MsgBuilder.Console.Builder.styleFormatters.h1;
-
       // Swap to V1 theme
       MsgBuilder.Console.Builder.styleFormatters = MsgBuilder.Console.styleFormattersV1;
 
@@ -386,17 +387,17 @@ describe('MsgBuilder.Console', () => {
     });
 
     test('subclass can have its own style theme', () => {
-      // Create a subclass with V2 theme
-      class V2Builder extends MsgBuilder.Console.Builder {
-        static override styleFormatters = MsgBuilder.Console.styleFormattersV2;
+      // Create a subclass with the default (RGB) theme
+      class RgbBuilder extends MsgBuilder.Console.Builder {
+        static override styleFormatters = MsgBuilder.Console.styleFormatters;
       }
 
-      // Verify subclass has V2
-      const subclassBuilder = new V2Builder();
+      // Verify subclass uses the default theme
+      const subclassBuilder = new RgbBuilder();
       const result = subclassBuilder.h1('test').format({ color: false });
       assertEquals(result, 'test');
 
-      // Verify parent still has original
+      // Verify parent still has V0 (set at top of this file)
       assertEquals(MsgBuilder.Console.Builder.styleFormatters, originalStyles);
     });
   });

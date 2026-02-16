@@ -8,8 +8,8 @@ export { ConsoleMsgBuilder as Builder };
 // Re-export style maps for theming
 export {
   consoleStyleFormatters as styleFormatters,
+  consoleStyleFormattersV0 as styleFormattersV0,
   consoleStyleFormattersV1 as styleFormattersV1,
-  consoleStyleFormattersV2 as styleFormattersV2,
   createConsoleMsgBuilder,
   createMsgBuilder,
 } from './const.ts';

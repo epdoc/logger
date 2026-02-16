@@ -5,13 +5,13 @@ import { ConsoleMsgBuilder } from './builder.ts';
 import type { ConsoleStyleMap } from './types.ts';
 
 /**
- * The default console style theme.
+ * The original (V0) console style theme.
  *
  * Uses standard ANSI colors for broad terminal compatibility. All keys from
  * {@link ConsoleStyleMap} are defined here; the TypeScript compiler will report
  * an error if any are missing.
  */
-export const consoleStyleFormatters: ConsoleStyleMap = {
+export const consoleStyleFormattersV0: ConsoleStyleMap = {
   text: colors.white,
   h1: colors.brightWhite,
   h2: colors.magenta,
@@ -62,11 +62,11 @@ const purple = 0x996fda;
 const green = 0x51d67c;
 
 /**
- * A rich 24-bit RGB console style theme (V2) using a warm, distinct color palette.
+ * The default console style theme using a rich 24-bit RGB color palette.
  *
  * Requires a terminal with true-color (24-bit) support.
  */
-export const consoleStyleFormattersV2: ConsoleStyleMap = {
+export const consoleStyleFormatters: ConsoleStyleMap = {
   // Text hierarchy
   text: (str: string) => rgb24(str, skin),
   h1: (str: string) => bold(rgb24(str, gold)),
