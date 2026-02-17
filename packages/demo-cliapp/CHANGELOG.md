@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.1] - 2026-02-16
+
+- Updated dependencies
+
 ## [0.0.5] - 2026-02-03
 
 - Fixed --log-show-all flag implementation
