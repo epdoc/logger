@@ -82,12 +82,7 @@ export async function writeMessage(msg: Mcp.JsonRpcResponse): Promise<void> {
   const headerBytes = encoder.encode(header);
 
   const output = concatUint8Arrays(headerBytes, bodyBytes);
-  const writer = Deno.stdout.writable.getWriter();
-  try {
-    await writer.write(output);
-  } finally {
-    writer.releaseLock();
-  }
+  await Deno.stdout.write(output);
 }
 
 /**

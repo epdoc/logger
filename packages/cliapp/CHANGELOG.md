@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.6-alpha.7] - 2026-02-18
+
+- Bug fixes for MCP
+
 ## [2.0.6-alpha.6] - 2026-02-16
 
 - Updated dependencies
