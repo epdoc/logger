@@ -115,15 +115,20 @@ export class McpServer<TCtx extends Ctx.AbstractBase> {
     this.#ctx.log.info.text('MCP server listening on stdio').emit();
 
     while (true) {
-      const request = await readMessage(reader, readBuffer);
-      if (request === null) {
-        this.#ctx.log.info.text('stdin closed, shutting down').emit();
-        break;
-      }
+      try {
+        const request = await readMessage(reader, readBuffer);
+        if (request === null) {
+          this.#ctx.log.info.text('stdin closed, shutting down').emit();
+          break;
+        }
 
-      const response = await this.#handleRequest(request);
-      if (response) {
-        await writeMessage(response);
+        const response = await this.#handleRequest(request);
+        if (response) {
+          writeMessage(response);
+        }
+      } catch (error) {
+        this.#ctx.log.error.text('Error in MCP serve loop:').value(error).emit();
+        // Continue processing - don't crash on single request errors
       }
     }
 

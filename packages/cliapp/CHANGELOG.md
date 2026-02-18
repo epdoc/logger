@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.6-alpha.9] - 2026-02-18
+
+- Fix MCP stdout flushing and add error handling
+Use writeSync in writeMessage to ensure MCP JSON-RPC responses are 
+immediately flushed to stdout, preventing inspector timeouts.
+Add try/catch error handling in serve loop to prevent server crashes
+on request processing errors.
+Fixes MCP inspector disconnect issues when running as stdio transport.
+
 ## [2.0.6-alpha.7] - 2026-02-18
 
 - Bug fixes for MCP

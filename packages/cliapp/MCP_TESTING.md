@@ -1,6 +1,7 @@
 # MCP Testing Guide for cliapp Applications
 
-This guide explains how to write unit tests for MCP (Model Context Protocol) functionality in applications that use `@epdoc/cliapp`.
+This guide explains how to write unit tests for MCP (Model Context Protocol) functionality in applications that use
+`@epdoc/cliapp`.
 
 ## Overview
 
@@ -275,7 +276,8 @@ function encodeMessage(msg: unknown): Uint8Array {
 
 ## Complete Example Test File
 
-See `packages/cliapp/test/mcp.test.ts` for existing tests on the introspection layer. For your application, create a test file following this structure:
+See `packages/cliapp/test/mcp.test.ts` for existing tests on the introspection layer. For your application, create a
+test file following this structure:
 
 ```typescript
 /**

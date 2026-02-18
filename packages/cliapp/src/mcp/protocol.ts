@@ -72,9 +72,13 @@ export async function readMessage(
 /**
  * Writes a JSON-RPC response to stdout using Content-Length framing.
  *
+ * Similar to @epdoc/fs pattern: writes data then ensures it's flushed.
+ * For stdout, we use writeSync as there's no sync() method available,
+ * which provides the same guarantee of immediate disk flush.
+ *
  * @param msg - The JSON-RPC response to send
  */
-export async function writeMessage(msg: Mcp.JsonRpcResponse): Promise<void> {
+export function writeMessage(msg: Mcp.JsonRpcResponse): void {
   const encoder = new TextEncoder();
   const json = JSON.stringify(msg);
   const bodyBytes = encoder.encode(json);
@@ -82,7 +86,9 @@ export async function writeMessage(msg: Mcp.JsonRpcResponse): Promise<void> {
   const headerBytes = encoder.encode(header);
 
   const output = concatUint8Arrays(headerBytes, bodyBytes);
-  await Deno.stdout.write(output);
+  // Use writeSync to ensure data is flushed immediately to stdout.
+  // This matches the pattern in @epdoc/fs where sync() is called after write.
+  Deno.stdout.writeSync(output);
 }
 
 /**
