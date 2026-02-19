@@ -1,5 +1,6 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import type * as Level from '@epdoc/loglevels';
+import type { Integer } from '@epdoc/type';
 import type { Entry } from '../types.ts';
 
 export * from './factory.ts';
@@ -46,6 +47,15 @@ export interface IEmitter extends IMark {
    * Retrieves the session ID.
    */
   get sid(): string | undefined;
+  /**
+   * Sets the session ID for the logger's context.
+   * @param {string} val - The session identifier, often tied to a user.
+   */
+  set msgSep(val: Integer);
+  /**
+   * Retrieves the session ID.
+   */
+  get msgSep(): Integer;
   /**
    * Sets the log level threshold for this logger.
    * @param {Level.Name | Level.Value} level - The threshold to set.

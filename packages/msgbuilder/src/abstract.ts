@@ -1,4 +1,5 @@
 import type { HrMilliseconds } from '@epdoc/duration';
+import { bold, dim } from '@std/fmt/colors';
 import { _, type Dict, type Integer } from '@epdoc/type';
 import { ConsoleEmitter } from './emitter.ts';
 import type { EmitterData, FormatOpts, IEmitter, IFormatter, MsgPart, StyleArg, StyleFormatterFn } from './types.ts';
@@ -35,6 +36,8 @@ export abstract class AbstractMsgBuilder implements IFormatter {
   protected _showElapsed: boolean = false;
   protected _allow: boolean = true;
   protected _conditionMet = false;
+  protected _dimMode: boolean = false;
+  protected _boldMode: boolean = false;
 
   /**
    * Initializes a new message builder instance.
@@ -368,7 +371,14 @@ export abstract class AbstractMsgBuilder implements IFormatter {
     }
     this._msgParts.forEach((part: MsgPart) => {
       if (part.style && !noColor) {
-        parts.push(part.style(part.str));
+        let styled = part.style(part.str);
+        if (this._boldMode) {
+          styled = bold(styled);
+        }
+        if (this._dimMode) {
+          styled = dim(styled);
+        }
+        parts.push(styled);
       } else {
         parts.push(part.str);
       }

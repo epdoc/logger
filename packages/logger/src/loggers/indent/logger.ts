@@ -1,6 +1,6 @@
 import type * as Log from '$log';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import { isArray, isNumber, isString } from '@epdoc/type';
+import { type Integer, isArray, isInteger, isPosInteger, isString } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
 
 /**
@@ -27,6 +27,22 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    * @protected
    */
   protected _indent: string[] = [];
+  protected override _msgSep: Integer = 1;
+
+  /**
+   * Sets the message separator (number of spaces between message parts).
+   * @param {Integer} val - The number of spaces.
+   */
+  override set msgSep(val: Integer) {
+    this._msgSep = val;
+  }
+
+  /**
+   * Retrieves the message separator value.
+   */
+  override get msgSep(): Integer {
+    return this._msgSep;
+  }
 
   /**
    * Sets the start time for the logger's internal time tracking.
@@ -97,19 +113,28 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    *
    * @remarks
    * - If `n` is a `string`, it is added directly as an indentation string.
-   * - If `n` is a `number`, that many spaces are added as indentation levels.
+   * - If `n` is a `number`, that many spaces are added or removede as indentation levels.
    * - If `n` is an `array` of strings, each string is added as an indentation level.
    * - If `n` is `undefined`, a single space is added as an indentation level.
+   * - If `n` is `false`, indenting is turned off (same as nodent)
    *
    * @param {number | string | string[]} [n] - The indentation value(s) to add.
    * @returns {this} The current logger instance for chaining.
    */
-  indent(n?: number | string | string[]): this {
-    if (isString(n)) {
+  indent(n?: number | string | string[] | false): this {
+    if (n === false) {
+      this._indent = [];
+    } else if (isString(n)) {
       this._indent.push(n);
-    } else if (isNumber(n)) {
+    } else if (isPosInteger(n)) {
       for (let x = 0; x < n; ++x) {
         this._indent.push(' ');
+      }
+    } else if (isInteger(n)) {
+      // n is negative, remove |n| indent levels
+      const levelsToRemove = Math.abs(n);
+      for (let x = 0; x < levelsToRemove && this._indent.length > 0; ++x) {
+        this._indent.pop();
       }
     } else if (isArray(n)) {
       for (let x = 0; x < n.length; ++x) {
@@ -155,6 +180,11 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    */
   nodent(): this {
     this._indent = [];
+    return this;
+  }
+
+  sep(n: Integer): this {
+    this.msgSep = n;
     return this;
   }
 }

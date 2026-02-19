@@ -1,6 +1,7 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
+import type { Integer } from '@epdoc/type';
 import type { TimestampFormat } from './consts.ts';
 
 /**
@@ -33,6 +34,8 @@ export type Entry = {
   msg: string | MsgBuilder.IFormatter | undefined;
   /** Any structured data associated with the log entry. */
   data?: unknown | undefined;
+  /** The number of spaces to output between parts of a message, defaults to 1 */
+  msgSep?: Integer;
 };
 
 /**

@@ -297,6 +297,7 @@ export class LogMgr<
         meetsThreshold,
         meetsFlushThreshold,
       },
+      emitter.msgSep,
       // Pass flush callback to handle flush threshold
       meetsFlushThreshold ? () => this.transportMgr.flushQueue(true) : undefined,
       // Pass the logger's demark method for ewt functionality

@@ -25,7 +25,8 @@ export type ConsoleStyleKey =
   | 'error'
   | 'success'
   | 'strikethru'
-  | 'dim';
+  | 'dim'
+  | 'bold';
 
 /**
  * A style map that satisfies all keys required by {@link ConsoleMsgBuilder}.
@@ -157,11 +158,45 @@ export interface IConsoleMsgBuilder {
    */
   strikethru(...args: MsgBuilder.StyleArg[]): this;
   /**
-   * Appends a dimmed (de-emphasized) message.
-   * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
+   * Dim mode control or dim styling.
+   *
+   * - `dim()`: Toggle persistent dim mode (on↔off)
+   * - `dim(true)`: Enable persistent dim mode for all subsequent output
+   * - `dim(false)`: Disable persistent dim mode
+   * - `dim('text')` or `dim(value, ...)`: Apply dim styling to text only (one-time)
+   *
+   * @param {boolean | MsgBuilder.StyleArg} firstArg - Toggle/enable/disable flag or text to style
+   * @param {...MsgBuilder.StyleArg[]} restArgs - Additional text arguments (when styling)
    * @returns {this} The current instance for method chaining.
    */
-  dim(...args: MsgBuilder.StyleArg[]): this;
+  dim(firstArg?: boolean | MsgBuilder.StyleArg, ...restArgs: MsgBuilder.StyleArg[]): this;
+  /**
+   * Disable persistent dim mode.
+   * Alias for `dim(false)`.
+   *
+   * @returns {this} The current instance for method chaining.
+   */
+  undim(): this;
+  /**
+   * Bold mode control or bold styling.
+   *
+   * - `bold()`: Toggle persistent bold mode (on↔off)
+   * - `bold(true)`: Enable persistent bold mode for all subsequent output
+   * - `bold(false)`: Disable persistent bold mode
+   * - `bold('text')` or `bold(value, ...)`: Apply bold styling to text only (one-time)
+   *
+   * @param {boolean | MsgBuilder.StyleArg} firstArg - Toggle/enable/disable flag or text to style
+   * @param {...MsgBuilder.StyleArg[]} restArgs - Additional text arguments (when styling)
+   * @returns {this} The current instance for method chaining.
+   */
+  bold(firstArg?: boolean | MsgBuilder.StyleArg, ...restArgs: MsgBuilder.StyleArg[]): this;
+  /**
+   * Disable persistent bold mode.
+   * Alias for `bold(false)`.
+   *
+   * @returns {this} The current instance for method chaining.
+   */
+  unbold(): this;
   /**
    * Appends a green checkmark icon (✓). Defaults to `success` style.
    * @param {StyleFormatterFn} [color] - Optional style override.

@@ -181,13 +181,75 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   }
 
   /**
-   * Appends a dimmed (de-emphasized) message. Useful for secondary or
-   * supplementary information.
-   * @param {...MsgBuilder.StyleArg[]} args
+   * Dim mode control or dim styling.
+   *
+   * - `dim()`: Toggle persistent dim mode (on↔off)
+   * - `dim(true)`: Enable persistent dim mode for all subsequent output
+   * - `dim(false)`: Disable persistent dim mode
+   * - `dim('text')` or `dim(value, ...)`: Apply dim styling to text only (one-time)
+   *
+   * @param {boolean | MsgBuilder.StyleArg} firstArg - Toggle/enable/disable flag or text to style
+   * @param {...MsgBuilder.StyleArg[]} restArgs - Additional text arguments (when styling)
    * @returns {this}
    */
-  public dim(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(this.styles.dim, ...args);
+  public dim(firstArg?: boolean | MsgBuilder.StyleArg, ...restArgs: MsgBuilder.StyleArg[]): this {
+    if (typeof firstArg === 'boolean') {
+      this._dimMode = firstArg;
+      return this;
+    } else if (firstArg === undefined) {
+      this._dimMode = !this._dimMode;
+      return this;
+    } else {
+      const args = [firstArg, ...restArgs];
+      return this.stylize(this.styles.dim, ...args);
+    }
+  }
+
+  /**
+   * Disable persistent dim mode.
+   * Alias for `dim(false)`.
+   *
+   * @returns {this}
+   */
+  public undim(): this {
+    this._dimMode = false;
+    return this;
+  }
+
+  /**
+   * Bold mode control or bold styling.
+   *
+   * - `bold()`: Toggle persistent bold mode (on↔off)
+   * - `bold(true)`: Enable persistent bold mode for all subsequent output
+   * - `bold(false)`: Disable persistent bold mode
+   * - `bold('text')` or `bold(value, ...)`: Apply bold styling to text only (one-time)
+   *
+   * @param {boolean | MsgBuilder.StyleArg} firstArg - Toggle/enable/disable flag or text to style
+   * @param {...MsgBuilder.StyleArg[]} restArgs - Additional text arguments (when styling)
+   * @returns {this}
+   */
+  public bold(firstArg?: boolean | MsgBuilder.StyleArg, ...restArgs: MsgBuilder.StyleArg[]): this {
+    if (typeof firstArg === 'boolean') {
+      this._boldMode = firstArg;
+      return this;
+    } else if (firstArg === undefined) {
+      this._boldMode = !this._boldMode;
+      return this;
+    } else {
+      const args = [firstArg, ...restArgs];
+      return this.stylize(this.styles.bold, ...args);
+    }
+  }
+
+  /**
+   * Disable persistent bold mode.
+   * Alias for `bold(false)`.
+   *
+   * @returns {this}
+   */
+  public unbold(): this {
+    this._boldMode = false;
+    return this;
   }
 
   // ─── Navigation / references ───────────────────────────────────────────────

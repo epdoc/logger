@@ -71,7 +71,8 @@ export const enable = {
   error: set.redText, // Changed from bold + brightRed to just red
   success: set.brightGreenText, // bright green for success
   strikethru: set.inverse,
-  dim: set.grayText, // gray for dimmed text
+  dim: '\x1b[2m' + set.whiteText, // dim + white for dimmed text
+  bold: set.bold + set.whiteText, // bold + white for bold text
   _reqId: set.brightYellowText,
   _sid: set.underline + set.brightYellowText,
   _package: set.brightGreenText,
@@ -101,7 +102,8 @@ export const disable = {
   error: reset.fg, // Changed from fg + bold to just fg
   success: reset.fg,
   strikethru: reset.inverse,
-  dim: reset.fg,
+  dim: reset.fg + reset.bold, // reset fg + reset dim (dim uses same reset as bold: \x1b[22m)
+  bold: reset.fg + reset.bold, // reset fg + reset bold
   _reqId: reset.fg,
   _sid: reset.fg + reset.underline,
   _package: reset.fg,

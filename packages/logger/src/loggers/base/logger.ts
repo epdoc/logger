@@ -2,7 +2,7 @@ import type * as Log from '$log';
 import type { HrMilliseconds } from '@epdoc/duration';
 import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import { _ } from '@epdoc/type';
+import { _, type Integer } from '@epdoc/type';
 import type { LogMgr } from '../../logmgr.ts';
 import type { IEmitter, IGetChildParams, IInherit, ILevels } from '../types.ts';
 
@@ -45,6 +45,7 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
   protected _sid: string | undefined;
   protected _mark: Record<string, HrMilliseconds> = {};
   protected _childCount = 0;
+  protected _msgSep: Integer = 1;
 
   /**
    * Initializes a new logger instance.
@@ -189,6 +190,21 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
    */
   public get reqId(): string | undefined {
     return this._reqId;
+  }
+
+  /**
+   * Sets the message separator (number of spaces between message parts).
+   * @param {Integer} val - The number of spaces.
+   */
+  public set msgSep(val: Integer) {
+    this._msgSep = val;
+  }
+
+  /**
+   * Retrieves the message separator value.
+   */
+  public get msgSep(): Integer {
+    return this._msgSep;
   }
 
   /**

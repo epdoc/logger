@@ -3,43 +3,64 @@ import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
 import * as MsgBuilder from '../src/mod.ts';
 
+/**
+ * Generates sample text that exercises all console style formatters.
+ * Creates a cohesive narrative (deployment log) demonstrating each style.
+ */
+function sampleText(msg: MsgBuilder.Console.Builder): string {
+  // Main headers
+  msg.h1('\nApplication Deployment Log (h1)');
+
+  // Section header
+  msg.h2('\n\nBuild Configuration (h2)');
+
+  // Subsection
+  msg.h3('\nEnvironment Settings (h3)');
+
+  // Body text with various elements
+  msg.text('\nStarting deployment process at ').date('2025-02-20 14:30:45').text('. ');
+  msg.text('The build system will ').action('compile (action)').text(' and ').action('deploy');
+  msg.text(' the application to production. (text)');
+
+  // Key-value pairs with labels and values
+  msg.text('\n\n').label('Project: ').value('@epdoc/logger');
+  msg.label('\nLabel: ').value('v2.5.0 (value)');
+  msg.label('\nEnvironment: ').highlight('production (highlight)');
+  msg.label('\nBuild ID: ').code('abc123def456 (code)');
+
+  // File paths and URLs
+  msg.text('\n\nSource files located at ').path('/format/as/path/auth.ts');
+  msg.text('\nDocumentation available at ').url('https://docs.epdoc.dev/format/as/url');
+
+  // Status messages
+  msg.h3('\n\nBuild Status');
+  msg.success('\n✓ Dependencies installed successfully (success)');
+  msg.success('\n✓ TypeScript compilation completed');
+  msg.warn('\n⚠ Deprecated API usage detected in (warn)').path('/format/as/path/legacy.ts');
+  msg.error('\n✗ Failed to optimize bundle error');
+
+  // Highlight important info
+  msg.highlight('\n\nImportant: ').text('Review ').strikethru('old strikethru').text(' before proceeding.');
+
+  // Technical details
+  msg.dim('\n\nDebug information (dim):');
+  msg.dim('\n  - Memory usage: 142MB');
+  msg.dim('\n  - Build time: 3m 42s');
+  msg.dim('\n  - Worker threads: 4');
+
+  // Bold text
+  msg.bold('\n\nCritical notice (bold):');
+  msg.bold('\n  Ensure all tests pass before merge.');
+
+  // Action items
+  msg.text('\n\nNext steps: ').action('Run tests').text(' → ').action('Deploy to staging').text(' → ');
+  msg.action('Monitor metrics (action)');
+
+  return msg.format();
+}
+
 describe('MsgBuilder.Console', () => {
   describe('style formatters comparison', () => {
-    test('default style formatters with colors (full demonstration)', () => {
-      console.log('\n╔════════════════════════════════════════════════════════════╗');
-      console.log('║   DEFAULT STYLE (24-bit RGB) - Full Style Demonstration    ║');
-      console.log('╚════════════════════════════════════════════════════════════╝\n');
-
-      MsgBuilder.Console.Builder.styleFormatters = MsgBuilder.Console.styleFormatters;
-      const msgBuilder = new MsgBuilder.Console.Builder();
-      const result = msgBuilder
-        .h1('h1')
-        .h2('h2')
-        .h3('h3')
-        .action('action')
-        .label('label')
-        .highlight('highlight')
-        .value('value')
-        .url('url')
-        .path('path')
-        .code('code')
-        .date('date')
-        .success('success')
-        .strikethru('strikethru')
-        .warn('warn')
-        .error('error')
-        .format({ color: true });
-
-      console.log(result);
-      console.log('');
-
-      // Verify that colors are applied (should contain ANSI escape codes)
-      expect(result).not.toEqual(
-        'h1 h2 h3 action label highlight value url path code date success strikethru warn error',
-      );
-      expect(result).toContain('\x1b'); // ANSI escape sequence start
-    });
-
     test('all three style formatters with colors (compact)', () => {
       console.log('\n╔════════════════════════════════════════════════════════════╗');
       console.log('║   STYLE FORMATTER COMPARISON (with colors)                 ║');
@@ -52,18 +73,20 @@ describe('MsgBuilder.Console', () => {
       ];
 
       for (const s of styles) {
+        console.log(`\n${s.name}\n`);
         MsgBuilder.Console.Builder.styleFormatters = s.style;
         const msgBuilder = new MsgBuilder.Console.Builder();
-        const result = msgBuilder
-          .h1(s.name)
-          .text(' - ')
-          .label('label')
-          .value('value')
-          .path('/example/path')
-          .success('success')
-          .warn('warn')
-          .error('error')
-          .format({ color: true });
+        const result = sampleText(msgBuilder);
+        // const result = msgBuilder
+        //   .h1(s.name)
+        //   .text(' - ')
+        //   .label('label')
+        //   .value('value')
+        //   .path('/example/path')
+        //   .success('success')
+        //   .warn('warn')
+        //   .error('error')
+        //   .format({ color: true });
 
         console.log(result);
         console.log('');
@@ -102,13 +125,15 @@ describe('MsgBuilder.Console', () => {
         .strikethru('strikethru')
         .warn('warn')
         .error('error')
+        .dim('dim')
+        .bold('bold')
         .format({ color: false });
 
       console.log(result);
       console.log('');
 
       // Verify no ANSI codes when color is false
-      assertEquals(result, 'h1 h2 h3 action label highlight value url path code date success strikethru warn error');
+      assertEquals(result, 'h1 h2 h3 action label highlight value url path code date success strikethru warn error dim bold');
       expect(result).not.toContain('\x1b');
 
       // Reset to default
@@ -149,15 +174,17 @@ describe('MsgBuilder.Console', () => {
         .success('success')
         .strikethru('strikethru')
         .warn('warn')
-        .error('error');
+        .error('error')
+        .dim('dim')
+        .bold('bold');
       const result = builder.format({ color: true });
       console.log(result);
       expect(result).toMatch(
-        /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*url.*path.*code.*date.*success.*strikethru.*warn.*error.*$/,
+        /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*url.*path.*code.*date.*success.*strikethru.*warn.*error.*dim.*bold.*$/,
       );
       const r2 = builder.format({ color: false });
       console.log(r2);
-      expect(r2).toEqual('h1 h2 h3 action label highlight value url path code date success strikethru warn error');
+      expect(r2).toEqual('h1 h2 h3 action label highlight value url path code date success strikethru warn error dim bold');
     });
 
     test('display no colors', () => {
@@ -180,9 +207,11 @@ describe('MsgBuilder.Console', () => {
         .strikethru('strikethru')
         .warn('warn')
         .error('error')
+        .dim('dim')
+        .bold('bold')
         .format({ color: false });
       console.log(result);
-      assertEquals(result, 'h1 h2 h3 action label highlight value url path code date success strikethru warn error');
+      assertEquals(result, 'h1 h2 h3 action label highlight value url path code date success strikethru warn error dim bold');
     });
 
     test('display applyColor', () => {

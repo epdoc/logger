@@ -7,8 +7,8 @@ import * as Base from '../base/mod.ts';
 import { OutputFormat } from '../consts.ts';
 import type { ILogMgrTransportContext, OutputFormatType, TransportEntry } from '../types.ts';
 import { consoleStyleFormatters } from './consts.ts';
-import type { TransportStyleMap } from './types.ts';
 import type * as Console from './types.ts';
+import type { TransportStyleMap } from './types.ts';
 
 /**
  * A transport for logging messages to the console.
@@ -204,7 +204,8 @@ export class ConsoleTransport extends Base.Transport {
     if (!_.isNullOrUndefined(msg.data) && this._show.data) {
       parts.push(JSON.stringify(msg.data));
     }
-    return parts.join(' ');
+    const sep = _.isInteger(msg.msgSep) ? ' '.repeat(msg.msgSep) : ' ';
+    return parts.join(sep);
   }
 
   formatJsonArrayEntry(entry: TransportEntry, msg: Entry): string {

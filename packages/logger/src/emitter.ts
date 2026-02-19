@@ -1,6 +1,7 @@
 import type * as Log from '$log';
 import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
+import type { Integer } from '@epdoc/type';
 
 export interface ITransportEmitter {
   emit(msg: Log.Entry): void;
@@ -43,6 +44,7 @@ export class Emitter implements MsgBuilder.IEmitter {
   private readonly _reqId?: string;
   private readonly _pkg?: string;
   private readonly _meetsThreshold: boolean;
+  private readonly _msgSep: Integer = 1;
   private readonly _meetsFlushThreshold: boolean;
   private readonly _flushCallback?: () => void;
   private readonly _demark?: (name: string, keep?: boolean) => number;
@@ -72,6 +74,7 @@ export class Emitter implements MsgBuilder.IEmitter {
       meetsThreshold: boolean;
       meetsFlushThreshold: boolean;
     },
+    msgSep: Integer,
     flushCallback?: () => void,
     demark?: (name: string, keep?: boolean) => number,
   ) {
@@ -83,6 +86,7 @@ export class Emitter implements MsgBuilder.IEmitter {
     this._meetsThreshold = thresholds.meetsThreshold;
     this._meetsFlushThreshold = thresholds.meetsFlushThreshold;
     this._flushCallback = flushCallback;
+    this._msgSep = msgSep;
     this._demark = demark;
   }
 
@@ -193,6 +197,7 @@ export class Emitter implements MsgBuilder.IEmitter {
       reqId: this._reqId,
       pkg: this._pkg,
       msg: data.formatter,
+      msgSep: this._msgSep,
       data: data.data,
     };
 

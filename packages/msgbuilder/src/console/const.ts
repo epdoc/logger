@@ -28,7 +28,8 @@ export const consoleStyleFormattersV0: ConsoleStyleMap = {
   error: colors.red,
   success: colors.brightGreen,
   strikethru: colors.inverse,
-  dim: colors.gray,
+  dim: (str: string) => colors.dim(colors.white(str)),
+  bold: (str: string) => colors.bold(colors.white(str)),
 };
 
 /**
@@ -51,7 +52,8 @@ export const consoleStyleFormattersV1: ConsoleStyleMap = {
   error: (str: string) => bold(colors.brightRed(str)),
   success: colors.brightGreen,
   strikethru: colors.inverse,
-  dim: colors.gray,
+  dim: (str: string) => colors.dim(colors.white(str)),
+  bold: (str: string) => colors.bold(colors.white(str)),
 };
 
 const gold = 0xff981a;
@@ -94,7 +96,8 @@ export const consoleStyleFormatters: ConsoleStyleMap = {
   code: (str: string) => rgb24(str, skin),
   date: (str: string) => rgb24(str, blue),
   strikethru: colors.inverse,
-  dim: (str: string) => rgb24(str, 0x888888),
+  dim: (str: string) => colors.dim(rgb24(str, 0xffffff)),
+  bold: (str: string) => colors.bold(rgb24(str, 0xffffff)),
 };
 
 /**
