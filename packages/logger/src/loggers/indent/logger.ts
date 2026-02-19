@@ -27,20 +27,21 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    * @protected
    */
   protected _indent: string[] = [];
-  protected override _msgSep: Integer = 1;
+  protected override _msgSep: Integer | undefined = undefined;
 
   /**
    * Sets the message separator (number of spaces between message parts).
-   * @param {Integer} val - The number of spaces.
+   * Set to `undefined` to reset to the default from `show.msgSep`.
+   * @param {Integer | undefined} val - The number of spaces, or undefined to use the default.
    */
-  override set msgSep(val: Integer) {
+  override set msgSep(val: Integer | undefined) {
     this._msgSep = val;
   }
 
   /**
-   * Retrieves the message separator value.
+   * Retrieves the message separator value, or `undefined` if using the default.
    */
-  override get msgSep(): Integer {
+  override get msgSep(): Integer | undefined {
     return this._msgSep;
   }
 
@@ -183,7 +184,13 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
     return this;
   }
 
-  sep(n: Integer): this {
+  /**
+   * Sets the number of spaces between message parts for subsequent log messages.
+   * Call with no argument to reset to the default from `show.msgSep`.
+   * @param {Integer} [n] - The number of spaces, or omit to reset to the default.
+   * @returns {this} The logger instance for chaining.
+   */
+  sep(n?: Integer): this {
     this.msgSep = n;
     return this;
   }

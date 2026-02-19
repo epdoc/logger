@@ -54,7 +54,7 @@ export class InfluxTransport extends Base.Transport {
 
     // Process the message body
     if (entry.msg instanceof MsgBuilder.Abstract) {
-      fields.set('message', entry.msg.format({ color: false, target: 'json' }));
+      fields.set('message', entry.msg.format({ color: false, target: 'json', msgSep: entry.msgSep }));
     } else if (_.isString(entry.msg)) {
       fields.set('message', entry.msg);
     }

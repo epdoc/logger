@@ -137,7 +137,7 @@ export class ConsoleTransport extends Base.Transport {
 
     if (msg.msg instanceof MsgBuilder.Abstract) {
       const target = this._format === 'text' ? 'console' : this._format as MsgBuilder.EmitterTarget;
-      entry.msg = msg.msg.format({ color: color, target });
+      entry.msg = msg.msg.format({ color: color, target, msgSep: msg.msgSep });
     } else if (_.isString(msg.msg)) {
       entry.msg = msg.msg;
     } else {
@@ -204,7 +204,7 @@ export class ConsoleTransport extends Base.Transport {
     if (!_.isNullOrUndefined(msg.data) && this._show.data) {
       parts.push(JSON.stringify(msg.data));
     }
-    const sep = _.isInteger(msg.msgSep) ? ' '.repeat(msg.msgSep) : ' ';
+    const sep = this._show.columnSep ?? ' ';
     return parts.join(sep);
   }
 

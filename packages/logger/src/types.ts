@@ -76,6 +76,16 @@ export type EmitterShowOpts = {
   pkgSep?: string;
   /** If set to false, will suppress color in any Transports that support color by default (eg. Console). */
   color?: boolean;
+  /**
+   * Default number of spaces between message parts when formatting a log message.
+   * Can be overridden per-logger via `logger.sep(n)`. Defaults to 1.
+   */
+  msgSep?: Integer;
+  /**
+   * Separator string between transport-level columns (timestamp, level, pkg, msg, time, data).
+   * Defaults to a single space `' '`.
+   */
+  columnSep?: string;
 };
 
 /**

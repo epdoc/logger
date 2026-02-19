@@ -45,7 +45,7 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
   protected _sid: string | undefined;
   protected _mark: Record<string, HrMilliseconds> = {};
   protected _childCount = 0;
-  protected _msgSep: Integer = 1;
+  protected _msgSep: Integer | undefined;
 
   /**
    * Initializes a new logger instance.
@@ -203,16 +203,17 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
 
   /**
    * Sets the message separator (number of spaces between message parts).
-   * @param {Integer} val - The number of spaces.
+   * Set to `undefined` to reset to the default from `show.msgSep`.
+   * @param {Integer | undefined} val - The number of spaces, or undefined to use the default.
    */
-  public set msgSep(val: Integer) {
+  public set msgSep(val: Integer | undefined) {
     this._msgSep = val;
   }
 
   /**
-   * Retrieves the message separator value.
+   * Retrieves the message separator value, or `undefined` if using the default.
    */
-  public get msgSep(): Integer {
+  public get msgSep(): Integer | undefined {
     return this._msgSep;
   }
 

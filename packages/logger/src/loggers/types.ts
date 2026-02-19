@@ -48,14 +48,15 @@ export interface IEmitter extends IMark {
    */
   get sid(): string | undefined;
   /**
-   * Sets the session ID for the logger's context.
-   * @param {string} val - The session identifier, often tied to a user.
+   * Sets the message separator (number of spaces between message parts).
+   * Set to `undefined` to reset to the default from `show.msgSep`.
+   * @param {Integer | undefined} val - The number of spaces, or undefined to use the default.
    */
-  set msgSep(val: Integer);
+  set msgSep(val: Integer | undefined);
   /**
-   * Retrieves the session ID.
+   * Retrieves the message separator value, or `undefined` if using the default.
    */
-  get msgSep(): Integer;
+  get msgSep(): Integer | undefined;
   /**
    * Sets the log level threshold for this logger.
    * @param {Level.Name | Level.Value} level - The threshold to set.

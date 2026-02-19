@@ -78,7 +78,7 @@ export class BufferTransport extends Base.Transport {
     // Format the message similar to console transport
     let message = '';
     if (msg.msg instanceof MsgBuilder.Abstract) {
-      message = msg.msg.format({ color: false, target: 'console' });
+      message = msg.msg.format({ color: false, target: 'console', msgSep: msg.msgSep });
     } else if (_.isString(msg.msg)) {
       message = msg.msg;
     }

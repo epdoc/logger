@@ -21,6 +21,8 @@ export function isStrictEmitterShowOpts(val: unknown): val is EmitterShowOpts {
     'time',
     'pkgSep',
     'color',
+    'msgSep',
+    'columnSep',
   ] as const;
 
   if (!_.isDict(val) || !_.hasOnlyAllowedProperties(val, allowedPropertyNames)) {
@@ -42,6 +44,8 @@ export function isStrictEmitterShowOpts(val: unknown): val is EmitterShowOpts {
   if ('time' in obj && !(_.isUndefined(obj.time) || _.isBoolean(obj.time))) return false;
   if ('pkgSep' in obj && !(_.isUndefined(obj.pkgSep) || _.isString(obj.pkgSep))) return false;
   if ('color' in obj && !(_.isUndefined(obj.color) || _.isBoolean(obj.color))) return false;
+  if ('msgSep' in obj && !(_.isUndefined(obj.msgSep) || _.isInteger(obj.msgSep))) return false;
+  if ('columnSep' in obj && !(_.isUndefined(obj.columnSep) || _.isString(obj.columnSep))) return false;
 
   return true;
 }
