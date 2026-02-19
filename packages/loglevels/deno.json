@@ -13,7 +13,9 @@
     "check": "deno check src test",
     "docs": "deno doc --json src/mod.ts > library-docs.json",
     "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs",
-    "publish": "deno publish"
+    "publish": "deno publish",
+    "update": "output=$(deno update 2>&1); echo \"$output\"; [[ \"$output\" =~ \"Updated\" ]]",
+    "update:changed": "deno task update && deno task prepublish"
   },
   "exports": "./src/mod.ts",
   "test": {

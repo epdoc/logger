@@ -13,7 +13,9 @@
     "example:01": "deno run -A test/example.01.test.ts",
     "example:02": "deno run -A test/example.02.test.ts",
     "example:03": "deno run -A test/example.03.test.ts",
-    "example:04": "deno run -A test/example.04.test.ts"
+    "example:04": "deno run -A test/example.04.test.ts",
+    "update": "output=$(deno update 2>&1); echo \"$output\"; [[ \"$output\" =~ \"Updated\" ]]",
+    "update:changed": "deno task update && deno task prepublish"
   },
   "license": "MIT",
   "imports": {
