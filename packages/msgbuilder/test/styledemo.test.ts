@@ -1,10 +1,7 @@
 import { assertEquals } from '@std/assert';
 import { expect } from '@std/expect';
 import { afterAll, beforeAll, describe, test } from '@std/testing/bdd';
-import os from 'node:os';
 import * as MsgBuilder from '../src/mod.ts';
-
-const home = os.userInfo().homedir;
 
 describe('MsgBuilder.Console', () => {
   describe('style formatters comparison', () => {
@@ -37,8 +34,10 @@ describe('MsgBuilder.Console', () => {
       console.log('');
 
       // Verify that colors are applied (should contain ANSI escape codes)
-      expect(result).not.toEqual('h1 h2 h3 action label highlight value url path code date success strikethru warn error');
-      expect(result).toMatch(/\x1b\[|\u001b\[/); // ANSI escape sequences
+      expect(result).not.toEqual(
+        'h1 h2 h3 action label highlight value url path code date success strikethru warn error',
+      );
+      expect(result).toContain('\x1b'); // ANSI escape sequence start
     });
 
     test('all three style formatters with colors (compact)', () => {
@@ -71,7 +70,7 @@ describe('MsgBuilder.Console', () => {
 
         // Verify that colors are applied (should contain ANSI escape codes)
         expect(result).not.toEqual(expect.stringContaining(s.name + ' - label value /example/path success warn error'));
-        expect(result).toMatch(/\x1b\[|\u001b\[/); // ANSI escape sequences
+        expect(result).toContain('\x1b'); // ANSI escape sequence start
       }
 
       // Reset to default
@@ -85,7 +84,7 @@ describe('MsgBuilder.Console', () => {
 
       // Use V0 theme for no-colors demo
       MsgBuilder.Console.Builder.styleFormatters = MsgBuilder.Console.styleFormattersV0;
-      
+
       const msgBuilder = new MsgBuilder.Console.Builder();
       const result = msgBuilder
         .h1('h1')
@@ -110,7 +109,7 @@ describe('MsgBuilder.Console', () => {
 
       // Verify no ANSI codes when color is false
       assertEquals(result, 'h1 h2 h3 action label highlight value url path code date success strikethru warn error');
-      expect(result).not.toMatch(/\x1b\[|\u001b\[/);
+      expect(result).not.toContain('\x1b');
 
       // Reset to default
       MsgBuilder.Console.Builder.styleFormatters = MsgBuilder.Console.styleFormatters;
