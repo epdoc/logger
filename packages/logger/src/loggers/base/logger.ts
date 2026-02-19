@@ -193,6 +193,15 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
   }
 
   /**
+   * Sets the request ID on the logger's context.
+   *
+   * @param {string} [val] - The request ID to set.
+   */
+  public set reqId(val: string | undefined) {
+    this._reqId = val;
+  }
+
+  /**
    * Sets the message separator (number of spaces between message parts).
    * @param {Integer} val - The number of spaces.
    */
@@ -205,17 +214,6 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
    */
   public get msgSep(): Integer {
     return this._msgSep;
-  }
-
-  /**
-   * Appends a request ID to the logger's context in a chainable manner.
-   *
-   * @param {string} [val] - The request ID to add.
-   * @returns {this} The current logger instance.
-   * @internal
-   */
-  public set reqId(val: string | undefined) {
-    this._reqId = val;
   }
 
   /**
