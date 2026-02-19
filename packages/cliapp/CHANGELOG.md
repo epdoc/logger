@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.7] - 2026-02-19
+
+- Updated dependencies
+
 ## [2.0.6] - 2026-02-18
 
 - Updated dependencies. Declared 2.0.6 release.
