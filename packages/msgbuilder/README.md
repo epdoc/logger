@@ -258,6 +258,46 @@ This abstract class provides a fluent, chainable interface for constructing log 
 
 It manages message parts, indentation, conditional logic, and structured data, and implements the `IFormatter` interface for final string conversion.
 
+### Theming and Colors
+
+The `ConsoleMsgBuilder` uses a static `styleFormatters` property to determine how to style different message parts (text, headings, labels, values, etc.). You can customize the color theme globally or per-subclass.
+
+#### Default Theme
+
+The default theme is `Console.styleFormatters` (exported from `@epdoc/msgbuilder`), which uses a rich 24-bit RGB color palette optimized for modern terminals with true-color support. The default includes colors like gold for h1 headings, purple for h2, cyan for paths, and green for values.
+
+#### Available Themes
+
+Three built-in themes are available:
+
+- **`Console.styleFormatters`** (default) - Rich 24-bit RGB colors (requires true-color terminal support)
+- **`Console.styleFormattersV0`** - Standard ANSI colors for broad terminal compatibility
+- **`Console.styleFormattersV1`** - Higher-contrast, bolder palette using standard ANSI colors
+
+#### Changing the Global Theme
+
+```typescript
+import { Console } from '@epdoc/msgbuilder';
+
+// Use the V0 theme (standard ANSI colors)
+Console.Builder.styleFormatters = Console.styleFormattersV0;
+
+// Use the V1 theme (higher contrast)
+Console.Builder.styleFormatters = Console.styleFormattersV1;
+```
+
+#### Per-Subclass Theme
+
+```typescript
+import { Console } from '@epdoc/msgbuilder';
+
+class MyBuilder extends Console.Builder {
+  static override styleFormatters = Console.styleFormattersV1;
+}
+```
+
+Individual builder methods always read from `this.styles`, which resolves to the class-level `styleFormatters` — so a subclass override is automatically respected without overriding any methods.
+
 ### `ConsoleMsgBuilder`
 
 A message builder for creating styled console messages.

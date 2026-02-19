@@ -104,6 +104,22 @@ class AppContext extends CliApp.Ctx.AbstractBase<AppBuilder, AppLogger> {
 
 See [example.04.test.ts](./test/example.04.test.ts) for a complete working example.
 
+#### Theming and Colors
+
+You can customize the color theme for your CLI application:
+
+```typescript
+import { Console } from '@epdoc/msgbuilder';
+
+// Use standard ANSI colors for broader terminal compatibility
+Console.Builder.styleFormatters = Console.styleFormattersV0;
+
+// Or use the higher-contrast V1 theme
+Console.Builder.styleFormatters = Console.styleFormattersV1;
+```
+
+For message content styling, see [@epdoc/msgbuilder theming](../msgbuilder/README.md#theming-and-colors). For console transport column styling (session ID, request ID, etc.), see [@epdoc/logger theming](../logger/README.md#console-transport-column-styling).
+
 ### Commands with Subcommands
 
 Override `getSubCommands()` to return subcommand instances. Subcommands do not receive a context in their constructor —

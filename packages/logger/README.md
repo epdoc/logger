@@ -240,7 +240,55 @@ log.info.text('Operation complete').emit();
 
 When you setup a transport, you tell the transport whether to use color or not. Of our bundled transports, only the `Console` Transport supports color and by default it will appear with color output.
 
-You can force color on or off (where supported by a transport) by setting the color property of 
+You can force color on or off (where supported by a transport) by setting the color property.
+
+### Console Transport Column Styling
+
+The Console transport applies styles to metadata columns (session ID, request ID, package name, elapsed time, etc.) separately from the message content styling provided by the message builder. The active style map is held on the static `columnStyles` property and defaults to the built-in theme.
+
+#### Default Theme
+
+The default theme uses standard ANSI colors:
+- Session ID (`_sid`): Yellow with underline
+- Request ID (`_reqId`): Bright yellow
+- Package (`_package`): Green
+- Elapsed time (`_elapsed`): Gray
+- Level prefixes (`_level`, `_errorPrefix`, etc.): Gray, red for errors, cyan for warnings
+
+#### Changing Column Styles
+
+```typescript
+import * as Log from '@epdoc/logger';
+import * as colors from '@std/fmt/colors';
+
+// Define custom column styles
+const myColumnStyles = {
+  _reqId: colors.brightCyan,
+  _sid: colors.magenta,
+  _package: colors.brightGreen,
+  _elapsed: colors.gray,
+  _level: colors.white,
+  _errorPrefix: colors.brightRed,
+  _warnPrefix: colors.brightYellow,
+  _infoPrefix: colors.white,
+  _verbosePrefix: colors.gray,
+  _debugPrefix: colors.gray,
+  _sillyPrefix: colors.gray,
+  _httpPrefix: colors.gray,
+  _timePrefix: colors.gray,
+  _plain: colors.white,
+  _suffix: colors.white,
+  _action: colors.blue,
+};
+
+// Apply globally to all Console transports
+Log.Transport.Console.Transport.columnStyles = myColumnStyles;
+
+// Or apply to a specific transport instance
+const transport = new Log.Transport.Console.Transport(logMgr, { color: true });
+```
+
+For message content styling (text, headings, values, etc.), see the [@epdoc/msgbuilder documentation](../msgbuilder/README.md#theming-and-colors). 
 
 # Documentation
 
