@@ -19,7 +19,7 @@ function sampleText(msg: MsgBuilder.Console.Builder): string {
 
   // Body text with various elements
   msg.text('\nStarting deployment process at ').date('2025-02-20 14:30:45').text('. ');
-  msg.text('The build system will ').action('compile (action)').text(' and ').action('deploy');
+  msg.text('The').bold('build system').text('will').action('compile (action)').text(' and ').action('deploy');
   msg.text(' the application to production. (text)');
 
   // Key-value pairs with labels and values
@@ -133,7 +133,10 @@ describe('MsgBuilder.Console', () => {
       console.log('');
 
       // Verify no ANSI codes when color is false
-      assertEquals(result, 'h1 h2 h3 action label highlight value url path code date success strikethru warn error dim bold');
+      assertEquals(
+        result,
+        'h1 h2 h3 action label highlight value url path code date success strikethru warn error dim bold',
+      );
       expect(result).not.toContain('\x1b');
 
       // Reset to default
@@ -184,7 +187,9 @@ describe('MsgBuilder.Console', () => {
       );
       const r2 = builder.format({ color: false });
       console.log(r2);
-      expect(r2).toEqual('h1 h2 h3 action label highlight value url path code date success strikethru warn error dim bold');
+      expect(r2).toEqual(
+        'h1 h2 h3 action label highlight value url path code date success strikethru warn error dim bold',
+      );
     });
 
     test('display no colors', () => {
@@ -211,7 +216,10 @@ describe('MsgBuilder.Console', () => {
         .bold('bold')
         .format({ color: false });
       console.log(result);
-      assertEquals(result, 'h1 h2 h3 action label highlight value url path code date success strikethru warn error dim bold');
+      assertEquals(
+        result,
+        'h1 h2 h3 action label highlight value url path code date success strikethru warn error dim bold',
+      );
     });
 
     test('display applyColor', () => {

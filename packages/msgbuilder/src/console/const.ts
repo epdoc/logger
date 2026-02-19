@@ -56,12 +56,17 @@ export const consoleStyleFormattersV1: ConsoleStyleMap = {
   bold: (str: string) => colors.bold(colors.white(str)),
 };
 
+const white = 0xffffff;
 const gold = 0xff981a;
-const skin = 0xffa46f;
+const amber = 0xffb020;
+const orange = 0xf0883e;
 const pink = 0xef5867;
-const blue = 0x14b0bd;
-const purple = 0x996fda;
 const green = 0x51d67c;
+const teal = 0x2dd4a8;
+const cyan = 0x58d1eb;
+const steel = 0x8899aa;
+const lavender = 0xc4b5fd;
+const lilac = 0xe0a0ff;
 
 /**
  * The default console style theme using a rich 24-bit RGB color palette.
@@ -70,34 +75,34 @@ const green = 0x51d67c;
  */
 export const consoleStyleFormatters: ConsoleStyleMap = {
   // Text hierarchy
-  text: (str: string) => rgb24(str, skin),
+  text: (str: string) => rgb24(str, white),
   h1: (str: string) => bold(rgb24(str, gold)),
-  h2: (str: string) => rgb24(str, purple),
-  h3: (str: string) => rgb24(str, blue),
+  h2: (str: string) => rgb24(str, lilac),
+  h3: (str: string) => rgb24(str, steel),
 
   // Interactive elements
-  action: (str: string) => bold(rgb24(str, pink)),
-  highlight: (str: string) => bold(rgb24(str, gold)),
+  action: (str: string) => bold(rgb24(str, orange)),
+  highlight: (str: string) => bold(rgb24(str, amber)),
 
   // Key-value pairs
-  label: (str: string) => rgb24(str, blue),
+  label: (str: string) => rgb24(str, steel),
   value: (str: string) => rgb24(str, green),
 
   // Navigation
-  url: (str: string) => colors.underline(rgb24(str, blue)),
-  path: (str: string) => colors.underline(rgb24(str, purple)),
+  url: (str: string) => colors.underline(rgb24(str, cyan)),
+  path: (str: string) => colors.underline(rgb24(str, lavender)),
 
   // Status indicators
-  success: (str: string) => rgb24(str, green),
-  warn: (str: string) => rgb24(str, gold),
+  success: (str: string) => rgb24(str, teal),
+  warn: (str: string) => rgb24(str, amber),
   error: (str: string) => bold(rgb24(str, pink)),
 
   // Utility
-  code: (str: string) => rgb24(str, skin),
-  date: (str: string) => rgb24(str, blue),
+  code: (str: string) => rgb24(str, lavender),
+  date: (str: string) => rgb24(str, steel),
   strikethru: colors.inverse,
-  dim: (str: string) => colors.dim(rgb24(str, 0xffffff)),
-  bold: (str: string) => colors.bold(rgb24(str, 0xffffff)),
+  dim: (str: string) => colors.dim(rgb24(str, white)),
+  bold: (str: string) => colors.bold(rgb24(str, white)),
 };
 
 /**

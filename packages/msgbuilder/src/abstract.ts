@@ -1,6 +1,6 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import { bold, dim } from '@std/fmt/colors';
 import { _, type Dict, type Integer } from '@epdoc/type';
+import { bold, dim } from '@std/fmt/colors';
 import { ConsoleEmitter } from './emitter.ts';
 import type { EmitterData, FormatOpts, IEmitter, IFormatter, MsgPart, StyleArg, StyleFormatterFn } from './types.ts';
 import { StringUtil } from './util.ts';
@@ -209,7 +209,16 @@ export abstract class AbstractMsgBuilder implements IFormatter {
           return String(arg);
         })
         .join(' ');
-      this.appendMsgPart(str, style);
+      let finalStyle = style;
+      if (_.isFunction(finalStyle) && this._dimMode) {
+        const prev = finalStyle;
+        finalStyle = (s: string) => dim(prev(s));
+      }
+      if (_.isFunction(finalStyle) && this._boldMode) {
+        const prev = finalStyle;
+        finalStyle = (s: string) => bold(prev(s));
+      }
+      this.appendMsgPart(str, finalStyle);
     }
     return this;
   }
@@ -361,9 +370,11 @@ export abstract class AbstractMsgBuilder implements IFormatter {
    */
   format(opts?: FormatOpts): string {
     let noColor = Deno.noColor;
+    let sep = ' ';
     if (opts) {
       if (opts.color === true) noColor = false;
       if (opts.color === false) noColor = true;
+      if (_.isInteger(opts.msgSep)) sep = ' '.repeat(opts.msgSep);
     }
     const parts: string[] = [];
     if (_.isNonEmptyString(this._msgIndent)) {
@@ -371,19 +382,12 @@ export abstract class AbstractMsgBuilder implements IFormatter {
     }
     this._msgParts.forEach((part: MsgPart) => {
       if (part.style && !noColor) {
-        let styled = part.style(part.str);
-        if (this._boldMode) {
-          styled = bold(styled);
-        }
-        if (this._dimMode) {
-          styled = dim(styled);
-        }
-        parts.push(styled);
+        parts.push(part.style(part.str));
       } else {
         parts.push(part.str);
       }
     });
-    return parts.join(' ');
+    return parts.join(sep);
   }
 
   /**

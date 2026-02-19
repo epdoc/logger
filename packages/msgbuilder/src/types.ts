@@ -1,5 +1,5 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import type { Dict } from '@epdoc/type';
+import type { Dict, Integer } from '@epdoc/type';
 import type { AbstractMsgBuilder } from './abstract.ts';
 
 /**
@@ -81,6 +81,10 @@ export type FormatOpts = {
    * The target format for the output.
    */
   target?: EmitterTarget;
+  /**
+   * The number of spaces used to separate message parts. Defaults to 1.
+   */
+  msgSep?: Integer;
 };
 
 /**

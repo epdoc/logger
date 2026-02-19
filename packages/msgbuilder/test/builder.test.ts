@@ -338,6 +338,30 @@ describe('MsgBuilder.Console', () => {
       assertEquals(result, 'Hello World');
     });
 
+    test('format with msgSep=0 joins parts with no space', () => {
+      const builder = new MsgBuilder.Console.Builder();
+      const result = builder.h1('Hello').text('World').format({ color: false, msgSep: 0 });
+      assertEquals(result, 'HelloWorld');
+    });
+
+    test('format with msgSep=1 joins parts with single space (default)', () => {
+      const builder = new MsgBuilder.Console.Builder();
+      const result = builder.h1('Hello').text('World').format({ color: false, msgSep: 1 });
+      assertEquals(result, 'Hello World');
+    });
+
+    test('format with msgSep=3 joins parts with three spaces', () => {
+      const builder = new MsgBuilder.Console.Builder();
+      const result = builder.h1('Hello').text('World').value('!').format({ color: false, msgSep: 3 });
+      assertEquals(result, 'Hello   World   !');
+    });
+
+    test('format without msgSep defaults to single space', () => {
+      const builder = new MsgBuilder.Console.Builder();
+      const result = builder.h1('A').text('B').format({ color: false });
+      assertEquals(result, 'A B');
+    });
+
     test('emit() outputs with color', () => {
       const tester = new MsgBuilder.TestEmitter();
       const builder = new MsgBuilder.Console.Builder(tester);
