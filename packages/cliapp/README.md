@@ -118,7 +118,9 @@ Console.Builder.styleFormatters = Console.styleFormattersV0;
 Console.Builder.styleFormatters = Console.styleFormattersV1;
 ```
 
-For message content styling, see [@epdoc/msgbuilder theming](../msgbuilder/README.md#theming-and-colors). For console transport column styling (session ID, request ID, etc.), see [@epdoc/logger theming](../logger/README.md#console-transport-column-styling).
+For message content styling, see [@epdoc/msgbuilder theming](../msgbuilder/README.md#theming-and-colors). For console
+transport column styling (session ID, request ID, etc.), see
+[@epdoc/logger theming](../logger/README.md#console-transport-column-styling).
 
 ### Commands with Subcommands
 
