@@ -37,8 +37,9 @@ export type TransportStyleKey =
  * while the `Record<TransportStyleKey, ...>` part ensures all required keys
  * are present at compile time.
  */
-export type TransportStyleMap = Record<TransportStyleKey, StyleFormatterFn> &
-  Record<string, StyleFormatterFn>;
+export type TransportStyleMap =
+  & Record<TransportStyleKey, StyleFormatterFn>
+  & Record<string, StyleFormatterFn>;
 
 /**
  * Options for configuring the `Console` transport.
