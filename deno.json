@@ -17,7 +17,7 @@
     "./packages/cliapp",
     "./packages/demo",
     "./packages/cliffapp",
-    "./packages/demo-cliffy",
+    "./packages/examples",
     "./packages/demo-cliapp"
   ],
   "fmt": {

@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logger-examples",
-  "version": "0.0.1-alpha.18",
+  "version": "0.0.1-alpha.19",
   "exports": "./README.md",
   "description": "Logging module with chainable formatting, middleware mixins and extendable transports",
   "author": {
@@ -10,18 +10,26 @@
   "license": "MIT",
   "tasks": {
     "lint": "deno lint",
-    "check": "deno check *.ts",
+    "check": "deno check *.ts test/*.ts",
+    "test": "deno test -A",
     "examples": "./run.sh"
+  },
+  "test": {
+    "include": [
+      "test/**/*.test.ts"
+    ]
   },
   "lint": {
     "include": [
       "deno.json",
-      "*.ts"
+      "*.ts",
+      "test"
     ]
   },
   "fmt": {
     "include": [
       "*.ts",
+      "test",
       "deno.json"
     ],
     "singleQuote": true,
@@ -31,6 +39,8 @@
     "@epdoc/cliapp": "../cliapp/src/mod.ts",
     "@epdoc/logger": "../logger/src/mod.ts",
     "@epdoc/msgbuilder": "../msgbuilder/src/mod.ts",
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.4"
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
+    "@std/expect": "jsr:@std/expect@^1.0.17",
+    "@std/testing": "jsr:@std/testing@^1.0.17"
   }
 }
