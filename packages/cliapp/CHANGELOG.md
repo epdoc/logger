@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.8] - 2026-02-19
+
+- Update depedencies
+
 ## [2.0.7] - 2026-02-19
 
 - Updated dependencies
