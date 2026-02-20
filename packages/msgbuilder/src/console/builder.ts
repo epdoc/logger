@@ -1,6 +1,6 @@
 import { _, type Integer } from '@epdoc/type';
 import os from 'node:os';
-import { relative } from 'node:path';
+import { isAbsolute, relative } from 'node:path';
 import { AbstractMsgBuilder } from '../abstract.ts';
 import type * as MsgBuilder from '../types.ts';
 import { consoleStyleFormatters } from './const.ts';
@@ -273,13 +273,35 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   }
 
   /**
-   * Appends a file path relative to the user's home directory.
-   * @param {string} path - The absolute path to display as a relative path.
-   * @returns {this}
+   * Resolves a path to its most readable relative form.
+   * * Logic priority:
+   * 1. Home-relative (`~/...`) if within the user's home directory.
+   * 2. CWD-relative (`./...`) if within the current working directory.
+   * 3. Absolute path as a fallback (useful for external volumes like /Volumes/SSD8TB/).
+   * * @param path - The absolute or relative file path to format.
+   * @returns The current instance for method chaining.
    */
   relative(path: string): this {
-    const s = '~/' + relative(home, path);
-    return this.path(s);
+    const cwd = Deno.cwd();
+
+    // 1. Calculate relative paths
+    const relToHome = relative(home, path);
+    const relToCwd = relative(cwd, path);
+
+    let displayPath: string;
+
+    // 2. Logic: Is it under Home? (and not traversing 'up' out of it)
+    if (!relToHome.startsWith('..') && !isAbsolute(relToHome)) {
+      displayPath = `~/${relToHome}`;
+    } // 3. Logic: Is it under the Current Working Directory?
+    else if (!relToCwd.startsWith('..') && !isAbsolute(relToCwd)) {
+      displayPath = `./${relToCwd}`;
+    } // 4. Fallback: Use the Absolute path (e.g., /Volumes/SSD8TB/...)
+    else {
+      displayPath = path;
+    }
+
+    return this.path(displayPath);
   }
 
   // ─── Data types ────────────────────────────────────────────────────────────
