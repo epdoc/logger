@@ -18,10 +18,10 @@ type HelloOpts = { time: number };
 export const TREE: CliApp.CommandNode<Ctx.RootContext, DeclarativeOpts> = {
   name: 'main_declarative',
   description: 'A Purely Declarative Demo',
-  options: {
-    '--happy-mode': 'Enable happy mode',
-    '--name <name>': 'Your name',
-  },
+  options: [
+    { flags: '--happy-mode', description: 'Enable happy mode' },
+    { flags: '--name <name>', description: 'Your name' },
+  ],
   helpText: [
     { text: '\nThis is help text for the root command.' },
     { text: 'This is more help text for the root command.' },
@@ -53,14 +53,14 @@ export const TREE: CliApp.CommandNode<Ctx.RootContext, DeclarativeOpts> = {
   subCommands: {
     hello: {
       description: 'This command will say hello',
-      options: {
-        '--time <time>': {
-          description: 'How many hours I will be here',
-          default: '10',
-          required: true,
-          argParser: _.asInt,
-        },
-      },
+      options: [{
+        flags: '--time <time>',
+        description: 'How many hours I will be here',
+        default: '10',
+        required: true,
+        argParser: _.asInt,
+      }],
+
       helpText: [{ text: '\nThis is help text for the hello command.' }],
       createContext: (ctx: Ctx.RootContext): Ctx.ChildContext => {
         ctx.log.info.section('hello createContext').emit();
