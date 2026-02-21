@@ -34,7 +34,7 @@ class AppContext extends CliApp.Ctx.AbstractBase {
 // 2. Define root command
 class RootCommand extends CliApp.Cmd.AbstractBase<AppContext, AppContext> {
   constructor(ctx: AppContext) {
-    super(ctx, { ...pkg, root: true });
+    super(ctx, { root: true });
   }
 
   override defineOptions() {
@@ -54,6 +54,10 @@ if (import.meta.main) {
   await CliApp.run(ctx, rootCmd);
 }
 ```
+
+> **Note:** Root commands automatically inherit `name`, `version`, and `description` from the context's `pkg` metadata
+> (loaded from `deno.json`). The `@scope/` prefix is stripped from the name. You only need `{ root: true }` — no need to
+> spread `pkg` into the constructor params.
 
 ## Documentation
 
@@ -130,7 +134,7 @@ they receive the parent's hydrated context via `setParentContext()` during the p
 ```typescript
 class RootCommand extends CliApp.Cmd.AbstractBase<AppContext, AppContext, RootOptions> {
   constructor(ctx: AppContext) {
-    super(ctx, { ...pkg, root: true, dryRun: true });
+    super(ctx, { root: true, dryRun: true }); // name, version, description come from ctx.pkg
   }
 
   override defineOptions() {
@@ -298,7 +302,14 @@ Base class for all commands.
 - `initialContext` — For root commands: the pre-constructed context. For subcommands: pass `undefined`.
 - `params.root` — Set `true` on the root command to enable logging options and version flag.
 - `params.dryRun` — Set `true` to include the `--dry-run` flag.
-- `params.name`, `params.description`, `params.version` — Command metadata.
+- `params.name`, `params.description`, `params.version` — Command metadata. For root commands, these automatically fall
+  back to `ctx.pkg` if not provided (name has `@scope/` stripped). This means `{ root: true }` is typically sufficient.
+
+**Metadata resolution order** (highest priority first):
+
+1. `defineMetadata()` — programmatic overrides via setters
+2. Constructor params — values passed to `super(ctx, { ... })`
+3. `ctx.pkg` — automatic fallback from `deno.json` (root commands only)
 
 **Lifecycle methods (override as needed):**
 

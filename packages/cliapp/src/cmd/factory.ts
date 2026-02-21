@@ -3,6 +3,7 @@
  * @description Factory function to create BaseCommand subclasses from CommandNode configuration
  */
 
+import { _ } from '@epdoc/type';
 import type * as Ctx from '../context.ts';
 import type * as CliApp from '../types.ts';
 import { AbstractCommand } from './abstract.ts';
@@ -69,14 +70,11 @@ export function createCommand<
         }
       }
 
-      if (node.options) {
-        for (const [flags, config] of Object.entries(node.options)) {
-          const desc = typeof config === 'string' ? config : config.description;
-          const option = this.option(flags, desc);
-          if (typeof config !== 'string') {
-            if (config.default) option.default(config.default);
-            if (config.required) option.required();
-          }
+      if (_.isNonEmptyArray(node.options)) {
+        for (const config of (node.options)) {
+          const option = this.option(config.flags, config.description);
+          if (config.default) option.default(config.default);
+          if (config.required) option.required();
           option.emit();
         }
       }

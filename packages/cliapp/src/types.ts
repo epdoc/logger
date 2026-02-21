@@ -49,6 +49,7 @@ export type LogOptions = CmdOptions & {
  * Configuration for a single command-line option
  */
 export interface OptionConfig {
+  flags: string;
   description: string;
   default?: unknown;
   required?: boolean;
@@ -119,7 +120,7 @@ export interface CommandNode<
   /** Command aliases */
   aliases?: string[];
   /** Command options */
-  options?: OptionsMap;
+  options?: OptionConfig[];
   /** Command arguments */
   arguments?: string[];
   /** Custom help text to display */

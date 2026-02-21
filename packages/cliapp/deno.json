@@ -1,7 +1,7 @@
 {
   "name": "@epdoc/cliapp",
   "description": "A CLI application template for @epdoc/logger",
-  "version": "2.0.9",
+  "version": "2.0.10",
   "exports": "./src/mod.ts",
   "tasks": {
     "dev": "deno test --watch",

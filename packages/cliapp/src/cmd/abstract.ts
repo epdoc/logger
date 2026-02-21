@@ -69,11 +69,15 @@ export abstract class AbstractCommand<
   /**
    * Initializes basic Commander.js state and stores constructor parameters.
    *
+   * For root commands, `name`, `version`, and `description` are automatically
+   * populated from `ctx.pkg` during {@link init} if not provided here. See
+   * {@link init} for the full metadata resolution order.
+   *
    * @param initialContext - Optional initial context for root commands.
    * @param params - Configuration parameters.
-   * @param params.name - Command name.
-   * @param params.description - Brief command summary.
-   * @param params.version - Version string (only applied if root=true).
+   * @param params.name - Command name. Falls back to `ctx.pkg.name` (scope-stripped) for root commands.
+   * @param params.description - Brief command summary. Falls back to `ctx.pkg.description` for root commands.
+   * @param params.version - Version string (only applied if root=true). Falls back to `ctx.pkg.version`.
    * @param params.aliases - Command aliases (only for subcommands).
    * @param params.root - Set to true for the root command to enable global flags.
    * @param params.dryRun - Set to true to include the global --dry-run option.
@@ -105,15 +109,37 @@ export abstract class AbstractCommand<
    * sets up command options via {@link defineOptions}, and recursively
    * initializes subcommands.
    *
-   * Metadata provided in the constructor {@link params} (or via the
-   * declarative {@link createCommand} `node`) takes precedence over values
-   * set programmatically in {@link defineMetadata}.
+   * ### Metadata resolution order (highest priority first)
+   *
+   * 1. **{@link defineMetadata}** — programmatic overrides via setters
+   * 2. **Constructor params** — values already in `this.params`
+   * 3. **`ctx.pkg`** — automatic fallback for root commands only
+   *
+   * For root commands (`params.root === true`), if `name`, `version`, or
+   * `description` are not already set in params, they are automatically
+   * populated from `grandpaContext.pkg` (the `deno.json` metadata passed to the
+   * context constructor). The `name` field has its `@scope/` prefix stripped
+   * (e.g. `"@epdoc/nexus"` becomes `"nexus"`). This means a minimal root
+   * command constructor like `super(ctx, { root: true })` will automatically
+   * pick up the application name, version, and description from `deno.json`.
    *
    * @returns A promise that resolves to the command instance.
    */
   public async init(): Promise<this> {
     if (this.initialized) return this;
     this.initialized = true;
+
+    // For root commands, auto-populate name/version/description from ctx.pkg
+    // as the lowest-priority fallback. defineMetadata() and explicit constructor
+    // params can still override these values.
+    if (this.params.root && this.grandpaContext?.pkg) {
+      const pkg = this.grandpaContext.pkg;
+      if (!this.params.version) this.params.version = pkg.version;
+      if (!this.params.description) this.params.description = pkg.description;
+      if (!this.params.name) {
+        this.params.name = pkg.name.replace(/^@[^/]+\//, '');
+      }
+    }
 
     // Subclasses can apply additional metadata here FIRST
     await this.defineMetadata();

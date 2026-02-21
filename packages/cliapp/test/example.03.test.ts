@@ -27,9 +27,7 @@ const RootCommand = CliApp.Cmd.create<RootContext, RootContext, RootOptions>(
   {
     name: pkg.name,
     description: pkg.description,
-    options: {
-      '--root-option': 'Example root command option',
-    },
+    options: [{ flags: '--root-option', description: 'Example root command option' }],
     hydrateContext: (ctx, opts) => {
       ctx.debugMode = (opts as RootOptions).rootOption;
     },
@@ -38,9 +36,7 @@ const RootCommand = CliApp.Cmd.create<RootContext, RootContext, RootOptions>(
         name: 'process',
         description: 'Process files',
         arguments: ['<files...>'],
-        options: {
-          '--sub-option': 'Example subcommand option',
-        },
+        options: [{ flags: '--sub-option', description: 'Example subcommand option' }],
         createContext: (parent: RootContext) => {
           return new ChildContext(parent, { pkg: 'child' });
         },
