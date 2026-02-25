@@ -58,7 +58,7 @@ export class LogMgr<
     pkg: false,
     reqId: false,
     sid: false,
-    time: false,
+    time: true,
     data: false,
   };
   // protected _pkg: string = '';
