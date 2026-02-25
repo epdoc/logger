@@ -40,7 +40,7 @@
     "@epdoc/logger": "../logger/src/mod.ts",
     "@epdoc/msgbuilder": "../msgbuilder/src/mod.ts",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
-    "@std/expect": "jsr:@std/expect@^1.0.17",
+    "@std/expect": "jsr:@std/expect@^1.0.18",
     "@std/testing": "jsr:@std/testing@^1.0.17"
   }
 }

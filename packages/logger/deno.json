@@ -48,14 +48,14 @@
     "$transport": "./src/transports/mod.ts",
     "@epdoc/loglevels": "jsr:@epdoc/loglevels@^0.0.16",
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.6",
-    "@std/expect": "jsr:@std/expect@^1.0.17",
+    "@std/expect": "jsr:@std/expect@^1.0.18",
     "@std/fmt": "jsr:@std/fmt@^1.0.9",
     "@std/fmt/colors": "jsr:@std/fmt@^1.0.9/colors",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
     "@epdoc/string": "jsr:@epdoc/string@^0.1.16",
     "@epdoc/duration": "jsr:@epdoc/duration@^0.3.7",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^2.0.14",
-    "@std/assert": "jsr:@std/assert@^1.0.18",
+    "@std/assert": "jsr:@std/assert@^1.0.19",
     "@std/testing": "jsr:@std/testing@^1.0.17"
   }
 }
