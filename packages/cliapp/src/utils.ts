@@ -69,7 +69,7 @@ export function configureLogging(ctx: Ctx.AbstractBase, opts: LogOptions): void 
     ctx.logMgr.threshold = threshold;
   }
 
-  const show: Log.EmitterShowOpts = {};
+  const show: Log.EmitterShowOpts = { time: true };
 
   if (_.isBoolean(opts.color)) {
     show.color = opts.color;
@@ -82,7 +82,7 @@ export function configureLogging(ctx: Ctx.AbstractBase, opts: LogOptions): void 
   } else if (opts.logShow) {
     if (_.isNonEmptyArray(opts.logShow)) {
       for (const prefix of opts.logShow) {
-        const prefixStr = String(prefix);
+        const prefixStr = String(prefix).toLowerCase();
         const m = prefixStr.match(REG.levelType);
         if (m && m.length) {
           show.level = true;
@@ -106,6 +106,8 @@ export function configureLogging(ctx: Ctx.AbstractBase, opts: LogOptions): void 
           show.sid = true;
         } else if (prefix === 'time') {
           show.time = true;
+        } else if (prefix === 'notime') {
+          show.time = false;
         } else if (prefix === 'all') {
           setAllShow(show);
         }

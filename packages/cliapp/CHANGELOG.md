@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.11] - 2026-02-24
+
+- Set show time default true
+
 ## [2.0.10] - 2026-02-21
 
 - Changed declarative CommandNode options argument to be an array of OptionsConfig objects.

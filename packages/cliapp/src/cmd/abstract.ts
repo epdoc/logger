@@ -13,6 +13,20 @@ import type * as Ctx from '../context.ts';
 import type * as CliApp from '../types.ts';
 import { commaList, configureLogging } from '../utils.ts';
 
+const logShowValues = [
+  'level',
+  'level:icon',
+  'level:int',
+  'package',
+  'reqId',
+  'utc',
+  'locale',
+  'elapsed',
+  'time',
+  'notime',
+  'all',
+];
+
 /**
  * Abstract base class for creating CLI commands with automatic context flow
  *
@@ -436,13 +450,15 @@ export abstract class AbstractCommand<
         'SILLY',
       ])
       .argParser((val) => val.toUpperCase()).emit();
-    this.option('--verbose', 'Shortcut for --log verbose').emit();
-    this.option('-D, --debug', 'Shortcut for --log debug').emit();
-    this.option('-T, --trace', 'Shortcut for --log trace').emit();
-    this.option('-S, --spam', 'Shortcut for --log spam').emit();
-    this.option('--log-show [show]', 'Enable log message output properties').argParser(commaList)
-      .emit();
-    this.option('-A, --log-show-all', 'Shortcut for --log_show all').emit();
+    this.option('--verbose', 'Shortcut for --log-level verbose').emit();
+    this.option('-D, --debug', 'Shortcut for --log-level debug').emit();
+    this.option('-T, --trace', 'Shortcut for --log-level trace').emit();
+    this.option('-S, --spam', 'Shortcut for --log-level spam').emit();
+    this.option('--log-show [show]', 'Enable log message output properties with comma-separated list').argParser(
+      commaList,
+    )
+      .choices(logShowValues).emit();
+    this.option('-A, --log-show-all', 'Shortcut for --log-show all').emit();
     this.option('--no-color', 'Do not show color in output').emit();
 
     if (this.params.dryRun) {
