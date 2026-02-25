@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.12] - 2026-02-24
+
+- Updated dependencies
+
 ## [2.0.11] - 2026-02-24
 
 - Set show time default true
