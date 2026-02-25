@@ -200,7 +200,7 @@ export abstract class AbstractCommand<
 
         // 3. Configure logging for root commands
         if (this.params.root) {
-          configureLogging(this.ctx, opts as CliApp.LogOptions);
+          configureLogging(this.ctx, opts as CliApp.LogCmdOptions);
         }
 
         // 4. Pass this context down to subcommands so they can inherit

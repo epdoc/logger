@@ -19,7 +19,7 @@ class ChildContext extends RootContext {
   }
 }
 
-type RootOptions = CliApp.LogOptions & { rootOption: boolean };
+type RootOptions = CliApp.LogCmdOptions & { rootOption: boolean };
 type SubOptions = { subOption: boolean };
 
 // Define commands using 100% declarative approach

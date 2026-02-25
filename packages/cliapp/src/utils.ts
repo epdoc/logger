@@ -2,31 +2,54 @@ import * as Log from '@epdoc/logger';
 import type { Integer } from '@epdoc/type';
 import * as _ from '@epdoc/type';
 import type * as Ctx from './context.ts';
-import type { LogOptions } from './types.ts';
+import type { LogCmdOptions } from './types.ts';
 
 const REG = {
   levelType: new RegExp(/^level(:(icon|\d{1,2}|\-\d{1,2}))?$/),
 };
 
 /**
- * Configures logging settings based on command-line options
+ * Configures logging settings based on command-line options.
  *
  * Processes standard logging options (--log-level, --verbose, --debug, etc.) and applies
  * them to the logger manager. Handles log level conflicts and configures output
  * formatting based on --log-show options.
  *
+ * By default, elapsed time display is enabled (`time: true`). This can be explicitly
+ * disabled using `--log-show notime`, or re-enabled with `--log-show time`. The time
+ * setting follows a last-wins approach when multiple time-related options are provided.
+ *
  * @param ctx - Application context containing the logger manager
  * @param opts - Parsed command-line options from Commander.js
+ * @param opts.logLevel - Explicit log level threshold (e.g., 'INFO', 'DEBUG')
+ * @param opts.verbose - Shortcut to set log level to INFO
+ * @param opts.debug - Shortcut to set log level to DEBUG
+ * @param opts.trace - Shortcut to set log level to TRACE
+ * @param opts.spam - Shortcut to set log level to SPAM
+ * @param opts.logShow - Array of display properties (e.g., ['level', 'pkg', 'time', 'notime'])
+ * @param opts.logShowAll - Show all available log properties
+ * @param opts.color - Explicitly enable color output
+ * @param opts.noColor - Disable color output
+ * @param opts.dryRun - Enable dry-run mode
  *
- * @throws {Error} When conflicting log level options are provided
+ * @throws {Error} When conflicting log level options are provided (e.g., both --debug and --verbose)
  *
- * @example
+ * @example Basic usage
  * ```typescript
  * const opts = cmd.commander.opts();
  * configureLogging(ctx, opts);
  * ```
+ *
+ * @example With specific show options
+ * ```typescript
+ * // Show level and package, with default time display
+ * configureLogging(ctx, { logShow: ['level', 'pkg'] });
+ *
+ * // Disable time display explicitly
+ * configureLogging(ctx, { logShow: ['level', 'notime'] });
+ * ```
  */
-export function configureLogging(ctx: Ctx.AbstractBase, opts: LogOptions): void {
+export function configureLogging(ctx: Ctx.AbstractBase, opts: LogCmdOptions): void {
   if (opts.dryRun) {
     ctx.dryRun = true;
   }
@@ -79,41 +102,37 @@ export function configureLogging(ctx: Ctx.AbstractBase, opts: LogOptions): void 
 
   if (opts.logShowAll) {
     setAllShow(show);
-  } else if (opts.logShow) {
-    if (_.isNonEmptyArray(opts.logShow)) {
-      for (const prefix of opts.logShow) {
-        const prefixStr = String(prefix).toLowerCase();
-        const m = prefixStr.match(REG.levelType);
-        if (m && m.length) {
-          show.level = true;
-          if (m.length > 1) {
-            if (m[2] === 'icon') {
-              show.level = 'icon';
-            } else {
-              const val = _.asInt(m[2]);
-              if (val) {
-                show.level = val;
-              }
+  } else if (opts.logShow && _.isNonEmptyArray(opts.logShow)) {
+    for (const prefix of opts.logShow) {
+      const prefixStr = String(prefix).toLowerCase();
+      const m = prefixStr.match(REG.levelType);
+      if (m && m.length) {
+        show.level = true;
+        if (m.length > 1) {
+          if (m[2] === 'icon') {
+            show.level = 'icon';
+          } else {
+            const val = _.asInt(m[2]);
+            if (val) {
+              show.level = val;
             }
           }
-        } else if (Log.isTimestampFormat(prefix)) {
-          show.timestamp = prefix;
-        } else if (prefix === 'package' || prefix === 'pkg') {
-          show.pkg = true;
-        } else if (prefix === 'reqId') {
-          show.reqId = true;
-        } else if (prefix === 'sid') {
-          show.sid = true;
-        } else if (prefix === 'time') {
-          show.time = true;
-        } else if (prefix === 'notime') {
-          show.time = false;
-        } else if (prefix === 'all') {
-          setAllShow(show);
         }
+      } else if (Log.isTimestampFormat(prefix)) {
+        show.timestamp = prefix;
+      } else if (prefix === 'package' || prefix === 'pkg') {
+        show.pkg = true;
+      } else if (prefix === 'reqId') {
+        show.reqId = true;
+      } else if (prefix === 'sid') {
+        show.sid = true;
+      } else if (prefix === 'time') {
+        show.time = true;
+      } else if (prefix === 'notime') {
+        show.time = false;
+      } else if (prefix === 'all') {
+        setAllShow(show);
       }
-    } else {
-      setAllShow(show);
     }
   }
   if (!_.isEmpty(show)) {

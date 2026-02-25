@@ -82,7 +82,6 @@ describe('util', () => {
       const ctx = new TestContext(pkg);
       await ctx.setupLogging();
       CliApp.configureLogging(ctx, { logShow: ['level'] });
-      CliApp.configureLogging(ctx, { logShow: true });
     });
 
     it('should handle "all" in logShow', async () => {
@@ -101,6 +100,85 @@ describe('util', () => {
       const ctx = new TestContext(pkg);
       await ctx.setupLogging();
       CliApp.configureLogging(ctx, { color: true, noColor: true });
+    });
+  });
+
+  describe('time display option', () => {
+    it('should default time to true when no log-show options provided', async () => {
+      const ctx = new TestContext(pkg);
+      await ctx.setupLogging();
+      CliApp.configureLogging(ctx, {});
+      assertEquals(ctx.logMgr.show.time, true);
+    });
+
+    it('should enable time when --log-show time is provided', async () => {
+      const ctx = new TestContext(pkg);
+      await ctx.setupLogging();
+      CliApp.configureLogging(ctx, { logShow: ['time'] });
+      assertEquals(ctx.logMgr.show.time, true);
+    });
+
+    it('should disable time when --log-show notime is provided', async () => {
+      const ctx = new TestContext(pkg);
+      await ctx.setupLogging();
+      CliApp.configureLogging(ctx, { logShow: ['notime'] });
+      assertEquals(ctx.logMgr.show.time, false);
+    });
+
+    it('should handle time in combination with other show options', async () => {
+      const ctx = new TestContext(pkg);
+      await ctx.setupLogging();
+      CliApp.configureLogging(ctx, { logShow: ['level', 'time', 'pkg'] });
+      assertEquals(ctx.logMgr.show.time, true);
+      assertEquals(ctx.logMgr.show.level, true);
+      assertEquals(ctx.logMgr.show.pkg, true);
+    });
+
+    it('should override default time:true with notime', async () => {
+      const ctx = new TestContext(pkg);
+      await ctx.setupLogging();
+      CliApp.configureLogging(ctx, { logShow: ['level', 'notime'] });
+      assertEquals(ctx.logMgr.show.time, false);
+      assertEquals(ctx.logMgr.show.level, true);
+    });
+
+    it('should set time to true when --log-show-all is used', async () => {
+      const ctx = new TestContext(pkg);
+      await ctx.setupLogging();
+      CliApp.configureLogging(ctx, { logShowAll: true });
+      assertEquals(ctx.logMgr.show.time, true);
+      assertEquals(ctx.logMgr.show.level, true);
+      assertEquals(ctx.logMgr.show.pkg, true);
+    });
+
+    it('should preserve time:true when other show options are set without affecting time', async () => {
+      const ctx = new TestContext(pkg);
+      await ctx.setupLogging();
+      CliApp.configureLogging(ctx, { logShow: ['level', 'pkg'] });
+      assertEquals(ctx.logMgr.show.time, true);
+      assertEquals(ctx.logMgr.show.level, true);
+      assertEquals(ctx.logMgr.show.pkg, true);
+    });
+
+    it('should handle last-wins when both time and notime are provided', async () => {
+      const ctx = new TestContext(pkg);
+      await ctx.setupLogging();
+      CliApp.configureLogging(ctx, { logShow: ['time', 'notime'] });
+      assertEquals(ctx.logMgr.show.time, false);
+    });
+
+    it('should handle last-wins when notime comes before time', async () => {
+      const ctx = new TestContext(pkg);
+      await ctx.setupLogging();
+      CliApp.configureLogging(ctx, { logShow: ['notime', 'time'] });
+      assertEquals(ctx.logMgr.show.time, true);
+    });
+
+    it('should preserve time:true with all option', async () => {
+      const ctx = new TestContext(pkg);
+      await ctx.setupLogging();
+      CliApp.configureLogging(ctx, { logShow: ['all'] });
+      assertEquals(ctx.logMgr.show.time, true);
     });
   });
 

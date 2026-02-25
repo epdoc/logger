@@ -33,7 +33,7 @@ class AppContext extends CliApp.Ctx.AbstractBase<AppBuilder, Logger> {
 }
 
 // Option types
-type RootOptions = CliApp.LogOptions & {
+type RootOptions = CliApp.LogCmdOptions & {
   config?: string;
   quiet?: boolean;
   dryRun?: boolean;

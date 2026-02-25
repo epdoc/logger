@@ -22,7 +22,7 @@ export type CmdArgs = string[];
 /**
  * Standard CLI options structure
  */
-export type LogOptions = CmdOptions & {
+export type LogCmdOptions = CmdOptions & {
   /** Log level threshold (e.g., 'info', 'debug', 'error') */
   logLevel?: string;
   /** Shortcut to set logLevel to verbose */
@@ -33,8 +33,8 @@ export type LogOptions = CmdOptions & {
   trace?: boolean;
   /** Shortcut to set logLevel to spam (the lowest log level) */
   spam?: boolean;
-  /** Array of log properties to display (e.g., 'level', 'timestamp'). Empty shows only the message.  */
-  logShow?: string[] | boolean | undefined;
+  /** Array of log properties to display (e.g., 'level', 'timestamp', 'time', 'notime'). */
+  logShow?: string[] | undefined;
   /** Show all available log properties */
   logShowAll?: boolean;
   /** Display color output */
