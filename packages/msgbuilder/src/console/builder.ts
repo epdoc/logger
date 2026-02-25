@@ -1,6 +1,6 @@
 import { _, type Integer } from '@epdoc/type';
 import os from 'node:os';
-import { isAbsolute, relative } from 'node:path';
+import { relative } from 'node:path';
 import { AbstractMsgBuilder } from '../abstract.ts';
 import type * as MsgBuilder from '../types.ts';
 import { consoleStyleFormatters } from './const.ts';
@@ -273,32 +273,58 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   }
 
   /**
-   * Resolves a path to its most readable relative form.
-   * * Logic priority:
-   * 1. Home-relative (`~/...`) if within the user's home directory.
-   * 2. CWD-relative (`./...`) if within the current working directory.
-   * 3. Absolute path as a fallback (useful for external volumes like /Volumes/SSD8TB/).
-   * * @param path - The absolute or relative file path to format.
-   * @returns The current instance for method chaining.
+   * Formats a file path as a relative path, preferring the shorter of home-relative or CWD-relative.
+   *
+   * This method always returns a relative path (never absolute), choosing whichever is shorter:
+   * - Home-relative (`~/...`) if the path relative to the user's home directory is shorter
+   * - CWD-relative (`./...`) if the path relative to the current working directory is shorter
+   *
+   * Unlike typical relative path functions, this method will show paths with `..` traversal
+   * if necessary. For example, `/usr/bin` might be displayed as `~/../../usr/bin` on macOS
+   * where the home directory is `/Users/username`.
+   *
+   * @param path - The absolute or relative file path to format
+   * @returns The current instance for method chaining
+   *
+   * @example Basic usage with paths under home
+   * ```typescript
+   * const builder = new Console.Builder();
+   * // If home is /Users/alice and cwd is /Users/alice/projects
+   * builder.relative('/Users/alice/documents/file.txt');
+   * // Displays as: ~/documents/file.txt
+   * ```
+   *
+   * @example Paths outside home and cwd
+   * ```typescript
+   * const builder = new Console.Builder();
+   * // If home is /Users/alice
+   * builder.relative('/usr/local/bin');
+   * // Displays as: ~/../../usr/local/bin (or ./../../usr/local/bin if CWD-relative is shorter)
+   * ```
+   *
+   * @example CWD-relative when shorter
+   * ```typescript
+   * const builder = new Console.Builder();
+   * // If home is /Users/alice and cwd is /usr/local
+   * builder.relative('/usr/local/bin/app');
+   * // Displays as: ./bin/app (shorter than ~/../../usr/local/bin/app)
+   * ```
    */
   relative(path: string): this {
     const cwd = Deno.cwd();
 
-    // 1. Calculate relative paths
+    // Calculate relative paths
     const relToHome = relative(home, path);
     const relToCwd = relative(cwd, path);
 
     let displayPath: string;
 
-    // 2. Logic: Is it under Home? (and not traversing 'up' out of it)
-    if (!relToHome.startsWith('..') && !isAbsolute(relToHome)) {
+    // Prefer home-relative if it's shorter or equal to CWD-relative
+    // This handles cases where path is outside both home and CWD
+    if (relToHome.length <= relToCwd.length) {
       displayPath = `~/${relToHome}`;
-    } // 3. Logic: Is it under the Current Working Directory?
-    else if (!relToCwd.startsWith('..') && !isAbsolute(relToCwd)) {
+    } else {
       displayPath = `./${relToCwd}`;
-    } // 4. Fallback: Use the Absolute path (e.g., /Volumes/SSD8TB/...)
-    else {
-      displayPath = path;
     }
 
     return this.path(displayPath);
