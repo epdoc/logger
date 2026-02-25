@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2026-02-24
+
+- Fixed outdated use of option declarative command
+
 ## [0.1.2] - 2026-02-21
 
 - Updated declarative for new CommandNode definition
