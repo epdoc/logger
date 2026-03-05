@@ -429,6 +429,14 @@
           "jsr:@std/fmt@^1.0.9",
           "jsr:@std/testing@^1.0.17"
         ]
+      },
+      "packages/template": {
+        "dependencies": [
+          "jsr:@epdoc/cliapp@^2.0.10",
+          "jsr:@epdoc/logger@^1003.2.18",
+          "jsr:@epdoc/type@^1.2.6",
+          "jsr:@std/assert@^1.0.19"
+        ]
       }
     }
   }

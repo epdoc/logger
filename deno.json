@@ -18,7 +18,8 @@
     "./packages/demo",
     "./packages/cliffapp",
     "./packages/examples",
-    "./packages/demo-cliapp"
+    "./packages/demo-cliapp",
+    "./packages/template"
   ],
   "fmt": {
     "include": ["packages", "deno.json", "launch.config.json"],

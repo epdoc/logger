@@ -1,0 +1,32 @@
+{
+  "name": "@epdoc/cliapp-template",
+  "version": "0.0.2",
+  "description": "Template for creating @epdoc/cliapp compatible commands",
+  "exports": {
+    ".": "./src/mod.ts",
+    "./main": "./main.ts"
+  },
+  "tasks": {
+    "fmt": "deno fmt src test *.json",
+    "lint": "deno lint src test",
+    "check": "deno check *.ts *.json src test",
+    "test": "deno test -A test",
+    "docs": "deno doc --json src/mod.ts > library-docs.json",
+    "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
+  },
+  "license": "MIT",
+  "imports": {
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.0.10",
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.2.18",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
+    "@std/assert": "jsr:@std/assert@^1.0.19"
+  },
+  "fmt": {
+    "singleQuote": true,
+    "lineWidth": 120,
+    "include": ["src", "test", "main.ts", "*.json"]
+  },
+  "lint": {
+    "include": ["src", "test", "main.ts", "*.json"]
+  }
+}
