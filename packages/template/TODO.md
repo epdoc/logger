@@ -32,5 +32,10 @@ The feature has the following important characteristics:
 - If `start` and `stop` are required to start and stop a ProgressLine, do we really need to call `ctx.progress` instead of `ctx.log`?
   - I think we will be able to use `ctx.log.info.text('Downloading').label('fakefile.rsc').start();` and rely on `start`, but this needs TBD.
 - `start` and `stop` will `emit` the message if the threshold is below `info`. But they will control ProgressLine if they are at `info` level.
+- Ideally we could also replace the text string with a call to `update`.
 
 - We will also support calling `ctx.progress.verbose` and `ctx.progress.debug`, and the behaviour will be that we show no progress if the threshold level is above `verbose`/`debug`, the spinner if the level is at `verbose`/`debug`, and the log message if the level is below `verbose`/`debug`. However, for the purposes of clarity in our desriptions in this document, we are assuming the user is always using `info`.
+
+## Feature: Progress Bar
+
+Modify ProgressLine to also support a progress bar (eg `_______ text` where the underscores are where the bar goes and text is the message we built or are updating)
