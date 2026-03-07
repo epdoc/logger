@@ -1,6 +1,6 @@
 import { _, type CompareResult, type Integer } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
-import { isLogLevelSpec, isLogLevelsSet, isSeverityNumber, isSpec } from './guards.ts';
+import { isLogLevelsSet, isSeverityNumber, isSpec } from './guards.ts';
 import type * as Level from './types.ts';
 
 /**
@@ -21,7 +21,7 @@ import type * as Level from './types.ts';
 export class LogLevels implements Level.IBasic {
   $$id: string;
   protected _levelDef: Level.LogLevelMap = {};
-  #specMap: Level.SpecMap = {};
+  #specMap: Level.SpecMap = new Map();
   #specArray: Level.SpecArray = new Array(25).fill(null);
   protected _levelValues: Level.Severity[] = [];
   /**
@@ -43,7 +43,7 @@ export class LogLevels implements Level.IBasic {
       this._levelDef[name] = spec;
       this._levelValues.push(spec.severity);
       const def: Level.Spec = { name, ...spec };
-      this.#specMap[name] = def;
+      this.#specMap.set(name, def);
       this.#specArray[spec.severity] = def;
     }
   }
@@ -65,16 +65,20 @@ export class LogLevels implements Level.IBasic {
    * @inheritdoc
    */
   get names(): Level.Name[] {
-    return Object.keys(this.#specMap);
+    return Array.from(this.#specMap.keys());
   }
 
   get specMap(): Level.SpecMap {
     return this.#specMap;
   }
 
+  get specArray(): Level.SpecArray {
+    return this.#specArray;
+  }
+
   /**
    * @inheritdoc
-   * @deprecarted
+   * @deprecated Use specMap instead
    */
   get levelDefs(): Level.LogLevelMap {
     return this._levelDef;
@@ -86,7 +90,7 @@ export class LogLevels implements Level.IBasic {
       return this.#specArray[level];
     }
     if (_.isString(level)) {
-      const spec = this.#specMap[level.toUpperCase()];
+      const spec = this.#specMap.get(level.toUpperCase());
       return spec ? spec : null;
     }
     return null;
@@ -96,66 +100,66 @@ export class LogLevels implements Level.IBasic {
    * @inheritdoc
    * @deprecated
    */
-  asValue(level: Level.Spec | Level.Name | Level.Severity): Level.Severity {
-    if (isSpec(level)) {
-      return level.severity;
-    }
-    if (_.isString(level) && isLogLevelSpec(this._levelDef[level.toUpperCase()])) {
-      return this._levelDef[level.toUpperCase()].severity as Level.Severity;
-    }
-    if (_.isInteger(level) && this._levelValues.includes(level)) {
-      return level as Level.Severity;
-    }
-    throw new Error(`Cannot get log level: no name for level: ${level ? level : 'undefined'}`);
-  }
+  // asValue(level: Level.Spec | Level.Name | Level.Severity): Level.Severity {
+  //   if (isSpec(level)) {
+  //     return level.severity;
+  //   }
+  //   if (_.isString(level) && isLogLevelSpec(this._levelDef[level.toUpperCase()])) {
+  //     return this._levelDef[level.toUpperCase()].severity as Level.Severity;
+  //   }
+  //   if (_.isInteger(level) && this._levelValues.includes(level)) {
+  //     return level as Level.Severity;
+  //   }
+  //   throw new Error(`Cannot get log level: no name for level: ${level ? level : 'undefined'}`);
+  // }
 
   /**
    * @inheritdoc
    * @deprecated
    */
-  asName(level: Level.Spec | Level.Severity | Level.Name): Level.Name {
-    if (isSpec(level)) {
-      return level.name;
-    }
-    if (typeof level === 'string' && level.toUpperCase() in this._levelDef) {
-      return level.toUpperCase() as Level.Name;
-    }
-    const result: Level.Name = Object.keys(this._levelDef).find((key) => {
-      return isLogLevelSpec(this._levelDef[key]) && this._levelDef[key].severity === level;
-    }) as Level.Name;
-    if (result) {
-      return result;
-    }
-    throw new Error(`Cannot get log level: no name for level: ${level}`);
-  }
+  // asName(level: Level.Spec | Level.Severity | Level.Name): Level.Name {
+  //   if (isSpec(level)) {
+  //     return level.name;
+  //   }
+  //   if (typeof level === 'string' && level.toUpperCase() in this._levelDef) {
+  //     return level.toUpperCase() as Level.Name;
+  //   }
+  //   const result: Level.Name = Object.keys(this._levelDef).find((key) => {
+  //     return isLogLevelSpec(this._levelDef[key]) && this._levelDef[key].severity === level;
+  //   }) as Level.Name;
+  //   if (result) {
+  //     return result;
+  //   }
+  //   throw new Error(`Cannot get log level: no name for level: ${level}`);
+  // }
 
   /**
    * @inheritdoc
    * @deprecated
    */
-  meetsThreshold(
-    level: Level.Spec | Level.Severity | Level.Name,
-    threshold: Level.Spec | Level.Severity | Level.Name,
-  ): boolean {
-    return (this.compareThresholdValue(this.asValue(level), this.asValue(threshold)) >= 0) ? true : false;
-  }
+  // meetsThreshold(
+  //   level: Level.Spec | Level.Severity | Level.Name,
+  //   threshold: Level.Spec | Level.Severity | Level.Name,
+  // ): boolean {
+  //   return (this.compareThresholdValue(this.asValue(level), this.asValue(threshold)) >= 0) ? true : false;
+  // }
 
   /**
    * @inheritdoc
    * @deprecated
    */
-  compareThreshold(
-    level: Level.Spec | Level.Severity | Level.Name,
-    threshold: Level.Spec | Level.Severity | Level.Name,
-  ): CompareResult {
-    return this.compareThresholdValue(this.asValue(level), this.asValue(threshold));
-  }
+  // compareThreshold(
+  //   level: Level.Spec | Level.Severity | Level.Name,
+  //   threshold: Level.Spec | Level.Severity | Level.Name,
+  // ): CompareResult {
+  //   return this.compareThresholdValue(this.asValue(level), this.asValue(threshold));
+  // }
 
   /**
    * @inheritdoc
    * @deprecated
    */
-  compareThresholdValue(levelVal: Level.Severity, thresholdVal: Level.Severity): CompareResult {
+  compareLevelValue(levelVal: Level.Severity, thresholdVal: Level.Severity): CompareResult {
     return (levelVal > thresholdVal) ? +1 : (levelVal === thresholdVal) ? 0 : -1;
   }
 
@@ -163,30 +167,26 @@ export class LogLevels implements Level.IBasic {
    * @inheritdoc
    */
   compareLevels(level: Level.Spec, threshold: Level.Spec): CompareResult {
-    return this.compareThresholdValue(level.severity, threshold.severity);
-  }
-
-  /**
-   * @inheritdoc
-   *     @deprecated
-   */
-  meetsFlushThreshold(level: Level.Spec | Level.Severity | Level.Name): boolean {
-    const spec = this.asSpec(level);
-    return (spec && spec.severity >= 17) ? true : false;
+    return (level.severity > threshold.severity) ? +1 : (level.severity === threshold.severity) ? 0 : -1;
   }
 
   /**
    * @inheritdoc
    */
-  maxWidth(threshold: Level.Spec | Level.Severity | Level.Name): Integer {
-    const thresholdVal = this.asValue(threshold);
+  // meetsFlushThreshold(level: Level.Spec | Level.Severity | Level.Name): boolean {
+  //   const spec = this.asSpec(level);
+  //   return (spec && spec.severity >= 17) ? true : false;
+  // }
+
+  /**
+   * @inheritdoc
+   */
+  maxWidth(thresholdSpec: Level.Spec): Integer {
     let w = 0;
-    for (const name of this.names) {
-      const levelVal = this.asValue(name);
-      if (this.compareThresholdValue(levelVal, thresholdVal) >= 0) {
-        const len = name.length;
-        if (len > w) {
-          w = len;
+    for (const spec of this.#specArray) {
+      if (spec && spec.severity >= thresholdSpec.severity) {
+        if (spec.name.length > w) {
+          w = spec.name.length;
         }
       }
     }
@@ -196,12 +196,9 @@ export class LogLevels implements Level.IBasic {
   /**
    * @inheritdoc
    */
-  applyColors(msg: string, level: Level.Name): string {
-    if (isLogLevelSpec(this._levelDef[level])) {
-      const colorFn = this._levelDef[level].fmtFn;
-      if (colorFn) {
-        return colorFn(msg);
-      }
+  static applyColors(msg: string, spec: Level.Spec | null): string {
+    if (spec && spec.fmtFn) {
+      return spec.fmtFn(msg);
     }
     return msg;
   }

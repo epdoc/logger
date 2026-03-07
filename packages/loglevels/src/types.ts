@@ -67,7 +67,7 @@ export type LogLevelsSet = {
 };
 export type LogLevelMap = Record<Name, LogLevelsSpec>;
 
-export type SpecMap = Record<Name, Spec>;
+export type SpecMap = Map<Name, Spec>;
 export type SpecArray = (Spec | null)[];
 
 /**

@@ -20,6 +20,34 @@ const DEFS: Level.LogLevelsSet = {
   },
 } as const;
 
+const colorResult: string[] = [
+  'hello',
+  set.magentaText + 'hello' + reset.fg,
+  set.grayText + 'hello' + reset.fg,
+  set.cyanText + 'hello' + reset.fg,
+  'hello',
+  set.blueText + 'hello' + reset.fg,
+  'hello',
+  set.grayText + 'hello' + reset.fg,
+  'hello',
+  set.greenText + 'hello' + reset.fg,
+  'hello',
+  set.grayText + 'hello' + reset.fg,
+  'hello',
+  set.yellowText + 'hello' + reset.fg,
+  'hello',
+  set.cyanText + 'hello' + reset.fg,
+  'hello',
+  set.redText + 'hello' + reset.fg,
+  'hello',
+  'hello',
+  'hello',
+  'hello',
+  'hello',
+  'hello',
+  'hello',
+];
+
 describe('levels cli', () => {
   const logLevels = new Level.LogLevels(DEFS);
 
@@ -38,13 +66,14 @@ describe('levels cli', () => {
     ]);
     assertEquals(logLevels.$$id, 'test1');
     assertEquals(logLevels.asSpec('info')!.severity, 9);
-    // Test that invalid severity throws
-    try {
-      logLevels.asName(4);
-      throw new Error('Expected asName(4) to throw');
-    } catch (e) {
-      assertEquals((e as Error).message, 'Cannot get log level: no name for level: 4');
-    }
+    assertEquals(logLevels.asSpec(4), null);
+    // // Test that invalid severity throws
+    // try {
+    //   logLevels.asSpec(4)!.name;
+    //   throw new Error('Expected asName(4) to throw');
+    // } catch (e) {
+    //   assertEquals((e as Error).message, 'Cannot get log level: no name for level: 4');
+    // }
     assertEquals(logLevels.asSpec(2)!.name, 'INPUT');
     assertEquals(logLevels.asSpec(3)!.name, 'VERBOSE');
     assertEquals(logLevels.asSpec(1)!.name, 'SILLY');
@@ -55,9 +84,9 @@ describe('levels cli', () => {
   });
 
   test('width', () => {
-    assertEquals(logLevels.maxWidth('INFO'), 5);
-    assertEquals(logLevels.maxWidth('PROMPT'), 6);
-    assertEquals(logLevels.maxWidth('SILLY'), 7);
+    assertEquals(logLevels.maxWidth(logLevels.asSpec('INFO')!), 5);
+    assertEquals(logLevels.maxWidth(logLevels.asSpec('PROMPT')!), 6);
+    assertEquals(logLevels.maxWidth(logLevels.asSpec('SILLY')!), 7);
   });
   test('marked levels', () => {
     assertEquals(logLevels.warnLevel!.name, 'WARN');
@@ -81,15 +110,10 @@ describe('levels cli', () => {
   });
 
   test('color', () => {
-    assertEquals(logLevels.applyColors('hello', 'ERROR'), set.redText + 'hello' + reset.fg);
-    assertEquals(logLevels.applyColors('hello', 'WARN'), set.yellowText + 'hello' + reset.fg);
-    assertEquals(logLevels.applyColors('hello', 'HELP'), set.cyanText + 'hello' + reset.fg);
-    assertEquals(logLevels.applyColors('hello', 'DATA'), set.grayText + 'hello' + reset.fg);
-    assertEquals(logLevels.applyColors('hello', 'INFO'), set.greenText + 'hello' + reset.fg);
-    assertEquals(logLevels.applyColors('hello', 'DEBUG'), set.blueText + 'hello' + reset.fg);
-    assertEquals(logLevels.applyColors('hello', 'PROMPT'), set.grayText + 'hello' + reset.fg);
-    assertEquals(logLevels.applyColors('hello', 'VERBOSE'), set.cyanText + 'hello' + reset.fg);
-    assertEquals(logLevels.applyColors('hello', 'INPUT'), set.grayText + 'hello' + reset.fg);
-    assertEquals(logLevels.applyColors('hello', 'SILLY'), set.magentaText + 'hello' + reset.fg);
+    for (let severity = 1; severity <= 24; ++severity) {
+      const spec: Level.Spec | null = logLevels.specArray[severity];
+      const s: string = Level.LogLevels.applyColors('hello', spec);
+      assertEquals(s, colorResult[severity]);
+    }
   });
 });
