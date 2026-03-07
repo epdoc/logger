@@ -59,24 +59,24 @@ export interface IEmitter extends IMark {
   get msgSep(): Integer | undefined;
   /**
    * Sets the log level threshold for this logger.
-   * @param {Level.Name | Level.Value} level - The threshold to set.
+   * @param {Level.Name | Level.Severity} level - The threshold to set.
    */
-  set threshold(level: Level.Name | Level.Value);
+  set threshold(level: Level.Name | Level.Severity);
   /**
    * Retrieves the logger's effective threshold.
    */
-  get threshold(): Level.Value;
+  get threshold(): Level.Severity;
   /**
    * /** Alias for {@link meetsThreshold}.
    */
-  meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean;
+  meetsThreshold(level: Level.Severity | Level.Name, threshold?: Level.Severity | Level.Name): boolean;
   /**
    * Checks if a log level meets the specified threshold.
-   * @param {Level.Value | Level.Name} level - The level to check.
-   * @param {Level.Value | Level.Name} [threshold] - An optional, overriding threshold.
+   * @param {Level.Severity | Level.Name} level - The level to check.
+   * @param {Level.Severity | Level.Name} [threshold] - An optional, overriding threshold.
    * @returns {boolean} `true` if the level meets the threshold.
    */
-  isEnabledFor(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean;
+  isEnabledFor(level: Level.Severity | Level.Name, threshold?: Level.Severity | Level.Name): boolean;
 }
 
 /**
@@ -116,35 +116,35 @@ export interface ILevels {
   get logLevels(): Level.IBasic;
   /**
    * Sets the log level threshold.
-   * @param {Level.Name | Level.Value} level - The threshold to set.
+   * @param {Level.Name | Level.Severity} level - The threshold to set.
    * @returns {ILevels} The instance for chaining.
    */
-  setThreshold(level: Level.Name | Level.Value): ILevels;
+  setThreshold(level: Level.Name | Level.Severity): ILevels;
   /**
    * Sets the log level threshold.
    */
-  set threshold(level: Level.Name | Level.Value);
+  set threshold(level: Level.Name | Level.Severity);
   /**
    * Retrieves the effective log level threshold.
    */
-  get threshold(): Level.Value;
+  get threshold(): Level.Severity;
   /**
    * /** Alias for {@link meetsThreshold}.
    */
-  meetsThreshold(level: Level.Value | Level.Name, threshold: Level.Value | Level.Name): boolean;
+  meetsThreshold(level: Level.Severity | Level.Name, threshold: Level.Severity | Level.Name): boolean;
   /**
    * Checks if a log level meets a given threshold.
-   * @param {Level.Value | Level.Name} level - The level to check.
-   * @param {Level.Value | Level.Name} threshold - The threshold to check against.
+   * @param {Level.Severity | Level.Name} level - The level to check.
+   * @param {Level.Severity | Level.Name} threshold - The threshold to check against.
    * @returns {boolean} `true` if the level meets the threshold.
    */
-  isEnabledFor(level: Level.Value | Level.Name, threshold: Level.Value | Level.Name): boolean;
+  isEnabledFor(level: Level.Severity | Level.Name, threshold: Level.Severity | Level.Name): boolean;
   /**
    * Checks if a log level meets the immediate flush threshold.
-   * @param {Level.Value | Level.Name} level - The level to check.
+   * @param {Level.Severity | Level.Name} level - The level to check.
    * @returns {boolean} `true` if the level requires an immediate flush.
    */
-  meetsFlushThreshold(level: Level.Value | Level.Name): boolean;
+  meetsFlushThreshold(level: Level.Severity | Level.Name): boolean;
 }
 
 /**

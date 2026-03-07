@@ -30,9 +30,9 @@ export abstract class AbstractTransport {
   protected _bReady = false;
   protected _bEnabled = true;
   protected _opts: BaseOptions;
-  protected _level: Level.Value;
-  protected _threshold: Level.Value;
-  protected _flushThreshold: Level.Value;
+  protected _level: Level.Severity;
+  protected _threshold: Level.Severity;
+  protected _flushThreshold: Level.Severity;
   protected _show: EmitterShowOpts = { pkgSep: '.' };
 
   private static _nextId = 1;
@@ -66,11 +66,11 @@ export abstract class AbstractTransport {
   /**
    * Sets the log level threshold for this specific transport.
    *
-   * @param {Level.Name | Level.Value} level - The minimum level required for a
+   * @param {Level.Name | Level.Severity} level - The minimum level required for a
    * message to be processed by this transport.
    * @returns {this} The instance for chaining.
    */
-  setThreshold(level: Level.Name | Level.Value): this {
+  setThreshold(level: Level.Name | Level.Severity): this {
     this._threshold = this._logMgr.logLevels.asValue(level);
     this.thresholdUpdated();
     return this;
@@ -96,10 +96,10 @@ export abstract class AbstractTransport {
   /**
    * Checks if a given numeric log level meets this transport's threshold.
    *
-   * @param {Level.Value} level - The numeric log level to check.
+   * @param {Level.Severity} level - The numeric log level to check.
    * @returns {boolean} `true` if the level meets the threshold.
    */
-  meetsThresholdValue(level: Level.Value): boolean {
+  meetsThresholdValue(level: Level.Severity): boolean {
     if (this._threshold === undefined) {
       return true;
     }
@@ -120,10 +120,10 @@ export abstract class AbstractTransport {
   /**
    * Checks if a numeric log level meets the immediate flush threshold.
    *
-   * @param {Level.Value} level - The numeric log level to check.
+   * @param {Level.Severity} level - The numeric log level to check.
    * @returns {boolean} `true` if the level requires an immediate flush.
    */
-  meetsFlushThresholdValue(level: Level.Value): boolean {
+  meetsFlushThresholdValue(level: Level.Severity): boolean {
     return this._logMgr.logLevels.meetsThresholdValue(level, this._threshold);
   }
 

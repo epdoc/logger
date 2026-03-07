@@ -70,7 +70,7 @@ export class BufferTransport extends Base.Transport {
       return; // Transport is disabled
     }
 
-    const levelValue: Level.Value = this._logMgr.logLevels.asValue(msg.level);
+    const levelValue: Level.Severity = this._logMgr.logLevels.asValue(msg.level);
     if (!this.meetsThresholdValue(levelValue)) {
       return;
     }

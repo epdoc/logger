@@ -1,6 +1,6 @@
 import { Console } from '@epdoc/msgbuilder';
-import * as Ctx from '../context.ts';
-import { ProgressLine } from './line.ts';
+import { ProgressLine } from '@epdoc/progress';
+import * as Ctx from './context.ts';
 
 export class ProgressMsgBuilder extends Console.Builder {
   #line: ProgressLine;

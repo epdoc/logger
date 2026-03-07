@@ -37,7 +37,7 @@ export class InfluxTransport extends Base.Transport {
   }
 
   override emit(entry: Entry): void {
-    const levelValue: Level.Value = this._logMgr.logLevels.asValue(entry.level);
+    const levelValue: Level.Severity = this._logMgr.logLevels.asValue(entry.level);
     if (!this.meetsThresholdValue(levelValue)) return;
     if (!entry.timestamp) return;
 

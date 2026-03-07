@@ -60,24 +60,6 @@ const logger = logMgr.getLogger<AppLogger>();
 logger.info.fileOp('READ', '/path/to/file.txt').emit();
 ```
 
-## ContextBundle Pattern
-
-For complex applications with multiple generic types, use the ContextBundle pattern to reduce type complexity:
-
-```typescript
-import * as CliApp from '@epdoc/cliapp';
-import * as Log from '@epdoc/logger';
-
-// Bundle all context types together
-type AppBundle = CliApp.Cmd.ContextBundle<AppContext, AppBuilder, AppLogger>;
-
-class ProcessCmd extends CliApp.Cmd.Sub<AppBundle, ProcessOptions> {
-  // Implementation uses bundled types
-}
-```
-
-This reduces generic parameters from 4 to 2 while maintaining full type safety.
-
 ## Log Manager (`LogMgr`)
 
 The `LogMgr` is the central component responsible for managing the entire logging setup. Its main responsibilities include:
@@ -171,6 +153,22 @@ logger.info
   .label('Status:').success('Complete')
   .emit();
 ```
+
+## Message Flow
+
+- Call `log.info` (or other level)
+  - Creates new `LogEmitter()`
+  - Logger asks LogMgr for new `MsgBuilder(emitter)`
+- Add text to `MsgBuilder`
+- Call `msg.emit`, which:
+  - verifies `emitter.emitEnabled` 
+     - does msg's level meet *any* threshold, including any transport thresholds?
+  - builds message string
+  - calls `Emitter.emit()`, which calls `LogMgr.emit()`
+  - `LogMgr.emit()` checks if _any_ threshold is met
+  - Calls `TransportMgr.emit()` which calls each Transport.emit()
+  - Each Transport's `emit` checks it's local log threshold and emits message
+
 
 The emit flow: `MsgBuilder.emit()` → `Emitter.emit()` → `TransportMgr.emit()` → `Transport.emit()`
 

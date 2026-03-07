@@ -1,5 +1,5 @@
-import type { Integer } from '@epdoc/type';
-import type { LogLevelMap, Name, Value } from './types.ts';
+import type { CompareResult, Integer } from '@epdoc/type';
+import type * as LogLevel from './types.ts';
 
 /**
  * Defines the core contract for a log level management system.
@@ -17,84 +17,86 @@ export interface IBasic {
   readonly $$id: string;
   /**
    * An array of all defined log level names, typically in uppercase.
+   * @deprecated
    */
-  readonly names: Name[];
-
-  /**
-   * The name of the default log level (e.g., 'INFO').
-   */
-  readonly defaultLevelName: Name;
-
-  /**
-   * The name of the lowest-priority log level.
-   */
-  readonly lowestLevelName: Name;
-
-  /**
-   * The name of the warning log level.
-   */
-  readonly warnLevelName: Name;
-
-  /**
-   * The raw definition object that configures all log levels.
-   */
-  readonly levelDefs: LogLevelMap;
-
-  /**
-   * Converts a log level name or numeric value to its corresponding numeric value.
-   * We recommend you set this value to OTLP severity number.
-   *
-   * @param {Name | Value} level - The log level to convert.
-   * @returns {Value} The numeric value of the log level.
-   * @throws {Error} If the level name or value is not defined.
-   */
-  asValue(level: Name | Value): Value;
-
-  /**
-   * Converts a log level numeric value or name to its corresponding name. The returned value is in
-   * uppercase.
-   *
-   * @param {Name | Value} level - The log level to convert.
-   * @returns {Name} The name of the log level.
-   * @throws {Error} If the level value or name is not defined.
-   */
-  asName(level: Name | Value): Name;
+  readonly names: LogLevel.Name[];
 
   /**
    * Checks if a given log level meets or exceeds a specified threshold.
    *
-   * @param {Value | Name} level - The log level to check.
-   * @param {Value | Name} threshold - The threshold to compare against.
-   * @returns {boolean} `true` if the log level meets the threshold.
+   * @param {Severity | Name} level - The log level to check.
+   * @param {Severity | Name} threshold - The threshold to compare against.
+   * @returns {boolean} 0 if the log level meets the threshold, +1 if the log level exceeds the
+   * threshold, and -1 otherwise.
+   * @deprecated Use compareLevels
    */
-  meetsThreshold(level: Value | Name, threshold: Value | Name): boolean;
+  compareThreshold(
+    level: LogLevel.Spec | LogLevel.Severity | LogLevel.Name,
+    threshold: LogLevel.Spec | LogLevel.Severity | LogLevel.Name,
+  ): CompareResult;
+
+  /**
+   * Performs the numeric comparison to check if a level meets or exceeds a threshold.
+   *
+   * @param {Severity} levelVal - The numeric value of the log level.
+   * @param {Severity} thresholdVal - The numeric value of the threshold.
+   * @returns {boolean} 0 if the log level meets the threshold, +1 if the log level exceeds the
+   * threshold, and -1 otherwise.
+   * @deprecated Use compareLevels
+   * @internal
+   */
+  compareThresholdValue(levelVal: LogLevel.Severity, thresholdVal: LogLevel.Severity): CompareResult;
+
+  /**
+   * Compares two log levels using Def objects.
+   * Returns 0 if the levels are equal, +1 if the first level exceeds the second,
+   * and -1 if the first level is below the second.
+   *
+   * @param {Def} level - The first log level to compare.
+   * @param {Def} threshold - The second log level to compare against.
+   * @returns {CompareResult} 0 if equal, +1 if level > threshold, -1 if level < threshold.
+   */
+  compareLevels(level: LogLevel.Spec, threshold: LogLevel.Spec): CompareResult;
+
+  /**
+   * Checks if a given log level meets or exceeds a specified threshold.
+   *
+   * @param {Def | Severity | Name} level - The log level to check.
+   * @param {Def | Severity | Name} threshold - The threshold to compare against.
+   * @returns {boolean} `true` if the log level meets the threshold.
+   * @deprecated Use compareLevels
+   */
+  meetsThreshold(
+    level: LogLevel.Spec | LogLevel.Severity | LogLevel.Name,
+    threshold: LogLevel.Spec | LogLevel.Severity | LogLevel.Name,
+  ): boolean;
 
   /**
    * Performs the numeric comparison to check if a level meets a threshold.
    *
-   * @param {Value} levelVal - The numeric value of the log level.
-   * @param {Value} thresholdVal - The numeric value of the threshold.
+   * @param {Severity} levelVal - The numeric value of the log level.
+   * @param {Severity} thresholdVal - The numeric value of the threshold.
    * @returns {boolean} `true` if the level meets the threshold.
    * @internal
    */
-  meetsThresholdValue(levelVal: Value, thresholdVal: Value): boolean;
+  // meetsThresholdValue(levelVal: Value, thresholdVal: Value): boolean;
 
   /**
    * Checks if a log level is configured to trigger an immediate flush.
    *
-   * @param {Value | Name} level - The log level to check.
+   * @param {Def | Severity | Name} level - The log level to check.
    * @returns {boolean} `true` if the level requires an immediate flush.
    */
-  meetsFlushThreshold(level: Value | Name): boolean;
+  meetsFlushThreshold(level: LogLevel.Spec | LogLevel.Severity | LogLevel.Name): boolean;
 
   /**
    * Calculates the maximum character width of all log level names up to a given
    * threshold, for formatting purposes.
    *
-   * @param {Value | Name} threshold - The highest log level to consider.
+   * @param {Def | Severity | Name} threshold - The highest log level to consider.
    * @returns {Integer} The maximum width of the level names.
    */
-  maxWidth(threshold: Value | Name): Integer;
+  maxWidth(threshold: LogLevel.Spec | LogLevel.Severity | LogLevel.Name): Integer;
 
   /**
    * Applies a level-specific color formatting function to a message.
@@ -103,5 +105,5 @@ export interface IBasic {
    * @param {Name} level - The log level of the message.
    * @returns {string} The formatted (potentially colored) message.
    */
-  applyColors(msg: string, level: Name): string;
+  applyColors(msg: string, level: LogLevel.Name): string;
 }

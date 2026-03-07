@@ -7,16 +7,16 @@ import { reset, set } from './color-map.ts';
 const DEFS: Level.LogLevelsSet = {
   id: 'test1',
   levels: {
-    error: { val: 0, fmtFn: colors.red, flush: true },
-    warn: { val: 1, fmtFn: colors.yellow, warn: true },
-    help: { val: 2, fmtFn: colors.cyan },
-    data: { val: 3, fmtFn: colors.gray },
-    info: { val: 4, fmtFn: colors.green, default: true },
-    debug: { val: 5, fmtFn: colors.blue },
-    prompt: { val: 6, fmtFn: colors.gray },
-    verbose: { val: 7, fmtFn: colors.cyan },
-    input: { val: 8, fmtFn: colors.gray },
-    silly: { val: 9, fmtFn: colors.magenta, lowest: true },
+    error: { severity: 17, fmtFn: colors.red },
+    warn: { severity: 13, fmtFn: colors.yellow },
+    help: { severity: 15, fmtFn: colors.cyan },
+    data: { severity: 11, fmtFn: colors.gray },
+    info: { severity: 9, fmtFn: colors.green },
+    debug: { severity: 5, fmtFn: colors.blue },
+    prompt: { severity: 7, fmtFn: colors.gray },
+    verbose: { severity: 3, fmtFn: colors.cyan },
+    input: { severity: 2, fmtFn: colors.gray },
+    silly: { severity: 1, fmtFn: colors.magenta },
   },
 } as const;
 
@@ -37,17 +37,21 @@ describe('levels cli', () => {
       'SILLY',
     ]);
     assertEquals(logLevels.$$id, 'test1');
-    assertEquals(logLevels.asValue('info'), 4);
-    assertEquals(logLevels.asName(4), 'INFO');
-    assertEquals(logLevels.asName(5), 'DEBUG');
-    assertEquals(logLevels.asName(6), 'PROMPT');
-    assertEquals(logLevels.asName(7), 'VERBOSE');
-    assertEquals(logLevels.asName(8), 'INPUT');
-    assertEquals(logLevels.asName(9), 'SILLY');
-    assertEquals(logLevels.asName(3), 'DATA');
-    assertEquals(logLevels.asName(2), 'HELP');
-    assertEquals(logLevels.asName(1), 'WARN');
-    assertEquals(logLevels.asName(0), 'ERROR');
+    assertEquals(logLevels.asSpec('info')!.severity, 9);
+    // Test that invalid severity throws
+    try {
+      logLevels.asName(4);
+      throw new Error('Expected asName(4) to throw');
+    } catch (e) {
+      assertEquals((e as Error).message, 'Cannot get log level: no name for level: 4');
+    }
+    assertEquals(logLevels.asSpec(2)!.name, 'INPUT');
+    assertEquals(logLevels.asSpec(3)!.name, 'VERBOSE');
+    assertEquals(logLevels.asSpec(1)!.name, 'SILLY');
+    assertEquals(logLevels.asSpec(11)!.name, 'DATA');
+    assertEquals(logLevels.asSpec(15)!.name, 'HELP');
+    assertEquals(logLevels.asSpec(13)!.name, 'WARN');
+    assertEquals(logLevels.asSpec(17)!.name, 'ERROR');
   });
 
   test('width', () => {
@@ -56,31 +60,24 @@ describe('levels cli', () => {
     assertEquals(logLevels.maxWidth('SILLY'), 7);
   });
   test('marked levels', () => {
-    assertEquals(logLevels.warnLevelName, 'WARN');
-    assertEquals(logLevels.lowestLevelName, 'SILLY');
-    assertEquals(logLevels.defaultLevelName, 'INFO');
+    assertEquals(logLevels.warnLevel!.name, 'WARN');
+    assertEquals(logLevels.warnLevel!.severity, 13);
+    assertEquals(logLevels.defaultLevel!.severity, 9);
+    assertEquals(logLevels.defaultLevel!.name, 'INFO');
   });
 
-  test('threshold', () => {
-    assertEquals(logLevels.meetsThreshold(4, 4), true);
-    assertEquals(logLevels.meetsThreshold(4, 5), true);
-    assertEquals(logLevels.meetsThreshold(5, 4), false);
-    assertEquals(logLevels.meetsThreshold(4, 2), false);
-  });
+  test('compare levels', () => {
+    // Using Def objects
+    const errorDef = logLevels.asSpec('error')!;
+    const warnDef = logLevels.asSpec('warn')!;
+    const infoDef = logLevels.asSpec('info')!;
+    const debugDef = logLevels.asSpec('debug')!;
 
-  test('flush threshold', () => {
-    assertEquals(logLevels.meetsFlushThreshold('INFO'), false);
-    assertEquals(logLevels.meetsFlushThreshold('DEBUG'), false);
-    assertEquals(logLevels.meetsFlushThreshold('PROMPT'), false);
-    assertEquals(logLevels.meetsFlushThreshold('VERBOSE'), false);
-    assertEquals(logLevels.meetsFlushThreshold('INPUT'), false);
-    assertEquals(logLevels.meetsFlushThreshold('SILLY'), false);
-    assertEquals(logLevels.meetsFlushThreshold('ERROR'), true);
-    assertEquals(logLevels.meetsFlushThreshold('WARN'), false);
-    assertEquals(logLevels.meetsFlushThreshold('HELP'), false);
-    assertEquals(logLevels.meetsFlushThreshold('DATA'), false);
-    assertEquals(logLevels.meetsFlushThreshold(3), false);
-    assertEquals(logLevels.meetsFlushThreshold(0), true);
+    assertEquals(logLevels.compareLevels(errorDef, errorDef), 0);
+    assertEquals(logLevels.compareLevels(warnDef, errorDef), -1);
+    assertEquals(logLevels.compareLevels(errorDef, warnDef), +1);
+    assertEquals(logLevels.compareLevels(infoDef, debugDef), +1);
+    assertEquals(logLevels.compareLevels(debugDef, infoDef), -1);
   });
 
   test('color', () => {

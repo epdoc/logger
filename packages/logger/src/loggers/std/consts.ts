@@ -18,22 +18,22 @@ import { StdLogger } from './logger.ts';
 const stdLogLevelsSet: Level.LogLevelsSet = {
   id: 'std',
   levels: {
-    fatal: { val: 22, fmtFn: colors.brightRed, flush: true, icon: '☠' },
-    critical: { val: 21, fmtFn: colors.brightRed, flush: true, icon: '↯' },
-    error: { val: 17, fmtFn: colors.red, flush: true, icon: '✗' },
-    warn: { val: 13, fmtFn: colors.yellow, warn: true, icon: '⚠' },
-    info: { val: 9, fmtFn: colors.green, default: true, icon: 'ℹ' },
-    verbose: { val: 6, fmtFn: colors.cyan, icon: '…' },
+    fatal: { severity: 22, fmtFn: colors.brightRed, flush: true, icon: '☠' },
+    critical: { severity: 21, fmtFn: colors.brightRed, flush: true, icon: '↯' },
+    error: { severity: 17, fmtFn: colors.red, flush: true, icon: '✗' },
+    warn: { severity: 13, fmtFn: colors.yellow, warn: true, icon: '⚠' },
+    info: { severity: 9, fmtFn: colors.green, default: true, icon: 'ℹ' },
+    verbose: { severity: 6, fmtFn: colors.cyan, icon: '…' },
     debug: {
-      val: 5,
+      severity: 5,
       fmtFn: (str: string) => {
         return colors.dim(colors.blue(str));
       },
       icon: 'Δ',
     },
-    trace: { val: 4, fmtFn: colors.gray, icon: '↳' },
+    trace: { severity: 4, fmtFn: colors.gray, icon: '↳' },
     spam: {
-      val: 2,
+      severity: 2,
       fmtFn: (str: string) => {
         return colors.dim(colors.gray(str));
       },
@@ -41,7 +41,7 @@ const stdLogLevelsSet: Level.LogLevelsSet = {
       icon: '¶',
     },
     silly: {
-      val: 1,
+      severity: 1,
       fmtFn: (str: string) => {
         return colors.dim(colors.gray(str));
       },

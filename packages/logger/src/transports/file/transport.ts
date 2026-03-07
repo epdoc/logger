@@ -90,10 +90,10 @@ export class FileTransport extends Console.Transport {
    * Outputs a log message to the file.
    *
    * @param {string} msg - The log message to be written.
-   * @param {Level.Value} levelValue - The numerical value of the log level.
+   * @param {Level.Severity} levelValue - The numerical value of the log level.
    * @returns {Promise<void>} A promise that resolves when the output is complete.
    */
-  override async output(msg: string, levelValue: Level.Value): Promise<void> {
+  override async output(msg: string, levelValue: Level.Severity): Promise<void> {
     const bytes = this.encoder.encode(msg + '\n');
     if (bytes.byteLength > this.buf.byteLength - this.pointer) {
       await this.flush();

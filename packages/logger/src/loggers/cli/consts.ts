@@ -18,16 +18,16 @@ import { CliLogger } from './logger.ts';
 const cliLogLevelsSet: Level.LogLevelsSet = {
   id: 'cli',
   levels: {
-    error: { val: 17, fmtFn: colors.red, flush: true, icon: '✗' },
-    warn: { val: 13, fmtFn: colors.yellow, warn: true, icon: '⚠' },
-    help: { val: 11, fmtFn: colors.cyan, icon: '?' },
-    data: { val: 10, fmtFn: colors.gray, icon: '≡' },
-    info: { val: 9, fmtFn: colors.green, default: true, icon: 'ℹ' },
-    debug: { val: 5, fmtFn: colors.blue, icon: '⚙' },
-    prompt: { val: 4, fmtFn: colors.gray, icon: '»' },
-    verbose: { val: 3, fmtFn: colors.cyan, icon: '…' },
-    input: { val: 2, fmtFn: colors.gray, icon: '⌨' },
-    silly: { val: 1, fmtFn: colors.magenta, lowest: true, icon: '☺' },
+    error: { severity: 17, fmtFn: colors.red, icon: '✗' },
+    warn: { severity: 13, fmtFn: colors.yellow, icon: '⚠' },
+    help: { severity: 11, fmtFn: colors.cyan, icon: '?' },
+    data: { severity: 10, fmtFn: colors.gray, icon: '≡' },
+    info: { severity: 9, fmtFn: colors.green, icon: 'ℹ' },
+    debug: { severity: 5, fmtFn: colors.blue, icon: '⚙' },
+    prompt: { severity: 4, fmtFn: colors.gray, icon: '»' },
+    verbose: { severity: 3, fmtFn: colors.cyan, icon: '…' },
+    input: { severity: 2, fmtFn: colors.gray, icon: '⌨' },
+    silly: { severity: 1, fmtFn: colors.magenta, icon: '☺' },
   },
 } as const;
 

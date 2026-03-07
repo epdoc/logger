@@ -17,16 +17,19 @@ The core of this module is the `LogLevels` class, which takes a log level defini
 for working with your custom levels. We DO NOT declare log levels in this module.
 
 ```ts
-import { LogLevels, type LogLevelsDef } from '@epdoc/loglevels';
+import { LogLevels, type LogLevelsSet } from '@epdoc/loglevels';
 import { bold, red, yellow } from '@std/fmt/colors';
 
-// 1. Define your custom log levels
-const myLevels: LogLevelsDef = {
-  CRITICAL: { val: 0, fmtFn: (str) => bold(red(str)), flush: true },
-  ERROR: { val: 1, fmtFn: red },
-  WARN: { val: 2, fmtFn: yellow, warn: true },
-  INFO: { val: 3, default: true },
-  DEBUG: { val: 4, lowest: true },
+// 1. Define your custom log levels using OTLP severity numbers
+const myLevels: LogLevelsSet = {
+  id: 'my-app',
+  levels: {
+    CRITICAL: { severity: 21, fmtFn: (str) => bold(red(str)), flush: true },
+    ERROR: { severity: 17, fmtFn: red },
+    WARN: { severity: 13, fmtFn: yellow, warn: true },
+    INFO: { severity: 9, default: true },
+    DEBUG: { severity: 5, lowest: true },
+  },
 };
 
 // 2. Create a level manager instance
@@ -53,7 +56,24 @@ console.log(levels.applyColors(errorMessage, 'ERROR'));
 // Output: (red text) This is an error!
 ```
 
-## API Overview
+### Using Def Objects
+
+You can work with log levels as `Def` objects that contain both the name and severity:
+
+```ts
+// Convert to a Def object
+const errorDef = levels.asDef('ERROR');
+// Returns: { name: 'ERROR', severity: 17 }
+
+// Use compareLevels for comparing Def objects
+const infoDef = levels.asDef('INFO')!;
+const debugDef = levels.asDef('DEBUG')!;
+
+const result = levels.compareLevels(infoDef, debugDef);
+// Returns: +1 (INFO severity 9 > DEBUG severity 5)
+```
+
+### API Overview
 
 - **`LogLevelsSet`**: A type definition for an object that defines your custom log levels. The keys of the levels
   property are the level names (e.g., `'ERROR'`), and the values are `LogLevelSpec` objects specifying the `val`

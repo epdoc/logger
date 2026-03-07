@@ -9,7 +9,7 @@ import type { OutputFormat } from './consts.ts';
  */
 export interface ILogMgrTransportContext {
   readonly logLevels: Level.IBasic;
-  readonly threshold: Level.Value;
+  readonly threshold: Level.Severity;
   readonly show: EmitterShowOpts;
   readonly startTime: Date;
 }

@@ -37,7 +37,7 @@ let markId = 0;
 export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements IEmitter, ILevels, IInherit {
   protected _logMgr: LogMgr<M>;
   protected _parent: this | undefined;
-  protected _threshold: Level.Value | undefined;
+  protected _threshold: Level.Severity | undefined;
   protected _show: Log.EmitterShowOpts = { pkgSep: '.' };
   /** Contains the chain of pkg values for all super loggers */
   protected _pkgs: string[] = [];
@@ -248,11 +248,11 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
    * {@link LogMgr}, and the transport. A warning is issued if this threshold is
    * less restrictive than the manager's, as the manager's setting will prevail.
    *
-   * @param {Level.Name | Level.Value} level - The threshold to set.
+   * @param {Level.Name | Level.Severity} level - The threshold to set.
    * @returns {this} The current logger instance.
    * @internal
    */
-  setThreshold(level: Level.Name | Level.Value): this {
+  setThreshold(level: Level.Name | Level.Severity): this {
     this._threshold = this.logLevels.asValue(level);
     if (this._logMgr.threshold) {
       if (this._threshold > this._logMgr.threshold) {
@@ -276,19 +276,19 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
    * The effective threshold is the most restrictive of the logger, log manager,
    * and transport settings.
    *
-   * @param {Level.Name | Level.Value} level - The threshold to set.
+   * @param {Level.Name | Level.Severity} level - The threshold to set.
    */
-  public set threshold(level: Level.Name | Level.Value) {
+  public set threshold(level: Level.Name | Level.Severity) {
     this.setThreshold(level);
   }
 
   /**
    * Gets the effective threshold for this logger instance.
    *
-   * @returns {Level.Value} The logger's own threshold, or the log manager's
+   * @returns {Level.Severity} The logger's own threshold, or the log manager's
    * threshold if one is not set on the logger.
    */
-  public get threshold(): Level.Value {
+  public get threshold(): Level.Severity {
     return this._threshold || this._logMgr.threshold;
   }
 
@@ -299,16 +299,16 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
   /**
    * Checks if a given log level meets the effective threshold.
    */
-  isEnabledFor(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean {
-    if (threshold !== undefined) {
-      return this.logLevels.meetsThreshold(level, threshold);
-    }
-    return this._logMgr.meetsThreshold(level, this._threshold);
+  isEnabledFor(level: Level.Severity | Level.Name, threshold?: Level.Severity | Level.Name): boolean {
+    const thres = _.isNullOrUndefined(threshold) ? this._threshold : threshold;
+    const thresholdVal = this.logLevels.asValue(thres!);
+    const result = this._logMgr.logLevels.compareThresholdValue(this.logLevels.asValue(level), thresholdVal);
+    return result >= 0;
   }
   /**
    * /** Alias for {@link isEnabledFor}.
    */
-  meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean {
+  meetsThreshold(level: Level.Severity | Level.Name, threshold?: Level.Severity | Level.Name): boolean {
     return this.isEnabledFor(level, threshold);
   }
 
@@ -316,7 +316,7 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
    * Checks if a given log level meets the immediate flush threshold.
    * @internal
    */
-  meetsFlushThreshold(level: Level.Value | Level.Name): boolean {
+  meetsFlushThreshold(level: Level.Severity | Level.Name): boolean {
     return this.logLevels.meetsFlushThreshold(level);
   }
 

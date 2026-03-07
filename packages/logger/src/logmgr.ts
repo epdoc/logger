@@ -6,8 +6,9 @@ import * as Logger from '$logger';
 import * as Transport from '$transport';
 import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
-import { Emitter, type ITransportEmitter } from './emitter.ts';
+import { CompareResult } from '@epdoc/type';
 import { isStrictEmitterShowOpts } from './guards.ts';
+import { type ITransportEmitter, LogEmitter } from './log-emitter.ts';
 
 /**
  * Central logging manager that coordinates loggers, transports, and message builders.
@@ -51,7 +52,7 @@ export class LogMgr<
   protected _logLevels: Level.IBasic | undefined;
   protected _rootLogger: Logger.IEmitter | undefined;
   protected _msgBuilder: MsgBuilder.Abstract | undefined;
-  protected _threshold: Level.Value = 9;
+  protected _threshold: Level.Severity = 9;
   protected _show: Log.EmitterShowOpts = {
     pkgSep: '.',
     level: false,
@@ -171,11 +172,11 @@ export class LogMgr<
 
   /**
    * Sets the log threshold level. This will apply across all transports, unless overriden by a transport.
-   * @param {Level.Name | Level.Value} level - The new threshold level.
+   * @param {Level.Name | Level.Severity} level - The new threshold level.
    * @returns {this} The instance of LogMgr.
    * @throws Will throw an error if log levels are not set.
    */
-  public set threshold(level: Level.Name | Level.Value) {
+  public set threshold(level: Level.Name | Level.Severity) {
     assert(
       this._logLevels,
       'Methods initLevels() or getLogger() must be called before setting log level threshold.',
@@ -198,7 +199,7 @@ export class LogMgr<
     this.transportMgr.setThreshold(this._threshold);
   }
 
-  public get threshold(): Level.Value {
+  public get threshold(): Level.Severity {
     return this._threshold;
   }
 
@@ -280,11 +281,11 @@ export class LogMgr<
    * @returns {M} A new message builder instance.
    */
   public getMsgBuilder(level: string, emitter: Logger.IEmitter): M {
-    const meetsThreshold = this.meetsThreshold(level);
+    const compareThreshold = this.compareThreshold(level);
     const meetsFlushThreshold = this.meetsFlushThreshold(level);
 
     // Create a lightweight emitter that captures context and has direct access to TransportMgr
-    const directEmitter = new Emitter(
+    const directEmitter = new LogEmitter(
       this,
       level as Level.Name,
       {
@@ -294,8 +295,8 @@ export class LogMgr<
         pkgSep: this._show.pkgSep || '.',
       },
       {
-        meetsThreshold,
-        meetsFlushThreshold,
+        compareThreshold: compareThreshold,
+        meetsFlushThreshold: meetsFlushThreshold,
       },
       emitter.msgSep ?? this._show.msgSep ?? 1,
       // Pass flush callback to handle flush threshold
@@ -397,7 +398,7 @@ export class LogMgr<
     if (!msg.timestamp) {
       msg.timestamp = new Date();
     }
-    if (this.meetsThreshold(msg.level)) {
+    if (this.meetsAnyThreshold(msg.level)) {
       const flush = this.meetsFlushThreshold(msg.level);
       this.transportMgr.emit(msg, flush);
     }
@@ -424,30 +425,34 @@ export class LogMgr<
   }
 
   /**
-   * Evaluates whether a given log level satisfies the configured threshold.
+   * Evaluates whether a given log level satisfies the configured threshold for any of the
+   * transports.
    *
-   * This method first converts the provided level (and optional threshold value)
-   * to its numeric representation. If an explicit threshold is provided, it checks
-   * whether the numeric value of the level meets that threshold; if not, it returns false.
-   * Next, it asserts that a default threshold is set on the LogMgr, and compares the level
-   * against this default threshold. Finally, it consults the transport manager to confirm
-   * that the computed level value is acceptable across any configured transport.
+   * This method first converts the provided level (and optional threshold value) to its numeric
+   * representation. If an explicit threshold is provided, it checks whether the numeric value of
+   * the level meets that threshold; if not, it returns false. Next, it asserts that a default
+   * threshold is set on the LogMgr, and compares the level against this default threshold. Finally,
+   * it consults the transport manager to confirm that the computed level value is acceptable across
+   * any configured transport.
    *
-   * @param {Level.Value | Level.Name} level - The log level to check, either as a numeric value or name.
-   * @param {Level.Value | Level.Name} [threshold] - Optional. A specific threshold to compare against instead of the default.
-   * @returns {boolean} Returns true if the log level meets the configured threshold (both explicitly provided and default) and passes the transport manager's checks; otherwise, false.
+   * @param {Level.Severity | Level.Name} level - The log level to check, either as a numeric value or
+   * name.
+   * @param {Level.Severity | Level.Name} [threshold] - Optional. A specific threshold to compare
+   * against instead of the default.
+   * @returns {boolean} Returns true if the log level meets the configured threshold (both
+   * explicitly provided and default) and passes the transport manager's checks; otherwise, false.
    *
    * @throws Will throw an error if the default log threshold is not set.
    */
-  meetsThreshold(level: Level.Value | Level.Name, threshold?: Level.Value | Level.Name): boolean {
+  meetsAnyThreshold(level: Level.Severity | Level.Name, threshold?: Level.Severity | Level.Name): boolean {
     const levelVal = this.logLevels.asValue(level);
     if (threshold !== undefined) {
-      if (!this.logLevels.meetsThresholdValue(levelVal, this.logLevels.asValue(threshold))) {
+      if (this.logLevels.compareThresholdValue(levelVal, this.logLevels.asValue(threshold)) < 0) {
         return false;
       }
     }
     assert(this._threshold, 'Log threshold not set');
-    if (!this.logLevels.meetsThresholdValue(levelVal, this._threshold)) {
+    if (this.logLevels.compareThresholdValue(levelVal, this._threshold) < 0) {
       return false;
     }
     if (this.transportMgr.isRunning()) {
@@ -457,13 +462,28 @@ export class LogMgr<
   }
 
   /**
+   * This method is used in a narrow set of circumstances when we
+   * @param level
+   * @param threshold
+   * @returns
+   */
+  compareThreshold(level: Level.Severity | Level.Name, threshold?: Level.Severity | Level.Name): CompareResult {
+    const levelVal = this.logLevels.asValue(level);
+    if (threshold !== undefined) {
+      return this.logLevels.compareThresholdValue(levelVal, this.logLevels.asValue(threshold));
+    }
+    assert(this._threshold, 'Log threshold not set');
+    return this.logLevels.compareThresholdValue(levelVal, this._threshold);
+  }
+
+  /**
    * Sets the flush threshold level. If a message exceeds this level then it
    * will be output immediately. Otherwise it may be buffered.
-   * @param {Level.Value | Level.Name} level - The flush threshold level.
+   * @param {Level.Severity | Level.Name} level - The flush threshold level.
    * @returns {boolean} True if the level meets the flush threshold, false
    * otherwise.
    */
-  meetsFlushThreshold(level: Level.Value | Level.Name): boolean {
+  meetsFlushThreshold(level: Level.Severity | Level.Name): boolean {
     return this.logLevels.meetsFlushThreshold(level);
   }
 }

@@ -21,26 +21,23 @@ import type { Integer } from '@epdoc/type';
 import type { IBasic } from './ibasic.ts';
 
 /**
- * Represents the unique name of a log level, such as 'INFO' or 'DEBUG'.
+ * Represents the unique case-insensitive name of a log level, such as, 'info', 'INFO' or 'DEBUG'.
  */
 export type Name = string;
 
 /**
- * Represents the numeric value associated with a log level.
+ * Represents the OTLP numeric value associated with a log level.
+ * This is an integer between 1 and 24.
+ * @see isSeverityNumber
  */
-export type Value = Integer;
-
-/**
- * Represents the OTLP numeric value associated with a log level. This is an integer between 0 and 24.
- */
-export type SeverityNumber = Integer;
+export type Severity = Integer;
 
 /**
  * Defines the complete configuration for a single log level.
  */
-export type LogLevelSpec = {
-  /** The numeric value of the log level. This determines its priority. */
-  val: Value;
+export type LogLevelsSpec = {
+  /** OTLP severityNumber mapping. */
+  severity: Severity;
   /**
    * An optional function to apply custom styling or formatting to messages
    * logged at this level. Typically used for adding colors.
@@ -49,33 +46,12 @@ export type LogLevelSpec = {
    * @returns {string} The formatted message.
    */
   fmtFn?: (str: string) => string;
-  /**
-   * If `true`, this level is considered the default logging threshold if no
-   * other level is specified.
-   * @default false
-   */
-  default?: boolean;
-  /**
-   * If `true`, this level is considered the lowest-priority level, often used
-   * for verbose or debugging messages.
-   * @default false
-   */
-  lowest?: boolean;
-  /**
-   * If `true`, this level is designated as the primary "warning" level.
-   * @default false
-   */
-  warn?: boolean;
-  /**
-   * If `true`, any message logged at this level will trigger an immediate
-   * flush of the transport buffer. Useful for critical errors.
-   * @default false
-   */
-  flush?: boolean;
   /** An icon that can be displayed in place of the log level string. */
   icon?: string;
-  /** OTLP severityNumber mapping */
-  severityNumber?: SeverityNumber;
+};
+
+export type Spec = LogLevelsSpec & {
+  name: Name;
 };
 
 /**
@@ -83,13 +59,16 @@ export type LogLevelSpec = {
  *
  * @remarks
  * The keys in levels are the log level {@link Name|names} (e.g., 'ERROR'), and the values are their
- * corresponding {@link LogLevelSpec|definitions}.
+ * corresponding {@link LogLevelsSpec|definitions}.
  */
 export type LogLevelsSet = {
   id: string;
   levels: LogLevelMap;
 };
-export type LogLevelMap = Record<Name, LogLevelSpec>;
+export type LogLevelMap = Record<Name, LogLevelsSpec>;
+
+export type SpecMap = Record<Name, Spec>;
+export type SpecArray = (Spec | null)[];
 
 /**
  * Defines the signature for a factory function that creates a log level

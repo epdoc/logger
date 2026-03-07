@@ -1,7 +1,7 @@
 import type * as Log from '$log';
 import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import type { Integer } from '@epdoc/type';
+import type { CompareResult, Integer } from '@epdoc/type';
 
 export interface ITransportEmitter {
   emit(msg: Log.Entry): void;
@@ -37,15 +37,14 @@ export interface ITransportEmitter {
  *
  * @public
  */
-export class Emitter implements MsgBuilder.IEmitter {
+export class LogEmitter implements MsgBuilder.IEmitter {
   private readonly _level: Level.Name;
   private readonly _msgEmitter: ITransportEmitter;
   private readonly _sid?: string;
   private readonly _reqId?: string;
   private readonly _pkg?: string;
-  private readonly _meetsThreshold: boolean;
+  private readonly _compareThreshold: CompareResult;
   private readonly _msgSep: Integer = 1;
-  private readonly _meetsFlushThreshold: boolean;
   private readonly _flushCallback?: () => void;
   private readonly _demark?: (name: string, keep?: boolean) => number;
 
@@ -71,7 +70,7 @@ export class Emitter implements MsgBuilder.IEmitter {
       pkgSep: string;
     },
     thresholds: {
-      meetsThreshold: boolean;
+      compareThreshold: CompareResult; // 0 for meets, 1 for exceeds
       meetsFlushThreshold: boolean;
     },
     msgSep: Integer,
@@ -83,8 +82,8 @@ export class Emitter implements MsgBuilder.IEmitter {
     this._sid = context.sid;
     this._reqId = context.reqId;
     this._pkg = context.pkgs.length > 0 ? context.pkgs.join(context.pkgSep) : undefined;
-    this._meetsThreshold = thresholds.meetsThreshold;
-    this._meetsFlushThreshold = thresholds.meetsFlushThreshold;
+    this._compareThreshold = thresholds.compareThreshold;
+    // this._meetsFlushThreshold = thresholds.meetsFlushThreshold;
     this._flushCallback = flushCallback;
     this._msgSep = msgSep;
     this._demark = demark;
@@ -103,7 +102,7 @@ export class Emitter implements MsgBuilder.IEmitter {
    * @public
    */
   get dataEnabled(): boolean {
-    return this._meetsThreshold;
+    return this._compareThreshold >= 0;
   }
 
   /**
@@ -118,7 +117,7 @@ export class Emitter implements MsgBuilder.IEmitter {
    * @public
    */
   get emitEnabled(): boolean {
-    return this._meetsThreshold;
+    return this._compareThreshold >= 0;
   }
 
   /**
@@ -133,7 +132,7 @@ export class Emitter implements MsgBuilder.IEmitter {
    * @public
    */
   get stackEnabled(): boolean {
-    return this._meetsThreshold;
+    return this._compareThreshold >= 0;
   }
 
   /**

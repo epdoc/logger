@@ -120,7 +120,7 @@ export class ConsoleTransport extends Base.Transport {
    * @param {Entry} msg - The log entry to be emitted.
    */
   override emit(msg: Entry) {
-    const levelValue: Level.Value = this._logMgr.logLevels.asValue(msg.level);
+    const levelValue: Level.Severity = this._logMgr.logLevels.asValue(msg.level);
     if (!this.meetsThresholdValue(levelValue)) {
       return;
     }
@@ -231,10 +231,10 @@ export class ConsoleTransport extends Base.Transport {
    * Outputs a string to the console.
    *
    * @param {string} str - The string to be output.
-   * @param {Level.Value} _levelValue - The numerical value of the log level.
+   * @param {Level.Severity} _levelValue - The numerical value of the log level.
    * @returns {Promise<void>} A promise that resolves when the output is complete.
    */
-  output(str: string, _levelValue: Level.Value): Promise<void> {
+  output(str: string, _levelValue: Level.Severity): Promise<void> {
     if (this._useStderr) {
       console.error(str);
     } else {
