@@ -30,9 +30,9 @@ export abstract class AbstractTransport {
   protected _bReady = false;
   protected _bEnabled = true;
   protected _opts: BaseOptions;
-  protected _level: Level.Severity;
-  protected _threshold: Level.Severity;
-  protected _flushThreshold: Level.Severity;
+  protected _level: Level.Spec;
+  protected _threshold: Level.Spec | null = null;
+  protected _flushThreshold: Level.Spec | null = null;
   protected _show: EmitterShowOpts = { pkgSep: '.' };
 
   private static _nextId = 1;
@@ -47,9 +47,9 @@ export abstract class AbstractTransport {
   constructor(logMgr: ILogMgrTransportContext, opts: BaseOptions = {}) {
     this._logMgr = logMgr;
     this._opts = opts;
-    this._level = logMgr.logLevels.asValue('info');
+    this._level = logMgr.logLevels.defaultLevel;
     this._threshold = logMgr.threshold;
-    this._flushThreshold = logMgr.logLevels.asValue('warn');
+    this._flushThreshold = logMgr.logLevels.warnLevel;
     this._show = opts.show ?? logMgr.show;
 
     // Generate unique ID for this transport instance
@@ -70,8 +70,8 @@ export abstract class AbstractTransport {
    * message to be processed by this transport.
    * @returns {this} The instance for chaining.
    */
-  setThreshold(level: Level.Name | Level.Severity): this {
-    this._threshold = this._logMgr.logLevels.asValue(level);
+  setThreshold(level: Level.Spec): this {
+    this._threshold = level;
     this.thresholdUpdated();
     return this;
   }

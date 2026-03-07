@@ -19,7 +19,7 @@ export type TimestampFormatType = typeof TimestampFormat[keyof typeof TimestampF
  */
 export type Entry = {
   /** The severity level of the log entry. */
-  level: Level.Name;
+  level: Level.Spec;
   /** The timestamp of when the log entry was created. */
   timestamp?: Date;
   /** A 'response time' to be output by the transport. */

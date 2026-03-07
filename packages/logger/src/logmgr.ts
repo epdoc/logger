@@ -6,7 +6,7 @@ import * as Logger from '$logger';
 import * as Transport from '$transport';
 import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
-import { CompareResult } from '@epdoc/type';
+import type { CompareResult } from '@epdoc/type';
 import { isStrictEmitterShowOpts } from './guards.ts';
 import { type ITransportEmitter, LogEmitter } from './log-emitter.ts';
 
@@ -52,7 +52,7 @@ export class LogMgr<
   protected _logLevels: Level.IBasic | undefined;
   protected _rootLogger: Logger.IEmitter | undefined;
   protected _msgBuilder: MsgBuilder.Abstract | undefined;
-  protected _threshold: Level.Severity = 9;
+  protected _threshold: Level.Spec | null = null;
   protected _show: Log.EmitterShowOpts = {
     pkgSep: '.',
     level: false,
@@ -158,7 +158,8 @@ export class LogMgr<
     }
     if (!this._logLevels) {
       this._logLevels = this._loggerFactories.createLevels();
-      this._threshold = this._logLevels.asValue(this._logLevels.defaultLevelName);
+
+      this._threshold = this._logLevels.defaultLevel;
     }
     return this;
   }
@@ -181,11 +182,11 @@ export class LogMgr<
       this._logLevels,
       'Methods initLevels() or getLogger() must be called before setting log level threshold.',
     );
-    this._threshold = this.logLevels.asValue(level);
-    if (this._rootLogger) {
-      if (this._threshold > this._rootLogger.threshold) {
+    this._threshold = this.logLevels.asSpec(level);
+    if (this._threshold && this._rootLogger) {
+      if (this._threshold.severity > this._rootLogger.threshold.severity) {
         const msg: Log.Entry = {
-          level: this.logLevels.warnLevelName,
+          level: this.logLevels.asSpec('WARN'),
           msg: `LogMgr threshold (${
             this.logLevels.asName(this._threshold)
           }) is less restrictive than root logger threshold (${
@@ -199,7 +200,7 @@ export class LogMgr<
     this.transportMgr.setThreshold(this._threshold);
   }
 
-  public get threshold(): Level.Severity {
+  public get threshold(): Level.Spec | null {
     return this._threshold;
   }
 

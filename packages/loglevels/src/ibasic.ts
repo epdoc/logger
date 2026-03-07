@@ -21,6 +21,12 @@ export interface IBasic {
    */
   readonly names: LogLevel.Name[];
 
+  get defaultLevel(): LogLevel.Spec;
+  get warnLevel(): LogLevel.Spec;
+  get flushLevel(): LogLevel.Spec;
+
+  asSpec(level: LogLevel.Spec | LogLevel.Name | LogLevel.Severity): LogLevel.Spec | null;
+
   /**
    * Checks if a given log level meets or exceeds a specified threshold.
    *

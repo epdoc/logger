@@ -1,4 +1,5 @@
 import { _, type CompareResult, type Integer } from '@epdoc/type';
+import { assert } from '@std/assert/assert';
 import { isLogLevelSpec, isLogLevelsSet, isSeverityNumber, isSpec } from './guards.ts';
 import type * as Level from './types.ts';
 
@@ -47,13 +48,16 @@ export class LogLevels implements Level.IBasic {
     }
   }
 
-  get defaultLevel(): Level.Spec | null {
+  get defaultLevel(): Level.Spec {
+    assert(this.#specArray[9]);
     return this.#specArray[9];
   }
-  get warnLevel(): Level.Spec | null {
+  get warnLevel(): Level.Spec {
+    assert(this.#specArray[13]);
     return this.#specArray[13];
   }
-  get flushLevel(): Level.Spec | null {
+  get flushLevel(): Level.Spec {
+    assert(this.#specArray[17]);
     return this.#specArray[17];
   }
 

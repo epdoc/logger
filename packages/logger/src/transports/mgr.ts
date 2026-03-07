@@ -32,8 +32,8 @@ export class TransportMgr {
    * @param {Level.Name | Level.Severity} level - The log level to set.
    * @returns {this} The current instance for method chaining.
    */
-  setThreshold(level: Level.Name | Level.Severity): this {
-    const threshold = this._logMgr.logLevels.asValue(level);
+  setThreshold(level: Level.Spec): this {
+    const threshold = level;
     this.transports.forEach((transport) => {
       transport.setThreshold(threshold);
     });

@@ -38,7 +38,7 @@ export interface ITransportEmitter {
  * @public
  */
 export class LogEmitter implements MsgBuilder.IEmitter {
-  private readonly _level: Level.Name;
+  private readonly _level: Level.Spec;
   private readonly _msgEmitter: ITransportEmitter;
   private readonly _sid?: string;
   private readonly _reqId?: string;
@@ -62,7 +62,7 @@ export class LogEmitter implements MsgBuilder.IEmitter {
    */
   constructor(
     logMgr: ITransportEmitter,
-    level: Level.Name,
+    level: Level.Spec,
     context: {
       sid?: string;
       reqId?: string;
