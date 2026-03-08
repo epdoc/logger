@@ -49,7 +49,7 @@ export const otlpFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, OtlpLogger
    * Factory method to create an instance of {@link LogLevels} configured with
    * the CLI-specific log level definitions.
    *
-   * @returns {Level.IBasic} A new `LogLevels` instance for CLI logging.
+   * @returns {Level.LogLevels} A new `LogLevels` instance for CLI logging.
    */
   createLevels: () => {
     return new Level.LogLevels(otlpLogLevelsSet);

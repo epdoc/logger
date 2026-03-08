@@ -2,12 +2,12 @@
  * @file Buffer transport types for in-memory log capture
  */
 
-import type { BaseOptions } from '../base/types.ts';
+import type { TransportBaseOptions } from '../types.ts';
 
 /**
  * Configuration options for the buffer transport
  */
-export interface IBufferTransportOptions extends BaseOptions {
+export interface IBufferTransportOptions extends TransportBaseOptions {
   /**
    * Maximum number of log entries to store in memory.
    * When exceeded, oldest entries are removed (FIFO).

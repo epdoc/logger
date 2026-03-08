@@ -4,9 +4,8 @@ import { assert } from '@std/assert';
 import type * as Log from '$log';
 import * as Logger from '$logger';
 import * as Transport from '$transport';
-import * as Level from '@epdoc/loglevels';
+import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
-import type { CompareResult } from '@epdoc/type';
 import { isStrictEmitterShowOpts } from './guards.ts';
 import { type ITransportEmitter, LogEmitter } from './log-emitter.ts';
 
@@ -46,10 +45,10 @@ import { type ITransportEmitter, LogEmitter } from './log-emitter.ts';
  */
 export class LogMgr<
   M extends MsgBuilder.Abstract = MsgBuilder.Console.Builder,
-> implements Transport.ILogMgrTransportContext, ITransportEmitter {
+> implements Transport.TransportBaseOptions, ITransportEmitter {
   protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
-  protected _logLevels: Level.IBasic | undefined;
+  #logLevels: Level.LogLevels | undefined;
   protected _rootLogger: Logger.IEmitter | undefined;
   protected _msgBuilder: MsgBuilder.Abstract | undefined;
   protected _threshold: Level.Spec | null = null;
@@ -156,10 +155,10 @@ export class LogMgr<
     if (factories) {
       this._loggerFactories = factories;
     }
-    if (!this._logLevels) {
-      this._logLevels = this._loggerFactories.createLevels();
+    if (!this.#logLevels) {
+      this.#logLevels = this._loggerFactories.createLevels();
 
-      this._threshold = this._logLevels.defaultLevel;
+      this._threshold = this.#logLevels.defaultLevel;
     }
     return this;
   }
@@ -179,7 +178,7 @@ export class LogMgr<
    */
   public setThreshold(level: Level.Name | Level.Severity | Level.Spec) {
     assert(
-      this._logLevels,
+      this.#logLevels,
       'Methods initLevels() or getLogger() must be called before setting log level threshold.',
     );
     this._threshold = this.logLevels.asSpec(level);
@@ -192,6 +191,7 @@ export class LogMgr<
             `LogMgr threshold (${this._threshold.name}) is less retrictive than root logger threshold (${this._rootLogger.threshold.name}).` +
             'Root logger threshold will apply.',
           pkg: 'LogMgr',
+          transports: this.transportMgr,
         };
         this.forceEmit(msg);
       }
@@ -252,13 +252,17 @@ export class LogMgr<
    */
   public async getLogger<L extends Logger.IEmitter>(params: Logger.IGetChildParams = {}): Promise<L> {
     if (!this._rootLogger) {
-      this._logLevels = this._loggerFactories.createLevels();
+      this.#logLevels = this._loggerFactories.createLevels();
       this._rootLogger = this._loggerFactories.createLogger(this, params);
     }
     if (!this.transportMgr.transports.length) {
-      const transport = new Transport.Console.Transport(this, {
-        show: this._show,
-      });
+      const consoleOpts: Transport.Console.Options = {
+        logLevels: this.logLevels,
+        show: this.show,
+        startTime: this.startTime,
+        threshold: this.threshold,
+      };
+      const transport = new Transport.Console.Transport(consoleOpts);
       await this.transportMgr.add(transport);
     }
     if (!this.transportMgr.isRunning()) {
@@ -282,8 +286,8 @@ export class LogMgr<
    * @returns {M} A new message builder instance.
    */
   public getMsgBuilder(level: string, emitter: Logger.IEmitter): M {
-    assert(this._logLevels, 'Log levels not yet initialized');
-    const levelSpec = this._logLevels.asSpec(level);
+    assert(this.#logLevels, 'Log levels not yet initialized');
+    const levelSpec = this.#logLevels.asSpec(level);
     assert(levelSpec, `Invalid level ${level}`);
 
     let meetsAnyThreshold = false;
@@ -296,12 +300,11 @@ export class LogMgr<
       meetsAnyThreshold = true;
     }
 
-    const meetsFlushThreshold = levelSpec.severity >= this._logLevels.flushLevel.severity;
-    let flushCallback = () => void;
-    if( meetsFlushThreshold) {
-      flushCallback = () => this.transportMgr.flushQueue(true)
+    const meetsFlushThreshold = levelSpec.severity >= this.#logLevels.flushLevel.severity;
+    let flushCallback = () => {};
+    if (meetsFlushThreshold) {
+      flushCallback = () => this.transportMgr.flushQueue(true);
     }
-
 
     // Create a lightweight emitter that captures context and has direct access to TransportMgr
     const opts: Log.LogEmitterOpts = {
@@ -334,11 +337,12 @@ export class LogMgr<
   }
 
   async addTransport(transport: Transport.Base.Transport): Promise<void> {
-    assert(this._logLevels, 'Log Manager must be initialized before adding transports.');
+    assert(this.#logLevels, 'Log Manager must be initialized before adding transports.');
     if (this.transportMgr.isRunning()) {
       this.emit({
-        level: this._logLevels.warnLevel,
+        level: this.#logLevels.warnLevel,
         msg: `Log Manager is already running. Transport ${transport.toString()} is now active for new messages.`,
+        transports: this.transportMgr,
       });
     }
     await this.transportMgr.add(transport);
@@ -353,7 +357,11 @@ export class LogMgr<
    */
   async start(): Promise<void> {
     if (this._bRunning) {
-      this.emit({ level: this.logLevels.warnLevel, msg: 'Start called on Log Manager that is already running.' });
+      this.emit({
+        level: this.logLevels.warnLevel,
+        msg: 'Start called on Log Manager that is already running.',
+        transports: this.transportMgr,
+      });
       return;
     }
     await this.transportMgr.start();
@@ -365,7 +373,11 @@ export class LogMgr<
    */
   async stop(): Promise<void> {
     if (!this._bRunning) {
-      this.emit({ level: this.logLevels.warnLevel, msg: 'Stop called on Log Manager that is not running.' });
+      this.emit({
+        level: this.logLevels.warnLevel,
+        msg: 'Stop called on Log Manager that is not running.',
+        transports: this.transportMgr,
+      });
       return;
     }
     await this.transportMgr.stop();
@@ -412,11 +424,11 @@ export class LogMgr<
    * @param {Entry} msg - The log message to emit.
    */
   public emit(msg: Log.Entry): void {
-    if (!msg.timestamp) {
-      msg.timestamp = new Date();
-    }
-    if (this.meetsAnyThreshold(msg.level)) {
-      const flush = this.meetsFlushThreshold(msg.level);
+    if (this.transportMgr.meetsAnyThreshold(msg.level)) {
+      if (!msg.timestamp) {
+        msg.timestamp = new Date();
+      }
+      const flush = msg.level.severity >= this.logLevels.flushLevel.severity;
       this.transportMgr.emit(msg, flush);
     }
   }
@@ -427,7 +439,8 @@ export class LogMgr<
    * @internal
    */
   forceEmit(msg: Log.Entry): void {
-    this.transportMgr.emit(msg);
+    const flush = msg.level.severity >= this.logLevels.flushLevel.severity;
+    this.transportMgr.emit(msg, flush);
   }
 
   /**
@@ -436,70 +449,8 @@ export class LogMgr<
    * @returns {ILogLevels} The log levels.
    * @throws Will throw an error if log levels are not set.
    */
-  get logLevels(): Level.IBasic {
-    assert(this._logLevels, 'LogLevels not set for Logger. Call initLevels() first.');
-    return this._logLevels as Level.IBasic;
-  }
-
-  /**
-   * Evaluates whether a given log level satisfies the configured threshold for any of the
-   * transports.
-   *
-   * This method first converts the provided level (and optional threshold value) to its numeric
-   * representation. If an explicit threshold is provided, it checks whether the numeric value of
-   * the level meets that threshold; if not, it returns false. Next, it asserts that a default
-   * threshold is set on the LogMgr, and compares the level against this default threshold. Finally,
-   * it consults the transport manager to confirm that the computed level value is acceptable across
-   * any configured transport.
-   *
-   * @param {Level.Severity | Level.Name} level - The log level to check, either as a numeric value or
-   * name.
-   * @param {Level.Severity | Level.Name} [threshold] - Optional. A specific threshold to compare
-   * against instead of the default.
-   * @returns {boolean} Returns true if the log level meets the configured threshold (both
-   * explicitly provided and default) and passes the transport manager's checks; otherwise, false.
-   *
-   * @throws Will throw an error if the default log threshold is not set.
-   */
-  meetsAnyThreshold(level: Level.Spec, threshold?: Level.Spec): boolean {
-    if (threshold !== undefined) {
-      if( level.severity >= threshold.severity ) {
-        return true;
-      }
-    }
-    assert(this._threshold, 'Log threshold not set');
-      if( level.severity >= this._threshold.severity ) {
-      return true;
-    }
-    if (this.transportMgr.isRunning()) {
-      return this.transportMgr.meetsAnyThresholdValue(levelVal);
-    }
-    return true;
-  }
-
-  /**
-   * This method is used in a narrow set of circumstances when we
-   * @param level
-   * @param threshold
-   * @returns
-   */
-  compareThreshold(level: Level.Severity | Level.Name, threshold?: Level.Severity | Level.Name): CompareResult {
-    const levelVal = this.logLevels.asValue(level);
-    if (threshold !== undefined) {
-      return this.logLevels.compareThresholdValue(levelVal, this.logLevels.asValue(threshold));
-    }
-    assert(this._threshold, 'Log threshold not set');
-    return this.logLevels.compareThresholdValue(levelVal, this._threshold);
-  }
-
-  /**
-   * Sets the flush threshold level. If a message exceeds this level then it
-   * will be output immediately. Otherwise it may be buffered.
-   * @param {Level.Severity | Level.Name} level - The flush threshold level.
-   * @returns {boolean} True if the level meets the flush threshold, false
-   * otherwise.
-   */
-  meetsFlushThreshold(level: Level.Severity | Level.Name): boolean {
-    return this.logLevels.meetsFlushThreshold(level);
+  get logLevels(): Level.LogLevels {
+    assert(this.#logLevels, 'LogLevels not set for Logger. Call initLevels() first.');
+    return this.#logLevels;
   }
 }

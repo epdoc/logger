@@ -3,7 +3,7 @@ import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { Integer } from '@epdoc/type';
 import type { TimestampFormat } from './consts.ts';
-import { TransportMgr } from './transports/mgr.ts';
+import type { TransportMgr } from './transports/mgr.ts';
 
 /**
  * A type representing the allowed values for timestamp formatting.

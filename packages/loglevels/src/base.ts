@@ -15,7 +15,7 @@ import type * as Level from './types.ts';
  *
  * @implements {Level.IBasic}
  */
-export class LogLevels implements Level.IBasic {
+export class LogLevels {
   $$id: string;
   #specMap: Level.SpecMap = new Map();
   #specArray: Level.SpecArray = new Array(25).fill(null);

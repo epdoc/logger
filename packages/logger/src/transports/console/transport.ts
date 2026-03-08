@@ -1,11 +1,11 @@
 import type { Entry } from '$log';
-import type * as Level from '@epdoc/loglevels';
+import * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { StringEx } from '@epdoc/string';
 import { _, type Integer } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
 import { OutputFormat } from '../consts.ts';
-import type { ILogMgrTransportContext, OutputFormatType, TransportEntry } from '../types.ts';
+import type { OutputFormatType, TransportBaseOptions, TransportEntry } from '../types.ts';
 import { consoleStyleFormatters } from './consts.ts';
 import type * as Console from './types.ts';
 import type { TransportStyleMap } from './types.ts';
@@ -59,15 +59,15 @@ export class ConsoleTransport extends Base.Transport {
 
   /**
    * Creates an instance of the `Console` transport.
-   * @param {ILogMgrTransportContext} logMgr - The log manager context.
+   * @param {TransportBaseOptions} logMgr - The log manager context.
    * @param {Options} [opts={}] - Configuration options for the transport.
    * @param opts.format - Output format ('text', 'json', or 'json-array')
    * @param opts.color - Whether to use colors in output (defaults to true)
    * @param opts.threshold - Minimum log level for this transport
    * @param opts.flushThreshold - Log level that triggers immediate flush
    */
-  constructor(logMgr: ILogMgrTransportContext, opts: Console.Options = {}) {
-    super(logMgr, opts);
+  constructor(opts: Console.Options) {
+    super(opts);
     if (opts.format) {
       this._format = opts.format;
     }
@@ -91,7 +91,7 @@ export class ConsoleTransport extends Base.Transport {
    * @returns {boolean} `true` if color is enabled, otherwise `false`.
    */
   get useColor(): boolean {
-    return this._color === true && this._show.color !== false;
+    return this._color === true && this.show.color !== false;
   }
 
   /**
@@ -107,7 +107,7 @@ export class ConsoleTransport extends Base.Transport {
    * @returns {this} The current instance for method chaining.
    */
   override thresholdUpdated(): this {
-    this._levelWidth = this._logMgr.logLevels.maxWidth(this._logMgr.threshold);
+    this._levelWidth = this.logLevels.maxWidth(this.threshold);
     return this;
   }
 
@@ -120,12 +120,12 @@ export class ConsoleTransport extends Base.Transport {
    * @param {Entry} msg - The log entry to be emitted.
    */
   override emit(msg: Entry) {
-    const levelValue: Level.Severity = this._logMgr.logLevels.asValue(msg.level);
-    if (!this.meetsThresholdValue(levelValue)) {
+    if (!this.emitFilter(msg)) {
       return;
     }
-    const show = this._show;
-    const _logLevels = this._logMgr.logLevels;
+
+    const show = this.show;
+    const _logLevels = this.logLevels;
     const color = this.useColor;
 
     const entry: TransportEntry = Object.assign(
@@ -147,11 +147,11 @@ export class ConsoleTransport extends Base.Transport {
 
     if (this._format === 'json') {
       // Output as JSON object
-      this.output(JSON.stringify(entry), levelValue);
+      this.output(JSON.stringify(entry), msg.level.severity);
     } else if (this._format === 'jsonArray') {
       // Output as JSON Array
       const text = this.formatJsonArrayEntry(entry, msg);
-      this.output(text, levelValue);
+      this.output(text, msg.level.severity);
       // } else if (this._format === 'otlp') {
       //   // Output as OpenTelemetry Protocol JSON (for Deno OTEL auto-export)
       //   const otlpEntry = this.formatOtlpEntry(entry, msg);
@@ -159,36 +159,36 @@ export class ConsoleTransport extends Base.Transport {
       //   this.output(asStr, levelValue);
     } else {
       const text = this.formatTextEntry(entry, msg);
-      this.output(text, levelValue);
+      this.output(text, msg.level.severity);
     }
   }
 
   formatTextEntry(entry: TransportEntry, msg: Entry): string {
     const parts: string[] = [];
-    if (_.isString(entry.timestamp) && this._show.timestamp) {
+    if (_.isString(entry.timestamp) && this.show.timestamp) {
       parts.push(entry.timestamp);
     }
 
-    if (this._show.level && entry.level) {
-      parts.push(this.styledLevel(entry.level, this._show.level));
+    if (this.show.level && entry.level) {
+      parts.push(this.styledLevel(entry.level, this.show.level));
     }
 
-    if (this._show.pkg && _.isNonEmptyString(entry.pkg)) {
+    if (this.show.pkg && _.isNonEmptyString(entry.pkg)) {
       parts.push(this._styledString(entry.pkg, false, '_package'));
     }
 
-    if (this._show.sid && _.isNonEmptyString(entry.sid)) {
+    if (this.show.sid && _.isNonEmptyString(entry.sid)) {
       parts.push(this._styledString(entry.sid, false, '_sid'));
     }
 
-    if (this._show.reqId && _.isNonEmptyString(entry.reqId)) {
+    if (this.show.reqId && _.isNonEmptyString(entry.reqId)) {
       parts.push(this._styledString(entry.reqId, false, '_reqId'));
     }
 
     if (entry.msg) {
       parts.push(entry.msg);
     }
-    if (this._show.time && _.isNumber(entry.time) && entry.time) {
+    if (this.show.time && _.isNumber(entry.time) && entry.time) {
       // Format duration with appropriate precision
       let digits = 3;
       if (entry.time > 100) {
@@ -201,23 +201,22 @@ export class ConsoleTransport extends Base.Transport {
       parts.push(this._styledString(`(${entry.time.toFixed(digits)} ms)`, false, '_elapsed'));
     }
 
-    if (!_.isNullOrUndefined(msg.data) && this._show.data) {
+    if (!_.isNullOrUndefined(msg.data) && this.show.data) {
       parts.push(JSON.stringify(msg.data));
     }
-    const sep = this._show.columnSep ?? ' ';
+    const sep = this.show.columnSep ?? ' ';
     return parts.join(sep);
   }
 
   formatJsonArrayEntry(entry: TransportEntry, msg: Entry): string {
-    const logLevels = this._logMgr.logLevels;
     const color = this.useColor;
     const parts: (string | null | object | number)[] = [];
-    if (_.isString(entry.timestamp) && this._show.timestamp) {
-      parts.push(color ? logLevels.applyColors(entry.timestamp, msg.level) : entry.timestamp);
+    if (_.isString(entry.timestamp) && this.show.timestamp) {
+      parts.push(color ? Level.applyColors(entry.timestamp, msg.level) : entry.timestamp);
     } else {
       parts.push(null);
     }
-    parts.push(entry.level ? this.styledLevel(entry.level, this._show.level) : null);
+    parts.push(entry.level ? this.styledLevel(entry.level, this.show.level) : null);
     parts.push(entry.pkg ?? null);
     parts.push(entry.sid ?? null);
     parts.push(entry.reqId ?? null);
@@ -250,12 +249,11 @@ export class ConsoleTransport extends Base.Transport {
    * @param {boolean | Integer | undefined} show - Configuration for displaying the level.
    * @returns {string} The styled log level string.
    */
-  styledLevel(level: Level.Name, show: boolean | Integer | 'icon' | undefined): string {
+  styledLevel(level: Level.Spec, show: boolean | Integer | 'icon' | undefined): string {
     let s = '';
     if (show === 'icon') {
-      const def = this._logMgr.logLevels.levelDefs[level];
-      if (def && def.icon) {
-        s = def.icon;
+      if (level.icon) {
+        s = level.icon;
       }
       show = true;
     }
@@ -271,7 +269,7 @@ export class ConsoleTransport extends Base.Transport {
     }
     s = '[' + s + ']';
     if (this.useColor) {
-      return this._logMgr.logLevels.applyColors(s, level);
+      return Level.applyColors(s, level);
     }
     return s;
   }

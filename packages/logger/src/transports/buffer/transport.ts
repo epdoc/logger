@@ -1,10 +1,9 @@
 import type { Entry } from '$log';
 import { DateEx } from '@epdoc/datetime';
-import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { _ } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
-import type { ILogMgrTransportContext, TransportEntry } from '../types.ts';
+import type { TransportEntry } from '../types.ts';
 import type { IBufferTransportOptions } from './types.ts';
 
 /**
@@ -30,8 +29,8 @@ export class BufferTransport extends Base.Transport {
   private maxEntries: number;
   private delayReady?: number;
 
-  constructor(logMgr: ILogMgrTransportContext, opts: IBufferTransportOptions = {}) {
-    super(logMgr, opts);
+  constructor(opts: IBufferTransportOptions) {
+    super(opts);
     this.maxEntries = opts.maxEntries ?? 1000;
     this.delayReady = opts.delayReady;
     // Don't set ready here - let setup() handle it
@@ -66,12 +65,7 @@ export class BufferTransport extends Base.Transport {
    * Emits a log entry to the buffer.
    */
   override emit(msg: Entry) {
-    if (!this._bEnabled) {
-      return; // Transport is disabled
-    }
-
-    const levelValue: Level.Severity = this._logMgr.logLevels.asValue(msg.level);
-    if (!this.meetsThresholdValue(levelValue)) {
+    if (!this.emitFilter(msg)) {
       return;
     }
 
@@ -112,9 +106,9 @@ export class BufferTransport extends Base.Transport {
   /**
    * Get entries filtered by log level
    */
-  getEntriesByLevel(level: string): readonly TransportEntry[] {
-    return this.entries.filter((entry) => entry.level!.toLowerCase() === level.toLowerCase());
-  }
+  // getEntriesByLevel(level: string): readonly TransportEntry[] {
+  //   return this.entries.filter((entry) => entry.level!.toLowerCase() === level.toLowerCase());
+  // }
 
   /**
    * Get the most recent log entry

@@ -2,10 +2,9 @@ import type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from
 import { dateEx } from '@epdoc/datetime';
 import { duration } from '@epdoc/duration';
 import type * as Level from '@epdoc/loglevels';
-import { _, CompareResult } from '@epdoc/type';
+import { _, type CompareResult } from '@epdoc/type';
 import { isTimestampFormat } from '../../consts.ts';
-import type { ILogMgrTransportContext } from '../types.ts';
-import type { BaseOptions } from './types.ts';
+import type { TransportBaseOptions } from '../types.ts';
 
 /**
  * The abstract base class for all log transports.
@@ -26,41 +25,42 @@ export abstract class AbstractTransport {
   public readonly type: string = 'basic';
   /** Unique identifier for this transport instance. */
   public readonly id: string;
-  protected _logMgr: ILogMgrTransportContext;
   protected _bReady = false;
   protected _bEnabled = true;
-  protected _opts: BaseOptions;
-  protected _level: Level.Spec;
-  protected _threshold: Level.Spec | null = null;
-  protected _flushThreshold: Level.Spec | null = null;
-  protected _show: EmitterShowOpts = { pkgSep: '.' };
+  #logLevels: Level.LogLevels;
+  #threshold: Level.Spec;
+  #show: EmitterShowOpts = { pkgSep: '.' };
+  #startTime: Date;
 
   private static _nextId = 1;
 
   /**
    * Initializes a new transport instance.
    *
-   * @param {ILogMgrTransportContext} logMgr - The central log manager context.
+   * @param {TransportBaseOptions} logMgr - The central log manager context.
    * @param {BaseOptions} [opts={}] - Configuration options for the transport.
    * @param opts.show - Overrides default visibility settings for log metadata
    */
-  constructor(logMgr: ILogMgrTransportContext, opts: BaseOptions = {}) {
-    this._logMgr = logMgr;
-    this._opts = opts;
-    this._level = logMgr.logLevels.defaultLevel;
-    this._threshold = logMgr.threshold;
-    this._flushThreshold = logMgr.logLevels.warnLevel;
-    this._show = opts.show ?? logMgr.show;
+  constructor(opts: TransportBaseOptions) {
+    this.#logLevels = opts.logLevels;
+    this.#threshold = opts.threshold;
+    this.#show = opts.show;
+    this.#startTime = opts.startTime;
 
     // Generate unique ID for this transport instance
     this.id = `${this.type}-${AbstractTransport._nextId++}`;
   }
 
-  /**
-   * Retrieves the configuration options for this transport.
-   */
-  getOptions(): BaseOptions {
-    return this._opts;
+  get show(): EmitterShowOpts {
+    return this.#show;
+  }
+
+  get threshold(): Level.Spec {
+    return this.#threshold;
+  }
+
+  get logLevels(): Level.LogLevels {
+    return this.#logLevels;
   }
 
   /**
@@ -71,7 +71,7 @@ export abstract class AbstractTransport {
    * @returns {this} The instance for chaining.
    */
   setThreshold(level: Level.Spec): this {
-    this._threshold = level;
+    this.#threshold = level;
     this.thresholdUpdated();
     return this;
   }
@@ -82,12 +82,12 @@ export abstract class AbstractTransport {
    * @param {EmitterShowOpts} opts - The visibility settings to apply.
    * @returns {this} The instance for chaining.
    */
-  show(opts: EmitterShowOpts): this {
+  setShow(opts: EmitterShowOpts): this {
     Object.keys(opts).forEach((key) => {
       const k: EmitterShowKey = key as EmitterShowKey;
       if (opts[k] === true || opts[k] === false || _.isNonEmptyString(opts[k]) || _.isInteger(opts[k])) {
         // @ts-ignore Allow dynamic assignment
-        this._show[k] = opts[k];
+        this.#show[k] = opts[k];
       }
     });
     return this;
@@ -99,15 +99,13 @@ export abstract class AbstractTransport {
    * @param {Level.Severity} level - The numeric log level to check.
    * @returns {boolean} `true` if the level meets the threshold.
    */
-  compareThreshold(level: Level.Spec): CompareResult | undefined {
-    if (this._threshold) {
-      if (level.severity > this._threshold.severity) {
-        return +1;
-      } else if (level.severity === this._threshold.severity) {
-        return 0;
-      }
-      return -1;
+  compareToTransportThreshold(level: Level.Spec): CompareResult | undefined {
+    if (level.severity > this.threshold.severity) {
+      return +1;
+    } else if (level.severity === this.threshold.severity) {
+      return 0;
     }
+    return -1;
   }
 
   /**
@@ -117,8 +115,7 @@ export abstract class AbstractTransport {
    * @returns {boolean} `true` if the entry's level meets the threshold.
    */
   msgMeetsThreshold(msg: Entry): boolean {
-    const levelValue = this._logMgr.logLevels.asValue(msg.level);
-    return this._logMgr.logLevels.meetsThresholdValue(levelValue, this._threshold);
+    return msg.level.severity >= this.threshold.severity;
   }
 
   /**
@@ -127,8 +124,8 @@ export abstract class AbstractTransport {
    * @param {Level.Severity} level - The numeric log level to check.
    * @returns {boolean} `true` if the level requires an immediate flush.
    */
-  meetsFlushThresholdValue(level: Level.Severity): boolean {
-    return this._logMgr.logLevels.meetsThresholdValue(level, this._threshold);
+  meetsFlushThreshold(level: Level.Spec): boolean {
+    return level.severity >= this.#logLevels.flushLevel.severity;
   }
 
   /**
@@ -153,7 +150,7 @@ export abstract class AbstractTransport {
       } else if (format === 'local') {
         return dateEx(d).toISOLocalString();
       } else if (format === 'elapsed') {
-        return duration().narrow.format(d.getTime() - this._logMgr.startTime.getTime());
+        return duration().narrow.format(d.getTime() - this.#startTime.getTime());
       }
     }
     return undefined;
@@ -191,7 +188,7 @@ export abstract class AbstractTransport {
   }
 
   /**
-   * Enables or disables the transport.
+   * Enables or disables the transport. This should be the result of a user action.
    *
    * @param {boolean} enabled - Whether the transport should be enabled.
    * @returns {this} The instance for chaining.
@@ -208,6 +205,13 @@ export abstract class AbstractTransport {
     return this._bEnabled;
   }
 
+  emitFilter(msg: Entry): boolean {
+    if (this._bEnabled && msg.level.severity >= this.threshold.severity && msg.timestamp) {
+      return true;
+    }
+    return false;
+  }
+
   /**
    * The core method where the transport processes and outputs a log entry.
    * Concrete classes must implement this method.
@@ -215,9 +219,10 @@ export abstract class AbstractTransport {
    * @param {Entry} msg - The log entry to process.
    */
   emit(msg: Entry): void {
-    if (this._bEnabled && this.msgMeetsThreshold(msg)) {
-      // Implementation-specific logic goes in subclasses.
+    if (!this.emitFilter(msg)) {
+      return;
     }
+    // Implementation-specific logic goes in subclasses.
   }
 
   /**

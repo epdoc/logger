@@ -1,15 +1,13 @@
 import type { Entry } from '$log';
 import type { Milliseconds } from '@epdoc/duration';
-import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { _, type Integer } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
-import type { ILogMgrTransportContext } from '../types.ts';
 import type * as Influx from './types.ts';
 
 export class InfluxTransport extends Base.Transport {
   public override readonly type: string = 'influx';
-  protected override _opts: Influx.Options;
+  protected influxOpts: Influx.Options;
   #buffer: string[] = [];
   #batchSize: Integer;
   #flushInterval: Milliseconds;
@@ -20,9 +18,9 @@ export class InfluxTransport extends Base.Transport {
   #hostname: string;
   #droppedStats: Influx.DroppedMessageStats | null = null;
 
-  constructor(logMgr: ILogMgrTransportContext, opts: Influx.Options) {
-    super(logMgr, opts);
-    this._opts = opts;
+  constructor(opts: Influx.Options) {
+    super(opts);
+    this.influxOpts = opts;
     this._bReady = true;
     this.#hostname = opts.hostname || this.#getHostname();
     this.#batchSize = opts.batchSize ?? 100;
@@ -33,39 +31,39 @@ export class InfluxTransport extends Base.Transport {
   }
 
   override toString(): string {
-    return `Influx[${this._opts.host}/${this._opts.org}/${this._opts.bucket}]`;
+    return `Influx[${this.influxOpts.host}/${this.influxOpts.org}/${this.influxOpts.bucket}]`;
   }
 
-  override emit(entry: Entry): void {
-    const levelValue: Level.Severity = this._logMgr.logLevels.asValue(entry.level);
-    if (!this.meetsThresholdValue(levelValue)) return;
-    if (!entry.timestamp) return;
+  override emit(msg: Entry): void {
+    if (!this.emitFilter(msg)) {
+      return;
+    }
 
     // 1. Tags (low cardinality, good for filtering)
     const tags = new Map<string, string>();
-    tags.set('level', entry.level.toUpperCase()); // Standardize to uppercase
-    if (this._opts.service) tags.set('service', this._opts.service);
-    if (this._opts.environment) tags.set('environment', this._opts.environment);
+    tags.set('level', msg.level.name); // Standardize to uppercase
+    if (this.influxOpts.service) tags.set('service', this.influxOpts.service);
+    if (this.influxOpts.environment) tags.set('environment', this.influxOpts.environment);
     tags.set('host', this.#hostname);
-    if (entry.pkg) tags.set('package', entry.pkg);
+    if (msg.pkg) tags.set('package', msg.pkg);
 
     // 2. Fields (high cardinality data)
     const fields = new Map<string, string | number | boolean>();
 
     // Process the message body
-    if (entry.msg instanceof MsgBuilder.Abstract) {
-      fields.set('message', entry.msg.format({ color: false, target: 'json', msgSep: entry.msgSep }));
-    } else if (_.isString(entry.msg)) {
-      fields.set('message', entry.msg);
+    if (msg.msg instanceof MsgBuilder.Abstract) {
+      fields.set('message', msg.msg.format({ color: false, target: 'json', msgSep: msg.msgSep }));
+    } else if (_.isString(msg.msg)) {
+      fields.set('message', msg.msg);
     }
 
     // Move high-cardinality identifiers to fields
-    if (entry.reqId) fields.set('request_id', entry.reqId);
-    if (entry.sid) fields.set('session_id', entry.sid);
+    if (msg.reqId) fields.set('request_id', msg.reqId);
+    if (msg.sid) fields.set('session_id', msg.sid);
 
     // Process extra data attributes
-    if (_.isDict(entry.data)) {
-      for (const [key, value] of Object.entries(entry.data)) {
+    if (_.isDict(msg.data)) {
+      for (const [key, value] of Object.entries(msg.data)) {
         const val = this.#isPrimitive(value) ? value : JSON.stringify(value);
         if (val !== undefined && val !== null) {
           fields.set(`data_${key}`, val as string | number | boolean);
@@ -74,11 +72,11 @@ export class InfluxTransport extends Base.Transport {
     }
 
     // Keep duration in milliseconds (more intuitive than nanoseconds)
-    if (_.isDefined(entry.time)) {
-      fields.set('duration_ms', entry.time!);
+    if (_.isDefined(msg.time)) {
+      fields.set('duration_ms', msg.time!);
     }
 
-    const timestampNs = (entry.timestamp.getTime() * 1_000_000).toString();
+    const timestampNs = (msg.timestamp!.getTime() * 1_000_000).toString();
     const line = this.#formatLineProtocol(tags, fields, timestampNs);
     this.#addToBuffer(line);
   }
@@ -159,11 +157,11 @@ export class InfluxTransport extends Base.Transport {
   }
 
   async #transmitBatch(lines: string[], maxRetries = this.#maxRetries): Promise<void> {
-    if (!this._opts.host || !this._opts.token) return;
+    if (!this.influxOpts.host || !this.influxOpts.token) return;
 
-    const url = new URL('/api/v2/write', this._opts.host);
-    url.searchParams.append('org', this._opts.org || '');
-    url.searchParams.append('bucket', this._opts.bucket || '');
+    const url = new URL('/api/v2/write', this.influxOpts.host);
+    url.searchParams.append('org', this.influxOpts.org || '');
+    url.searchParams.append('bucket', this.influxOpts.bucket || '');
     url.searchParams.append('precision', 'ns');
 
     const body = lines.join('\n');
@@ -173,7 +171,7 @@ export class InfluxTransport extends Base.Transport {
         const response = await fetch(url, {
           method: 'POST',
           headers: {
-            'Authorization': `Token ${this._opts.token}`,
+            'Authorization': `Token ${this.influxOpts.token}`,
             'Content-Type': 'text/plain; charset=utf-8',
           },
           body,
@@ -248,8 +246,8 @@ export class InfluxTransport extends Base.Transport {
 
     const tags = new Map<string, string>();
     tags.set('level', 'WARN');
-    if (this._opts.service) tags.set('service', this._opts.service);
-    if (this._opts.environment) tags.set('environment', this._opts.environment);
+    if (this.influxOpts.service) tags.set('service', this.influxOpts.service);
+    if (this.influxOpts.environment) tags.set('environment', this.influxOpts.environment);
     tags.set('host', this.#hostname);
     tags.set('package', 'logger.influx');
 

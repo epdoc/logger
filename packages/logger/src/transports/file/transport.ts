@@ -1,7 +1,7 @@
 import type * as Level from '@epdoc/loglevels';
 import type { Integer } from '@epdoc/type';
 import * as Console from '../console/mod.ts';
-import type { ILogMgrTransportContext } from '../types.ts';
+import type { TransportBaseOptions } from '../types.ts';
 import type { FileLogMode, FileOptions } from './types.ts';
 
 const BUFSIZE = 4096;
@@ -35,7 +35,7 @@ export class FileTransport extends Console.Transport {
 
   /**
    * Creates an instance of the `File` transport.
-   * @param {ILogMgrTransportContext} logMgr - The log manager context.
+   * @param {TransportBaseOptions} logMgr - The log manager context.
    * @param {FileOptions} opts - Configuration options for the transport.
    * @param opts.filepath - Path to the log file
    * @param opts.mode - File logging mode ('a' for append, 'w' for write, 'x' for create new)
@@ -45,7 +45,7 @@ export class FileTransport extends Console.Transport {
    * @param opts.threshold - Minimum log level for this transport
    * @param opts.flushThreshold - Log level that triggers immediate flush
    */
-  constructor(logMgr: ILogMgrTransportContext, opts: FileOptions) {
+  constructor(logMgr: TransportBaseOptions, opts: FileOptions) {
     super(logMgr, opts);
     this.filepath = opts.filepath;
     this.mode = opts.mode ?? 'a';
@@ -57,7 +57,7 @@ export class FileTransport extends Console.Transport {
    * @returns {this} The current instance for method chaining.
    */
   override thresholdUpdated(): this {
-    this._levelWidth = this._logMgr.logLevels.maxWidth(this._logMgr.threshold);
+    this._levelWidth = this.g.logLevels.maxWidth(this.g.threshold);
     return this;
   }
 

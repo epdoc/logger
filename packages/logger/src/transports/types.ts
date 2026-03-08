@@ -7,9 +7,9 @@ import type { OutputFormat } from './consts.ts';
  * Interface defining the context from LogMgr that transports need access to.
  * This allows transports to be decoupled from the generic LogMgr<M>.
  */
-export interface ILogMgrTransportContext {
+export interface TransportBaseOptions {
   readonly logLevels: Level.IBasic;
-  readonly threshold: Level.Spec;
+  threshold: Level.Spec;
   readonly show: EmitterShowOpts;
   readonly startTime: Date;
 }
@@ -30,7 +30,7 @@ export type OutputFormatType = typeof OutputFormat[keyof typeof OutputFormat];
  */
 export type TransportEntry = Partial<{
   /** The log level name. */
-  level: string;
+  level: Level.Spec;
   /** The formatted timestamp string. */
   timestamp: string;
   /** The response time to be displayed. */

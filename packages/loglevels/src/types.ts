@@ -21,7 +21,7 @@
  */
 
 import type { Integer } from '@epdoc/type';
-import type { IBasic } from './ibasic.ts';
+import type { LogLevels } from './base.ts';
 
 /**
  * Represents the unique case-insensitive name of a log level, such as, 'info', 'INFO' or 'DEBUG'.
@@ -84,6 +84,4 @@ export type SpecArray = (Spec | null)[];
  * @returns {IBasic} An instance of a class that implements the {@link IBasic}
  *   interface for managing log levels.
  */
-export type FactoryMethod = () => IBasic;
-
-export type { IBasic };
+export type FactoryMethod = () => LogLevels;

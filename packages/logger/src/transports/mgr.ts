@@ -3,7 +3,7 @@ import type * as Level from '@epdoc/loglevels';
 import { assert } from '@std/assert';
 import type { AbstractTransport } from './base/transport.ts';
 import { ConsoleTransport } from './console/transport.ts';
-import type { ILogMgrTransportContext } from './types.ts';
+import type { TransportBaseOptions } from './types.ts';
 
 /**
  * Manages a collection of log transports, handling the distribution of log
@@ -11,7 +11,7 @@ import type { ILogMgrTransportContext } from './types.ts';
  */
 export class TransportMgr {
   protected _bRunning = false;
-  protected _logMgr: ILogMgrTransportContext;
+  protected _logMgr: TransportBaseOptions;
   protected _queue: Log.Entry[] = [];
   /**
    * An array of registered transport instances.
@@ -20,9 +20,9 @@ export class TransportMgr {
 
   /**
    * Creates an instance of the `TransportMgr`.
-   * @param {ILogMgrTransportContext} logMgr - The log manager context.
+   * @param {TransportBaseOptions} logMgr - The log manager context.
    */
-  constructor(logMgr: ILogMgrTransportContext) {
+  constructor(logMgr: TransportBaseOptions) {
     this._logMgr = logMgr;
   }
 
@@ -50,7 +50,7 @@ export class TransportMgr {
   meetsAnyThreshold(level: Level.Spec): boolean {
     assert(this.transports.length, 'No transports');
     return this.transports.some((transport) => {
-      const result = transport.compareThreshold(level);
+      const result = transport.compareToTransportThreshold(level);
       return result && result >= 0;
     });
   }
@@ -63,7 +63,7 @@ export class TransportMgr {
    */
   show(opts: Log.EmitterShowOpts): this {
     this.transports.forEach((transport) => {
-      transport.show(opts);
+      transport.setShow(opts);
     });
     return this;
   }

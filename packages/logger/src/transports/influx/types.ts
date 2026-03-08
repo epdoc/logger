@@ -1,9 +1,9 @@
-import type * as Base from '../base/mod.ts';
+import { TransportBaseOptions } from '../types.ts';
 
 /**
  * Options for configuring the InfluxDB transport.
  */
-export interface Options extends Base.Options {
+export interface Options extends TransportBaseOptions {
   host: string;
   org: string;
   bucket: string;

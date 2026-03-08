@@ -1,5 +1,4 @@
-import type * as Base from '../base/mod.ts';
-import type { OutputFormatType } from '../types.ts';
+import type { OutputFormatType, TransportBaseOptions } from '../types.ts';
 
 export type StyleFormatterFn = (s: string) => string;
 
@@ -44,7 +43,7 @@ export type TransportStyleMap =
 /**
  * Options for configuring the `Console` transport.
  */
-export interface Options extends Base.Options {
+export interface Options extends TransportBaseOptions {
   /**
    * The output format to use.
    * @default 'text'

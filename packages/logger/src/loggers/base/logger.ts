@@ -1,6 +1,6 @@
 import type * as Log from '$log';
 import type { HrMilliseconds } from '@epdoc/duration';
-import * as Level from '@epdoc/loglevels';
+import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { _, type Integer } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
@@ -296,30 +296,15 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
   }
 
   /**
-   * Checks if a given log level meets the effective threshold.
+   * Does level meet this logger's threshold or the threshold of any of the transports?
    */
-  isEnabledFor(level: Level.Spec, threshold?: Level.Spec): boolean {
-    const thres = _.isNullOrUndefined(threshold) ? this._threshold : threshold;
-    const thresholdVal = this.logLevels.asValue(thres!);
-    const result = this._logMgr.logLevels.compareThresholdValue(this.logLevels.asValue(level), thresholdVal);
-    return result >= 0;
-  }
-  /**
-   * /** Alias for {@link isEnabledFor}.
-   */
-  meetsAnyThreshold(level: Level.Spec, threshold?: Level.Spec): boolean {
-    const t = Level.isSpec(threshold) ? threshold : this._threshold;
-    const thresholdVal = this.logLevels.asValue(thres!);
-    const result = this._logMgr.logLevels.compareThreshold(this.logLevels.asValue(level), thresholdVal);
-    return result >= 0;
-  }
-
-  /**
-   * Checks if a given log level meets the immediate flush threshold.
-   * @internal
-   */
-  meetsFlushThreshold(level: Level.Severity | Level.Name): boolean {
-    return this.logLevels.meetsFlushThreshold(level);
+  meetsAnyThreshold(level: Level.Spec): boolean {
+    for (const transport of this.logMgr.transportMgr.transports) {
+      if (level.severity >= transport.threshold.severity) {
+        return true;
+      }
+    }
+    return false;
   }
 
   /**
