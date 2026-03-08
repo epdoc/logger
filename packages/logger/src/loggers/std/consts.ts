@@ -18,11 +18,11 @@ import { StdLogger } from './logger.ts';
 const stdLogLevelsSet: Level.LogLevelsSet = {
   id: 'std',
   levels: {
-    fatal: { severity: 22, fmtFn: colors.brightRed, flush: true, icon: '☠' },
-    critical: { severity: 21, fmtFn: colors.brightRed, flush: true, icon: '↯' },
-    error: { severity: 17, fmtFn: colors.red, flush: true, icon: '✗' },
-    warn: { severity: 13, fmtFn: colors.yellow, warn: true, icon: '⚠' },
-    info: { severity: 9, fmtFn: colors.green, default: true, icon: 'ℹ' },
+    fatal: { severity: 22, fmtFn: colors.brightRed, icon: '☠' },
+    critical: { severity: 21, fmtFn: colors.brightRed, icon: '↯' },
+    error: { severity: 17, fmtFn: colors.red, icon: '✗' },
+    warn: { severity: 13, fmtFn: colors.yellow, icon: '⚠' },
+    info: { severity: 9, fmtFn: colors.green, icon: 'ℹ' },
     verbose: { severity: 6, fmtFn: colors.cyan, icon: '…' },
     debug: {
       severity: 5,
@@ -37,7 +37,6 @@ const stdLogLevelsSet: Level.LogLevelsSet = {
       fmtFn: (str: string) => {
         return colors.dim(colors.gray(str));
       },
-      lowest: true,
       icon: '¶',
     },
     silly: {
@@ -45,7 +44,6 @@ const stdLogLevelsSet: Level.LogLevelsSet = {
       fmtFn: (str: string) => {
         return colors.dim(colors.gray(str));
       },
-      lowest: true,
       icon: '⁂',
     },
   },

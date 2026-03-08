@@ -2,7 +2,7 @@ import type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from
 import { dateEx } from '@epdoc/datetime';
 import { duration } from '@epdoc/duration';
 import type * as Level from '@epdoc/loglevels';
-import { _ } from '@epdoc/type';
+import { _, CompareResult } from '@epdoc/type';
 import { isTimestampFormat } from '../../consts.ts';
 import type { ILogMgrTransportContext } from '../types.ts';
 import type { BaseOptions } from './types.ts';
@@ -99,11 +99,15 @@ export abstract class AbstractTransport {
    * @param {Level.Severity} level - The numeric log level to check.
    * @returns {boolean} `true` if the level meets the threshold.
    */
-  meetsThresholdValue(level: Level.Severity): boolean {
-    if (this._threshold === undefined) {
-      return true;
+  compareThreshold(level: Level.Spec): CompareResult | undefined {
+    if (this._threshold) {
+      if (level.severity > this._threshold.severity) {
+        return +1;
+      } else if (level.severity === this._threshold.severity) {
+        return 0;
+      }
+      return -1;
     }
-    return this._logMgr.logLevels.meetsThresholdValue(level, this._threshold);
   }
 
   /**

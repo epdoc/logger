@@ -2,6 +2,7 @@ import { assertEquals } from '@std/assert';
 import * as colors from '@std/fmt/colors';
 import { describe, test } from '@std/testing/bdd';
 import * as Level from '../src/mod.ts';
+import { applyColors, compareLevels } from '../src/utils.ts';
 import { reset, set } from './color-map.ts';
 
 const DEFS: Level.LogLevelsSet = {
@@ -51,8 +52,8 @@ const colorResult: string[] = [
 describe('levels cli', () => {
   const logLevels = new Level.LogLevels(DEFS);
 
-  test('names and values', () => {
-    assertEquals(logLevels.names, [
+  test('specMap keys and values', () => {
+    assertEquals(Array.from(logLevels.specMap.keys()), [
       'ERROR',
       'WARN',
       'HELP',
@@ -102,17 +103,17 @@ describe('levels cli', () => {
     const infoDef = logLevels.asSpec('info')!;
     const debugDef = logLevels.asSpec('debug')!;
 
-    assertEquals(logLevels.compareLevels(errorDef, errorDef), 0);
-    assertEquals(logLevels.compareLevels(warnDef, errorDef), -1);
-    assertEquals(logLevels.compareLevels(errorDef, warnDef), +1);
-    assertEquals(logLevels.compareLevels(infoDef, debugDef), +1);
-    assertEquals(logLevels.compareLevels(debugDef, infoDef), -1);
+    assertEquals(compareLevels(errorDef, errorDef), 0);
+    assertEquals(compareLevels(warnDef, errorDef), -1);
+    assertEquals(compareLevels(errorDef, warnDef), +1);
+    assertEquals(compareLevels(infoDef, debugDef), +1);
+    assertEquals(compareLevels(debugDef, infoDef), -1);
   });
 
   test('color', () => {
     for (let severity = 1; severity <= 24; ++severity) {
       const spec: Level.Spec | null = logLevels.specArray[severity];
-      const s: string = Level.LogLevels.applyColors('hello', spec);
+      const s: string = applyColors('hello', spec);
       assertEquals(s, colorResult[severity]);
     }
   });

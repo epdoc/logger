@@ -13,78 +13,85 @@ deno add @epdoc/loglevels
 
 ## Usage
 
-The core of this module is the `LogLevels` class, which takes a log level definition object and provides an interface
+The core of this module is the `LogLevels` class, which takes a `LogLevelsSet` definition and provides an interface
 for working with your custom levels. We DO NOT declare log levels in this module.
 
 ```ts
-import { LogLevels, type LogLevelsSet } from '@epdoc/loglevels';
+import { LogLevels, type LogLevelsSet, compareLevels, applyColors } from '@epdoc/loglevels';
 import { bold, red, yellow } from '@std/fmt/colors';
 
-// 1. Define your custom log levels using OTLP severity numbers
+// 1. Define your custom log levels using OTLP severity numbers (1–24)
 const myLevels: LogLevelsSet = {
   id: 'my-app',
   levels: {
-    CRITICAL: { severity: 21, fmtFn: (str) => bold(red(str)), flush: true },
+    CRITICAL: { severity: 21, fmtFn: (str) => bold(red(str)) },
     ERROR: { severity: 17, fmtFn: red },
-    WARN: { severity: 13, fmtFn: yellow, warn: true },
-    INFO: { severity: 9, default: true },
-    DEBUG: { severity: 5, lowest: true },
+    WARN: { severity: 13, fmtFn: yellow },
+    INFO: { severity: 9 },
+    DEBUG: { severity: 5 },
   },
 };
 
 // 2. Create a level manager instance
 const levels = new LogLevels(myLevels);
 
-// 3. Use the manager to work with your levels
-console.log('All level names:', levels.names);
-// Output: All level names: [ 'CRITICAL', 'ERROR', 'WARN', 'INFO', 'DEBUG' ]
+// 3. Look up levels — asSpec() returns a Spec or null
+const infoSpec = levels.asSpec('INFO')!;
+console.log(infoSpec.name);       // 'INFO'
+console.log(infoSpec.severity);   // 9
 
-console.log('Default level:', levels.defaultLevelName);
-// Output: Default level: INFO
+// 4. Use well-known levels
+console.log(levels.defaultLevel.name);  // 'INFO' (severity 9)
+console.log(levels.warnLevel.name);     // 'WARN' (severity 13)
+console.log(levels.flushLevel.name);    // 'ERROR' (severity 17)
 
-const currentThreshold = 'INFO';
+// 5. Compare levels using Spec objects
+const errorSpec = levels.asSpec('ERROR')!;
+const debugSpec = levels.asSpec('DEBUG')!;
+console.log(compareLevels(errorSpec, debugSpec));  // +1 (ERROR > DEBUG)
+console.log(compareLevels(debugSpec, errorSpec));  // -1 (DEBUG < ERROR)
 
-console.log(`Should we log a DEBUG message?`, levels.meetsThreshold('DEBUG', currentThreshold));
-// Output: Should we log a DEBUG message? false
+// 6. Apply level-specific colors
+console.log(applyColors('This is an error!', errorSpec));  // (red text)
 
-console.log(`Should we log a WARN message?`, levels.meetsThreshold('WARN', currentThreshold));
-// Output: Should we log a WARN message? true
-
-// Apply custom formatting
-const errorMessage = 'This is an error!';
-console.log(levels.applyColors(errorMessage, 'ERROR'));
-// Output: (red text) This is an error!
+// 7. Threshold check — direct severity comparison
+const threshold = levels.asSpec('INFO')!;
+const shouldLog = errorSpec.severity >= threshold.severity;  // true
 ```
 
-### Using Def Objects
+### Working with Spec Objects
 
-You can work with log levels as `Def` objects that contain both the name and severity:
+The primary data type is `Spec`, which bundles a level's name, severity, and
+optional formatting into a single object:
 
 ```ts
-// Convert to a Def object
-const errorDef = levels.asDef('ERROR');
-// Returns: { name: 'ERROR', severity: 17 }
-
-// Use compareLevels for comparing Def objects
-const infoDef = levels.asDef('INFO')!;
-const debugDef = levels.asDef('DEBUG')!;
-
-const result = levels.compareLevels(infoDef, debugDef);
-// Returns: +1 (INFO severity 9 > DEBUG severity 5)
+type Spec = {
+  name: string;           // e.g. 'INFO', 'ERROR'
+  severity: number;       // OTLP severity (1–24)
+  fmtFn?: (str: string) => string;  // optional color/style function
+  icon?: string;          // optional display icon
+};
 ```
+
+Instead of passing around raw level names or severity numbers, the codebase
+passes `Spec` objects. Use `asSpec()` to convert a name or severity into a Spec,
+or access well-known levels via `defaultLevel`, `warnLevel`, and `flushLevel`.
 
 ### API Overview
 
-- **`LogLevelsSet`**: A type definition for an object that defines your custom log levels. The keys of the levels
-  property are the level names (e.g., `'ERROR'`), and the values are `LogLevelSpec` objects specifying the `val`
-  (numeric value) and other properties.
+- **`LogLevelsSet`**: Configuration object passed to the `LogLevels` constructor. Contains an `id` string and a
+  `levels` record mapping level names to `LogLevelsSpec` objects.
 
-- **`LogLevels`**: A class that takes a `LogLevelsSet` and implements the `IBasic` interface. It provides methods for
-  converting between level names and values, checking logging thresholds (`meetsThreshold`), and applying custom
-  formatting.
+- **`LogLevels`**: The main class. Implements `IBasic`. Provides `asSpec()`, `maxWidth()`, and well-known level
+  getters (`defaultLevel`, `warnLevel`, `flushLevel`).
 
-- **`IBasic`**: The core interface that defines the contract for a log level management system. This allows for
-  different implementations to be used interchangeably within a logger.
+- **`IBasic`**: The core interface for log level management. Allows different level sets to be used interchangeably.
+
+- **`compareLevels(a, b)`**: Standalone function comparing two Spec objects by severity. Returns `+1`, `0`, or `-1`.
+
+- **`applyColors(msg, spec)`**: Standalone function that applies a Spec's `fmtFn` to a message string.
+
+- **Type guards**: `isSpec()`, `isSeverityNumber()`, `isLogLevelSpec()`, `isLogLevelMap()`, `isLogLevelsSet()`.
 
 ## Industry Standard Log Levels
 

@@ -61,11 +61,11 @@ export interface IEmitter extends IMark {
    * Sets the log level threshold for this logger.
    * @param {Level.Name | Level.Severity} level - The threshold to set.
    */
-  set threshold(level: Level.Name | Level.Severity);
+  set threshold(level: Level.Spec | Level.Name | Level.Severity);
   /**
    * Retrieves the logger's effective threshold.
    */
-  get threshold(): Level.Severity;
+  get threshold(): Level.Spec;
   /**
    * /** Alias for {@link meetsThreshold}.
    */

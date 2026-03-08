@@ -33,23 +33,25 @@ export class TransportMgr {
    * @returns {this} The current instance for method chaining.
    */
   setThreshold(level: Level.Spec): this {
-    const threshold = level;
     this.transports.forEach((transport) => {
-      transport.setThreshold(threshold);
+      transport.setThreshold(level);
     });
     return this;
   }
 
   /**
-   * Checks if any transport meets the specified log level threshold.
+   * Checks if any transport meets the specified log level threshold. Some transports may not have
+   * thresholds set, in which case they don't participate in this calculation, and so we should
+   * leave it up to the logger or logMgr threshold.
    *
    * @param {Level.Severity} levelVal - The numerical value of the log level.
    * @returns {boolean} `true` if any transport meets the threshold, otherwise `false`.
    */
-  meetsAnyThresholdValue(levelVal: Level.Severity): boolean {
+  meetsAnyThreshold(level: Level.Spec): boolean {
     assert(this.transports.length, 'No transports');
     return this.transports.some((transport) => {
-      return transport.meetsThresholdValue(levelVal);
+      const result = transport.compareThreshold(level);
+      return result && result >= 0;
     });
   }
 

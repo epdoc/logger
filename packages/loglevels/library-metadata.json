@@ -1,0 +1,49 @@
+{
+  "package": "@epdoc/loglevels",
+  "version": "1.0.0-beta.1",
+  "purpose": "Define and manage custom log level sets using OTLP severity numbers (1-24). Provides Spec-based lookups, comparison, and formatting — no logging output itself.",
+  "quickStart": "const levels = new LogLevels({ id: 'app', levels: { ERROR: { severity: 17 }, INFO: { severity: 9 }, DEBUG: { severity: 5 } } });\nconst spec = levels.asSpec('INFO')!;\nconsole.log(spec.name, spec.severity); // 'INFO' 9",
+  "keyExports": [
+    "LogLevels — Main class implementing IBasic. Constructed from a LogLevelsSet. Provides asSpec(), maxWidth(), defaultLevel, warnLevel, flushLevel, specMap, specArray.",
+    "IBasic — Interface contract for log level managers; used as the type for logLevels references throughout @epdoc/logger.",
+    "Spec — The primary data object: { name, severity, fmtFn?, icon? }. Passed around instead of raw names or severity numbers.",
+    "LogLevelsSpec — Config for a single level without a name: { severity, fmtFn?, icon? }. Used inside LogLevelsSet definitions.",
+    "LogLevelsSet — Constructor argument: { id: string, levels: Record<Name, LogLevelsSpec> }.",
+    "Name — Type alias for string (a level name like 'INFO').",
+    "Severity — Type alias for Integer (OTLP severity number 1-24).",
+    "SpecMap — Map<Name, Spec>.",
+    "SpecArray — (Spec | null)[] indexed by severity (length 25).",
+    "FactoryMethod — () => IBasic factory type.",
+    "compareLevels(a, b) — Standalone function: compares two Specs by severity, returns +1/0/-1.",
+    "applyColors(msg, spec) — Standalone function: applies spec.fmtFn to a string.",
+    "isSpec(val) — Type guard for Spec objects.",
+    "isSeverityNumber(val) — Type guard for integers 1-24.",
+    "isLogLevelSpec(obj), isLogLevelMap(obj), isLogLevelsSet(obj) — Type guards for config types."
+  ],
+  "dependencies": {
+    "internal": [],
+    "external": ["@epdoc/type", "@std/assert"]
+  },
+  "keyPatterns": [
+    {
+      "name": "Spec-based level passing",
+      "description": "Instead of passing level names (string) or severity numbers, pass Spec objects. Use asSpec() to convert, then access .name, .severity, .fmtFn directly."
+    },
+    {
+      "name": "Well-known severity anchors",
+      "description": "defaultLevel (severity 9), warnLevel (severity 13), and flushLevel (severity 17) are fixed anchors. Every LogLevelsSet must include levels at these severities."
+    },
+    {
+      "name": "Threshold comparison",
+      "description": "Compare levels via spec.severity >= threshold.severity, or use compareLevels(spec, threshold) for a CompareResult (+1/0/-1)."
+    },
+    {
+      "name": "Import convention",
+      "description": "Consumers import as: import * as Level from '@epdoc/loglevels'; then reference Level.Spec, Level.Name, Level.IBasic, new Level.LogLevels(), Level.isSpec(), etc."
+    }
+  ],
+  "architecture": {
+    "flow": "LogLevelsSet (config) → LogLevels constructor → specMap + specArray → asSpec() lookups",
+    "keyDesign": "Spec is the universal currency. All level identity flows through Spec objects rather than raw strings or numbers. LogLevels is a leaf dependency with no internal package deps."
+  }
+}

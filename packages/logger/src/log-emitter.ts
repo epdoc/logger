@@ -1,7 +1,8 @@
 import type * as Log from '$log';
 import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import type { CompareResult, Integer } from '@epdoc/type';
+import type { Integer } from '@epdoc/type';
+import type { TransportMgr } from './transports/mgr.ts';
 
 export interface ITransportEmitter {
   emit(msg: Log.Entry): void;
@@ -38,15 +39,19 @@ export interface ITransportEmitter {
  * @public
  */
 export class LogEmitter implements MsgBuilder.IEmitter {
-  private readonly _level: Level.Spec;
-  private readonly _msgEmitter: ITransportEmitter;
-  private readonly _sid?: string;
-  private readonly _reqId?: string;
-  private readonly _pkg?: string;
-  private readonly _compareThreshold: CompareResult;
-  private readonly _msgSep: Integer = 1;
-  private readonly _flushCallback?: () => void;
-  private readonly _demark?: (name: string, keep?: boolean) => number;
+  #enable = true; // are we going to emit this message?
+  #level: Level.Spec;
+  // is #level >= flush level
+  #flush = false;
+  // this is the logMgr, and we will deprecate it and make the LogEmitter a TransporEmitter?
+  // _msgEmitter: ITransportEmitter;
+  #transportMgr: TransportMgr;
+  #sid?: string;
+  #reqId?: string;
+  #pkg?: string;
+  #msgSep: Integer = 1;
+  #flushCallback?: () => void;
+  #demark?: (name: string, keep?: boolean) => number;
 
   /**
    * Creates a new Emitter instance with logger context and transport reference.
@@ -60,33 +65,20 @@ export class LogEmitter implements MsgBuilder.IEmitter {
    *
    * @internal
    */
-  constructor(
-    logMgr: ITransportEmitter,
-    level: Level.Spec,
-    context: {
-      sid?: string;
-      reqId?: string;
-      pkgs: string[];
-      pkgSep: string;
-    },
-    thresholds: {
-      compareThreshold: CompareResult; // 0 for meets, 1 for exceeds
-      meetsFlushThreshold: boolean;
-    },
-    msgSep: Integer,
-    flushCallback?: () => void,
-    demark?: (name: string, keep?: boolean) => number,
-  ) {
-    this._level = level;
-    this._msgEmitter = logMgr;
-    this._sid = context.sid;
-    this._reqId = context.reqId;
-    this._pkg = context.pkgs.length > 0 ? context.pkgs.join(context.pkgSep) : undefined;
-    this._compareThreshold = thresholds.compareThreshold;
-    // this._meetsFlushThreshold = thresholds.meetsFlushThreshold;
-    this._flushCallback = flushCallback;
-    this._msgSep = msgSep;
-    this._demark = demark;
+  constructor(options: Log.LogEmitterOpts) {
+    this.#enable = options.enable;
+    this.#level = options.level;
+    this.#flush = options.flush;
+    // this._msgEmitter = logMgr;
+    if (options.context) {
+      this.#sid = options.context.sid;
+      this.#reqId = options.context.reqId;
+      this.#pkg = options.context.pkgs.length > 0 ? options.context.pkgs.join(options.context.pkgSep) : undefined;
+    }
+    this.#flushCallback = options.flushCallback;
+    this.#msgSep = options.msgSep;
+    this.#transportMgr = options.transportMgr;
+    this.#demark = options.demark;
   }
 
   /**
@@ -102,7 +94,7 @@ export class LogEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   get dataEnabled(): boolean {
-    return this._compareThreshold >= 0;
+    return this.#enable;
   }
 
   /**
@@ -117,7 +109,7 @@ export class LogEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   get emitEnabled(): boolean {
-    return this._compareThreshold >= 0;
+    return this.#enable;
   }
 
   /**
@@ -132,7 +124,7 @@ export class LogEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   get stackEnabled(): boolean {
-    return this._compareThreshold >= 0;
+    return this.#enable;
   }
 
   /**
@@ -156,7 +148,7 @@ export class LogEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   demark(name: string, keep = false): number {
-    return this._demark ? this._demark(name, keep) : 0;
+    return this.#demark ? this.#demark(name, keep) : 0;
   }
 
   /**
@@ -189,19 +181,20 @@ export class LogEmitter implements MsgBuilder.IEmitter {
    */
   emit = (data: MsgBuilder.EmitterData): MsgBuilder.EmitterData => {
     const entry: Log.Entry = {
-      level: this._level,
+      level: this.#level,
       timestamp: data.timestamp,
       time: data.elapsed,
-      sid: this._sid,
-      reqId: this._reqId,
-      pkg: this._pkg,
+      sid: this.#sid,
+      reqId: this.#reqId,
+      pkg: this.#pkg,
       msg: data.formatter,
-      msgSep: this._msgSep,
+      msgSep: this.#msgSep,
       data: data.data,
+      transports: this.#transportMgr,
     };
-
+    this.#transportMgr.emit(entry, this.#flush);
     // Emit to logMgr, which will test thresholds and emit to transport manager.
-    this._msgEmitter.emit(entry);
+    // this._msgEmitter.emit(entry);
 
     return data;
   };

@@ -9,17 +9,20 @@
  *
  * @example
  * ```ts
- * import { LogLevels, type LogLevelsDef } from '@epdoc/loglevels';
+ * import { LogLevels, type LogLevelsSet } from '@epdoc/loglevels';
  *
- * const myLevels: LogLevelsDef = {
- *   ERROR: { val: 0 },
- *   INFO: { val: 1, default: true },
- *   DEBUG: { val: 2 }
+ * const myLevels: LogLevelsSet = {
+ *   id: 'my-app',
+ *   levels: {
+ *     ERROR: { severity: 17 },
+ *     INFO:  { severity: 9 },
+ *     DEBUG: { severity: 5 },
+ *   },
  * };
  *
- * const levelManager = new LogLevels(myLevels);
- * console.log(levelManager.names); // ['ERROR', 'INFO', 'DEBUG']
- * console.log(levelManager.defaultLevelName); // 'INFO'
+ * const levels = new LogLevels(myLevels);
+ * console.log(levels.defaultLevel.name); // 'INFO'
+ * console.log(levels.asSpec('ERROR')!.severity); // 17
  * ```
  */
 
@@ -27,3 +30,4 @@ export * from './base.ts';
 export * from './guards.ts';
 export * from './ibasic.ts';
 export * from './types.ts';
+export * from './utils.ts';

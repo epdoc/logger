@@ -8,13 +8,10 @@ export function isLogLevelSpec(obj: unknown): obj is LogLevel.LogLevelsSpec {
   if (!_.isDict(obj)) return false;
   if (!isSeverityNumber(obj.severity)) return false;
 
-  // Check all optional properties
+  // Check optional properties match LogLevelsSpec shape
   return (
     (!_.isDefined(obj.fmtFn) || _.isFunction(obj.fmtFn)) &&
-    (!_.isDefined(obj.icon) || _.isString(obj.icon)) &&
-    ['default', 'warn', 'flush'].every(
-      (prop) => !_.isDefined(obj[prop]) || _.isBoolean(obj[prop]),
-    )
+    (!_.isDefined(obj.icon) || _.isString(obj.icon))
   );
 }
 

@@ -1,18 +1,21 @@
 /**
  * @module
- * This module defines the core types and interfaces for creating and managing
- * custom log level systems.
+ * Core types and interfaces for creating and managing custom log level systems.
  *
  * @example
  * ```ts
- * import type { LogLevelsDef, StyleFormatterFn } from '@epdoc/loglevels';
- * import { bold, red } from '@std/fmt/colors';
+ * import type { LogLevelsSet, LogLevelsSpec } from '@epdoc/loglevels';
+ * import { bold, red, yellow } from '@std/fmt/colors';
  *
- * const myCustomLevels: LogLevelsDef = {
- *   FATAL: { val: 0, fmtFn: (str) => bold(red(str)), flush: true },
- *   ERROR: { val: 1, fmtFn: red },
- *   INFO: { val: 2, default: true },
- *   DEBUG: { val: 3, lowest: true }
+ * const myLevels: LogLevelsSet = {
+ *   id: 'my-app',
+ *   levels: {
+ *     FATAL: { severity: 21, fmtFn: (str) => bold(red(str)) },
+ *     ERROR: { severity: 17, fmtFn: red },
+ *     WARN:  { severity: 13, fmtFn: yellow },
+ *     INFO:  { severity: 9 },
+ *     DEBUG: { severity: 5 },
+ *   },
  * };
  * ```
  */

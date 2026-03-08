@@ -3,6 +3,7 @@ import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { Integer } from '@epdoc/type';
 import type { TimestampFormat } from './consts.ts';
+import { TransportMgr } from './transports/mgr.ts';
 
 /**
  * A type representing the allowed values for timestamp formatting.
@@ -36,6 +37,8 @@ export type Entry = {
   data?: unknown | undefined;
   /** The number of spaces to output between parts of a message, defaults to 1 */
   msgSep?: Integer;
+  /** The transports that the logger will send this message to */
+  transports: TransportMgr;
 };
 
 /**
@@ -102,3 +105,21 @@ export type ILogMgrSettings = Partial<{
    */
   show: EmitterShowOpts;
 }>;
+
+export type LogEmitterContext = {
+  sid?: string;
+  reqId?: string;
+  pkgs: string[];
+  pkgSep: string;
+};
+
+export interface LogEmitterOpts {
+  enable: boolean;
+  level: Level.Spec;
+  flush: boolean;
+  context: LogEmitterContext;
+  msgSep: Integer;
+  transportMgr: TransportMgr;
+  flushCallback: () => void;
+  demark?: (name: string, keep?: boolean) => number;
+}
