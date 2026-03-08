@@ -21,7 +21,7 @@
  */
 
 import type { Integer } from '@epdoc/type';
-import type { LogLevels } from './base.ts';
+import type { LogLevels } from './loglevels.ts';
 
 /**
  * Represents the unique case-insensitive name of a log level, such as, 'info', 'INFO' or 'DEBUG'.

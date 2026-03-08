@@ -26,7 +26,7 @@
  * ```
  */
 
-export * from './base.ts';
 export * from './guards.ts';
+export * from './loglevels.ts';
 export * from './types.ts';
 export * from './utils.ts';
