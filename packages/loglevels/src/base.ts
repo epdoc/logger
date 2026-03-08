@@ -1,4 +1,4 @@
-import { type Integer } from '@epdoc/type';
+import type { Integer } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import { isLogLevelsSet, isSeverityNumber, isSpec } from './guards.ts';
 import type * as Level from './types.ts';
