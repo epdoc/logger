@@ -2,6 +2,7 @@ import * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import * as colors from '@std/fmt/colors';
 import { LogMgr } from '../../logmgr.ts';
+import type { IGetChildParams } from '../../types.ts';
 import type * as Base from '../base/mod.ts';
 import type { IFactoryMethods } from '../factory.ts';
 import { BareLogger } from './logger.ts';
@@ -18,15 +19,15 @@ import { BareLogger } from './logger.ts';
 const bareLogLevelsSet: Level.LogLevelsSet = {
   id: 'bare',
   levels: {
-    warn: { severity: 13, fmtFn: colors.yellow, warn: true },
-    info: { severity: 9, fmtFn: colors.green, default: true },
+    warn: { severity: 13, fmtFn: colors.yellow },
+    info: { severity: 9, fmtFn: colors.green },
   },
 } as const;
 
 export const bareFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, BareLogger<MsgBuilder.Abstract>> = {
   createLogger: <M extends MsgBuilder.Abstract>(
-    log: LogMgr<M> | Base.IEmitter,
-    params?: Base.IGetChildParams,
+    log: LogMgr<M> | Base.ILoggerEmitter,
+    params?: IGetChildParams,
   ): BareLogger<M> => {
     if (log instanceof LogMgr) {
       return new BareLogger<M>(log, params);

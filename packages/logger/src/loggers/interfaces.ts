@@ -1,7 +1,6 @@
 import type { HrMilliseconds } from '@epdoc/duration';
-import type * as Level from '@epdoc/loglevels';
 import type { Integer } from '@epdoc/type';
-import type { Entry } from '../types.ts';
+import type { Entry, IGetChildParams } from '../types.ts';
 
 export * from './factory.ts';
 
@@ -9,7 +8,7 @@ export * from './factory.ts';
  * Defines the core contract for a logger, responsible for emitting log entries
  * and managing contextual properties.
  */
-export interface IEmitter extends IMark {
+export interface ILoggerEmitter extends IMark {
   /**
    * Forwards a log entry to the log manager for processing.
    * @param {Log.Entry} msg - The log entry to emit.
@@ -61,22 +60,15 @@ export interface IEmitter extends IMark {
    * Sets the log level threshold for this logger.
    * @param {Level.Name | Level.Severity} level - The threshold to set.
    */
-  set threshold(level: Level.Spec | Level.Name | Level.Severity);
+  // setThreshold(level: Level.Spec | Level.Name | Level.Severity): this;
   /**
    * Retrieves the logger's effective threshold.
    */
-  get threshold(): Level.Spec;
+  // get threshold(): Level.Spec;
   /**
    * /** Alias for {@link meetsThreshold}.
    */
-  meetsThreshold(level: Level.Severity | Level.Name, threshold?: Level.Severity | Level.Name): boolean;
-  /**
-   * Checks if a log level meets the specified threshold.
-   * @param {Level.Severity | Level.Name} level - The level to check.
-   * @param {Level.Severity | Level.Name} [threshold] - An optional, overriding threshold.
-   * @returns {boolean} `true` if the level meets the threshold.
-   */
-  isEnabledFor(level: Level.Severity | Level.Name, threshold?: Level.Severity | Level.Name): boolean;
+  // meetsThreshold(level: Level.Severity | Level.Name, threshold?: Level.Severity | Level.Name): boolean;
 }
 
 /**
@@ -109,37 +101,31 @@ export interface IInherit {
 /**
  * Defines the contract for managing log level thresholds.
  */
-export interface ILevels {
-  /**
-   * Retrieves the active log level configuration.
-   */
-  get logLevels(): Level.LogLevels;
-  /**
-   * Sets the log level threshold.
-   * @param {Level.Spec} level - The threshold to set.
-   * @returns {ILevels} The instance for chaining.
-   */
-  setThreshold(level: Level.Spec): ILevels;
-  /**
-   * Sets the log level threshold.
-   */
-  set threshold(level: Level.Spec);
-  /**
-   * Retrieves the effective log level threshold.
-   */
-  get threshold(): Level.Severity;
-  /**
-   * /** Alias for {@link meetsThreshold}.
-   */
-  meetsThreshold(level: Level.Spec, threshold: Level.Spec): boolean;
-  /**
-   * Checks if a log level meets a given threshold.
-   * @param {Level.Severity | Level.Name} level - The level to check.
-   * @param {Level.Severity | Level.Name} threshold - The threshold to check against.
-   * @returns {boolean} `true` if the level meets the threshold.
-   */
-  meetsAnyThreshold(level: Level.Spec): boolean;
-}
+// export interface ILevels {
+//   /**
+//    * Retrieves the active log level configuration.
+//    */
+//   get logLevels(): Level.LogLevels;
+//   /**
+//    * Sets the log level threshold.
+//    */
+//   setThreshold(level: Level.Spec | Level.Name | Level.Severity): this;
+//   /**
+//    * Retrieves the effective log level threshold.
+//    */
+//   get threshold(): Level.Spec;
+//   /**
+//    * /** Alias for {@link meetsThreshold}.
+//    */
+//   // meetsThreshold(level: Level.Spec, threshold: Level.Spec): boolean;
+//   /**
+//    * Checks if a log level meets a given threshold.
+//    * @param {Level.Severity | Level.Name} level - The level to check.
+//    * @param {Level.Severity | Level.Name} threshold - The threshold to check against.
+//    * @returns {boolean} `true` if the level meets the threshold.
+//    */
+//   meetsAnyThreshold(level: Level.Spec): boolean;
+// }
 
 /**
  * Defines the contract for performance marking.
@@ -157,22 +143,4 @@ export interface IMark {
    * @returns {HrMilliseconds} The elapsed time in milliseconds.
    */
   demark(name: string, keep: boolean): HrMilliseconds;
-}
-
-/**
- * Defines the parameters for creating a child logger.
- */
-export interface IGetChildParams {
-  /**
-   * A session identifier, often tied to a user.
-   */
-  sid?: string;
-  /**
-   * A unique identifier for a request or operation.
-   */
-  reqId?: string;
-  /**
-   * A namespace, such as a class or module name.
-   */
-  pkg?: string;
 }

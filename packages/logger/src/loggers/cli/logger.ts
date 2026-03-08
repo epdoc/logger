@@ -1,6 +1,6 @@
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { LogMgr } from '../../logmgr.ts';
-import type * as Base from '../base/mod.ts';
+import type { IGetChildParams } from '../../types.ts';
 import * as Min from '../min/mod.ts';
 
 /**
@@ -28,7 +28,7 @@ import * as Min from '../min/mod.ts';
  * @template M - The type of message builder used by the logger.
  */
 export class CliLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> {
-  constructor(logMgr: LogMgr<M>, params?: Base.IGetChildParams) {
+  constructor(logMgr: LogMgr<M>, params?: IGetChildParams) {
     super(logMgr, params);
   }
 

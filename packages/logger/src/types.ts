@@ -114,12 +114,28 @@ export type LogEmitterContext = {
 };
 
 export interface LogEmitterOpts {
-  enable: boolean;
   level: Level.Spec;
-  flush: boolean;
   context: LogEmitterContext;
   msgSep: Integer;
   transportMgr: TransportMgr;
-  flushCallback: () => void;
   demark?: (name: string, keep?: boolean) => number;
+  emitCallback: (msg: Entry) => void;
+}
+
+/**
+ * Defines the parameters for creating a child logger.
+ */
+export interface IGetChildParams {
+  /**
+   * A session identifier, often tied to a user.
+   */
+  sid?: string;
+  /**
+   * A unique identifier for a request or operation.
+   */
+  reqId?: string;
+  /**
+   * A namespace, such as a class or module name.
+   */
+  pkg?: string;
 }

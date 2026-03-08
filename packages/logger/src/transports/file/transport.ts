@@ -45,8 +45,8 @@ export class FileTransport extends Console.Transport {
    * @param opts.threshold - Minimum log level for this transport
    * @param opts.flushThreshold - Log level that triggers immediate flush
    */
-  constructor(logMgr: TransportBaseOptions, opts: FileOptions) {
-    super(logMgr, opts);
+  constructor(opts: FileOptions) {
+    super(opts);
     this.filepath = opts.filepath;
     this.mode = opts.mode ?? 'a';
     this.buf = new Uint8Array(opts.bufferSize ?? BUFSIZE);
@@ -57,7 +57,7 @@ export class FileTransport extends Console.Transport {
    * @returns {this} The current instance for method chaining.
    */
   override thresholdUpdated(): this {
-    this._levelWidth = this.g.logLevels.maxWidth(this.g.threshold);
+    this._levelWidth = this.logLevels.maxWidth(this.threshold);
     return this;
   }
 
@@ -93,7 +93,7 @@ export class FileTransport extends Console.Transport {
    * @param {Level.Severity} levelValue - The numerical value of the log level.
    * @returns {Promise<void>} A promise that resolves when the output is complete.
    */
-  override async output(msg: string, levelValue: Level.Severity): Promise<void> {
+  override async output(msg: string, level: Level.Spec): Promise<void> {
     const bytes = this.encoder.encode(msg + '\n');
     if (bytes.byteLength > this.buf.byteLength - this.pointer) {
       await this.flush();
@@ -104,8 +104,8 @@ export class FileTransport extends Console.Transport {
       this.buf.set(bytes, this.pointer);
       this.pointer += bytes.byteLength;
     }
-    if (this.meetsFlushThresholdValue(levelValue)) {
-      await this.flush();
+    if (level.severity >= this.logLevels.flushLevel.severity) {
+      this.flush();
     }
   }
 

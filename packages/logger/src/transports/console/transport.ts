@@ -5,7 +5,7 @@ import { StringEx } from '@epdoc/string';
 import { _, type Integer } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
 import { OutputFormat } from '../consts.ts';
-import type { OutputFormatType, TransportBaseOptions, TransportEntry } from '../types.ts';
+import type { OutputFormatType, TransportEntry } from '../types.ts';
 import { consoleStyleFormatters } from './consts.ts';
 import type * as Console from './types.ts';
 import type { TransportStyleMap } from './types.ts';
@@ -147,11 +147,11 @@ export class ConsoleTransport extends Base.Transport {
 
     if (this._format === 'json') {
       // Output as JSON object
-      this.output(JSON.stringify(entry), msg.level.severity);
+      this.output(JSON.stringify(entry), msg.level);
     } else if (this._format === 'jsonArray') {
       // Output as JSON Array
       const text = this.formatJsonArrayEntry(entry, msg);
-      this.output(text, msg.level.severity);
+      this.output(text, msg.level);
       // } else if (this._format === 'otlp') {
       //   // Output as OpenTelemetry Protocol JSON (for Deno OTEL auto-export)
       //   const otlpEntry = this.formatOtlpEntry(entry, msg);
@@ -159,7 +159,7 @@ export class ConsoleTransport extends Base.Transport {
       //   this.output(asStr, levelValue);
     } else {
       const text = this.formatTextEntry(entry, msg);
-      this.output(text, msg.level.severity);
+      this.output(text, msg.level);
     }
   }
 
@@ -233,7 +233,7 @@ export class ConsoleTransport extends Base.Transport {
    * @param {Level.Severity} _levelValue - The numerical value of the log level.
    * @returns {Promise<void>} A promise that resolves when the output is complete.
    */
-  output(str: string, _levelValue: Level.Severity): Promise<void> {
+  output(str: string, _levelValue: Level.Spec): Promise<void> {
     if (this._useStderr) {
       console.error(str);
     } else {

@@ -1,13 +1,13 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { assert } from '@std/assert';
 // import { cli, ILogLevels, type Level.Name, Level.Value, LogLevelFactoryMethod, std } from './levels/index.ts';
-import type * as Log from '$log';
 import * as Logger from '$logger';
 import * as Transport from '$transport';
 import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { isStrictEmitterShowOpts } from './guards.ts';
-import { type ITransportEmitter, LogEmitter } from './log-emitter.ts';
+import { type ITransportEmitter, MsgEmitter } from './msg-emitter.ts';
+import type * as Log from './types.ts';
 
 /**
  * Central logging manager that coordinates loggers, transports, and message builders.
@@ -49,7 +49,7 @@ export class LogMgr<
   protected readonly _t0: Date = new Date();
   protected _type: string | undefined;
   #logLevels: Level.LogLevels | undefined;
-  protected _rootLogger: Logger.IEmitter | undefined;
+  protected _rootLogger: Logger.ILoggerEmitter | undefined;
   protected _msgBuilder: MsgBuilder.Abstract | undefined;
   protected _threshold: Level.Spec | null = null;
   protected _show: Log.EmitterShowOpts = {
@@ -67,7 +67,7 @@ export class LogMgr<
   protected _bRunning = false;
   readonly transportMgr: Transport.Mgr = new Transport.Mgr(this);
   protected _msgBuilderFactory: MsgBuilder.FactoryMethod = MsgBuilder.Console.createMsgBuilder;
-  protected _loggerFactories: Logger.IFactoryMethods<M, Logger.IEmitter> = Logger.Std.factoryMethods;
+  protected _loggerFactories: Logger.IFactoryMethods<M, Logger.ILoggerEmitter> = Logger.Std.factoryMethods;
   protected _loggerCount: Map<string, number> = new Map();
 
   // protected registeredLogLevels: Record<
@@ -118,10 +118,10 @@ export class LogMgr<
    * if not using the default logger, and the prefered way to do this is by calling `init` method
    * directly.
    *
-   * @param {Logger.IFactoryMethods<M, Logger.IEmitter>} factories - The set of factory methods.
+   * @param {Logger.IFactoryMethods<M, Logger.ILoggerEmitter>} factories - The set of factory methods.
    * @deprecated Use init method
    */
-  public set loggerFactory(factories: Logger.IFactoryMethods<M, Logger.IEmitter>) {
+  public set loggerFactory(factories: Logger.IFactoryMethods<M, Logger.ILoggerEmitter>) {
     this.initLevels(factories);
   }
 
@@ -129,10 +129,10 @@ export class LogMgr<
    * Gets the factories used to create the logger and its dependencies. Under normal circumstances
    * you should not need to use this getter.
    *
-   * @returns {Logger.IFactoryMethods<M, Logger.IEmitter>} The set of factory methods.
+   * @returns {Logger.IFactoryMethods<M, Logger.ILoggerEmitter>} The set of factory methods.
    * @deprecated Give me a reason not to deprecate this getter.
    */
-  public get loggerFactory(): Logger.IFactoryMethods<M, Logger.IEmitter> {
+  public get loggerFactory(): Logger.IFactoryMethods<M, Logger.ILoggerEmitter> {
     return this._loggerFactories;
   }
 
@@ -147,11 +147,11 @@ export class LogMgr<
    * called explicitly, the manager will be initialized with default factories
    * upon the first call to `getLogger()`.
    *
-   * @param {Logger.IFactoryMethods<M, Logger.IEmitter>} [factories] - The logger
+   * @param {Logger.IFactoryMethods<M, Logger.ILoggerEmitter>} [factories] - The logger
    * factories to use. If not provided, the existing factories will be used.
    * @returns {this} The `LogMgr` instance for chaining.
    */
-  initLevels(factories?: Logger.IFactoryMethods<M, Logger.IEmitter>): this {
+  initLevels(factories?: Logger.IFactoryMethods<M, Logger.ILoggerEmitter>): this {
     if (factories) {
       this._loggerFactories = factories;
     }
@@ -181,21 +181,9 @@ export class LogMgr<
       this.#logLevels,
       'Methods initLevels() or getLogger() must be called before setting log level threshold.',
     );
-    this._threshold = this.logLevels.asSpec(level);
-    assert(this._threshold, `Invalid threshold ${level}`);
-    if (this._rootLogger) {
-      if (this._threshold.severity > this._rootLogger.threshold.severity) {
-        const msg: Log.Entry = {
-          level: this.logLevels.asSpec('WARN')!,
-          msg:
-            `LogMgr threshold (${this._threshold.name}) is less retrictive than root logger threshold (${this._rootLogger.threshold.name}).` +
-            'Root logger threshold will apply.',
-          pkg: 'LogMgr',
-          transports: this.transportMgr,
-        };
-        this.forceEmit(msg);
-      }
-    }
+    const newThreshold = this.logLevels.asSpec(level);
+    assert(newThreshold, `Invalid threshold ${level}`);
+    this._threshold = newThreshold;
     this.transportMgr.setThreshold(this._threshold);
   }
 
@@ -250,7 +238,7 @@ export class LogMgr<
    * @template L - The expected type of the logger, which must extend `Logger.IEmitter`.
    * @returns {L} The root logger instance.
    */
-  public async getLogger<L extends Logger.IEmitter>(params: Logger.IGetChildParams = {}): Promise<L> {
+  public async getLogger<L extends Logger.ILoggerEmitter>(params: Log.IGetChildParams = {}): Promise<L> {
     if (!this._rootLogger) {
       this.#logLevels = this._loggerFactories.createLevels();
       this._rootLogger = this._loggerFactories.createLogger(this, params);
@@ -282,35 +270,17 @@ export class LogMgr<
    * going through the Logger and LogMgr.
    *
    * @param {string} level - The log level for the message.
-   * @param {Logger.IEmitter} emitter - The logger instance that provides context.
+   * @param {Logger.ILoggerEmitter} emitter - The logger instance that provides context.
    * @returns {M} A new message builder instance.
    */
-  public getMsgBuilder(level: string, emitter: Logger.IEmitter): M {
+  public getMsgBuilder(level: string, emitter: Logger.ILoggerEmitter): M {
     assert(this.#logLevels, 'Log levels not yet initialized');
     const levelSpec = this.#logLevels.asSpec(level);
     assert(levelSpec, `Invalid level ${level}`);
 
-    let meetsAnyThreshold = false;
-    if (levelSpec.severity && emitter.threshold) {
-      meetsAnyThreshold = levelSpec.severity >= emitter.threshold.severity;
-    } else if (this.threshold) {
-      meetsAnyThreshold = levelSpec.severity >= this.threshold.severity;
-    }
-    if (!meetsAnyThreshold && this.transportMgr.meetsAnyThreshold(levelSpec)) {
-      meetsAnyThreshold = true;
-    }
-
-    const meetsFlushThreshold = levelSpec.severity >= this.#logLevels.flushLevel.severity;
-    let flushCallback = () => {};
-    if (meetsFlushThreshold) {
-      flushCallback = () => this.transportMgr.flushQueue(true);
-    }
-
     // Create a lightweight emitter that captures context and has direct access to TransportMgr
     const opts: Log.LogEmitterOpts = {
-      enable: meetsAnyThreshold,
       level: levelSpec,
-      flush: meetsFlushThreshold,
       context: {
         sid: emitter.sid,
         reqId: emitter.reqId,
@@ -319,11 +289,11 @@ export class LogMgr<
       },
       msgSep: emitter.msgSep ?? this._show.msgSep ?? 1,
       transportMgr: this.transportMgr,
-      flushCallback: flushCallback,
+      emitCallback: this.transportMgr.emit,
       demark: emitter.demark ? (name: string, keep?: boolean) => emitter.demark!(name, keep ?? false) : undefined,
     };
 
-    const directEmitter = new LogEmitter(opts);
+    const directEmitter = new MsgEmitter(opts);
 
     return this._msgBuilderFactory(directEmitter) as unknown as M;
   }
@@ -428,8 +398,7 @@ export class LogMgr<
       if (!msg.timestamp) {
         msg.timestamp = new Date();
       }
-      const flush = msg.level.severity >= this.logLevels.flushLevel.severity;
-      this.transportMgr.emit(msg, flush);
+      this.transportMgr.emit(msg);
     }
   }
 
@@ -439,8 +408,7 @@ export class LogMgr<
    * @internal
    */
   forceEmit(msg: Log.Entry): void {
-    const flush = msg.level.severity >= this.logLevels.flushLevel.severity;
-    this.transportMgr.emit(msg, flush);
+    this.transportMgr.emit(msg);
   }
 
   /**

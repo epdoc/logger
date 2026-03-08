@@ -1,7 +1,7 @@
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { LogMgr } from '../../logmgr.ts';
+import type * as Logger from '../interfaces.ts';
 import * as Min from '../min/mod.ts';
-import type * as Logger from '../types.ts';
 
 /**
  * Implements a logger with a standard set of log levels.
@@ -16,12 +16,12 @@ import type * as Logger from '../types.ts';
  * - `trace`: For fine-grained tracing of program execution.
  *
  * This class extends {@link Logger.Indent} to provide indentation capabilities
- * and implements {@link std.IStdLogger} and {@link Logger.IEmitter} for its core
+ * and implements {@link std.IStdLogger} and {@link Logger.ILoggerEmitter} for its core
  * logging functionality.
  *
  * @template M - The type of message builder used by the logger.
  */
-export class OtlpLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> implements Logger.IEmitter {
+export class OtlpLogger<M extends MsgBuilder.Abstract> extends Min.Logger<M> implements Logger.ILoggerEmitter {
   /**
    * Creates a shallow copy of the current `StdLogger` instance.
    * @returns {this} A new `StdLogger` instance with copied properties.

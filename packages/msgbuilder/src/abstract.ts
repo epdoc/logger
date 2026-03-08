@@ -258,7 +258,7 @@ export abstract class AbstractMsgBuilder implements IFormatter {
    */
   public data(data: unknown): this {
     if (!this._allow) return this;
-    if (this._emitter.dataEnabled && _.isDict(data)) {
+    if (_.isDict(data)) {
       if (_.isDict(this._data)) {
         this._data = Object.assign(this._data, data);
       } else {

@@ -1,3 +1,4 @@
+import { IGetChildParams } from '$log';
 import * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import * as colors from '@std/fmt/colors';
@@ -33,8 +34,8 @@ const cliLogLevelsSet: Level.LogLevelsSet = {
 
 export const cliFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, CliLogger<MsgBuilder.Abstract>> = {
   createLogger: <M extends MsgBuilder.Abstract>(
-    log: LogMgr<M> | Base.IEmitter,
-    params?: Base.IGetChildParams,
+    log: LogMgr<M> | Base.ILoggerEmitter,
+    params?: IGetChildParams,
   ): CliLogger<M> => {
     if (log instanceof LogMgr) {
       return new CliLogger<M>(log, params);

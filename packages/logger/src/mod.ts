@@ -1,17 +1,18 @@
 export * from '$logger';
 export { isTimestampFormat, TimestampFormat } from './consts.ts';
-export { LogEmitter as Emitter } from './log-emitter.ts';
 export { LogMgr as Mgr } from './logmgr.ts';
+export { MsgEmitter as Emitter } from './msg-emitter.ts';
 export * as Transport from './transports/mod.ts';
 
 // Export AbstractLogger and types for external logger implementations
 export { AbstractLogger } from './loggers/base/logger.ts';
-export type { IEmitter, IFactoryMethods, IGetChildParams } from './loggers/types.ts';
+export type { IFactoryMethods, ILoggerEmitter as IEmitter } from './loggers/interfaces.ts';
 
 export type {
   EmitterShowKey,
   EmitterShowOpts,
   Entry,
+  IGetChildParams,
   ILogMgrSettings as IMgrSettings,
   TimestampFormatType,
 } from './types.ts';

@@ -95,7 +95,7 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    * @param {Log.Entry} msg - The log entry to emit.
    */
   override emit(msg: Log.Entry): void {
-    if (this.isEnabledFor(msg.level) && msg.msg) {
+    if (msg.msg && msg.transports.meetsAnyThreshold(msg.level)) {
       // Apply indentation for direct emit calls
       if (this._indent.length > 0) {
         const indentPrefix = this._indent.join(' ');
@@ -105,7 +105,7 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
           (msg.msg as unknown as { prependMsgPart: (str: string) => void }).prependMsgPart(indentPrefix);
         }
       }
-      this._logMgr.emit(msg);
+      msg.transports.emit(msg);
     }
   }
 

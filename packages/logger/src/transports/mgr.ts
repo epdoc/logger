@@ -143,9 +143,10 @@ export class TransportMgr {
       return t.alive;
     });
     const msg: Log.Entry = {
-      level: 'info',
+      level: this._logMgr.logLevels.defaultLevel,
       pkg: 'logger.transport.remove',
       msg: `Removed transport '${name}'`,
+      transports: this,
     };
 
     this.emit(msg);
@@ -172,7 +173,8 @@ export class TransportMgr {
    * @param msg - The log entry to emit.
    * @param flush - Whether to force any transports to flush their buffers or batched messages right away. This might be done for error messages.
    */
-  emit(msg: Log.Entry, flush = false): void {
+  emit(msg: Log.Entry): void {
+    const flush = msg.level.severity >= this._logMgr.logLevels.flushLevel.severity;
     if (this.allReady()) {
       // All transports ready - emit directly and flush any queued messages
       this.flushQueue();

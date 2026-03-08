@@ -24,5 +24,5 @@ export const OutputFormat = {
  * @returns {AbstractMsgBuilder<M>} A new transport instance.
  */
 export interface IStaticMsgBuilder {
-  create(level: Level.Name, emitter: Logger.IEmitter): MsgBuilder.Abstract;
+  create(level: Level.Name, emitter: Logger.ILoggerEmitter): MsgBuilder.Abstract;
 }

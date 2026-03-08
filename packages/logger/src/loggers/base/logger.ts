@@ -1,11 +1,11 @@
 import type * as Log from '$log';
 import type { HrMilliseconds } from '@epdoc/duration';
-import type * as Level from '@epdoc/loglevels';
+// import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { _, type Integer } from '@epdoc/type';
-import { assert } from '@std/assert/assert';
 import type { LogMgr } from '../../logmgr.ts';
-import type { IEmitter, IGetChildParams, IInherit, ILevels } from '../types.ts';
+import type { IGetChildParams } from '../../types.ts';
+import type { IInherit, ILoggerEmitter } from '../interfaces.ts';
 
 let markId = 0;
 
@@ -35,10 +35,10 @@ let markId = 0;
  * @implements {Logger.ILevels}
  * @implements {Logger.IInherit}
  */
-export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements IEmitter, ILevels, IInherit {
+export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements ILoggerEmitter, IInherit {
   protected _logMgr: LogMgr<M>;
   protected _parent: this | undefined;
-  protected _threshold: Level.Spec;
+  // protected _threshold: Level.Spec;
   protected _show: Log.EmitterShowOpts = { pkgSep: '.' };
   /** Contains the chain of pkg values for all super loggers */
   protected _pkgs: string[] = [];
@@ -64,7 +64,7 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
     if (params) {
       this.#appendParams(params);
     }
-    this._threshold = logMgr.logLevels.defaultLevel;
+    // this._threshold = logMgr.logLevels.defaultLevel;
   }
 
   /**
@@ -130,20 +130,20 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
    * @internal
    */
   assign(logger: AbstractLogger<M>): void {
-    this._threshold = logger._threshold;
+    // this._threshold = logger._threshold;
     this._show = logger._show;
     this._sid = logger._sid;
     this._reqId = logger._reqId;
     this._pkgs = [...logger._pkgs];
   }
 
-  public getLogLevels(): ILevels {
-    return this;
-  }
+  // public getLogLevels(): Level.LogLevels {
+  //   return this;
+  // }
 
-  get levels(): ILevels {
-    return this;
-  }
+  // get levels(): ILevels {
+  //   return this;
+  // }
 
   /**
 
@@ -154,9 +154,7 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
    * @param {Log.Entry} msg - The log entry to emit.
    */
   public emit(msg: Log.Entry): void {
-    if (this.meetsAnyThreshold(msg.level) && msg.msg) {
-      this._logMgr.emit(msg);
-    }
+    this._logMgr.emit(msg);
   }
 
   /**
@@ -222,9 +220,9 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
   /**
    * Gets the active log level configuration from the log manager.
    */
-  public get logLevels(): Level.IBasic {
-    return this._logMgr.logLevels;
-  }
+  // public get logLevels(): Level.LogLevels {
+  //   return this._logMgr.logLevels;
+  // }
 
   /**
    * Gets the associated log manager instance.
@@ -254,36 +252,22 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
    * @returns {this} The current logger instance.
    * @internal
    */
-  setThreshold(level: Level.Spec | Level.Name | Level.Severity): this {
-    const spec = this.logLevels.asSpec(level);
-    assert(spec, 'Threshold level doe snot exist');
-    this._threshold = spec;
-    if (this._logMgr.threshold) {
-      if (this._threshold.severity > this._logMgr.threshold.severity) {
-        const msg: Log.Entry = {
-          level: this.logLevels.warnLevel,
-          msg:
-            `Logger threshold ${spec.name} is less restrictive than LogMgr threshold ${this._logMgr.threshold.name}. LogMgr threshold will apply.`,
-        };
-        this._logMgr.emit(msg);
-      }
-    }
-    return this;
-  }
-
-  /**
-   * Sets the log level threshold for this logger instance.
-   *
-   * @remarks
-   * This is a convenient alternative to the {@link setThreshold} method.
-   * The effective threshold is the most restrictive of the logger, log manager,
-   * and transport settings.
-   *
-   * @param {Level.Name | Level.Severity} level - The threshold to set.
-   */
-  public set threshold(level: Level.Spec | Level.Name | Level.Severity) {
-    this.setThreshold(level);
-  }
+  // setThreshold(level: Level.Spec | Level.Name | Level.Severity): this {
+  //   const spec = this.logLevels.asSpec(level);
+  //   assert(spec, 'Threshold level doe snot exist');
+  //   this._threshold = spec;
+  //   if (this._logMgr.threshold) {
+  //     if (this._threshold.severity > this._logMgr.threshold.severity) {
+  //       const msg: Log.Entry = {
+  //         level: this.logLevels.warnLevel,
+  //         msg:
+  //           `Logger threshold ${spec.name} is less restrictive than LogMgr threshold ${this._logMgr.threshold.name}. LogMgr threshold will apply.`,
+  //       };
+  //       this._logMgr.emit(msg);
+  //     }
+  //   }
+  //   return this;
+  // }
 
   /**
    * Gets the effective threshold for this logger instance.
@@ -291,21 +275,21 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
    * @returns {Level.Severity} The logger's own threshold, or the log manager's
    * threshold if one is not set on the logger.
    */
-  public get threshold(): Level.Spec {
-    return this._threshold;
-  }
+  // get threshold(): Level.Spec {
+  //   return this._threshold;
+  // }
 
   /**
    * Does level meet this logger's threshold or the threshold of any of the transports?
    */
-  meetsAnyThreshold(level: Level.Spec): boolean {
-    for (const transport of this.logMgr.transportMgr.transports) {
-      if (level.severity >= transport.threshold.severity) {
-        return true;
-      }
-    }
-    return false;
-  }
+  // meetsAnyThreshold(level: Level.Spec): boolean {
+  //   for (const transport of this.logMgr.transportMgr.transports) {
+  //     if (level.severity >= transport.threshold.severity) {
+  //       return true;
+  //     }
+  //   }
+  //   return false;
+  // }
 
   /**
    * Creates a high-resolution performance mark.

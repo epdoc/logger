@@ -1,3 +1,4 @@
+import { IGetChildParams } from '$log';
 import * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import * as colors from '@std/fmt/colors';
@@ -18,10 +19,10 @@ import { OtlpLogger } from './logger.ts';
 const otlpLogLevelsSet: Level.LogLevelsSet = {
   id: 'std',
   levels: {
-    fatal: { severity: 21, fmtFn: colors.brightRed, flush: true, icon: '☠' },
-    error: { severity: 17, fmtFn: colors.red, flush: true, icon: '✗' },
-    warn: { severity: 13, fmtFn: colors.yellow, warn: true, icon: '⚠' },
-    info: { severity: 9, fmtFn: colors.green, default: true, icon: 'ℹ' },
+    fatal: { severity: 21, fmtFn: colors.brightRed, icon: '☠' },
+    error: { severity: 17, fmtFn: colors.red, icon: '✗' },
+    warn: { severity: 13, fmtFn: colors.yellow, icon: '⚠' },
+    info: { severity: 9, fmtFn: colors.green, icon: 'ℹ' },
     debug: {
       severity: 5,
       fmtFn: (str: string) => {
@@ -35,8 +36,8 @@ const otlpLogLevelsSet: Level.LogLevelsSet = {
 
 export const otlpFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, OtlpLogger<MsgBuilder.Abstract>> = {
   createLogger: <M extends MsgBuilder.Abstract>(
-    log: LogMgr<M> | Base.IEmitter,
-    params?: Base.IGetChildParams,
+    log: LogMgr<M> | Base.ILoggerEmitter,
+    params?: IGetChildParams,
   ): OtlpLogger<M> => {
     if (log instanceof LogMgr) {
       return new OtlpLogger<M>(log, params);

@@ -1,4 +1,4 @@
-import { TransportBaseOptions } from '../types.ts';
+import type { TransportBaseOptions } from '../types.ts';
 
 /**
  * Options for configuring the InfluxDB transport.

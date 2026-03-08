@@ -8,7 +8,7 @@ import type { OutputFormat } from './consts.ts';
  * This allows transports to be decoupled from the generic LogMgr<M>.
  */
 export interface TransportBaseOptions {
-  readonly logLevels: Level.IBasic;
+  readonly logLevels: Level.LogLevels;
   threshold: Level.Spec;
   readonly show: EmitterShowOpts;
   readonly startTime: Date;

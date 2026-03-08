@@ -1,3 +1,4 @@
+import { IGetChildParams } from '$log';
 import * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import * as colors from '@std/fmt/colors';
@@ -18,12 +19,11 @@ import { MinLogger } from './logger.ts';
 const minLogLevelsSet: Level.LogLevelsSet = {
   id: 'min',
   levels: {
-    error: { severity: 17, fmtFn: colors.red, flush: true },
-    warn: { severity: 13, fmtFn: colors.yellow, warn: true },
-    info: { severity: 9, fmtFn: colors.green, default: true },
+    error: { severity: 17, fmtFn: colors.red },
+    warn: { severity: 13, fmtFn: colors.yellow },
+    info: { severity: 9, fmtFn: colors.green },
     debug: {
       severity: 5,
-      lowest: true,
       fmtFn: (str: string) => {
         return colors.dim(colors.blue(str));
       },
@@ -33,8 +33,8 @@ const minLogLevelsSet: Level.LogLevelsSet = {
 
 export const minFactoryMethods: IFactoryMethods<MsgBuilder.Abstract, MinLogger<MsgBuilder.Abstract>> = {
   createLogger: <M extends MsgBuilder.Abstract>(
-    log: LogMgr<M> | Base.IEmitter,
-    params?: Base.IGetChildParams,
+    log: LogMgr<M> | Base.ILoggerEmitter,
+    params?: IGetChildParams,
   ): MinLogger<M> => {
     if (log instanceof LogMgr) {
       return new MinLogger<M>(log, params);

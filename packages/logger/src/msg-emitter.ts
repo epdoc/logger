@@ -38,19 +38,17 @@ export interface ITransportEmitter {
  *
  * @public
  */
-export class LogEmitter implements MsgBuilder.IEmitter {
-  #enable = true; // are we going to emit this message?
+export class MsgEmitter implements MsgBuilder.IEmitter {
   #level: Level.Spec;
   // is #level >= flush level
-  #flush = false;
-  // this is the logMgr, and we will deprecate it and make the LogEmitter a TransporEmitter?
+  // this is the logMgr, and we will deprecate it and make the MsgEmitter a TransporEmitter?
   // _msgEmitter: ITransportEmitter;
   #transportMgr: TransportMgr;
   #sid?: string;
   #reqId?: string;
   #pkg?: string;
   #msgSep: Integer = 1;
-  #flushCallback?: () => void;
+  #emitCallback?: (entry: Log.Entry) => void;
   #demark?: (name: string, keep?: boolean) => number;
 
   /**
@@ -66,19 +64,17 @@ export class LogEmitter implements MsgBuilder.IEmitter {
    * @internal
    */
   constructor(options: Log.LogEmitterOpts) {
-    this.#enable = options.enable;
     this.#level = options.level;
-    this.#flush = options.flush;
     // this._msgEmitter = logMgr;
     if (options.context) {
       this.#sid = options.context.sid;
       this.#reqId = options.context.reqId;
       this.#pkg = options.context.pkgs.length > 0 ? options.context.pkgs.join(options.context.pkgSep) : undefined;
     }
-    this.#flushCallback = options.flushCallback;
     this.#msgSep = options.msgSep;
     this.#transportMgr = options.transportMgr;
     this.#demark = options.demark;
+    this.#emitCallback = options.emitCallback;
   }
 
   /**
@@ -94,7 +90,7 @@ export class LogEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   get dataEnabled(): boolean {
-    return this.#enable;
+    return true;
   }
 
   /**
@@ -109,7 +105,7 @@ export class LogEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   get emitEnabled(): boolean {
-    return this.#enable;
+    return true;
   }
 
   /**
@@ -124,7 +120,7 @@ export class LogEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   get stackEnabled(): boolean {
-    return this.#enable;
+    return true;
   }
 
   /**
@@ -192,7 +188,7 @@ export class LogEmitter implements MsgBuilder.IEmitter {
       data: data.data,
       transports: this.#transportMgr,
     };
-    this.#transportMgr.emit(entry, this.#flush);
+    this.#transportMgr.emit(entry);
     // Emit to logMgr, which will test thresholds and emit to transport manager.
     // this._msgEmitter.emit(entry);
 
