@@ -2,6 +2,7 @@ import type * as Log from '$log';
 import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { Integer } from '@epdoc/type';
+import type { LogEventBus } from './event-bus.ts';
 import type { TransportMgr } from './transports/mgr.ts';
 
 export interface ITransportEmitter {
@@ -40,15 +41,12 @@ export interface ITransportEmitter {
  */
 export class MsgEmitter implements MsgBuilder.IEmitter {
   #level: Level.Spec;
-  // is #level >= flush level
-  // this is the logMgr, and we will deprecate it and make the MsgEmitter a TransporEmitter?
-  // _msgEmitter: ITransportEmitter;
-  #transportMgr: TransportMgr;
+  #eventBus: LogEventBus;
+  #transportMgr?: TransportMgr;
   #sid?: string;
   #reqId?: string;
   #pkg?: string;
   #msgSep: Integer = 1;
-  #emitCallback?: (entry: Log.Entry) => void;
   #demark?: (name: string, keep?: boolean) => number;
 
   /**
@@ -65,16 +63,15 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
    */
   constructor(options: Log.LogEmitterOpts) {
     this.#level = options.level;
-    // this._msgEmitter = logMgr;
     if (options.context) {
       this.#sid = options.context.sid;
       this.#reqId = options.context.reqId;
       this.#pkg = options.context.pkgs.length > 0 ? options.context.pkgs.join(options.context.pkgSep) : undefined;
     }
     this.#msgSep = options.msgSep;
+    this.#eventBus = options.eventBus;
     this.#transportMgr = options.transportMgr;
     this.#demark = options.demark;
-    this.#emitCallback = options.emitCallback;
   }
 
   /**
@@ -90,6 +87,14 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   get dataEnabled(): boolean {
+    // Check if any handlers are registered and level meets threshold
+    if (!this.#eventBus.hasHandlers()) {
+      return false;
+    }
+    // If transportMgr is available, check if level meets any transport threshold
+    if (this.#transportMgr) {
+      return this.#transportMgr.meetsAnyThreshold(this.#level);
+    }
     return true;
   }
 
@@ -105,6 +110,14 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   get emitEnabled(): boolean {
+    // Check if any handlers are registered and level meets threshold
+    if (!this.#eventBus.hasHandlers()) {
+      return false;
+    }
+    // If transportMgr is available, check if level meets any transport threshold
+    if (this.#transportMgr) {
+      return this.#transportMgr.meetsAnyThreshold(this.#level);
+    }
     return true;
   }
 
@@ -120,6 +133,14 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   get stackEnabled(): boolean {
+    // Check if any handlers are registered and level meets threshold
+    if (!this.#eventBus.hasHandlers()) {
+      return false;
+    }
+    // If transportMgr is available, check if level meets any transport threshold
+    if (this.#transportMgr) {
+      return this.#transportMgr.meetsAnyThreshold(this.#level);
+    }
     return true;
   }
 
@@ -186,11 +207,8 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
       msg: data.formatter,
       msgSep: this.#msgSep,
       data: data.data,
-      transports: this.#transportMgr,
     };
-    this.#transportMgr.emit(entry);
-    // Emit to logMgr, which will test thresholds and emit to transport manager.
-    // this._msgEmitter.emit(entry);
+    this.#eventBus.emit(entry);
 
     return data;
   };

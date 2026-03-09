@@ -45,8 +45,8 @@ export class FileTransport extends Console.Transport {
    * @param opts.threshold - Minimum log level for this transport
    * @param opts.flushThreshold - Log level that triggers immediate flush
    */
-  constructor(opts: FileOptions) {
-    super(opts);
+  constructor(baseOpts: TransportBaseOptions, opts: FileOptions) {
+    super(baseOpts, opts);
     this.filepath = opts.filepath;
     this.mode = opts.mode ?? 'a';
     this.buf = new Uint8Array(opts.bufferSize ?? BUFSIZE);

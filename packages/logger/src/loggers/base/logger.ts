@@ -137,16 +137,6 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
     this._pkgs = [...logger._pkgs];
   }
 
-  // public getLogLevels(): Level.LogLevels {
-  //   return this;
-  // }
-
-  // get levels(): ILevels {
-  //   return this;
-  // }
-
-  /**
-
   /**
    * Forwards a log entry to the {@link LogMgr} for processing, but only if it
    * meets the configured log level threshold.
@@ -218,13 +208,6 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
   }
 
   /**
-   * Gets the active log level configuration from the log manager.
-   */
-  // public get logLevels(): Level.LogLevels {
-  //   return this._logMgr.logLevels;
-  // }
-
-  /**
    * Gets the associated log manager instance.
    */
   public get logMgr(): LogMgr<M> {
@@ -238,58 +221,6 @@ export abstract class AbstractLogger<M extends MsgBuilder.Abstract> implements I
   public get parent(): this | undefined {
     return this._parent;
   }
-
-  /**
-   * Sets the log level threshold for this specific logger instance.
-   *
-   * @remarks
-   * This threshold acts as a preliminary filter. The final decision to log a
-   * message depends on the *most restrictive* threshold among this logger, the
-   * {@link LogMgr}, and the transport. A warning is issued if this threshold is
-   * less restrictive than the manager's, as the manager's setting will prevail.
-   *
-   * @param {Level.Name | Level.Severity} level - The threshold to set.
-   * @returns {this} The current logger instance.
-   * @internal
-   */
-  // setThreshold(level: Level.Spec | Level.Name | Level.Severity): this {
-  //   const spec = this.logLevels.asSpec(level);
-  //   assert(spec, 'Threshold level doe snot exist');
-  //   this._threshold = spec;
-  //   if (this._logMgr.threshold) {
-  //     if (this._threshold.severity > this._logMgr.threshold.severity) {
-  //       const msg: Log.Entry = {
-  //         level: this.logLevels.warnLevel,
-  //         msg:
-  //           `Logger threshold ${spec.name} is less restrictive than LogMgr threshold ${this._logMgr.threshold.name}. LogMgr threshold will apply.`,
-  //       };
-  //       this._logMgr.emit(msg);
-  //     }
-  //   }
-  //   return this;
-  // }
-
-  /**
-   * Gets the effective threshold for this logger instance.
-   *
-   * @returns {Level.Severity} The logger's own threshold, or the log manager's
-   * threshold if one is not set on the logger.
-   */
-  // get threshold(): Level.Spec {
-  //   return this._threshold;
-  // }
-
-  /**
-   * Does level meet this logger's threshold or the threshold of any of the transports?
-   */
-  // meetsAnyThreshold(level: Level.Spec): boolean {
-  //   for (const transport of this.logMgr.transportMgr.transports) {
-  //     if (level.severity >= transport.threshold.severity) {
-  //       return true;
-  //     }
-  //   }
-  //   return false;
-  // }
 
   /**
    * Creates a high-resolution performance mark.

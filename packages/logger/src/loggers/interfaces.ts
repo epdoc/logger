@@ -99,35 +99,6 @@ export interface IInherit {
 }
 
 /**
- * Defines the contract for managing log level thresholds.
- */
-// export interface ILevels {
-//   /**
-//    * Retrieves the active log level configuration.
-//    */
-//   get logLevels(): Level.LogLevels;
-//   /**
-//    * Sets the log level threshold.
-//    */
-//   setThreshold(level: Level.Spec | Level.Name | Level.Severity): this;
-//   /**
-//    * Retrieves the effective log level threshold.
-//    */
-//   get threshold(): Level.Spec;
-//   /**
-//    * /** Alias for {@link meetsThreshold}.
-//    */
-//   // meetsThreshold(level: Level.Spec, threshold: Level.Spec): boolean;
-//   /**
-//    * Checks if a log level meets a given threshold.
-//    * @param {Level.Severity | Level.Name} level - The level to check.
-//    * @param {Level.Severity | Level.Name} threshold - The threshold to check against.
-//    * @returns {boolean} `true` if the level meets the threshold.
-//    */
-//   meetsAnyThreshold(level: Level.Spec): boolean;
-// }
-
-/**
  * Defines the contract for performance marking.
  */
 export interface IMark {

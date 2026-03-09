@@ -43,7 +43,7 @@ export type TransportStyleMap =
 /**
  * Options for configuring the `Console` transport.
  */
-export interface Options extends TransportBaseOptions {
+export interface Options {
   /**
    * The output format to use.
    * @default 'text'

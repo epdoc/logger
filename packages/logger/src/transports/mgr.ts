@@ -1,6 +1,7 @@
 import type * as Log from '$log';
 import type * as Level from '@epdoc/loglevels';
 import { assert } from '@std/assert';
+import type { LogEventBus } from '../event-bus.ts';
 import type { AbstractTransport } from './base/transport.ts';
 import { ConsoleTransport } from './console/transport.ts';
 import type { TransportBaseOptions } from './types.ts';
@@ -17,6 +18,7 @@ export class TransportMgr {
    * An array of registered transport instances.
    */
   transports: AbstractTransport[] = [];
+  #unsubscribeFromBus?: () => void;
 
   /**
    * Creates an instance of the `TransportMgr`.
@@ -24,6 +26,20 @@ export class TransportMgr {
    */
   constructor(logMgr: TransportBaseOptions) {
     this._logMgr = logMgr;
+  }
+
+  /**
+   * Subscribes this TransportMgr to a LogEventBus.
+   * When entries are emitted to the bus, they will be processed by this manager.
+   *
+   * @param eventBus - The event bus to subscribe to
+   * @returns A function that unsubscribes from the bus
+   */
+  subscribeToEventBus(eventBus: LogEventBus): () => void {
+    this.#unsubscribeFromBus = eventBus.onEmit((entry) => {
+      this.emit(entry);
+    });
+    return this.#unsubscribeFromBus;
   }
 
   /**
@@ -146,7 +162,6 @@ export class TransportMgr {
       level: this._logMgr.logLevels.defaultLevel,
       pkg: 'logger.transport.remove',
       msg: `Removed transport '${name}'`,
-      transports: this,
     };
 
     this.emit(msg);

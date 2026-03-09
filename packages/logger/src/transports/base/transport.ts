@@ -41,11 +41,11 @@ export abstract class AbstractTransport {
    * @param {BaseOptions} [opts={}] - Configuration options for the transport.
    * @param opts.show - Overrides default visibility settings for log metadata
    */
-  constructor(opts: TransportBaseOptions) {
-    this.#logLevels = opts.logLevels;
-    this.#threshold = opts.threshold;
-    this.#show = opts.show;
-    this.#startTime = opts.startTime;
+  constructor(baseOpts: TransportBaseOptions) {
+    this.#logLevels = baseOpts.logLevels;
+    this.#threshold = baseOpts.threshold;
+    this.#show = baseOpts.show;
+    this.#startTime = baseOpts.startTime;
 
     // Generate unique ID for this transport instance
     this.id = `${this.type}-${AbstractTransport._nextId++}`;
@@ -263,6 +263,6 @@ export abstract class AbstractTransport {
    * Indicates if the transport is currently active and operational.
    */
   get alive(): boolean {
-    return false;
+    return this._bReady && this._bEnabled;
   }
 }

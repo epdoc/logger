@@ -8,4 +8,4 @@ const logMgr = new Log.Mgr<M>().initLevels();
 logMgr.threshold = 'verbose';
 const log = await logMgr.getLogger<L>();
 
-log.info.h2('Hello, world!').emit();
+log.info.h1('Hello').value('world!').emit();

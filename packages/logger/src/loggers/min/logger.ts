@@ -47,19 +47,6 @@ export class MinLogger<M extends MsgBuilder.Abstract> extends Bare.Logger<M> {
   }
 
   /**
-   * Provides a message builder for the `VERBOSE` log level.
-   *
-   * @remarks
-   * Use this level for more detailed informational messages than `INFO`,
-   * often useful for understanding the steps within a process.
-   *
-   * @returns {M} A message builder configured for the `VERBOSE` level.
-   */
-  // public get verbose(): M {
-  //   return this._logMgr.getMsgBuilder('VERBOSE', this);
-  // }
-
-  /**
    * Provides a message builder for the `DEBUG` log level.
    *
    * @remarks
@@ -72,29 +59,4 @@ export class MinLogger<M extends MsgBuilder.Abstract> extends Bare.Logger<M> {
     return this.getIndentedMsgBuilder('DEBUG');
   }
 
-  /**
-   * Provides a message builder for the `TRACE` log level.
-   *
-   * @remarks
-   * Use this level for fine-grained tracing of program execution, often used
-   * to follow the path of execution through complex logic or function calls.
-   *
-   * @returns {M} A message builder configured for the `TRACE` level.
-   */
-  // public get trace(): M {
-  //   return this._logMgr.getMsgBuilder('TRACE', this);
-  // }
-
-  /**
-   * Provides a message builder for the `SPAM` log level.
-   *
-   * @remarks
-   * This is an extra verbose level, typically used for very frequent or noisy
-   * debugging output that would normally be commented out in production code.
-   *
-   * @returns {M} A message builder configured for the `SPAM` level.
-   */
-  // public get spam(): M {
-  //   return this._logMgr.getMsgBuilder('SPAM', this);
-  // }
 }

@@ -3,6 +3,7 @@ import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { Integer } from '@epdoc/type';
 import type { TimestampFormat } from './consts.ts';
+import type { LogEventBus } from './event-bus.ts';
 import type { TransportMgr } from './transports/mgr.ts';
 
 /**
@@ -37,8 +38,6 @@ export type Entry = {
   data?: unknown | undefined;
   /** The number of spaces to output between parts of a message, defaults to 1 */
   msgSep?: Integer;
-  /** The transports that the logger will send this message to */
-  transports: TransportMgr;
 };
 
 /**
@@ -117,9 +116,14 @@ export interface LogEmitterOpts {
   level: Level.Spec;
   context: LogEmitterContext;
   msgSep: Integer;
-  transportMgr: TransportMgr;
+  /** The event bus to emit log entries to */
+  eventBus: LogEventBus;
+  /**
+   * Optional transport manager for threshold checking.
+   * Used to determine if a message would be accepted by any transport before doing expensive work.
+   */
+  transportMgr?: TransportMgr;
   demark?: (name: string, keep?: boolean) => number;
-  emitCallback: (msg: Entry) => void;
 }
 
 /**

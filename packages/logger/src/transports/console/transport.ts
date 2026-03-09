@@ -5,7 +5,7 @@ import { StringEx } from '@epdoc/string';
 import { _, type Integer } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
 import { OutputFormat } from '../consts.ts';
-import type { OutputFormatType, TransportEntry } from '../types.ts';
+import type { OutputFormatType, TransportBaseOptions, TransportEntry } from '../types.ts';
 import { consoleStyleFormatters } from './consts.ts';
 import type * as Console from './types.ts';
 import type { TransportStyleMap } from './types.ts';
@@ -66,8 +66,8 @@ export class ConsoleTransport extends Base.Transport {
    * @param opts.threshold - Minimum log level for this transport
    * @param opts.flushThreshold - Log level that triggers immediate flush
    */
-  constructor(opts: Console.Options) {
-    super(opts);
+  constructor(baseOpts: TransportBaseOptions, opts: Console.Options = {}) {
+    super(baseOpts);
     if (opts.format) {
       this._format = opts.format;
     }

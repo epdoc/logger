@@ -1,9 +1,7 @@
-import type { TransportBaseOptions } from '../types.ts';
-
 /**
  * Options for configuring the InfluxDB transport.
  */
-export interface Options extends TransportBaseOptions {
+export interface Options {
   host: string;
   org: string;
   bucket: string;

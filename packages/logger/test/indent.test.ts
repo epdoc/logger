@@ -191,8 +191,9 @@ describe('Logger Indentation', () => {
 
       // Create entry with string message
       const entry: Log.Entry = {
-        level: 'info',
+        level: logMgr.logLevels.asSpec('verbose')!,
         msg: 'test message',
+        transports: logMgr.transportMgr,
       };
 
       // Capture the modified entry by overriding transportMgr.emit

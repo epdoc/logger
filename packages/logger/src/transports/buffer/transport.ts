@@ -3,7 +3,7 @@ import { DateEx } from '@epdoc/datetime';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { _ } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
-import type { TransportEntry } from '../types.ts';
+import type { TransportBaseOptions, TransportEntry } from '../types.ts';
 import type { IBufferTransportOptions } from './types.ts';
 
 /**
@@ -29,8 +29,8 @@ export class BufferTransport extends Base.Transport {
   private maxEntries: number;
   private delayReady?: number;
 
-  constructor(opts: IBufferTransportOptions) {
-    super(opts);
+  constructor(baseOpts: TransportBaseOptions, opts: IBufferTransportOptions) {
+    super(baseOpts);
     this.maxEntries = opts.maxEntries ?? 1000;
     this.delayReady = opts.delayReady;
     // Don't set ready here - let setup() handle it
