@@ -3,4 +3,4 @@
  */
 
 export { BufferTransport as Transport } from './transport.ts';
-export type { IBufferTransportOptions } from './types.ts';
+export type { IBufferOptions as IBufferTransportOptions } from './types.ts';

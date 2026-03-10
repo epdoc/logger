@@ -476,7 +476,7 @@ Deno.test('InfluxTransport - message formatting with metadata', async () => {
 
   // Create a log entry with metadata
   const entry: Log.Entry = {
-    level: 'error',
+    level: logMgr.asSpec('error'),
     pkg: 'test.module',
     msg: 'Error occurred',
     reqId: 'req-123',

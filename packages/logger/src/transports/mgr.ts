@@ -1,10 +1,9 @@
 import type * as Log from '$log';
 import type * as Level from '@epdoc/loglevels';
 import { assert } from '@std/assert';
-import type { LogEventBus } from '../event-bus.ts';
 import type { AbstractTransport } from './base/transport.ts';
 import { ConsoleTransport } from './console/transport.ts';
-import type { TransportBaseOptions } from './types.ts';
+import type { IBaseOptions } from './types.ts';
 
 /**
  * Manages a collection of log transports, handling the distribution of log
@@ -12,34 +11,19 @@ import type { TransportBaseOptions } from './types.ts';
  */
 export class TransportMgr {
   protected _bRunning = false;
-  protected _logMgr: TransportBaseOptions;
+  protected _logMgr: IBaseOptions;
   protected _queue: Log.Entry[] = [];
   /**
    * An array of registered transport instances.
    */
   transports: AbstractTransport[] = [];
-  #unsubscribeFromBus?: () => void;
 
   /**
    * Creates an instance of the `TransportMgr`.
-   * @param {TransportBaseOptions} logMgr - The log manager context.
+   * @param {IBaseOptions} logMgr - The log manager context.
    */
-  constructor(logMgr: TransportBaseOptions) {
+  constructor(logMgr: IBaseOptions) {
     this._logMgr = logMgr;
-  }
-
-  /**
-   * Subscribes this TransportMgr to a LogEventBus.
-   * When entries are emitted to the bus, they will be processed by this manager.
-   *
-   * @param eventBus - The event bus to subscribe to
-   * @returns A function that unsubscribes from the bus
-   */
-  subscribeToEventBus(eventBus: LogEventBus): () => void {
-    this.#unsubscribeFromBus = eventBus.onEmit((entry) => {
-      this.emit(entry);
-    });
-    return this.#unsubscribeFromBus;
   }
 
   /**
@@ -69,6 +53,35 @@ export class TransportMgr {
       const result = transport.compareToTransportThreshold(level);
       return result && result >= 0;
     });
+  }
+
+  /**
+   * Gets the minimum (most permissive) threshold across all transports.
+   * Returns the threshold with the lowest severity number.
+   *
+   * @returns {Level.Spec | undefined} The minimum threshold, or undefined if no transports.
+   */
+  getMinThreshold(): Level.Spec | undefined {
+    if (this.transports.length === 0) {
+      return undefined;
+    }
+    return this.transports.reduce((min, transport) => {
+      return transport.threshold.severity < min.severity ? transport.threshold : min;
+    }, this.transports[0].threshold);
+  }
+
+  /**
+   * Checks if any registered transport can show progress.
+   * Progress mode is only applicable when there's a Console transport
+   * with progress enabled running in an interactive TTY.
+   *
+   * @returns {boolean} True if there's at least one progress-capable Console transport
+   */
+  hasProgressCapableTransport(): boolean {
+    const found = this.transports.filter((transport) => {
+      return transport.canShowProgress;
+    });
+    return found ? true : false;
   }
 
   /**

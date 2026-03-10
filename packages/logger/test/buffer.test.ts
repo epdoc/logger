@@ -7,7 +7,7 @@ Deno.test('BufferTransport - basic functionality', async () => {
   const logMgr = new Log.Mgr<Console.Builder>();
   logMgr.initLevels();
   logMgr.threshold = 'info';
-  const bufferTransport = new BufferTransport(logMgr);
+  const bufferTransport = new BufferTransport(logMgr, {});
   await logMgr.addTransport(bufferTransport);
   await logMgr.start();
 
@@ -35,7 +35,7 @@ Deno.test('BufferTransport - maxEntries limit', async () => {
     startTime: logMgr.startTime,
     masEntries: 3,
   };
-  const bufferTransport = new BufferTransport(opts);
+  const bufferTransport = new BufferTransport(opts, {});
   await logMgr.addTransport(bufferTransport);
 
   const logger = await logMgr.getLogger() as Log.Std.Logger<Console.Builder>;

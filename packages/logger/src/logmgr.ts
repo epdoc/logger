@@ -1,10 +1,8 @@
-import { assert } from '@std/assert';
-// import { cli, ILogLevels, type Level.Name, Level.Value, LogLevelFactoryMethod, std } from './levels/index.ts';
 import * as Logger from '$logger';
 import * as Transport from '$transport';
 import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
-import { createLogEventBus, type LogEventBus } from './event-bus.ts';
+import { assert } from '@std/assert';
 import { isStrictEmitterShowOpts } from './guards.ts';
 import { type ITransportEmitter, MsgEmitter } from './msg-emitter.ts';
 import type * as Log from './types.ts';
@@ -21,14 +19,14 @@ import type * as Log from './types.ts';
  * - Flush management
  *
  * The manager uses a factory pattern to support different logger types (std, cli, etc.)
- * and implements the new Emitter architecture for direct MsgBuilder-to-Transport communication.
+ * and implements direct MsgBuilder-to-Transport communication for performance.
  *
  * @example Basic usage
  * ```ts
  * const logMgr = new Log.Mgr<Log.MsgBuilder.Console.Builder>();
  * logMgr.threshold = 'info';
  *
- * const logger = logMgr.getLogger<Log.Std.Logger>();
+ * const logger = await logMgr.getLogger<Log.Std.Logger>();
  * logger.info.h1('Hello World').emit();
  * ```
  *
@@ -45,7 +43,7 @@ import type * as Log from './types.ts';
  */
 export class LogMgr<
   M extends MsgBuilder.Abstract = MsgBuilder.Console.Builder,
-> implements Transport.TransportBaseOptions, ITransportEmitter {
+> implements Transport.IBaseOptions, ITransportEmitter {
   #t0: Date = new Date();
   #logLevels: Level.LogLevels | undefined;
   #rootLogger: Logger.ILoggerEmitter | undefined;
@@ -65,25 +63,10 @@ export class LogMgr<
   #loggerFactories: Logger.IFactoryMethods<M, Logger.ILoggerEmitter> = Logger.Std.factoryMethods;
 
   /**
-   * The event bus for decoupled log entry communication.
-   * Transports subscribe to this bus to receive log entries.
-   */
-  readonly eventBus: LogEventBus = createLogEventBus();
-
-  // protected registeredLogLevels: Record<
-  //   string,
-  //   { levels: Level.FactoryMethod; logger: Logger.FactoryMethod<M, Logger.IEmitter> }
-  // > = {
-  //   cli: { levels: Logger.Cli.createLogLevels, logger: Logger.Cli.createLogger },
-  //   std: { levels: Logger.Std.createLogLevels, logger: Logger.Std.createLogger },
-  // };
-
-  /**
    * Creates an instance of LogMgr.
    * @param {Log.ILogMgrSettings} [opts] - Optional configuration settings.
    */
   constructor(opts: Log.ILogMgrSettings = {}) {
-    // this.transportMgr = new Transport.Mgr<M>(this);
     if (opts.show) {
       if (!isStrictEmitterShowOpts(opts.show)) {
         throw new Error('Invalid show options');
@@ -157,7 +140,6 @@ export class LogMgr<
     }
     if (!this.#logLevels) {
       this.#logLevels = this.#loggerFactories.createLevels();
-
       this.#threshold = this.#logLevels.defaultLevel;
     }
     return this;
@@ -235,7 +217,7 @@ export class LogMgr<
    * ```ts
    * const logMgr = new Log.Mgr();
    * // Specify the expected logger type for type safety.f
-   * const logger = logMgr.getLogger<Log.Std.Logger>();
+   * const logger = await logMgr.getLogger<Log.Std.Logger>();
    * logger.info.text('Hello').emit();
    * ```
    *
@@ -244,17 +226,17 @@ export class LogMgr<
    */
   public async getLogger<L extends Logger.ILoggerEmitter>(params: Log.IGetChildParams = {}): Promise<L> {
     if (!this.#rootLogger) {
-      this.#logLevels = this.#loggerFactories.createLevels();
+      this.initLevels();
       this.#rootLogger = this.#loggerFactories.createLogger(this, params);
     }
     if (!this.transportMgr.transports.length) {
-      const consoleOpts: Transport.Console.Options = {
-        logLevels: this.logLevels,
-        show: this.show,
-        startTime: this.startTime,
-        threshold: this.threshold,
-      };
-      const transport = new Transport.Console.Transport(consoleOpts);
+      // const consoleOpts: Transport.Console.Options = {
+      //   logLevels: this.logLevels,
+      //   show: this.show,
+      //   startTime: this.startTime,
+      //   threshold: this.threshold,
+      // };
+      const transport = new Transport.Console.Transport(this, {});
       await this.transportMgr.add(transport);
     }
     if (!this.transportMgr.isRunning()) {
@@ -269,7 +251,7 @@ export class LogMgr<
    * does not need to be called by a user.
    *
    * @remarks
-   * This method creates a lightweight Emitter that captures the logger's context and has a direct
+   * This method creates a lightweight MsgEmitter that captures the logger's context and has a direct
    * reference to the TransportMgr, allowing the MsgBuilder to emit directly to transports without
    * going through the Logger and LogMgr.
    *
@@ -282,7 +264,15 @@ export class LogMgr<
     const levelSpec = this.#logLevels.asSpec(level);
     assert(levelSpec, `Invalid level ${level}`);
 
-    // Create a lightweight emitter that captures context and emits to the event bus
+    // Progress mode is enabled when:
+    // 1. The level matches the LogMgr threshold exactly
+    // 2. There's at least one Console transport that can show progress
+    const threshold = this.#threshold;
+    const levelMatchesThreshold = (threshold && levelSpec.severity === threshold.severity) ? true : false;
+    const hasProgressTransport = this.transportMgr.hasProgressCapableTransport();
+    const progressEnabled = levelMatchesThreshold && hasProgressTransport;
+
+    // Create a lightweight emitter that captures context and emits directly to TransportMgr
     const opts: Log.LogEmitterOpts = {
       level: levelSpec,
       context: {
@@ -292,14 +282,14 @@ export class LogMgr<
         pkgSep: this.#show.pkgSep || '.',
       },
       msgSep: emitter.msgSep ?? this.#show.msgSep ?? 1,
-      eventBus: this.eventBus,
       transportMgr: this.transportMgr,
+      progressEnabled,
       demark: emitter.demark ? (name: string, keep?: boolean) => emitter.demark!(name, keep ?? false) : undefined,
     };
 
-    const directEmitter = new MsgEmitter(opts);
+    const msgEmitter = new MsgEmitter(opts);
 
-    return this.#msgBuilderFactory(directEmitter) as unknown as M;
+    return this.#msgBuilderFactory(msgEmitter) as unknown as M;
   }
 
   /**
@@ -336,8 +326,6 @@ export class LogMgr<
       });
       return;
     }
-    // Subscribe TransportMgr to the event bus
-    this.transportMgr.subscribeToEventBus(this.eventBus);
     await this.transportMgr.start();
     this.#bRunning = true;
   }
@@ -423,5 +411,16 @@ export class LogMgr<
   get logLevels(): Level.LogLevels {
     assert(this.#logLevels, 'LogLevels not set for Logger. Call initLevels() first.');
     return this.#logLevels;
+  }
+
+  /**
+   * Same as logLevels.asSpec except throws if val is not valid
+   */
+  asSpec(val: Level.Spec | Level.Name | Level.Severity): Level.Spec {
+    const result = this.logLevels.asSpec(val);
+    if (!result) {
+      throw new Error(`Invalid log level ${val}`);
+    }
+    return result;
   }
 }

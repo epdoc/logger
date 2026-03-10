@@ -58,5 +58,4 @@ export class MinLogger<M extends MsgBuilder.Abstract> extends Bare.Logger<M> {
   public get debug(): M {
     return this.getIndentedMsgBuilder('DEBUG');
   }
-
 }

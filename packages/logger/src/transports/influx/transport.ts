@@ -3,7 +3,7 @@ import type { Milliseconds } from '@epdoc/duration';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { _, type Integer } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
-import { TransportBaseOptions } from '../types.ts';
+import type { IBaseOptions } from '../types.ts';
 import type * as Influx from './types.ts';
 
 export class InfluxTransport extends Base.Transport {
@@ -19,8 +19,8 @@ export class InfluxTransport extends Base.Transport {
   #hostname: string;
   #droppedStats: Influx.DroppedMessageStats | null = null;
 
-  constructor(baseOpts: TransportBaseOptions, opts: Influx.Options) {
-    super(baseOpts);
+  constructor(baseOpts: IBaseOptions, opts: Influx.Options) {
+    super(baseOpts, opts);
     this.influxOpts = opts;
     this._bReady = true;
     this.#hostname = opts.hostname || this.#getHostname();

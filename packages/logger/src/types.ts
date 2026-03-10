@@ -3,7 +3,6 @@ import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { Integer } from '@epdoc/type';
 import type { TimestampFormat } from './consts.ts';
-import type { LogEventBus } from './event-bus.ts';
 import type { TransportMgr } from './transports/mgr.ts';
 
 /**
@@ -24,16 +23,16 @@ export type Entry = {
   level: Level.Spec;
   /** The timestamp of when the log entry was created. */
   timestamp?: Date;
-  /** A 'response time' to be output by the transport. */
-  time?: HrMilliseconds;
+  /** A namespace, such as a class or module name, for context. */
+  pkg?: string;
   /** A session identifier, often tied to a user. */
   sid?: string;
   /** A unique identifier for a specific request or operation. */
   reqId?: string;
-  /** A namespace, such as a class or module name, for context. */
-  pkg?: string;
   /** The log message, which can be a simple string or a formatable object. */
   msg: string | MsgBuilder.IFormatter | undefined;
+  /** A 'response time' to be output by the transport. */
+  time?: HrMilliseconds;
   /** Any structured data associated with the log entry. */
   data?: unknown | undefined;
   /** The number of spaces to output between parts of a message, defaults to 1 */
@@ -116,13 +115,23 @@ export interface LogEmitterOpts {
   level: Level.Spec;
   context: LogEmitterContext;
   msgSep: Integer;
-  /** The event bus to emit log entries to */
-  eventBus: LogEventBus;
+  /** Direct reference to TransportMgr for emitting entries */
+  transportMgr: TransportMgr;
   /**
-   * Optional transport manager for threshold checking.
-   * Used to determine if a message would be accepted by any transport before doing expensive work.
+   * Indicates if this log level is at the exact threshold for progress mode.
+   *
+   * Progress mode is only enabled when:
+   * 1. The log level exactly matches the LogMgr threshold
+   * 2. At least one ConsoleTransport is registered
+   *
+   * When enabled, progress indicators (spinners, progress bars) can be shown
+   * instead of emitting normal log messages. This allows for interactive progress
+   * display at the threshold level. Progress output goes to STDERR while normal
+   * logs respect the transport's configured output stream.
+   *
+   * When false but emitEnabled is true, normal log emission should occur.
    */
-  transportMgr?: TransportMgr;
+  progressEnabled: boolean;
   demark?: (name: string, keep?: boolean) => number;
 }
 

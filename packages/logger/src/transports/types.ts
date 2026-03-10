@@ -7,11 +7,18 @@ import type { OutputFormat } from './consts.ts';
  * Interface defining the context from LogMgr that transports need access to.
  * This allows transports to be decoupled from the generic LogMgr<M>.
  */
-export interface TransportBaseOptions {
+export interface IBaseOptions {
   logLevels: Level.LogLevels;
   threshold: Level.Spec;
   show: EmitterShowOpts;
   startTime: Date;
+}
+
+export interface IExtendedOptions {
+  /** If specified, these override the value set in TransportBaseOptions */
+  threshold?: Level.Spec;
+  /** If specified, these override the value set in TransportBaseOptions */
+  show?: EmitterShowOpts;
 }
 
 /**
@@ -25,16 +32,14 @@ export type OutputFormatType = typeof OutputFormat[keyof typeof OutputFormat];
  *
  * @remarks
  * This type is used internally by transports to represent a log entry where
- * some fields (like the timestamp) may have already been converted to strings.
+ * some fields (like the timestamp) will already been converted to strings.
  * @internal
  */
-export type TransportEntry = Partial<{
+export type Entry = Partial<{
   /** The log level name. */
   level: Level.Spec;
   /** The formatted timestamp string. */
   timestamp: string;
-  /** The response time to be displayed. */
-  time: HrMilliseconds;
   /** The package name. */
   pkg: string;
   /** The session ID. */
@@ -43,6 +48,8 @@ export type TransportEntry = Partial<{
   reqId: string;
   /** The formatted log message. */
   msg: string;
+  /** The response time to be displayed. */
+  time: HrMilliseconds;
   /** Structured data associated with the log. */
   data: unknown;
 }>;

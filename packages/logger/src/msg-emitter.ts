@@ -2,7 +2,6 @@ import type * as Log from '$log';
 import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import type { Integer } from '@epdoc/type';
-import type { LogEventBus } from './event-bus.ts';
 import type { TransportMgr } from './transports/mgr.ts';
 
 export interface ITransportEmitter {
@@ -10,28 +9,28 @@ export interface ITransportEmitter {
 }
 
 /**
- * Lightweight emitter that captures logger context and directly emits to the transport manager.
+ * Lightweight emitter that captures logger context and emits directly to the transport manager.
  *
  * @remarks
- * The Emitter class decouples MsgBuilder from Logger by providing a direct communication path
+ * The MsgEmitter class decouples MsgBuilder from Logger by providing a direct communication path
  * to the TransportMgr. This eliminates the complex routing chain and improves performance.
  *
  * **Architecture Flow:**
  * - **Before:** `MsgBuilder.emit()` → `Logger.emit()` → `LogMgr.emit()` → `TransportMgr.emit()`
- * - **After:** `MsgBuilder.emit()` → `Emitter.emit()` → `TransportMgr.emit()`
+ * - **After:** `MsgBuilder.emit()` → `MsgEmitter.emit()` → `TransportMgr.emit()`
  *
- * Each Emitter instance is created by LogMgr when a logger requests a message builder,
- * capturing the necessary context (level, sid, reqIds, pkgs) and threshold information.
+ * Each MsgEmitter instance is created by LogMgr when a logger requests a message builder,
+ * capturing the necessary context (level, sid, reqIds, pkgs) and providing threshold checking.
  *
  * @example
  * ```ts
  * // Created internally by LogMgr during log.info call
- * const emitter = new Emitter(
- *   'INFO',
- *   transportMgr,
- *   { sid: 'session123', reqIds: ['req456'], pkgs: ['MyClass'] },
- *   { meetsThreshold: true, meetsFlushThreshold: false }
- * );
+ * const emitter = new MsgEmitter({
+ *   level: levelSpec,
+ *   transportMgr: transportMgr,
+ *   context: { sid: 'session123', reqId: 'req456', pkgs: ['MyClass'], pkgSep: '.' },
+ *   msgSep: 1
+ * });
  *
  * // Used by MsgBuilder to emit directly
  * emitter.emit(logEntryData);
@@ -41,23 +40,18 @@ export interface ITransportEmitter {
  */
 export class MsgEmitter implements MsgBuilder.IEmitter {
   #level: Level.Spec;
-  #eventBus: LogEventBus;
-  #transportMgr?: TransportMgr;
+  #transportMgr: TransportMgr;
   #sid?: string;
   #reqId?: string;
   #pkg?: string;
   #msgSep: Integer = 1;
+  #progressEnabled: boolean;
   #demark?: (name: string, keep?: boolean) => number;
 
   /**
-   * Creates a new Emitter instance with logger context and transport reference.
+   * Creates a new MsgEmitter instance with logger context and transport reference.
    *
-   * @param level - The log level for this emitter
-   * @param transportMgr - Direct reference to the transport manager
-   * @param context - Logger context containing sid, reqIds, and pkgs
-   * @param thresholds - Threshold evaluation results
-   * @param flushCallback - Optional callback to trigger flush operations
-   * @param demark - Optional performance timing function for ewt() support
+   * @param options - Configuration options for the emitter
    *
    * @internal
    */
@@ -69,8 +63,8 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
       this.#pkg = options.context.pkgs.length > 0 ? options.context.pkgs.join(options.context.pkgSep) : undefined;
     }
     this.#msgSep = options.msgSep;
-    this.#eventBus = options.eventBus;
     this.#transportMgr = options.transportMgr;
+    this.#progressEnabled = options.progressEnabled ?? false;
     this.#demark = options.demark;
   }
 
@@ -87,15 +81,7 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   get dataEnabled(): boolean {
-    // Check if any handlers are registered and level meets threshold
-    if (!this.#eventBus.hasHandlers()) {
-      return false;
-    }
-    // If transportMgr is available, check if level meets any transport threshold
-    if (this.#transportMgr) {
-      return this.#transportMgr.meetsAnyThreshold(this.#level);
-    }
-    return true;
+    return this.#transportMgr.meetsAnyThreshold(this.#level);
   }
 
   /**
@@ -110,15 +96,7 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   get emitEnabled(): boolean {
-    // Check if any handlers are registered and level meets threshold
-    if (!this.#eventBus.hasHandlers()) {
-      return false;
-    }
-    // If transportMgr is available, check if level meets any transport threshold
-    if (this.#transportMgr) {
-      return this.#transportMgr.meetsAnyThreshold(this.#level);
-    }
-    return true;
+    return this.#transportMgr.meetsAnyThreshold(this.#level);
   }
 
   /**
@@ -133,15 +111,36 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
    * @public
    */
   get stackEnabled(): boolean {
-    // Check if any handlers are registered and level meets threshold
-    if (!this.#eventBus.hasHandlers()) {
-      return false;
-    }
-    // If transportMgr is available, check if level meets any transport threshold
-    if (this.#transportMgr) {
-      return this.#transportMgr.meetsAnyThreshold(this.#level);
-    }
-    return true;
+    return this.#transportMgr.meetsAnyThreshold(this.#level);
+  }
+
+  /**
+   * Indicates whether progress mode is enabled for this log level.
+   *
+   * @remarks
+   * Progress mode is enabled when the log level exactly matches the threshold.
+   * When enabled, progress indicators (spinners, progress bars) should be shown
+   * instead of emitting normal log messages. This allows for interactive progress
+   * display at the threshold level while maintaining normal logging behavior
+   * above and below it.
+   *
+   * @returns True if progress mode should be used
+   *
+   * @example
+   * ```ts
+   * if (this._emitter.progressEnabled) {
+   *   // Show spinner/progress bar
+   *   this.#progressLine.start(this.format());
+   * } else if (this._emitter.emitEnabled) {
+   *   // Emit normal log message
+   *   this.emit();
+   * }
+   * ```
+   *
+   * @public
+   */
+  get progressEnabled(): boolean {
+    return this.#progressEnabled;
   }
 
   /**
@@ -178,10 +177,8 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
    * This is the core emit method that bypasses Logger and LogMgr, providing direct
    * communication between MsgBuilder and TransportMgr. It:
    *
-   * 1. Checks if the message meets the threshold requirements
-   * 2. Creates a complete Log.Entry with context information
-   * 3. Emits directly to the transport manager
-   * 4. Triggers flush callback if flush threshold is met
+   * 1. Creates a complete Log.Entry with context information
+   * 2. Emits directly to the transport manager
    *
    * @example
    * ```ts
@@ -208,7 +205,7 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
       msgSep: this.#msgSep,
       data: data.data,
     };
-    this.#eventBus.emit(entry);
+    this.#transportMgr.emit(entry);
 
     return data;
   };

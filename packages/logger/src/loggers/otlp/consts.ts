@@ -1,4 +1,4 @@
-import { IGetChildParams } from '$log';
+import type { IGetChildParams } from '$log';
 import * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import * as colors from '@std/fmt/colors';

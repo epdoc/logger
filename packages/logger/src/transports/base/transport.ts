@@ -4,7 +4,7 @@ import { duration } from '@epdoc/duration';
 import type * as Level from '@epdoc/loglevels';
 import { _, type CompareResult } from '@epdoc/type';
 import { isTimestampFormat } from '../../consts.ts';
-import type { TransportBaseOptions } from '../types.ts';
+import type * as Transport from '../types.ts';
 
 /**
  * The abstract base class for all log transports.
@@ -37,14 +37,14 @@ export abstract class AbstractTransport {
   /**
    * Initializes a new transport instance.
    *
-   * @param {TransportBaseOptions} logMgr - The central log manager context.
-   * @param {BaseOptions} [opts={}] - Configuration options for the transport.
+   * @param {TransportBaseOptions} logMgr - The logMgr supports this interface.
+   * @param {BaseOptions} [opts={}] - Configuration options for the transport that are not from LogMgr.
    * @param opts.show - Overrides default visibility settings for log metadata
    */
-  constructor(baseOpts: TransportBaseOptions) {
+  constructor(baseOpts: Transport.IBaseOptions, extendedOpts: Transport.IExtendedOptions) {
     this.#logLevels = baseOpts.logLevels;
-    this.#threshold = baseOpts.threshold;
-    this.#show = baseOpts.show;
+    this.#threshold = extendedOpts.threshold || baseOpts.threshold;
+    this.#show = extendedOpts.show || baseOpts.show;
     this.#startTime = baseOpts.startTime;
 
     // Generate unique ID for this transport instance
@@ -91,6 +91,15 @@ export abstract class AbstractTransport {
       }
     });
     return this;
+  }
+
+  /**
+   * Indicates whether progress mode is enabled and can be used. This can only be `true` for the
+   * `Console` transport.
+   * @returns {boolean} `true` if progress mode can be used, otherwise `false`.
+   */
+  get canShowProgress(): boolean {
+    return false;
   }
 
   /**

@@ -1,7 +1,9 @@
+import type * as Transport from '../types.ts';
+
 /**
  * Options for configuring the InfluxDB transport.
  */
-export interface Options {
+export interface Options extends Transport.IExtendedOptions {
   host: string;
   org: string;
   bucket: string;

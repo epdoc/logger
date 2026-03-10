@@ -5,7 +5,7 @@ import { StringEx } from '@epdoc/string';
 import { _, type Integer } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
 import { OutputFormat } from '../consts.ts';
-import type { OutputFormatType, TransportBaseOptions, TransportEntry } from '../types.ts';
+import type * as Transport from '../types.ts';
 import { consoleStyleFormatters } from './consts.ts';
 import type * as Console from './types.ts';
 import type { TransportStyleMap } from './types.ts';
@@ -38,9 +38,11 @@ import type { TransportStyleMap } from './types.ts';
 export class ConsoleTransport extends Base.Transport {
   public override readonly type: string = 'console';
   protected _levelWidth: Integer = 5;
-  protected _format: OutputFormatType = OutputFormat.TEXT;
+  protected _format: Transport.OutputFormatType = OutputFormat.TEXT;
   protected _color: boolean = true;
   protected _useStderr: boolean = false;
+  protected _progress: boolean = false;
+  protected _isTTY: boolean | undefined = undefined;
 
   /**
    * The active style map for metadata columns.
@@ -63,16 +65,19 @@ export class ConsoleTransport extends Base.Transport {
    * @param {Options} [opts={}] - Configuration options for the transport.
    * @param opts.format - Output format ('text', 'json', or 'json-array')
    * @param opts.color - Whether to use colors in output (defaults to true)
-   * @param opts.threshold - Minimum log level for this transport
-   * @param opts.flushThreshold - Log level that triggers immediate flush
+   * @param opts.useStderr - Whether to output to stderr instead of stdout (for MCP mode)
+   * @param opts.progress - Whether to enable progress mode for TTY terminals
+   * @param opts.isTTY - Override TTY detection (auto-detected if not set)
    */
-  constructor(baseOpts: TransportBaseOptions, opts: Console.Options = {}) {
-    super(baseOpts);
+  constructor(baseOpts: Transport.IBaseOptions, opts: Console.Options = {}) {
+    super(baseOpts, opts);
     if (opts.format) {
       this._format = opts.format;
     }
     this._color = opts.color ?? true;
     this._useStderr = opts.useStderr ?? false;
+    this._progress = opts.progress ?? false;
+    this._isTTY = opts.isTTY;
     this._bReady = true;
   }
 
@@ -103,6 +108,32 @@ export class ConsoleTransport extends Base.Transport {
   }
 
   /**
+   * Indicates whether the transport is running in a TTY (interactive terminal).
+   * Auto-detects if not explicitly set via options.
+   * @returns {boolean} `true` if running in a TTY, otherwise `false`.
+   */
+  get isTTY(): boolean {
+    if (this._isTTY !== undefined) {
+      return this._isTTY;
+    }
+    // Auto-detect TTY capability using modern Deno API
+    try {
+      return this._useStderr ? Deno.stderr.isTerminal() : Deno.stdout.isTerminal();
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Indicates whether progress mode is enabled and can be used.
+   * Progress requires TTY mode, progress option enabled, and not in MCP mode (useStderr).
+   * @returns {boolean} `true` if progress mode can be used, otherwise `false`.
+   */
+  override get canShowProgress(): boolean {
+    return this.isTTY && this._progress && !this._useStderr;
+  }
+
+  /**
    * Updates the transport's internal state when the log level threshold changes.
    * @returns {this} The current instance for method chaining.
    */
@@ -128,7 +159,7 @@ export class ConsoleTransport extends Base.Transport {
     const _logLevels = this.logLevels;
     const color = this.useColor;
 
-    const entry: TransportEntry = Object.assign(
+    const entry: Transport.Entry = Object.assign(
       {
         timestamp: this.dateToString(msg.timestamp, show.timestamp ?? 'local'),
       },
@@ -163,7 +194,7 @@ export class ConsoleTransport extends Base.Transport {
     }
   }
 
-  formatTextEntry(entry: TransportEntry, msg: Entry): string {
+  formatTextEntry(entry: Transport.Entry, msg: Entry): string {
     const parts: string[] = [];
     if (_.isString(entry.timestamp) && this.show.timestamp) {
       parts.push(entry.timestamp);
@@ -208,7 +239,7 @@ export class ConsoleTransport extends Base.Transport {
     return parts.join(sep);
   }
 
-  formatJsonArrayEntry(entry: TransportEntry, msg: Entry): string {
+  formatJsonArrayEntry(entry: Transport.Entry, msg: Entry): string {
     const color = this.useColor;
     const parts: (string | null | object | number)[] = [];
     if (_.isString(entry.timestamp) && this.show.timestamp) {

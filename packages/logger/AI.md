@@ -50,7 +50,7 @@ User code: logger.info.h1('Title').value(123).emit()
         v
    MsgEmitter.emit(EmitterData)
    - Creates Entry with context + formatter
-   - Calls TransportMgr.emit(Entry) DIRECTLY
+   - Emits directly to TransportMgr
         |
         v
    TransportMgr.emit(Entry)
@@ -69,14 +69,14 @@ User code: logger.info.h1('Title').value(123).emit()
 
 | Class | File | Role |
 |-------|------|------|
-| `LogMgr` | `logmgr.ts` | Central manager. Owns TransportMgr. Creates loggers. Provides threshold default. Routes Entry objects to TransportMgr (used for direct emits, not MsgBuilder flow). |
-| `MsgEmitter` | `msg-emitter.ts` | Per-call lightweight emitter. Created by LogMgr for each message. Captures logger context (sid, reqId, pkgs). Implements IEmitter interface for MsgBuilder. Emits Entry directly to TransportMgr. |
-| `TransportMgr` | `transports/mgr.ts` | Owns transport collection. Manages queue when transports not ready. Distributes Entry to all transports. Computes flush flag. |
+| `LogMgr` | `logmgr.ts` | Central manager. Owns TransportMgr. Creates loggers. Provides threshold default. Routes Entry objects to TransportMgr. |
+| `MsgEmitter` | `msg-emitter.ts` | Per-call lightweight emitter. Created by LogMgr for each message. Captures logger context (sid, reqId, pkgs). Implements IEmitter interface for MsgBuilder. Emits Entry directly to TransportMgr. Provides `progressEnabled` flag for progress mode detection. |
+| `TransportMgr` | `transports/mgr.ts` | Owns transport collection. Manages queue when transports not ready. Distributes Entry to all transports. Computes flush flag. Provides meetsAnyThreshold() and hasProgressCapableTransport() for optimization. |
 | `AbstractTransport` | `transports/base/transport.ts` | Base for all transports. Has threshold, show opts, emitFilter(). Actual output in subclasses. |
 | `AbstractLogger` | `loggers/base/logger.ts` | Base logger. No threshold (removed). Manages context (sid, reqId, pkgs). Has mark()/demark() for EWT. |
-| `IndentLogger` | `loggers/indent/logger.ts` | Adds indent/outdent/nodent. Overrides emit() to apply indentation. **Uses Entry.transports for direct emit calls**. |
+| `IndentLogger` | `loggers/indent/logger.ts` | Adds indent/outdent/nodent. Overrides emit() to apply indentation. Emits via TransportMgr. |
 | `StdLogger` / `CliLogger` / etc. | `loggers/*/` | Add level-specific getters (info, warn, error, etc.). |
-| `Entry` | `types.ts` | Data structure passed through the system. Contains level, timestamp, msg (formatter), context, **transports: TransportMgr**. |
+| `Entry` | `types.ts` | Pure data structure passed through the system. Contains level, timestamp, msg (formatter), context. No infrastructure references. |
 
 ---
 
@@ -157,9 +157,104 @@ interface LogEmitterOpts {
   context: LogEmitterContext;  // { sid?, reqId?, pkgs[], pkgSep }
   msgSep: Integer;
   transportMgr: TransportMgr;  // Direct reference for emitting
+  progressEnabled?: boolean;   // True if this level supports progress mode
   demark?: (name: string, keep?: boolean) => number;
 }
 ```
+
+---
+
+## Progress Support
+
+### Overview
+
+The logger provides infrastructure for progress indicators (spinners, progress bars) in interactive terminal environments.
+
+### How Progress Mode Works
+
+**When is progress mode enabled?**
+1. The log level exactly matches the LogMgr threshold
+2. There's at least one `ConsoleTransport` with:
+   - `progress: true` option
+   - Running in an interactive TTY (`isTTY: true`)
+   - NOT in MCP mode (`useStderr: false`)
+
+**Three Operating Modes:**
+
+| Mode | Condition | Behavior |
+|------|-----------|----------|
+| **SUPPRESSED** | Level < threshold | No output |
+| **PROGRESS** | Level == threshold + TTY + progress enabled | Show spinner/progress bar |
+| **EMIT** | Level > threshold OR no TTY | Emit normal log messages |
+
+### Usage in Custom MsgBuilder
+
+```typescript
+class ProgressMsgBuilder extends Console.Builder {
+  start(): void {
+    if (!this._emitter.emitEnabled) {
+      return;  // SUPPRESSED mode
+    }
+    
+    if (this._emitter.progressEnabled) {
+      // PROGRESS mode: Show spinner
+      this.#progressLine.start(this.format());
+    } else {
+      // EMIT mode: Normal log
+      this.emit();
+    }
+  }
+  
+  update(progress: number): void {
+    if (this._emitter.progressEnabled) {
+      this.#progressLine.update(progress);
+    } else if (this._emitter.emitEnabled) {
+      this.value(progress).emit();
+    }
+  }
+  
+  stop(): void {
+    if (this._emitter.progressEnabled) {
+      this.#progressLine.stop();
+    }
+  }
+}
+```
+
+### ConsoleTransport Configuration
+
+```typescript
+// Normal mode - no progress
+const normalConsole = new ConsoleTransport(logMgr, {
+  format: 'text',
+  color: true
+});
+
+// Progress mode - interactive terminal
+const progressConsole = new ConsoleTransport(logMgr, {
+  format: 'text',
+  progress: true  // Enable progress support
+});
+
+// MCP mode - stderr only, no progress
+const mcpConsole = new ConsoleTransport(logMgr, {
+  format: 'text',
+  useStderr: true  // Disables progress automatically
+});
+
+// Force non-TTY mode
+const nonInteractiveConsole = new ConsoleTransport(logMgr, {
+  format: 'text',
+  isTTY: false  // Override auto-detection
+});
+```
+
+### Implementation Notes
+
+- Progress output always goes to **stderr** (even when `useStderr: false` for normal logs)
+- Only **ConsoleTransport** supports progress mode
+- File and InfluxDB transports always receive normal log entries
+- Progress mode is determined at **MsgEmitter** creation time based on current threshold
 
 ---
 
@@ -204,122 +299,56 @@ interface LogEmitterOpts {
 
 ---
 
-## Design Decisions to Resolve
+## Design Decisions - RESOLVED
 
 ### Q1: How should IndentLogger access TransportMgr?
 
-**Status**: ARCHITECTURAL DECISION PENDING - See Design Plan below
+**Status**: ✅ RESOLVED - Implemented Simplified Architecture
 
-**Current approach (through Entry):**
-- Entry carries `transports: TransportMgr`
-- IndentLogger.emit(entry) calls `entry.transports.meetsAnyThreshold()` and `entry.transports.emit()`
-- Pro: Works, decouples IndentLogger from LogMgr
-- Con: Every Entry has infrastructure reference; odd for a data structure
+**Solution Implemented: Direct Reference with Clear Ownership**
 
-**Design Plan for LogMgr/TransportMgr Messaging System**
+LogMgr owns TransportMgr directly, and MsgEmitter holds a direct reference for emission:
 
-Given the user's desire for a more message-flow oriented architecture while maintaining backward compatibility, here is a proposed plan:
-
-#### Option A: Event Bus Pattern (RECOMMENDED)
-
-**Concept**: Introduce a lightweight event bus between LogMgr and TransportMgr.
-
-**Implementation**:
-```typescript
-// New file: src/messaging/bus.ts
-interface LogEventBus {
-  emit(entry: Entry): void;
-  onEmit(handler: (entry: Entry) => void): () => void;  // Returns unsubscribe
-}
-
-class SimpleEventBus implements LogEventBus {
-  private handlers: Set<(entry: Entry) => void> = new Set();
-  
-  emit(entry: Entry): void {
-    this.handlers.forEach(h => h(entry));
-  }
-  
-  onEmit(handler: (entry: Entry) => void): () => void {
-    this.handlers.add(handler);
-    return () => this.handlers.delete(handler);
-  }
-}
+**Architecture**:
+```
+LogMgr (owns TransportMgr, creates loggers)
+    ↓
+MsgEmitter (holds TransportMgr reference, captures context)
+    ↓
+TransportMgr (manages transports, checks thresholds)
+    ↓
+Transports (output to console/file/etc.)
 ```
 
-**Changes**:
-1. `LogMgr` owns the event bus instance
-2. `TransportMgr` subscribes to the bus on initialization
-3. `MsgEmitter` emits to the bus instead of directly to TransportMgr
-4. `Entry` no longer needs `transports` field
-5. `IndentLogger` can access the bus via `this._logMgr.eventBus`
+**Key Design Points**:
+1. **LogMgr** owns `TransportMgr` directly (created in constructor)
+2. **MsgEmitter** receives `TransportMgr` reference at construction time
+3. **MsgEmitter** checks `transportMgr.meetsAnyThreshold()` for optimization
+4. **Entry** is pure data - no infrastructure references
+5. **IndentLogger** emits via `this._logMgr.transportMgr.emit()`
 
-**Pros**:
-- Pure decoupling - no direct references needed
-- Entry becomes pure data
-- Easy to add new consumers (metrics, filtering, etc.)
-- Backward compatible via adapter pattern
+**Threshold Management**:
+- `TransportMgr.meetsAnyThreshold(level)` checks if any transport accepts the level
+- `MsgEmitter` uses this to skip expensive operations (data serialization, stack traces)
+- Each transport has its own threshold, checked during `transport.emit()`
 
-**Cons**:
-- Slight performance overhead (function call indirection)
-- More complex architecture
-
-**Migration Path**:
-1. Add event bus alongside existing direct references
-2. Migrate TransportMgr to subscribe to bus
-3. Update MsgEmitter to emit to bus
-4. Update IndentLogger to use bus via LogMgr
-5. Deprecate and remove Entry.transports (major version bump)
-
-#### Option B: Logger Context Pattern
-
-**Concept**: Pass a lightweight context object to IndentLogger that contains only what it needs.
-
-**Implementation**:
+**Initialization Pattern** (Simple):
 ```typescript
-// In LogMgr
-interface ILoggerContext {
-  meetsAnyThreshold(level: Level.Spec): boolean;
-  emit(entry: Entry): void;
-}
-
-// IndentLogger stores reference to context
-class IndentLogger<M> extends Base.Logger<M> {
-  protected _context: ILoggerContext;
-  
-  override emit(msg: Log.Entry): void {
-    if (this._context.meetsAnyThreshold(msg.level)) {
-      this._context.emit(msg);
-    }
-  }
-}
+const logMgr = new Log.Mgr();
+const logger = await logMgr.getLogger();
+logger.info.text('Hello World').emit();
 ```
 
-**Pros**:
-- Entry stays pure data
-- Minimal changes to existing architecture
-- No global event bus needed
+**Custom Transport Setup**:
+```typescript
+const logMgr = new Log.Mgr();
 
-**Cons**:
-- Still couples IndentLogger to infrastructure concepts
-- Context interface needs to be maintained
+// Add custom transports
+await logMgr.addTransport(new FileTransport(logMgr, { filepath: 'app.log' }));
+await logMgr.addTransport(new InfluxTransport(logMgr, { database: 'logs' }));
 
-#### Option C: Keep Current Approach
-
-**Concept**: Accept that Entry carries a TransportMgr reference as a pragmatic compromise.
-
-**Justification**:
-- Current system works reliably
-- Entry is internal to the package (not exposed to users)
-- The coupling is limited and well-understood
-- Performance is optimal (direct reference)
-
----
-
-## Recommended Next Steps
-
-1. **Short term**: Keep current Entry.transports approach - it's working
-2. **Medium term**: If messaging flexibility becomes critical, implement Option A (Event Bus)
-3. **Long term**: Consider Option A as part of a v2.0 architecture with breaking changes
+const logger = await logMgr.getLogger();
+```
 
 ---
 
@@ -340,12 +369,14 @@ When making changes:
 |----------|------|--------|
 | 🔴 Critical | `transports/base/transport.ts` | Bug #1 — fix `alive` getter ✅ |
 | 🟡 High | `msg-emitter.ts` | Performance #2 — implement emitEnabled ✅ |
-| 🟢 Medium | `types.ts` | Architecture #4 — remove emitCallback ✅ |
+| 🟡 High | `transports/mgr.ts` | Architecture — meetsAnyThreshold() ✅ |
+| 🟡 High | `logmgr.ts` | Architecture — own TransportMgr ✅ |
+| 🟢 Medium | `types.ts` | Architecture — remove emitCallback ✅ |
 | 🟢 Medium | `loggers/base/logger.ts` | Cleanup #7, #9 — remove dead code, fix syntax ✅ |
 | 🟢 Medium | `loggers/interfaces.ts` | Cleanup #7 — remove ILevels interface ✅ |
 | 🟢 Medium | `loggers/min/logger.ts` | Cleanup #7 — remove commented getters ✅ |
-| 🟢 Medium | `logmgr.ts` | Cleanup #8 — remove unused fields ✅ |
-| 🔵 Low | Future | Architecture #3 — decide on Entry.transports |
+| 🟢 Medium | `loggers/indent/logger.ts` | Architecture — use transportMgr for emit ✅ |
+| 🟢 Medium | `AI.md` | Documentation — update architecture docs ✅ |
 
 ---
 

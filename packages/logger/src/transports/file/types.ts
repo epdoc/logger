@@ -1,3 +1,4 @@
+import { EmitterShowOpts } from '$log';
 import type { Integer } from '@epdoc/type';
 import type * as Console from '../console/mod.ts';
 

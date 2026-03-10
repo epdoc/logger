@@ -1,10 +1,10 @@
-import type { Entry } from '$log';
+import type * as Log from '../../types.ts';
 import { DateEx } from '@epdoc/datetime';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { _ } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
-import type { TransportBaseOptions, TransportEntry } from '../types.ts';
-import type { IBufferTransportOptions } from './types.ts';
+import type * as Transport from '../types.ts';
+import type { IBufferOptions } from './types.ts';
 
 /**
  * Buffer transport that stores log messages in memory for testing and inspection.
@@ -25,12 +25,12 @@ import type { IBufferTransportOptions } from './types.ts';
  */
 export class BufferTransport extends Base.Transport {
   public override readonly type: string = 'buffer';
-  private entries: TransportEntry[] = [];
+  private entries: Transport.Entry[] = [];
   private maxEntries: number;
   private delayReady?: number;
 
-  constructor(baseOpts: TransportBaseOptions, opts: IBufferTransportOptions) {
-    super(baseOpts);
+  constructor(baseOpts: Transport.IBaseOptions, opts: IBufferOptions = {}) {
+    super(baseOpts, opts);
     this.maxEntries = opts.maxEntries ?? 1000;
     this.delayReady = opts.delayReady;
     // Don't set ready here - let setup() handle it
@@ -64,7 +64,7 @@ export class BufferTransport extends Base.Transport {
   /**
    * Emits a log entry to the buffer.
    */
-  override emit(msg: Entry) {
+  override emit(msg: Log.Entry) {
     if (!this.emitFilter(msg)) {
       return;
     }
@@ -77,7 +77,7 @@ export class BufferTransport extends Base.Transport {
       message = msg.msg;
     }
 
-    const entry: TransportEntry = {
+    const entry: Transport.Entry = {
       timestamp: new DateEx(msg.timestamp ? msg.timestamp : new Date()).toISOLocalString(),
       level: msg.level,
       msg: message,
@@ -99,7 +99,7 @@ export class BufferTransport extends Base.Transport {
   /**
    * Get all captured log entries
    */
-  getEntries(): readonly TransportEntry[] {
+  getEntries(): readonly Transport.Entry[] {
     return [...this.entries];
   }
 
@@ -113,7 +113,7 @@ export class BufferTransport extends Base.Transport {
   /**
    * Get the most recent log entry
    */
-  getLastEntry(): TransportEntry | undefined {
+  getLastEntry(): Transport.Entry | undefined {
     return this.entries[this.entries.length - 1];
   }
 

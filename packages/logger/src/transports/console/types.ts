@@ -1,6 +1,43 @@
-import type { OutputFormatType, TransportBaseOptions } from '../types.ts';
+import type * as Transport from '../types.ts';
 
 export type StyleFormatterFn = (s: string) => string;
+
+/**
+ * Options for configuring the `Console` transport.
+ */
+export interface Options extends Transport.IExtendedOptions {
+  /**
+   * The output format to use.
+   * @default 'text'
+   */
+  format?: Transport.OutputFormatType;
+  /**
+   * Whether to use colors in the output.
+   * @default true
+   */
+  color?: boolean;
+
+  /**
+   * Whether to write output to stderr instead of stdout. This is necessary for some environments
+   * (like mcp) where stdout is not available.
+   * @default false
+   */
+  useStderr?: boolean;
+  /**
+   * Whether to enable progress mode for interactive terminals.
+   * When enabled and the output is a TTY, can show spinners and progress bars
+   * instead of emitting log messages. Progress output always goes to stderr.
+   * Ignored if useStderr is true (MCP mode) or if not running in a TTY.
+   * @default false
+   */
+  progress?: boolean;
+  /**
+   * Override TTY detection. If not set, TTY capability is auto-detected.
+   * Set to false to force non-TTY mode (disables progress, forces line-by-line output).
+   * @default undefined (auto-detect)
+   */
+  isTTY?: boolean;
+}
 
 /**
  * The complete set of style keys used by {@link ConsoleTransport} for
@@ -39,25 +76,3 @@ export type TransportStyleKey =
 export type TransportStyleMap =
   & Record<TransportStyleKey, StyleFormatterFn>
   & Record<string, StyleFormatterFn>;
-
-/**
- * Options for configuring the `Console` transport.
- */
-export interface Options {
-  /**
-   * The output format to use.
-   * @default 'text'
-   */
-  format?: OutputFormatType;
-  /**
-   * Whether to use colors in the output.
-   * @default true
-   */
-  color?: boolean;
-  /**
-   * Whether to write output to stderr instead of stdout. This is necessary for some environments
-   * (like mcp) where stdout is not available.
-   * @default false
-   */
-  useStderr?: boolean;
-}
