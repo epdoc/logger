@@ -144,6 +144,21 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
   }
 
   /**
+   * Access the transport manager for progress and transport operations.
+   *
+   * @returns The TransportMgr instance associated with this emitter
+   *
+   * @remarks
+   * This provides MsgBuilder implementations access to transport-level features
+   * like the active progress line for progress indicator support.
+   *
+   * @public
+   */
+  get transportMgr(): TransportMgr {
+    return this.#transportMgr;
+  }
+
+  /**
    * Measures elapsed time since a performance mark was created.
    *
    * @param name - The name of the mark to measure

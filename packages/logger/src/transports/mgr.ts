@@ -6,6 +6,17 @@ import { ConsoleTransport } from './console/transport.ts';
 import type { IBaseOptions } from './types.ts';
 
 /**
+ * Interface for progress line objects stored by TransportMgr.
+ * This is a minimal interface that @epdoc/progress.Line satisfies.
+ */
+export interface IProgressLine {
+  start(message: string): void;
+  update(message: string, progress?: number): void;
+  stop(finalMessage?: string): void;
+  readonly isActive: boolean;
+}
+
+/**
  * Manages a collection of log transports, handling the distribution of log
  * entries to each registered transport.
  */
@@ -17,6 +28,11 @@ export class TransportMgr {
    * An array of registered transport instances.
    */
   transports: AbstractTransport[] = [];
+  
+  // Active progress line storage for progress indicator support
+  #activeProgressLine?: IProgressLine;
+  #progressStartTime?: number;
+  #progressLevelName?: string;
 
   /**
    * Creates an instance of the `TransportMgr`.
@@ -24,6 +40,48 @@ export class TransportMgr {
    */
   constructor(logMgr: IBaseOptions) {
     this._logMgr = logMgr;
+  }
+  
+  /**
+   * Get the currently active progress line, if any.
+   * @returns The active IProgressLine or undefined
+   */
+  get activeProgress(): IProgressLine | undefined {
+    return this.#activeProgressLine;
+  }
+  
+  /**
+   * Get the start time of the current progress operation.
+   * @returns Timestamp when progress started, or undefined
+   */
+  get progressStartTime(): number | undefined {
+    return this.#progressStartTime;
+  }
+  
+  /**
+   * Get the level name that started the current progress.
+   * Used to verify updates use the same level.
+   * @returns Level name or undefined
+   */
+  get progressLevelName(): string | undefined {
+    return this.#progressLevelName;
+  }
+  
+  /**
+   * Set the active progress line.
+   * Automatically stops any previously active progress.
+   * 
+   * @param line - The IProgressLine to activate, or undefined to clear
+   * @param levelName - The log level name that started this progress
+   */
+  setActiveProgress(line: IProgressLine | undefined, levelName?: string): void {
+    // Auto-stop previous progress (handles developer error of forgetting stop)
+    if (this.#activeProgressLine?.isActive && this.#activeProgressLine !== line) {
+      this.#activeProgressLine.stop();
+    }
+    this.#activeProgressLine = line;
+    this.#progressLevelName = levelName;
+    this.#progressStartTime = line ? performance.now() : undefined;
   }
 
   /**

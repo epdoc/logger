@@ -14,56 +14,62 @@
  *
  * // In your command:
  * async execute(): Promise<void> {
- *   const progress = this.log.info.start({ type: 'spinner', index: 0 });
+ *   // Start with full builder chain
+ *   ctx.log.info.text('Processing').value(fileCount).start({ type: 'spinner', color: 'cyan' });
  *
  *   await processFiles();
- *   progress.update('Halfway done...');
+ *   
+ *   // Update with new builder chain - same level required!
+ *   ctx.log.info.text('Halfway done').update();
+ *   
  *   await processMoreFiles();
  *
- *   this.log.info.complete('All files processed!');
+ *   // Complete with final builder chain
+ *   ctx.log.info.icheck().text('All files processed!').complete();
  * }
  * ```
  */
+import { assert } from '@std/assert';
+import type * as Level from '@epdoc/loglevels';
+import type * as Log from '@epdoc/logger';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { Console } from '@epdoc/msgbuilder';
 import * as Progress from '@epdoc/progress';
-import type { ProgressState } from './types.ts';
 
 /**
- * Extended emitter interface that includes progress support.
+ * Extended emitter interface that includes progress support and transportMgr access.
  * This matches the MsgEmitter interface from @epdoc/logger.
  */
 interface ProgressEmitter extends MsgBuilder.IEmitter {
   /** True when progress mode is enabled (level matches threshold and TTY available) */
   progressEnabled: boolean;
+  /** Access to transport manager for active progress storage */
+  transportMgr: Log.Transport.Mgr;
+  /** The current log level spec */
+  readonly level: Level.Spec;
 }
-
-/**
- * Shared state for progress tracking.
- * This is stored on LogMgr/Transport and shared across all ProgressMsgBuilder instances.
- */
-const globalProgressState: ProgressState = {
-  isActive: false,
-};
 
 /**
  * Message builder with progress indicator support.
  *
  * Extends Console.Builder with methods for displaying progress bars, spinners,
  * and updating progress in-place using @epdoc/progress.
+ * 
+ * Architecture:
+ * - start() creates and stores ProgressLine on TransportMgr, returns builder
+ * - update()/complete()/cancel() retrieve ProgressLine from TransportMgr
+ * - All methods use builder's formatted message via this.format()
+ * - Auto-stops previous progress on new start()
+ * - Asserts validate same level is used for start/update/complete
  */
 export class ProgressMsgBuilder extends Console.Builder {
-  #state: ProgressState;
-
   /**
    * Creates a ProgressMsgBuilder instance.
    *
    * @param emitter - The message emitter from the logger
-   * @param state - Optional shared progress state (uses global state if not provided)
    */
-  constructor(emitter: ConstructorParameters<typeof Console.Builder>[0], state?: ProgressState) {
+  constructor(emitter: ConstructorParameters<typeof Console.Builder>[0]) {
     super(emitter);
-    this.#state = state ?? globalProgressState;
   }
 
   /**
@@ -73,43 +79,50 @@ export class ProgressMsgBuilder extends Console.Builder {
    * progress indicator using @epdoc/progress. In emit mode, emits a regular
    * log message. In suppressed mode, does nothing.
    *
+   * Auto-stops any previously active progress (handles developer error).
+   *
    * @param options - ProgressLineOptions from @epdoc/progress (type, index, color, etc.)
-   * @returns The ProgressLine instance for direct control, or null
+   * @returns This builder for continued chaining
    *
    * @example
    * ```typescript
-   * const progress = this.log.info.start({ type: 'spinner', index: 0, color: 'cyan' });
-   * // or
-   * const progress = this.log.info.start({ type: 'horizontal', total: 100, width: 30, color: 'green' });
+   * ctx.log.info.text('Running').value('tasks').start({ type: 'spinner', index: 0, color: 'cyan' });
+   * ctx.log.info.start({ type: 'horizontal', total: 100, width: 30, color: 'green' });
    * ```
    */
-  start(options?: Progress.LineOptions): Progress.Line | null {
-    // Check if we should emit at all (SUPPRESSED mode)
-    if (!this._emitter.emitEnabled) {
-      return null;
+  start(options?: Progress.LineOptions): this {
+    const emitter = this._emitter as ProgressEmitter;
+    
+    // Check SUPPRESSED mode
+    if (!emitter.emitEnabled) {
+      return this;
     }
 
-    // If there's already an active progress line, stop it first
-    if (this.#state.line?.isActive) {
-      this.#state.line.stop();
+    const transportMgr = emitter.transportMgr;
+    const levelName = emitter.level.name;
+
+    // Auto-stop previous progress (handles developer error of forgetting stop/complete)
+    if (transportMgr.activeProgress?.isActive) {
+      transportMgr.activeProgress.stop();
     }
 
-    if ((this._emitter as ProgressEmitter).progressEnabled) {
+    if (emitter.progressEnabled) {
       // PROGRESS mode: Show interactive progress
-      const progressLine = options ? new Progress.Line(options) : new Progress.Line({ type: 'spinner', index: 0 });
-      this.#state.line = progressLine;
-      this.#state.startTime = performance.now();
-      this.#state.isActive = true;
-
-      // Use the formatted message from this builder as the start text
+      const progressLine = options 
+        ? new Progress.Line(options) 
+        : new Progress.Line({ type: 'spinner', index: 0 });
+      
+      // Store on TransportMgr for later retrieval by update/complete
+      transportMgr.setActiveProgress(progressLine, levelName);
+      
+      // Start with formatted message from this builder
       progressLine.start(this.format());
-
-      return progressLine;
     } else {
-      // EMIT mode: Normal log emission
+      // EMIT mode: Emit as regular log message
       this.emit();
-      return null;
     }
+
+    return this;
   }
 
   /**
@@ -118,119 +131,177 @@ export class ProgressMsgBuilder extends Console.Builder {
    * In progress mode, updates the in-place progress indicator.
    * In emit mode, emits a new log message.
    *
-   * @param message - Optional message to display (uses current formatted text if not provided)
-   * @param progress - Optional progress value (for horizontal/vertical modes)
+   * Asserts that the same log level is used as start() (enforced by design).
+   *
+   * @param progressValue - Optional progress value (for horizontal/vertical modes)
    * @returns This builder for chaining
+   * 
+   * @example
+   * ```typescript
+   * ctx.log.info.text('Loading config').update();
+   * ctx.log.info.update(50); // Update progress bar to 50%
+   * ```
    */
-  update(message?: string, progress?: number): this {
-    if (!this._emitter.emitEnabled) {
-      return this; // SUPPRESSED mode
+  update(progressValue?: number): this {
+    const emitter = this._emitter as ProgressEmitter;
+    
+    // Check SUPPRESSED mode
+    if (!emitter.emitEnabled) {
+      return this;
     }
 
-    if ((this._emitter as ProgressEmitter).progressEnabled && this.#state.line?.isActive) {
-      // PROGRESS mode: Update in-place
-      const text = message ?? this.format();
-      this.#state.line.update(text, progress);
-    } else if (this._emitter.emitEnabled) {
-      // EMIT mode: Emit as regular log
-      if (message) {
-        this.text(message).emit();
-      } else {
-        this.emit();
-      }
+    const transportMgr = emitter.transportMgr;
+    const activeProgress = transportMgr.activeProgress;
+    const currentLevelName = emitter.level.name;
+
+    // Assert: Must have active progress to update
+    assert(
+      activeProgress?.isActive,
+      `No active progress to update. Call start() first at level ${transportMgr.progressLevelName || 'unknown'}`
+    );
+
+    // Assert: Must use same level as start()
+    assert(
+      currentLevelName === transportMgr.progressLevelName,
+      `Progress update must use same level as start(). Expected ${transportMgr.progressLevelName}, got ${currentLevelName}`
+    );
+
+    if (emitter.progressEnabled) {
+      // PROGRESS mode: Update in-place with formatted message
+      activeProgress.update(this.format(), progressValue);
+    } else {
+      // EMIT mode: Emit as new log message
+      this.emit();
     }
 
     return this;
   }
 
   /**
-   * Complete the progress and show final message.
+   * Complete the progress with final message.
    *
    * In progress mode, clears the progress indicator and shows final text.
    * In emit mode, emits a final log message.
    *
-   * @param finalText - Optional final message (uses current message if not provided)
+   * Asserts that the same log level is used as start().
+   * Automatically clears the active progress from TransportMgr.
+   *
    * @returns This builder for chaining
+   * 
+   * @example
+   * ```typescript
+   * ctx.log.info.icheck().text('Done!').complete();
+   * ctx.log.info.complete(); // Uses current formatted message
+   * ```
    */
-  complete(finalText?: string): this {
-    if (!this._emitter.emitEnabled) {
-      return this; // SUPPRESSED mode
+  complete(): this {
+    const emitter = this._emitter as ProgressEmitter;
+    
+    // Check SUPPRESSED mode
+    if (!emitter.emitEnabled) {
+      return this;
     }
 
-    if ((this._emitter as ProgressEmitter).progressEnabled && this.#state.line?.isActive) {
-      // PROGRESS mode: Stop progress line
-      const elapsed = this.#state.startTime ? Math.round((performance.now() - this.#state.startTime) / 10) / 100 : 0;
+    const transportMgr = emitter.transportMgr;
+    const activeProgress = transportMgr.activeProgress;
+    const currentLevelName = emitter.level.name;
 
-      let text = finalText ?? this.format();
+    // Assert: Must have active progress to complete
+    assert(
+      activeProgress?.isActive,
+      `No active progress to complete. Call start() first at level ${transportMgr.progressLevelName || 'unknown'}`
+    );
+
+    // Assert: Must use same level as start()
+    assert(
+      currentLevelName === transportMgr.progressLevelName,
+      `Progress complete must use same level as start(). Expected ${transportMgr.progressLevelName}, got ${currentLevelName}`
+    );
+
+    if (emitter.progressEnabled) {
+      // PROGRESS mode: Stop progress line with formatted message
+      const startTime = transportMgr.progressStartTime;
+      const elapsed = startTime 
+        ? Math.round((performance.now() - startTime) / 10) / 100 
+        : 0;
+
+      let text = this.format();
       if (elapsed > 0) {
         text += ` (${elapsed}s)`;
       }
 
-      this.#state.line.stop(text);
-      this.#state.isActive = false;
-      this.#state.line = undefined;
-      this.#state.startTime = undefined;
-    } else if (this._emitter.emitEnabled) {
+      activeProgress.stop(text);
+      
+      // Clear from TransportMgr
+      transportMgr.setActiveProgress(undefined);
+    } else {
       // EMIT mode: Emit final message
-      if (finalText) {
-        this.text(finalText).emit();
-      } else {
-        this.emit();
-      }
+      this.emit();
     }
 
     return this;
   }
 
   /**
-   * Stop progress without completing (for errors/cancellation).
+   * Cancel progress without showing final message.
    *
    * Clears any active progress indicator without showing final text.
+   * Can be called from any level (e.g., error handling at error level).
    *
    * @returns This builder for chaining
+   * 
+   * @example
+   * ```typescript
+   * try {
+   *   // ... progress operations ...
+   * } catch (error) {
+   *   ctx.log.error.cancel(); // Cancel from error level
+   *   ctx.log.error.text('Operation failed').emit();
+   * }
+   * ```
    */
   cancel(): this {
-    if (this.#state.line?.isActive) {
-      this.#state.line.stop();
-      this.#state.isActive = false;
-      this.#state.line = undefined;
-      this.#state.startTime = undefined;
+    const emitter = this._emitter as ProgressEmitter;
+    const transportMgr = emitter.transportMgr;
+    const activeProgress = transportMgr.activeProgress;
+
+    if (activeProgress?.isActive) {
+      activeProgress.stop();
+      
+      // Clear from TransportMgr
+      transportMgr.setActiveProgress(undefined);
     }
+
     return this;
   }
 
   /**
-   * Check if progress is currently active.
+   * Check if progress is currently active at this level.
+   * 
+   * @returns True if there's an active progress started at this level
    */
   get isProgressActive(): boolean {
-    return this.#state.isActive;
-  }
-
-  /**
-   * Get the shared progress state.
-   * Use this to check if progress is active across builder instances.
-   */
-  get progressState(): ProgressState {
-    return this.#state;
+    const emitter = this._emitter as ProgressEmitter;
+    const transportMgr = emitter.transportMgr;
+    
+    return transportMgr.activeProgress?.isActive === true &&
+           transportMgr.progressLevelName === emitter.level.name;
   }
 }
 
 /**
- * Factory function to create ProgressMsgBuilder with shared state.
+ * Factory function to create ProgressMsgBuilder.
  *
  * Use this factory when configuring your LogMgr to use ProgressMsgBuilder:
  *
  * @example
  * ```typescript
- * const logMgr = new Log.Mgr();
- *
- * logMgr.msgBuilderFactory = (emitter) =>
- *   new ProgressMsgBuilder(emitter);
+ * const logMgr = new Log.Mgr<CliApp.Progress.MsgBuilder>();
+ * logMgr.msgBuilderFactory = (emitter) => new CliApp.Progress.MsgBuilder(emitter);
  * ```
  */
 export function createProgressBuilder(
   emitter: ConstructorParameters<typeof ProgressMsgBuilder>[0],
-  state?: ProgressState,
 ): ProgressMsgBuilder {
-  return new ProgressMsgBuilder(emitter, state);
+  return new ProgressMsgBuilder(emitter);
 }
