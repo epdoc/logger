@@ -289,12 +289,12 @@ export class ConsoleTransport extends Base.Transport {
       show = true;
     }
     if (show && !s.length) {
-      s = StringEx(level).rightPad(this._levelWidth);
+      s = StringEx(level.name).rightPad(this._levelWidth);
       if (_.isInteger(show)) {
         if (show > 0) {
-          s = StringEx(level).rightPad(show, ' ', true);
+          s = StringEx(level.name).rightPad(show, ' ', true);
         } else if (show < 0) {
-          s = StringEx(level).leftPad(0 - show, ' ', true);
+          s = StringEx(level.name).leftPad(0 - show, ' ', true);
         }
       }
     }

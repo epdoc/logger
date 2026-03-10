@@ -51,7 +51,7 @@ export class TransportMgr {
     assert(this.transports.length, 'No transports');
     return this.transports.some((transport) => {
       const result = transport.compareToTransportThreshold(level);
-      return result && result >= 0;
+      return result !== undefined && result >= 0;
     });
   }
 

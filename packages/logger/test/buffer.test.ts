@@ -28,14 +28,7 @@ Deno.test('BufferTransport - maxEntries limit', async () => {
   const logMgr = new Log.Mgr<Console.Builder>();
   logMgr.initLevels();
   logMgr.threshold = 'info';
-  const opts = {
-    logLevels: logMgr.logLevels,
-    threshold: logMgr.threshold,
-    show: logMgr.show,
-    startTime: logMgr.startTime,
-    masEntries: 3,
-  };
-  const bufferTransport = new BufferTransport(opts, {});
+  const bufferTransport = new BufferTransport(logMgr, { maxEntries: 3 });
   await logMgr.addTransport(bufferTransport);
 
   const logger = await logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
