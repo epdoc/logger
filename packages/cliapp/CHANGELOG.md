@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2026-03-10
+
+- Added progress support
+
 ## [2.0.13] - 2026-03-10
 
 - Finished error free version of progress
