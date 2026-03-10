@@ -21,9 +21,10 @@ describe('Progress Modes', () => {
     await ctx.setupLogging('warn'); // threshold = warn
 
     // At info level (below threshold), progress should be suppressed
-    const progress = ctx.log.info.start({ type: 'spinner', index: 0 });
+    // start() returns builder for chaining, but nothing is displayed
+    ctx.log.info.text('Starting').start({ type: 'spinner', index: 0 });
 
-    assertEquals(progress, null);
+    // isProgressActive should be false (level doesn't match threshold)
     assertEquals(ctx.log.info.isProgressActive, false);
   });
 
@@ -32,19 +33,24 @@ describe('Progress Modes', () => {
     await ctx.setupLogging('info'); // threshold = info
 
     // At info level (matches threshold), progress should show
-    const progress = ctx.log.info.start({ type: 'spinner', index: 0, color: 'cyan' });
+    // Note: progressEnabled requires TTY - in test env without TTY,
+    // it falls back to EMIT mode
+    ctx.log.info.text('Running').start({ type: 'spinner', index: 0, color: 'cyan' });
 
-    // progressEnabled requires TTY and ConsoleTransport with progress: true
-    // In test environment without TTY, this may return null
-    // The test verifies the API works correctly
-    if (progress) {
-      assertEquals(ctx.log.info.isProgressActive, true);
+    // In a real TTY environment, isProgressActive would be true
+    // In tests without TTY, it will be false (falls back to EMIT)
+    const isActive = ctx.log.info.isProgressActive;
 
-      progress.update('Working...');
+    if (isActive) {
+      // PROGRESS mode: use update() with builder chain
+      ctx.log.info.text('Working...').update();
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      ctx.log.info.complete('Done!');
+      ctx.log.info.text('Done!').complete();
       assertEquals(ctx.log.info.isProgressActive, false);
+    } else {
+      // EMIT mode in test environment - just verify API works
+      ctx.log.info.text('Done!').complete();
     }
   });
 
@@ -53,30 +59,39 @@ describe('Progress Modes', () => {
     await ctx.setupLogging('debug'); // threshold = debug
 
     // At info level (above threshold), should emit log messages
-    const progress = ctx.log.info.start({ type: 'spinner', index: 0 });
+    ctx.log.info.text('Starting task').start({ type: 'spinner', index: 0 });
 
-    // In EMIT mode, start() emits a log message and returns null
-    assertEquals(progress, null);
+    // In EMIT mode, isProgressActive should be false
+    assertEquals(ctx.log.info.isProgressActive, false);
+
+    // Subsequent calls also emit as logs
+    ctx.log.info.text('Still working').update();
+    ctx.log.info.text('Finished').complete();
   });
 
   it('should handle progress bar with updates', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
-    const progress = ctx.log.info.start({
+    ctx.log.info.text('Starting').start({
       type: 'horizontal',
       total: 10,
       width: 20,
       color: 'green',
     });
 
-    if (progress) {
+    const isActive = ctx.log.info.isProgressActive;
+
+    if (isActive) {
       for (let i = 1; i <= 10; i++) {
-        progress.update(`Processing ${i}/10`, i);
+        ctx.log.info.text(`Processing ${i}/10`).update(i);
         await new Promise((resolve) => setTimeout(resolve, 50));
       }
 
-      ctx.log.info.complete('Complete!');
+      ctx.log.info.text('Complete!').complete();
+    } else {
+      // EMIT mode in test environment
+      ctx.log.info.text('Complete!').complete();
     }
   });
 
@@ -84,19 +99,27 @@ describe('Progress Modes', () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
-    const progress = ctx.log.info.start({ type: 'spinner', index: 0, color: 'blue' });
+    ctx.log.info.text('Initializing').start({ type: 'spinner', index: 0, color: 'blue' });
 
-    if (progress) {
-      progress.update('Loading configuration...');
+    const isActive = ctx.log.info.isProgressActive;
+
+    if (isActive) {
+      ctx.log.info.text('Loading configuration...').update();
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      progress.update('Connecting to server...');
+      ctx.log.info.text('Connecting to server...').update();
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      progress.update('Fetching data...');
+      ctx.log.info.text('Fetching data...').update();
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      ctx.log.info.complete('All tasks completed!');
+      ctx.log.info.text('All tasks completed!').complete();
+    } else {
+      // EMIT mode in test environment
+      ctx.log.info.text('Loading configuration...').update();
+      ctx.log.info.text('Connecting to server...').update();
+      ctx.log.info.text('Fetching data...').update();
+      ctx.log.info.text('All tasks completed!').complete();
     }
   });
 
@@ -104,14 +127,17 @@ describe('Progress Modes', () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
-    const progress = ctx.log.info.start({ type: 'spinner', index: 0 });
+    ctx.log.info.text('Starting').start({ type: 'spinner', index: 0 });
 
-    if (progress) {
-      assertEquals(ctx.log.info.isProgressActive, true);
+    const isActive = ctx.log.info.isProgressActive;
 
+    if (isActive) {
+      assertEquals(isActive, true);
       ctx.log.info.cancel();
-
       assertEquals(ctx.log.info.isProgressActive, false);
+    } else {
+      // In EMIT mode, cancel still works (just clears any state)
+      ctx.log.info.cancel();
     }
   });
 
@@ -119,12 +145,14 @@ describe('Progress Modes', () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
-    const progress = ctx.log.info.start({ type: 'horizontal', total: 5, width: 10 });
+    ctx.log.info.text('Starting').start({ type: 'horizontal', total: 5, width: 10 });
 
-    if (progress) {
+    const isActive = ctx.log.info.isProgressActive;
+
+    if (isActive) {
       try {
         for (let i = 1; i <= 5; i++) {
-          progress.update(`Step ${i}/5`, i);
+          ctx.log.info.text(`Step ${i}/5`).update(i);
 
           if (i === 3) {
             throw new Error('Simulated error');
@@ -138,6 +166,14 @@ describe('Progress Modes', () => {
       }
 
       assertEquals(ctx.log.info.isProgressActive, false);
+    } else {
+      // EMIT mode - simulate error handling
+      try {
+        throw new Error('Simulated error');
+      } catch (_error) {
+        ctx.log.error.cancel();
+        ctx.log.error.text('Operation failed').emit();
+      }
     }
   });
 });

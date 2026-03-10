@@ -18,10 +18,10 @@
  *   ctx.log.info.text('Processing').value(fileCount).start({ type: 'spinner', color: 'cyan' });
  *
  *   await processFiles();
- *   
+ *
  *   // Update with new builder chain - same level required!
  *   ctx.log.info.text('Halfway done').update();
- *   
+ *
  *   await processMoreFiles();
  *
  *   // Complete with final builder chain
@@ -54,7 +54,7 @@ interface ProgressEmitter extends MsgBuilder.IEmitter {
  *
  * Extends Console.Builder with methods for displaying progress bars, spinners,
  * and updating progress in-place using @epdoc/progress.
- * 
+ *
  * Architecture:
  * - start() creates and stores ProgressLine on TransportMgr, returns builder
  * - update()/complete()/cancel() retrieve ProgressLine from TransportMgr
@@ -92,7 +92,7 @@ export class ProgressMsgBuilder extends Console.Builder {
    */
   start(options?: Progress.LineOptions): this {
     const emitter = this._emitter as ProgressEmitter;
-    
+
     // Check SUPPRESSED mode
     if (!emitter.emitEnabled) {
       return this;
@@ -108,13 +108,11 @@ export class ProgressMsgBuilder extends Console.Builder {
 
     if (emitter.progressEnabled) {
       // PROGRESS mode: Show interactive progress
-      const progressLine = options 
-        ? new Progress.Line(options) 
-        : new Progress.Line({ type: 'spinner', index: 0 });
-      
+      const progressLine = options ? new Progress.Line(options) : new Progress.Line({ type: 'spinner', index: 0 });
+
       // Store on TransportMgr for later retrieval by update/complete
       transportMgr.setActiveProgress(progressLine, levelName);
-      
+
       // Start with formatted message from this builder
       progressLine.start(this.format());
     } else {
@@ -135,7 +133,7 @@ export class ProgressMsgBuilder extends Console.Builder {
    *
    * @param progressValue - Optional progress value (for horizontal/vertical modes)
    * @returns This builder for chaining
-   * 
+   *
    * @example
    * ```typescript
    * ctx.log.info.text('Loading config').update();
@@ -144,30 +142,30 @@ export class ProgressMsgBuilder extends Console.Builder {
    */
   update(progressValue?: number): this {
     const emitter = this._emitter as ProgressEmitter;
-    
+
     // Check SUPPRESSED mode
     if (!emitter.emitEnabled) {
       return this;
     }
 
-    const transportMgr = emitter.transportMgr;
-    const activeProgress = transportMgr.activeProgress;
-    const currentLevelName = emitter.level.name;
-
-    // Assert: Must have active progress to update
-    assert(
-      activeProgress?.isActive,
-      `No active progress to update. Call start() first at level ${transportMgr.progressLevelName || 'unknown'}`
-    );
-
-    // Assert: Must use same level as start()
-    assert(
-      currentLevelName === transportMgr.progressLevelName,
-      `Progress update must use same level as start(). Expected ${transportMgr.progressLevelName}, got ${currentLevelName}`
-    );
-
     if (emitter.progressEnabled) {
-      // PROGRESS mode: Update in-place with formatted message
+      // PROGRESS mode: Update in-place
+      const transportMgr = emitter.transportMgr;
+      const activeProgress = transportMgr.activeProgress;
+      const currentLevelName = emitter.level.name;
+
+      // Assert: Must have active progress to update
+      assert(
+        activeProgress?.isActive,
+        `No active progress to update. Call start() first at level ${transportMgr.progressLevelName || 'unknown'}`,
+      );
+
+      // Assert: Must use same level as start()
+      assert(
+        currentLevelName === transportMgr.progressLevelName,
+        `Progress update must use same level as start(). Expected ${transportMgr.progressLevelName}, got ${currentLevelName}`,
+      );
+
       activeProgress.update(this.format(), progressValue);
     } else {
       // EMIT mode: Emit as new log message
@@ -187,7 +185,7 @@ export class ProgressMsgBuilder extends Console.Builder {
    * Automatically clears the active progress from TransportMgr.
    *
    * @returns This builder for chaining
-   * 
+   *
    * @example
    * ```typescript
    * ctx.log.info.icheck().text('Done!').complete();
@@ -196,34 +194,32 @@ export class ProgressMsgBuilder extends Console.Builder {
    */
   complete(): this {
     const emitter = this._emitter as ProgressEmitter;
-    
+
     // Check SUPPRESSED mode
     if (!emitter.emitEnabled) {
       return this;
     }
 
-    const transportMgr = emitter.transportMgr;
-    const activeProgress = transportMgr.activeProgress;
-    const currentLevelName = emitter.level.name;
-
-    // Assert: Must have active progress to complete
-    assert(
-      activeProgress?.isActive,
-      `No active progress to complete. Call start() first at level ${transportMgr.progressLevelName || 'unknown'}`
-    );
-
-    // Assert: Must use same level as start()
-    assert(
-      currentLevelName === transportMgr.progressLevelName,
-      `Progress complete must use same level as start(). Expected ${transportMgr.progressLevelName}, got ${currentLevelName}`
-    );
-
     if (emitter.progressEnabled) {
-      // PROGRESS mode: Stop progress line with formatted message
+      // PROGRESS mode: Stop progress line
+      const transportMgr = emitter.transportMgr;
+      const activeProgress = transportMgr.activeProgress;
+      const currentLevelName = emitter.level.name;
+
+      // Assert: Must have active progress to complete
+      assert(
+        activeProgress?.isActive,
+        `No active progress to complete. Call start() first at level ${transportMgr.progressLevelName || 'unknown'}`,
+      );
+
+      // Assert: Must use same level as start()
+      assert(
+        currentLevelName === transportMgr.progressLevelName,
+        `Progress complete must use same level as start(). Expected ${transportMgr.progressLevelName}, got ${currentLevelName}`,
+      );
+
       const startTime = transportMgr.progressStartTime;
-      const elapsed = startTime 
-        ? Math.round((performance.now() - startTime) / 10) / 100 
-        : 0;
+      const elapsed = startTime ? Math.round((performance.now() - startTime) / 10) / 100 : 0;
 
       let text = this.format();
       if (elapsed > 0) {
@@ -231,7 +227,7 @@ export class ProgressMsgBuilder extends Console.Builder {
       }
 
       activeProgress.stop(text);
-      
+
       // Clear from TransportMgr
       transportMgr.setActiveProgress(undefined);
     } else {
@@ -249,7 +245,7 @@ export class ProgressMsgBuilder extends Console.Builder {
    * Can be called from any level (e.g., error handling at error level).
    *
    * @returns This builder for chaining
-   * 
+   *
    * @example
    * ```typescript
    * try {
@@ -267,7 +263,7 @@ export class ProgressMsgBuilder extends Console.Builder {
 
     if (activeProgress?.isActive) {
       activeProgress.stop();
-      
+
       // Clear from TransportMgr
       transportMgr.setActiveProgress(undefined);
     }
@@ -277,15 +273,15 @@ export class ProgressMsgBuilder extends Console.Builder {
 
   /**
    * Check if progress is currently active at this level.
-   * 
+   *
    * @returns True if there's an active progress started at this level
    */
   get isProgressActive(): boolean {
     const emitter = this._emitter as ProgressEmitter;
     const transportMgr = emitter.transportMgr;
-    
+
     return transportMgr.activeProgress?.isActive === true &&
-           transportMgr.progressLevelName === emitter.level.name;
+      transportMgr.progressLevelName === emitter.level.name;
   }
 }
 

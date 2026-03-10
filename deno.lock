@@ -369,7 +369,7 @@
     "members": {
       "packages/cliapp": {
         "dependencies": [
-          "jsr:@epdoc/logger@^1003.3.0-beta.1",
+          "jsr:@epdoc/logger@^1003.3.0-beta.2",
           "jsr:@epdoc/loglevels@^1.0.0-beta.4",
           "jsr:@epdoc/msgbuilder@~0.1.8",
           "jsr:@epdoc/progress@^0.0.9",
