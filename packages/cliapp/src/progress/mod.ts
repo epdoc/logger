@@ -32,8 +32,8 @@
  * ```
  */
 
-export { ProgressMsgBuilder, createProgressBuilder } from './builder.ts';
-export { TerminalProgressLine, LoggerProgressLine } from './line.ts';
+export { createProgressBuilder, ProgressMsgBuilder } from './builder.ts';
+export { LoggerProgressLine, TerminalProgressLine } from './line.ts';
 export {
   ANSI,
   DEFAULT_PROGRESS_WIDTH,

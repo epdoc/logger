@@ -15,17 +15,17 @@
  * // In your command:
  * async execute(): Promise<void> {
  *   const files = await this.getFiles();
- *   
+ *
  *   // Show progress bar
  *   for (let i = 0; i < files.length; i++) {
  *     this.log.info
  *       .label('Processing')
  *       .progress(i + 1, files.length, { label: files[i] })
  *       .update();
- *     
+ *
  *     await processFile(files[i]);
  *   }
- *   
+ *
  *   this.log.info.complete('All files processed!').emit();
  * }
  * ```
@@ -41,12 +41,7 @@ import {
   SPINNER_FRAMES,
 } from './const.ts';
 import { LoggerProgressLine, TerminalProgressLine } from './line.ts';
-import type {
-  ProgressBarOpts,
-  ProgressLine,
-  ProgressState,
-  SpinnerOpts,
-} from './types.ts';
+import type { ProgressBarOpts, ProgressLine, ProgressState, SpinnerOpts } from './types.ts';
 
 /**
  * Extended emitter interface that includes progress support.
@@ -233,9 +228,7 @@ export class ProgressMsgBuilder extends Console.Builder {
 
     if ((this._emitter as ProgressEmitter).progressEnabled && this.#state.line?.isActive) {
       // PROGRESS mode: Stop progress line
-      const elapsed = this.#state.startTime
-        ? Math.round((performance.now() - this.#state.startTime) / 10) / 100
-        : 0;
+      const elapsed = this.#state.startTime ? Math.round((performance.now() - this.#state.startTime) / 10) / 100 : 0;
 
       let text = finalText ?? this.format();
       if (elapsed > 0) {

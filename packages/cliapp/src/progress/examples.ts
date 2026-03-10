@@ -190,11 +190,4 @@ class TimedCommand extends CliApp.Cmd.AbstractBase<AppContext, AppContext> {
  *    logMgr.threshold = 'debug'; // Progress shows at debug level
  */
 
-export {
-  AppContext,
-  ProcessCommand,
-  SafeProcessCommand,
-  setupProgressLogging,
-  SpinnerCommand,
-  TimedCommand,
-};
+export { AppContext, ProcessCommand, SafeProcessCommand, setupProgressLogging, SpinnerCommand, TimedCommand };
