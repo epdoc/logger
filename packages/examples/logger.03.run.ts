@@ -15,7 +15,7 @@ const logger = await logMgr.getLogger<Log.Std.Logger<Console.Builder>>();
 logger.info.section('Example 03 - Std Logger show level and timestamp').emit();
 const transports = logMgr.transportMgr.transports.map((transport) => transport.toString());
 logger.info.label('Transports:').value(transports.join(', ')).emit();
-logger.info.label('Threshold:').value(logMgr.threshold).value(logMgr.logLevels.asName(logMgr.threshold)).emit();
+logger.info.label('Threshold:').value(logMgr.threshold).value(logMgr.logLevels.asSpec(logMgr.threshold)!.name).emit();
 logger.info.label('Show:').value(JSON.stringify(logMgr.show)).emit();
 logger.error.error('This is an error message').emit();
 logger.debug.text("This debug message won't show (threshold is info)").emit();

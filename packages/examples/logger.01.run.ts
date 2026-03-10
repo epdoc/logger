@@ -14,7 +14,7 @@ const logger = await logMgr.getLogger<Logger>();
 
 logger.info.section('Example 01 - Std Logger default setup').emit();
 logger.info.label('Transport:').value('Console').emit();
-logger.info.label('Threshold:').value(logMgr.threshold).value(logMgr.logLevels.asName(logMgr.threshold)).emit();
+logger.info.label('Threshold:').value(logMgr.threshold).value(logMgr.logLevels.asSpec(logMgr.threshold)!.name).emit();
 logger.info.label('Show:').value(JSON.stringify(logMgr.show)).emit();
 logger.warn.warn('This is a warning message').emit();
 logger.debug.text("This debug message won't show (threshold is info)").emit();

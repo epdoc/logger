@@ -17,7 +17,9 @@ logMgr.threshold = 'silly';
 const cliLogger = await logMgr.getLogger<Log.Cli.Logger<Console.Builder>>();
 
 cliLogger.info.section('Example 05 - CLI Logger has different levels compared to Std Logger').emit();
-cliLogger.info.label('Threshold:').value(logMgr.threshold).value(logMgr.logLevels.asName(logMgr.threshold)).emit();
+cliLogger.info.label('Threshold:')
+  .value(logMgr.threshold).value(logMgr.logLevels.asSpec(logMgr.threshold)!.name)
+  .emit();
 cliLogger.info.label('Show:').value(JSON.stringify(logMgr.show)).emit();
 cliLogger.error.error('An error message').emit();
 cliLogger.debug.text('A debug message').emit();

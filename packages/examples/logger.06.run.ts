@@ -20,7 +20,7 @@ const logger = await logMgr.getLogger<Log.Std.Logger<Console.Builder>>({ pkg: 'r
 const m0 = logger.mark();
 
 logger.info.section('Example 04 - Configuring more output options').emit();
-logger.info.label('Threshold:').value(logMgr.threshold).value(logMgr.logLevels.asName(logMgr.threshold)).emit();
+logger.info.label('Threshold:').value(logMgr.threshold).value(logMgr.logLevels.asSpec(logMgr.threshold)!.name).emit();
 logger.info.label('Show:').value(JSON.stringify(logMgr.show)).emit();
 logger.info.label('data').data({ foo: 'bar', bar: 123 }).emit();
 logger.debug.text('Debug message is now visible').emit();

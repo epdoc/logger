@@ -19,10 +19,10 @@ class AppContext extends CliApp.Ctx.AbstractBase {
 const pkg = { name: 'progress-demo', version: '1.0.0', description: 'Progress demo' };
 
 async function exampleSpinner() {
-  console.log('\n=== Spinner at INFO level ===\n');
-
   const ctx = new AppContext(pkg);
   await ctx.setupLogging('info'); // Set threshold to INFO
+
+  ctx.log.info.section('Spinner at INFO level').emit();
 
   // Start with full builder chain
   // In a TTY, this shows an interactive spinner
@@ -53,10 +53,9 @@ async function exampleSpinner() {
 }
 
 async function exampleProgressBar() {
-  console.log('\n=== Progress Bar at INFO level ===\n');
-
   const ctx = new AppContext(pkg);
   await ctx.setupLogging('info');
+  ctx.log.info.section('Progress Bar at INFO level').emit();
 
   const files = ['file1.txt', 'file2.txt', 'file3.txt', 'file4.txt', 'file5.txt'];
 
@@ -78,10 +77,10 @@ async function exampleProgressBar() {
 }
 
 async function exampleSuppressedMode() {
-  console.log('\n=== SUPPRESSED Mode (level < threshold) ===\n');
-
   const ctx = new AppContext(pkg);
   await ctx.setupLogging('warn'); // Threshold is WARN
+
+  ctx.log.info.section('SUPPRESSED Mode (level < threshold)').emit();
 
   // At INFO level (below threshold), progress is suppressed
   ctx.log.info.text('Starting task').start({ type: 'spinner', index: 0 });
@@ -92,31 +91,32 @@ async function exampleSuppressedMode() {
 }
 
 async function exampleEmitMode() {
-  console.log('\n=== EMIT Mode (level > threshold) ===\n');
-
   const ctx = new AppContext(pkg);
   await ctx.setupLogging('debug'); // Threshold is DEBUG
+  ctx.logMgr.show = { level: true, timestamp: 'elapsed', data: true, pkg: true };
+
+  ctx.log.info.section('EMIT Mode (level > threshold)').emit();
+  let i = 0;
 
   // At INFO level (above threshold), progress emits log messages
-  ctx.log.info.text('Starting operation').start({ type: 'spinner', index: 0 });
+  ctx.log.info.text('Starting operation').value(++i).start({ type: 'spinner', index: 3 });
 
   // isProgressActive should be false (emits as logs instead)
-  console.log(`Progress active: ${ctx.log.info.isProgressActive}`);
-  console.log('Above threshold - messages emitted as regular logs');
+  ctx.log.info.text('Progress active:').value(ctx.log.info.isProgressActive).emit();
+  ctx.log.info.text('Above threshold - messages emitted as regular logs').emit();
 
   // Subsequent updates also emit as logs
-  ctx.log.info.text('Still working...').update();
-  await delay(300);
-  ctx.log.info.text('Almost done...').update();
-  await delay(300);
-  ctx.log.info.text('Finished!').complete();
+  ctx.log.info.text('Still working...').value(++i).update();
+  await delay(800);
+  ctx.log.info.text('Almost done...').value(++i).update();
+  await delay(800);
+  ctx.log.info.text('Finished!').value(++i).complete();
 }
 
 async function exampleErrorHandling() {
-  console.log('\n=== Error Handling with Progress ===\n');
-
   const ctx = new AppContext(pkg);
   await ctx.setupLogging('info');
+  ctx.log.info.section('Error Handling with Progress').emit();
 
   ctx.log.info.text('Starting').start({
     type: 'horizontal',
@@ -128,7 +128,7 @@ async function exampleErrorHandling() {
   try {
     for (let i = 1; i <= 5; i++) {
       ctx.log.info.text(`Step ${i}/5`).update(i);
-      await delay(200);
+      await delay(500);
 
       if (i === 3) {
         throw new Error('Simulated error at step 3');
@@ -143,8 +143,6 @@ async function exampleErrorHandling() {
 }
 
 async function exampleWithLoggerFactory() {
-  console.log('\n=== Using LogMgr Factory Pattern ===\n');
-
   // Create LogMgr with custom MsgBuilder factory
   const logMgr = new Log.Mgr<CliApp.Progress.MsgBuilder>();
 
@@ -154,17 +152,19 @@ async function exampleWithLoggerFactory() {
   // Create logger
   const logger = await logMgr.getLogger<Log.Std.Logger<CliApp.Progress.MsgBuilder>>();
 
+  logger.info.section('Using LogMgr Factory Pattern').emit();
+
   // Now logger uses ProgressMsgBuilder for all messages
-  logger.info.text('Processing via LogMgr factory...').start({ 
-    type: 'spinner', 
-    index: 0, 
-    color: 'magenta' 
+  logger.info.text('Processing via LogMgr factory...').start({
+    type: 'bounce',
+    index: 1,
+    color: 'magenta',
   });
 
-  await delay(1000);
+  await delay(1500);
   logger.info.text('Still processing...').update();
-  await delay(1000);
-  logger.info.text('Done via factory!').complete();
+  await delay(2000);
+  logger.info.icheck().text('Done via factory!').complete();
 }
 
 // Run all examples

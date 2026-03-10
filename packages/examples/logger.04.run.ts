@@ -37,7 +37,7 @@ const logger = await logMgr.getLogger<Logger>();
 
 logger.info.section('Example 04 - Std Logger with custom message builder').emit();
 logger.info.label('Transports:').transports().emit();
-logger.info.label('Threshold:').value(logMgr.threshold).value(logMgr.logLevels.asName(logMgr.threshold)).emit();
+logger.info.label('Threshold:').value(logMgr.threshold).value(logMgr.logLevels.asSpec(logMgr.threshold)!.name).emit();
 logger.info.label('Show:').value(JSON.stringify(logMgr.show)).emit();
 logger.info.apiCall('GET', '/api/users').emit();
 logger.info.metric('Response Time', 245, 'ms').emit();
