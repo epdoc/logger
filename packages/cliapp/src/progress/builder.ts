@@ -2,46 +2,32 @@
  * ProgressMsgBuilder - Extends Console.Builder with progress indicator support.
  *
  * This class provides methods for displaying progress bars, spinners, and other
- * progress indicators in CLI applications. It integrates with the logger's
- * progress mode to show interactive progress in TTY terminals or fall back to
- * regular log messages in non-TTY environments.
+ * progress indicators in CLI applications. It integrates with @epdoc/progress
+ * to show interactive progress in TTY terminals or fall back to regular log
+ * messages in non-TTY environments.
  *
  * @example
  * ```typescript
- * class MyContext extends CliApp.Ctx.AbstractBase<ProgressMsgBuilder, Logger> {
- *   protected override builderClass = ProgressMsgBuilder;
+ * class MyContext extends CliApp.Ctx.AbstractBase {
+ *   protected override builderClass = CliApp.Progress.ProgressMsgBuilder;
  * }
  *
  * // In your command:
  * async execute(): Promise<void> {
- *   const files = await this.getFiles();
+ *   const progress = this.log.info.start({ type: 'spinner', index: 0 });
  *
- *   // Show progress bar
- *   for (let i = 0; i < files.length; i++) {
- *     this.log.info
- *       .label('Processing')
- *       .progress(i + 1, files.length, { label: files[i] })
- *       .update();
+ *   await processFiles();
+ *   progress.update('Halfway done...');
+ *   await processMoreFiles();
  *
- *     await processFile(files[i]);
- *   }
- *
- *   this.log.info.complete('All files processed!').emit();
+ *   this.log.info.complete('All files processed!');
  * }
  * ```
  */
-import { Console } from '@epdoc/msgbuilder';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import { isNumber } from '@epdoc/type';
-import {
-  ANSI,
-  DEFAULT_PROGRESS_WIDTH,
-  DEFAULT_SPINNER_INTERVAL,
-  PROGRESS_BAR_STYLES,
-  SPINNER_FRAMES,
-} from './const.ts';
-import { LoggerProgressLine, TerminalProgressLine } from './line.ts';
-import type { ProgressBarOpts, ProgressLine, ProgressState, SpinnerOpts } from './types.ts';
+import { Console } from '@epdoc/msgbuilder';
+import * as Progress from '@epdoc/progress';
+import type { ProgressState } from './types.ts';
 
 /**
  * Extended emitter interface that includes progress support.
@@ -54,8 +40,7 @@ interface ProgressEmitter extends MsgBuilder.IEmitter {
 
 /**
  * Shared state for progress tracking.
- * This is shared across all ProgressMsgBuilder instances to maintain
- * state between .start(), .update(), and .stop() calls.
+ * This is stored on LogMgr/Transport and shared across all ProgressMsgBuilder instances.
  */
 const globalProgressState: ProgressState = {
   isActive: false,
@@ -65,13 +50,10 @@ const globalProgressState: ProgressState = {
  * Message builder with progress indicator support.
  *
  * Extends Console.Builder with methods for displaying progress bars, spinners,
- * and updating progress in-place. Automatically detects TTY capability and
- * falls back to regular log messages in non-interactive environments.
+ * and updating progress in-place using @epdoc/progress.
  */
 export class ProgressMsgBuilder extends Console.Builder {
   #state: ProgressState;
-  #spinnerInterval?: number;
-  #currentSpinnerFrame = 0;
 
   /**
    * Creates a ProgressMsgBuilder instance.
@@ -85,88 +67,26 @@ export class ProgressMsgBuilder extends Console.Builder {
   }
 
   /**
-   * Configure a progress bar with current/total values.
-   *
-   * @param current - Current progress value
-   * @param total - Total expected value
-   * @param opts - Progress bar display options
-   * @returns This builder for chaining
-   *
-   * @example
-   * ```typescript
-   * this.log.info.progress(50, 100, { label: 'Downloading', width: 30 }).update();
-   * ```
-   */
-  progress(current: number, total: number, opts: ProgressBarOpts = {}): this {
-    if (!isNumber(current) || !isNumber(total) || total <= 0) {
-      return this;
-    }
-
-    const width = opts.width ?? DEFAULT_PROGRESS_WIDTH;
-    const style = PROGRESS_BAR_STYLES[opts.completeChar ? 'custom' : 'default'];
-    const completeChar = opts.completeChar ?? style.complete;
-    const incompleteChar = opts.incompleteChar ?? style.incomplete;
-
-    const percent = Math.min(100, Math.max(0, Math.round((current / total) * 100)));
-    const filled = Math.round((current / total) * width);
-    const empty = width - filled;
-
-    const bar = completeChar.repeat(filled) + incompleteChar.repeat(empty);
-
-    let text = '';
-    if (opts.label) {
-      text += opts.label + ' ';
-    }
-    text += `[${bar}]`;
-    if (opts.showPercent !== false) {
-      text += ` ${percent}%`;
-    }
-    if (opts.showCount !== false) {
-      text += ` (${current}/${total})`;
-    }
-    if (opts.suffix) {
-      text += ' ' + opts.suffix;
-    }
-
-    return this.text(text);
-  }
-
-  /**
-   * Configure an indeterminate spinner.
-   *
-   * @param opts - Spinner options
-   * @returns This builder for chaining
-   *
-   * @example
-   * ```typescript
-   * this.log.info.spinner({ text: 'Loading...' }).start();
-   * ```
-   */
-  spinner(opts: SpinnerOpts = {}): this {
-    const frames = opts.frames ?? SPINNER_FRAMES.dots;
-    const frame = frames[this.#currentSpinnerFrame % frames.length];
-
-    let text = frame;
-    if (opts.text) {
-      text += ' ' + opts.text;
-    }
-
-    return this.text(text);
-  }
-
-  /**
    * Start displaying progress.
    *
-   * In progress mode (TTY), shows an interactive progress indicator.
-   * In emit mode, emits a regular log message.
-   * In suppressed mode, does nothing.
+   * In progress mode (TTY and level matches threshold), shows an interactive
+   * progress indicator using @epdoc/progress. In emit mode, emits a regular
+   * log message. In suppressed mode, does nothing.
    *
-   * @returns This builder for chaining
+   * @param options - ProgressLineOptions from @epdoc/progress (type, index, color, etc.)
+   * @returns The ProgressLine instance for direct control, or null
+   *
+   * @example
+   * ```typescript
+   * const progress = this.log.info.start({ type: 'spinner', index: 0, color: 'cyan' });
+   * // or
+   * const progress = this.log.info.start({ type: 'horizontal', total: 100, width: 30, color: 'green' });
+   * ```
    */
-  start(): this {
-    // Check if we should emit at all
+  start(options?: Progress.LineOptions): Progress.Line | null {
+    // Check if we should emit at all (SUPPRESSED mode)
     if (!this._emitter.emitEnabled) {
-      return this; // SUPPRESSED mode
+      return null;
     }
 
     // If there's already an active progress line, stop it first
@@ -176,16 +96,20 @@ export class ProgressMsgBuilder extends Console.Builder {
 
     if ((this._emitter as ProgressEmitter).progressEnabled) {
       // PROGRESS mode: Show interactive progress
-      this.#state.line = new TerminalProgressLine();
+      const progressLine = options ? new Progress.Line(options) : new Progress.Line({ type: 'spinner', index: 0 });
+      this.#state.line = progressLine;
       this.#state.startTime = performance.now();
       this.#state.isActive = true;
-      this.#state.line.start(this.format());
+
+      // Use the formatted message from this builder as the start text
+      progressLine.start(this.format());
+
+      return progressLine;
     } else {
       // EMIT mode: Normal log emission
       this.emit();
+      return null;
     }
-
-    return this;
   }
 
   /**
@@ -194,19 +118,26 @@ export class ProgressMsgBuilder extends Console.Builder {
    * In progress mode, updates the in-place progress indicator.
    * In emit mode, emits a new log message.
    *
+   * @param message - Optional message to display (uses current formatted text if not provided)
+   * @param progress - Optional progress value (for horizontal/vertical modes)
    * @returns This builder for chaining
    */
-  update(): this {
+  update(message?: string, progress?: number): this {
     if (!this._emitter.emitEnabled) {
       return this; // SUPPRESSED mode
     }
 
     if ((this._emitter as ProgressEmitter).progressEnabled && this.#state.line?.isActive) {
       // PROGRESS mode: Update in-place
-      this.#state.line.update(this.format());
+      const text = message ?? this.format();
+      this.#state.line.update(text, progress);
     } else if (this._emitter.emitEnabled) {
       // EMIT mode: Emit as regular log
-      this.emit();
+      if (message) {
+        this.text(message).emit();
+      } else {
+        this.emit();
+      }
     }
 
     return this;
@@ -237,6 +168,8 @@ export class ProgressMsgBuilder extends Console.Builder {
 
       this.#state.line.stop(text);
       this.#state.isActive = false;
+      this.#state.line = undefined;
+      this.#state.startTime = undefined;
     } else if (this._emitter.emitEnabled) {
       // EMIT mode: Emit final message
       if (finalText) {
@@ -260,6 +193,8 @@ export class ProgressMsgBuilder extends Console.Builder {
     if (this.#state.line?.isActive) {
       this.#state.line.stop();
       this.#state.isActive = false;
+      this.#state.line = undefined;
+      this.#state.startTime = undefined;
     }
     return this;
   }
@@ -272,14 +207,11 @@ export class ProgressMsgBuilder extends Console.Builder {
   }
 
   /**
-   * Advance spinner to next frame.
-   * Call this before update() to animate spinners.
-   *
-   * @returns This builder for chaining
+   * Get the shared progress state.
+   * Use this to check if progress is active across builder instances.
    */
-  nextFrame(): this {
-    this.#currentSpinnerFrame++;
-    return this;
+  get progressState(): ProgressState {
+    return this.#state;
   }
 }
 
@@ -291,10 +223,9 @@ export class ProgressMsgBuilder extends Console.Builder {
  * @example
  * ```typescript
  * const logMgr = new Log.Mgr();
- * const progressState = { isActive: false };
  *
  * logMgr.msgBuilderFactory = (emitter) =>
- *   new Progress.Builder(emitter, progressState);
+ *   new ProgressMsgBuilder(emitter);
  * ```
  */
 export function createProgressBuilder(

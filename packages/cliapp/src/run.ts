@@ -112,7 +112,8 @@ export async function run<TCtx extends Ctx.AbstractBase = Ctx.AbstractBase>(
       ctx.log.nodent().info.h1('Application').error(err.message).ewt(t1);
     } else {
       ctx.log.error.h1('Application').err(err).ewt(t1);
-      if (ctx.log.meetsThreshold('debug')) {
+      const minThreshold = ctx.log.logMgr.transportMgr.getMinThreshold;
+      if (minThreshold.severity >= ctx.log.logMgr.logLevels.specMap.get('DEBUG').severity) {
         console.log(err.stack);
       } else {
         ctx.log.error.error('Error:').text(err.message).ewt(t1);

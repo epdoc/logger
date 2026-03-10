@@ -2,56 +2,37 @@
  * Progress indicator module for @epdoc/cliapp.
  *
  * This module provides progress bars, spinners, and other progress indicators
- * for CLI applications. It integrates with the logging system to show interactive
+ * for CLI applications. It integrates with @epdoc/progress to show interactive
  * progress in TTY terminals or fall back to regular log messages in non-TTY environments.
  *
  * @example
  * ```typescript
  * import * as CliApp from '@epdoc/cliapp';
- * import { Progress } from '@epdoc/cliapp';
  *
- * class AppContext extends CliApp.Ctx.AbstractBase<Progress.MsgBuilder> {
- *   protected override builderClass = Progress.MsgBuilder;
+ * class AppContext extends CliApp.Ctx.AbstractBase {
+ *   protected override builderClass = CliApp.Progress.MsgBuilder;
  * }
  *
  * // In your command:
  * async execute(): Promise<void> {
- *   const files = await this.getFiles();
+ *   // Start a spinner at info level
+ *   const progress = this.log.info.start({ type: 'spinner', index: 0, color: 'cyan' });
  *
- *   for (let i = 0; i < files.length; i++) {
- *     this.log.info
- *       .label('Processing')
- *       .progress(i + 1, files.length, { label: files[i] })
- *       .update();
+ *   await processFiles();
  *
- *     await processFile(files[i]);
+ *   if (progress) {
+ *     progress.update('Halfway done...');
+ *   } else {
+ *     this.log.info.update('Halfway done...');
  *   }
  *
- *   this.log.info.complete('All files processed!').emit();
+ *   await processMoreFiles();
+ *
+ *   // Complete with final message
+ *   this.log.info.complete('All files processed!');
  * }
  * ```
  */
 
-export { createProgressBuilder, ProgressMsgBuilder } from './builder.ts';
-export { LoggerProgressLine, TerminalProgressLine } from './line.ts';
-export {
-  ANSI,
-  DEFAULT_PROGRESS_WIDTH,
-  DEFAULT_SPINNER_INTERVAL,
-  PROGRESS_BAR_STYLES,
-  SPINNER_FRAMES,
-} from './const.ts';
-export type {
-  ProgressBarOpts,
-  ProgressBarStyle,
-  ProgressBarStyleConfig,
-  ProgressLine,
-  ProgressState,
-  SpinnerOpts,
-  SpinnerType,
-  TaskProgress,
-} from './types.ts';
-
-// Convenience alias for easier usage
-import { ProgressMsgBuilder } from './builder.ts';
-export type MsgBuilder = ProgressMsgBuilder;
+export { createProgressBuilder, ProgressMsgBuilder, ProgressMsgBuilder as MsgBuilder } from './builder.ts';
+export type { ProgressState } from './types.ts';

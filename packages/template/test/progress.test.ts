@@ -10,6 +10,6 @@ describe('progress-info',() => {
     const ctx = new Ctx.Context(pkg);
     ctx.progress.info.text('Downloading').label('fakefile.rsc').start();
     await delayPromise(1000);
-    ctx.progress.info.text('Downloaded').label('thefile.rsc').stop()
-  })
-}
+    ctx.progress.info.text('Downloaded').label('thefile.rsc').stop();
+  });
+});

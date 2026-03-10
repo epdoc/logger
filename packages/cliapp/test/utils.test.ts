@@ -19,35 +19,35 @@ describe('util', () => {
       const ctx = new TestContext(pkg);
       await ctx.setupLogging();
       CliApp.configureLogging(ctx, { logLevel: 'error' });
-      assertEquals(ctx.log.threshold.name.toLowerCase(), 'error');
+      assertEquals(ctx.logMgr.threshold.name.toLowerCase(), 'error');
     });
 
     it('should set threshold from opts.verbose', async () => {
       const ctx = new TestContext(pkg);
       await ctx.setupLogging();
       CliApp.configureLogging(ctx, { verbose: true });
-      assertEquals(ctx.log.threshold.name.toLowerCase(), 'info');
+      assertEquals(ctx.logMgr.threshold.name.toLowerCase(), 'info');
     });
 
     it('should set threshold from opts.debug', async () => {
       const ctx = new TestContext(pkg);
       await ctx.setupLogging();
       CliApp.configureLogging(ctx, { debug: true });
-      assertEquals(ctx.log.threshold.name.toLowerCase(), 'debug');
+      assertEquals(ctx.logMgr.threshold.name.toLowerCase(), 'debug');
     });
 
     it('should set threshold from opts.trace', async () => {
       const ctx = new TestContext(pkg);
       await ctx.setupLogging();
       CliApp.configureLogging(ctx, { trace: true });
-      assertEquals(ctx.log.thresholdName.toLowerCase(), 'trace');
+      assertEquals(ctx.logMgr.threshold.name.toLowerCase(), 'trace');
     });
 
     it('should set threshold from opts.spam', async () => {
       const ctx = new TestContext(pkg);
       await ctx.setupLogging();
       CliApp.configureLogging(ctx, { spam: true });
-      assertEquals(ctx.log.thresholdName.toLowerCase(), 'spam');
+      assertEquals(ctx.logMgr.threshold.name.toLowerCase(), 'spam');
     });
 
     it('should throw an error if conflicting log options are provided', async () => {

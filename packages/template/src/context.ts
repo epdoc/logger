@@ -1,27 +1,24 @@
+/**
+ * Context for template CLI applications.
+ *
+ * This context demonstrates how to set up a CLI application with progress
+ * indicator support using @epdoc/cliapp's ProgressMsgBuilder.
+ */
 import * as CliApp from '@epdoc/cliapp';
 import type * as Log from '@epdoc/logger';
-import * as Progress from './progress/mod.ts';
 
 /**
- * Custom message builder demonstrating extension of the base builder.
- *
- * Adds application-specific formatting methods for consistent logging.
- */
-export class CustomMsgBuilder extends CliApp.Ctx.MsgBuilder {
-  start(): void {}
-  stop(): void {}
-}
-// export type CustomLogger = CliApp.Ctx.Logger;
-
-/**
- * Bump-specific context class.
+ * Template context class with progress support.
  */
 export class Context extends CliApp.Ctx.AbstractBase {
   declare app: unknown;
   format: string = 'text';
-  #progress?: Progress.Monitor;
 
-  protected override builderClass = Progress.MsgBuilder;
+  /**
+   * Use the ProgressMsgBuilder for message building.
+   * This enables progress.start(), progress.update(), progress.complete() methods.
+   */
+  protected override builderClass = CliApp.Progress.MsgBuilder;
 
   constructor(
     pkg: CliApp.DenoPkg | Context,
@@ -32,17 +29,15 @@ export class Context extends CliApp.Ctx.AbstractBase {
       this.copyProperties(pkg);
     }
   }
-
-  get progress(): Progress.Monitor {
-    if (this.#progress) {
-      return this.#progress;
-    }
-    this.#progress = new Progress.Monitor(this);
-    return this.#progress;
-  }
 }
 
-export abstract class BaseClass extends CliApp.BaseClass<Context, Progress.MsgBuilder, CliApp.Ctx.Logger> {}
+/**
+ * Base class for template applications.
+ */
+export abstract class BaseClass extends CliApp.BaseClass<Context, CliApp.Progress.MsgBuilder, CliApp.Ctx.Logger> {}
 
+/**
+ * Base class for root commands in template applications.
+ */
 export abstract class BaseRootCmdClass<TOpts extends CliApp.CmdOptions>
   extends CliApp.Cmd.AbstractBase<Context, Context, TOpts> {}
