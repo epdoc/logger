@@ -144,6 +144,21 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
   }
 
   /**
+   * The current log level specification.
+   *
+   * @returns The Level.Spec object containing name, severity, and formatting info
+   *
+   * @remarks
+   * This provides MsgBuilder implementations access to the current log level
+   * for level-specific operations like progress indicators.
+   *
+   * @public
+   */
+  get level(): Level.Spec {
+    return this.#level;
+  }
+
+  /**
    * Access the transport manager for progress and transport operations.
    *
    * @returns The TransportMgr instance associated with this emitter
