@@ -28,7 +28,7 @@ export class TransportMgr {
    * An array of registered transport instances.
    */
   transports: AbstractTransport[] = [];
-  
+
   // Active progress line storage for progress indicator support
   #activeProgressLine?: IProgressLine;
   #progressStartTime?: number;
@@ -41,7 +41,7 @@ export class TransportMgr {
   constructor(logMgr: IBaseOptions) {
     this._logMgr = logMgr;
   }
-  
+
   /**
    * Get the currently active progress line, if any.
    * @returns The active IProgressLine or undefined
@@ -49,7 +49,7 @@ export class TransportMgr {
   get activeProgress(): IProgressLine | undefined {
     return this.#activeProgressLine;
   }
-  
+
   /**
    * Get the start time of the current progress operation.
    * @returns Timestamp when progress started, or undefined
@@ -57,7 +57,7 @@ export class TransportMgr {
   get progressStartTime(): number | undefined {
     return this.#progressStartTime;
   }
-  
+
   /**
    * Get the level name that started the current progress.
    * Used to verify updates use the same level.
@@ -66,11 +66,11 @@ export class TransportMgr {
   get progressLevelName(): string | undefined {
     return this.#progressLevelName;
   }
-  
+
   /**
    * Set the active progress line.
    * Automatically stops any previously active progress.
-   * 
+   *
    * @param line - The IProgressLine to activate, or undefined to clear
    * @param levelName - The log level name that started this progress
    */
