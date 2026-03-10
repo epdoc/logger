@@ -4,11 +4,9 @@
     "jsr:@cliffy/flags@1.0.0-rc.8": "1.0.0-rc.8",
     "jsr:@cliffy/internal@1.0.0-rc.8": "1.0.0-rc.8",
     "jsr:@cliffy/table@1.0.0-rc.8": "1.0.0-rc.8",
-    "jsr:@epdoc/cliapp@^2.1.1": "2.1.1",
     "jsr:@epdoc/datetime@^2.0.15": "2.0.15",
     "jsr:@epdoc/duration@~0.3.7": "0.3.7",
-    "jsr:@epdoc/fs@^1.2.22": "1.2.26",
-    "jsr:@epdoc/logger@^1003.3.1": "1003.3.1",
+    "jsr:@epdoc/fs@^1.2.26": "1.2.26",
     "jsr:@epdoc/progress@^0.0.9": "0.0.9",
     "jsr:@epdoc/string@~0.1.17": "0.1.17",
     "jsr:@epdoc/type@^1.2.4": "1.2.6",
@@ -63,16 +61,6 @@
         "jsr:@std/fmt@~1.0.2"
       ]
     },
-    "@epdoc/cliapp@2.1.1": {
-      "integrity": "a1a08fe584587527262c0262f0f7e2bc6a9ca7aa069353eee0d08b1a75d02ce6",
-      "dependencies": [
-        "jsr:@epdoc/progress",
-        "jsr:@epdoc/type@^1.2.6",
-        "jsr:@std/assert@^1.0.19",
-        "jsr:@std/fmt@^1.0.9",
-        "npm:commander"
-      ]
-    },
     "@epdoc/datetime@2.0.15": {
       "integrity": "8333af9642f4379d0ec4cbb69db4e466c8287ab0f3494a4b42b72ce05c771b76",
       "dependencies": [
@@ -95,17 +83,6 @@
         "jsr:@std/encoding",
         "jsr:@std/path@^1.1.4",
         "jsr:@std/yaml"
-      ]
-    },
-    "@epdoc/logger@1003.3.1": {
-      "integrity": "7e2ce3d9bdf2079824476ed9ffd01bdaaea16155a5115b50e109ff0278cdf6b6",
-      "dependencies": [
-        "jsr:@epdoc/datetime",
-        "jsr:@epdoc/duration",
-        "jsr:@epdoc/string",
-        "jsr:@epdoc/type@^1.2.6",
-        "jsr:@std/assert@^1.0.19",
-        "jsr:@std/fmt@^1.0.9"
       ]
     },
     "@epdoc/progress@0.0.9": {
@@ -371,7 +348,7 @@
       },
       "packages/demo": {
         "dependencies": [
-          "jsr:@epdoc/fs@^1.2.22",
+          "jsr:@epdoc/fs@^1.2.26",
           "jsr:@epdoc/type@^1.2.6",
           "jsr:@std/assert@^1.0.19"
         ]
