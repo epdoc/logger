@@ -9,10 +9,11 @@ MCP server support.
 - **Built-in Logging** — Integrated [@epdoc/logger](../logger/README.md) with automatic configuration
 - **Custom Message Builders** — Extend message formatting with application-specific methods
 - **Automatic MCP Support** — Commands exposed via [MCP](https://modelcontextprotocol.io/docs/getting-started/intro) for
-  use by AI, with no extra work
+  use by AI, with no extra work. MCP support is in an alpha state and not robust.
 - **Context Flow** — Parent context flows to child commands automatically
 - **Type-Safe** — Full TypeScript support with generic constraints
 - **Production Ready** — Error handling, signal management, and cleanup
+- **Progress Spinners** - Supports progress bars and spinners, fully integrated with log messaging.
 
 ## Installation
 
@@ -61,6 +62,9 @@ if (import.meta.main) {
 
 ## Documentation
 
+- **[AI Reference](./AI.md)** — Quick reference for AI assistants (concise, token-efficient)
+- **[Setup Guide](https://github.com/anomalyco/opencode/blob/main/skills/cliapp-setup/SKILL.md)** — Complete setup guide
+  with step-by-step examples
 - **[Design Decisions](./DESIGN.md)** — Technical architecture notes
 - **[Test Examples](./test/)** — Verified working examples (see below)
 - **[Demo App](../demo/)** — Production-grade CLI with MCP support

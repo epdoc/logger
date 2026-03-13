@@ -40,7 +40,7 @@ import * as Progress from '@epdoc/progress';
  * Extended emitter interface that includes progress support and transportMgr access.
  * This matches the MsgEmitter interface from @epdoc/logger.
  */
-interface ProgressEmitter extends MsgBuilder.IEmitter {
+export interface ProgressEmitter extends MsgBuilder.IEmitter {
   /** True when progress mode is enabled (level matches threshold and TTY available) */
   progressEnabled: boolean;
   /** Access to transport manager for active progress storage */
@@ -68,7 +68,7 @@ export class ProgressMsgBuilder extends Console.Builder {
    *
    * @param emitter - The message emitter from the logger
    */
-  constructor(emitter: ConstructorParameters<typeof Console.Builder>[0]) {
+  constructor(emitter: ProgressEmitter) {
     super(emitter);
   }
 
@@ -297,7 +297,7 @@ export class ProgressMsgBuilder extends Console.Builder {
  * ```
  */
 export function createProgressBuilder(
-  emitter: ConstructorParameters<typeof ProgressMsgBuilder>[0],
+  emitter: ProgressEmitter,
 ): ProgressMsgBuilder {
   return new ProgressMsgBuilder(emitter);
 }

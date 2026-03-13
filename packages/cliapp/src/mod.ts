@@ -1,6 +1,8 @@
 /**
- * @file Main module exports for @epdoc/cliapp v2.0
- * @description Clean CLI framework with automatic context flow and declarative configuration
+ * @file Main module exports for @epdoc/cliapp
+ * @description Type-safe CLI framework supporting commander.js-based command hierarchies,
+ * with integrated logging, context flow, and MCP server support. This is the main entry
+ * point for building CLI applications using the cliapp framework.
  * @module
  */
 
