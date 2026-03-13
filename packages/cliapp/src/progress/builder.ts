@@ -301,3 +301,45 @@ export function createProgressBuilder(
 ): ProgressMsgBuilder {
   return new ProgressMsgBuilder(emitter);
 }
+
+/**
+ * Creates a standalone ProgressEmitter for use without a logger.
+ *
+ * @remarks
+ * This is useful when you need to use ProgressMsgBuilder for formatting only
+ * (e.g., building help text) without a full logging setup. The returned emitter
+ * disables progress indicator features but allows all formatting methods from
+ * Console.Builder to work normally.
+ *
+ * When using ProgressMsgBuilder with a logger, the library provides a proper
+ * ProgressEmitter automatically.
+ *
+ * @example
+ * ```typescript
+ * // Standalone usage for help text formatting
+ * const emitter = createStandaloneProgressEmitter();
+ * const builder = new ProgressMsgBuilder(emitter);
+ * const helpText = builder.h1('Help').text('Description').format();
+ * ```
+ */
+export function createStandaloneProgressEmitter(): ProgressEmitter {
+  return {
+    dataEnabled: false,
+    emitEnabled: false,
+    stackEnabled: false,
+    progressEnabled: false,
+    level: { name: 'INFO' as Level.Name, value: 9, severity: 9 } as Level.Spec,
+    transportMgr: {
+      activeProgress: undefined,
+      progressLevelName: undefined,
+      progressStartTime: undefined,
+      setActiveProgress: () => {},
+    } as unknown as Log.Transport.Mgr,
+    emit: () => ({
+      timestamp: new Date(),
+      formatter: { format: () => '' } as MsgBuilder.IFormatter,
+      data: undefined,
+      elapsed: 0,
+    }),
+  };
+}

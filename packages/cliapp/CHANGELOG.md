@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.3] - 2026-03-13
+
+- Cleaned up use of generics for Emitter of ProgressMsgBuilder
+
 ## [2.1.2] - 2026-03-13
 
 - Fixed generics in Constext as they relate to ProgressMsgBuilder

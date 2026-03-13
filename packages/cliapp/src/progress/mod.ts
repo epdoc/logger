@@ -34,6 +34,11 @@
  * ```
  */
 
-export { createProgressBuilder, ProgressMsgBuilder, ProgressMsgBuilder as MsgBuilder } from './builder.ts';
+export {
+  createProgressBuilder,
+  createStandaloneProgressEmitter,
+  ProgressMsgBuilder,
+  ProgressMsgBuilder as MsgBuilder,
+} from './builder.ts';
 export type { ProgressEmitter } from './builder.ts';
 export type { ProgressState } from './types.ts';

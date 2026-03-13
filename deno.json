@@ -5,10 +5,14 @@
   },
   "license": "MIT",
   "tasks": {
-    "lint": "deno lint packages deno.json launch.config.json",
-    "check": "deno check packages",
-    "test:demo": "cd packages/demo && deno test --allow-all",
-    "docs": "deno doc --json packages/loglevels/src/mod.ts > packages/loglevels/library-docs.json && deno doc --json packages/msgbuilder/src/mod.ts > packages/msgbuilder/library-docs.json && deno doc --json packages/logger/src/mod.ts > packages/logger/library-docs.json && deno doc --json packages/cliapp/src/mod.ts > packages/cliapp/library-docs.json"
+    "lint": "dtask run lint",
+    "check": "dtask run check",
+    "test": "dtask run test",
+    "docs": "deno doc --json packages/loglevels/src/mod.ts > packages/loglevels/library-docs.json && deno doc --json packages/msgbuilder/src/mod.ts > packages/msgbuilder/library-docs.json && deno doc --json packages/logger/src/mod.ts > packages/logger/library-docs.json && deno doc --json packages/cliapp/src/mod.ts > packages/cliapp/library-docs.json",
+    "prepublish": "deno fmt && deno task lint && deno task check && deno task test",
+    "update": "dtask run update",
+    "update:latest": "dtask run update --latest",
+    "update:changed": "dtask run update:changed"
   },
   "workspace": [
     "./packages/loglevels",
@@ -21,33 +25,8 @@
     "./packages/template"
   ],
   "fmt": {
-    "include": ["packages", "deno.json", "launch.config.json"],
-    "exclude": [
-      "packages/logdy",
-      "packages/examples/logdy.run.ts",
-      "packages/logjava"
-    ],
+    "include": ["deno.json", "launch.config.json"],
     "singleQuote": true,
     "lineWidth": 120
-  },
-  "lint": {
-    "include": ["packages"],
-    "exclude": [
-      "packages/logdy",
-      "packages/examples/logdy.run.ts",
-      "packages/logjava"
-    ]
-  },
-  "test": {
-    "include": ["packages/**/*.test.ts"],
-    "exclude": ["packages/logdy", "packages/logjava"],
-    "permissions": {
-      "read": true,
-      "write": true,
-      "env": true,
-      "net": true,
-      "run": true,
-      "sys": true
-    }
   }
 }
