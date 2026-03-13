@@ -16,6 +16,16 @@ export class TemplateCommand extends Ctx.BaseRootCmdClass<TemplateCmdOptions> {
     this.option('--details', 'Provide more details').emit();
     this.argument('[files...]', 'Files to do nothing to').emit();
   }
+  helpText(): string {
+    const msg = new Ctx.CustomMsgBuilder();
+    msg.h1('\nNotes:\n');
+    msg.h2('\nDates are determined by:');
+    msg.label('\n    Image').iarrow().value('EXIF data');
+    msg.label('\n      PDF').iarrow().value('PDF metadata createdAt');
+    msg.label('\n    Video').iarrow().value('FFProbe looks for creation datetime');
+    msg.label('\n Fallback').iarrow().value('File system creation datetime');
+    return msg.format();
+  }
 
   override async execute(
     options: TemplateCmdOptions,

@@ -7,6 +7,26 @@
 import * as CliApp from '@epdoc/cliapp';
 import type * as Log from '@epdoc/logger';
 
+export class CustomMsgBuilder extends CliApp.Progress.MsgBuilder {
+  /**
+   * Creates a CustomMsgBuilder instance.
+   *
+   * @remarks
+   * This constructor is normally called by the @epdoc/cliapp library with a
+   * fully-configured ProgressEmitter. However, for standalone usage (e.g., building
+   * help text without a logger), the emitter parameter can be omitted. In that case,
+   * progress indicator methods (start, update, complete) will not function, but all
+   * formatting methods from Console.Builder (h1, h2, label, value, etc.) work normally.
+   *
+   * @param emitter - The progress emitter from the logger (optional for standalone use)
+   */
+  constructor(emitter?: CliApp.Progress.ProgressEmitter) {
+    // Provide a minimal mock emitter for standalone usage
+    const actualEmitter = emitter ?? CliApp.Progress.createStandaloneProgressEmitter();
+    super(actualEmitter);
+  }
+}
+
 /**
  * Template context class with progress support.
  */
@@ -18,7 +38,7 @@ export class Context extends CliApp.Ctx.AbstractBase {
    * Use the ProgressMsgBuilder for message building.
    * This enables progress.start(), progress.update(), progress.complete() methods.
    */
-  protected override builderClass = CliApp.Progress.MsgBuilder;
+  protected override builderClass = CustomMsgBuilder;
 
   constructor(
     pkg: CliApp.DenoPkg | Context,
@@ -34,7 +54,7 @@ export class Context extends CliApp.Ctx.AbstractBase {
 /**
  * Base class for template applications.
  */
-export abstract class BaseClass extends CliApp.BaseClass<Context, CliApp.Progress.MsgBuilder, CliApp.Ctx.Logger> {}
+export abstract class BaseClass extends CliApp.BaseClass<Context, CustomMsgBuilder, CliApp.Ctx.Logger> {}
 
 /**
  * Base class for root commands in template applications.
