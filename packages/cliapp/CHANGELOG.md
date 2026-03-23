@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.5] - 2026-03-23
+
+- Added options methodto AbstractBase.
+
 ## [2.1.4] - 2026-03-22
 
 - Added support for OptionDef when building options

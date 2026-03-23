@@ -154,12 +154,23 @@ export type Params = `[${string}]` | `<${string}>`;
  * Original definitions of options used across this app.
  */
 export interface OptionDef {
+  /** The option abbreviation, e.g. "n" */
   short?: Abbreviation;
+  /** The option name, e.g. "dry-run"  */
   name: string;
+  /** The option parameters, e.g. "[value]" or "<value>" */
   params?: Params;
+  /** The option description */
   description: string;
+  /** The option argument parser */
   argParser?: (str: string) => unknown;
+  /** The option choices */
   choices?: string[];
   validateChoices?: boolean;
   defVal?: number | boolean | string | string[];
 }
+
+/**
+ * Map of option names to their definitions.
+ */
+export type OptionDefMap = Record<string, OptionDef>;

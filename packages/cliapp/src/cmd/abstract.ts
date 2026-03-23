@@ -435,6 +435,14 @@ export abstract class AbstractCommand<
     return new FluentOptionBuilder(this, flags, description);
   }
 
+  options(defMap: CliApp.OptionDefMap, names: string[]): void {
+    for (const name of names) {
+      const def = defMap[name];
+      assert(def, `Option "${name}" not found in defMap`);
+      this.option(def).emit();
+    }
+  }
+
   argument(flags: string, description: string): FluentArgumentBuilder<this> {
     return new FluentArgumentBuilder(this, flags, description);
   }
