@@ -5,6 +5,7 @@
   },
   "license": "MIT",
   "tasks": {
+    "fmt": "dtask run fmt",
     "lint": "dtask run lint",
     "check": "dtask run check",
     "test": "dtask run test",

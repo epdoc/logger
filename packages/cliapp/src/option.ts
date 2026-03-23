@@ -1,4 +1,7 @@
+import { _ } from '@epdoc/type';
+import * as colors from '@std/fmt/colors';
 import * as Commander from 'commander';
+import type { OptionDef } from './types.ts';
 
 /**
  * Fluent builder for Commander.js options with method chaining
@@ -26,9 +29,45 @@ export class FluentOptionBuilder<T> {
   #command: T;
   #option: Commander.Option;
 
-  constructor(command: T, flags: string, description: string) {
+  constructor(command: T, flags: OptionDef, description?: string);
+  constructor(command: T, flags: string, description: string);
+  constructor(command: T, flags: string | OptionDef, description?: string) {
     this.#command = command;
-    this.#option = new Commander.Option(flags, description);
+    if (_.isString(flags) && _.isString(description)) {
+      this.#option = new Commander.Option(flags, description);
+    } else if (_.isDict(flags)) {
+      const def = flags as OptionDef;
+      if (def.choices && def.validateChoices === false) {
+        const choices: string = `(choices: ${
+          def.choices.map((choice) => colors.green(typeof choice === 'string' ? choice : JSON.stringify(choice))).join(
+            ', ',
+          )
+        })`;
+        def.description = [def.description, choices].join(' ');
+      }
+
+      this.#option = new Commander.Option(FluentOptionBuilder.optionString(def), def.description);
+      if (def.defVal) {
+        this.#option.default(def.defVal);
+      }
+      if (def.argParser) {
+        this.#option.argParser(def.argParser);
+      }
+      if (def.choices && def.validateChoices !== false) {
+        this.#option.choices(def.choices);
+      }
+    } else {
+      throw new Error('Invalid flags for command');
+    }
+  }
+
+  static optionString(def: OptionDef): string {
+    let result = def.short ? `-${def.short}, ` : '';
+    result += '--' + def.name;
+    if (def.params) {
+      result += ' ' + def.params;
+    }
+    return result;
   }
 
   /**

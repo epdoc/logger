@@ -426,8 +426,12 @@ export abstract class AbstractCommand<
       this.commander.addCommand(sub.commander);
     }
   }
-
-  option(flags: string, description: string): FluentOptionBuilder<this> {
+  option(flags: CliApp.OptionDef, description?: string): FluentOptionBuilder<this>;
+  option(flags: string, description: string): FluentOptionBuilder<this>;
+  option(flags: string | CliApp.OptionDef, description?: string): FluentOptionBuilder<this> {
+    if (_.isString(flags)) {
+      return new FluentOptionBuilder(this, flags, description || '');
+    }
     return new FluentOptionBuilder(this, flags, description);
   }
 

@@ -4,7 +4,7 @@
  * @module
  */
 
-import type { Dict } from '@epdoc/type';
+import type { Dict, LetterChar } from '@epdoc/type';
 import type * as Cmd from './cmd/mod.ts';
 import type * as Ctx from './context.ts';
 import type { CmdMetadata } from './pkg-type.ts';
@@ -145,4 +145,21 @@ export interface CommandConstructor<TContext extends Ctx.AbstractBase = Ctx.Abst
   // See packages/cliapp/DESIGN.md
   // deno-lint-ignore no-explicit-any
   new (initialContext?: TContext): Cmd.AbstractBase<any, TContext>;
+}
+
+export type Abbreviation = LetterChar;
+export type Params = `[${string}]` | `<${string}>`;
+
+/**
+ * Original definitions of options used across this app.
+ */
+export interface OptionDef {
+  short?: Abbreviation;
+  name: string;
+  params?: Params;
+  description: string;
+  argParser?: (str: string) => unknown;
+  choices?: string[];
+  validateChoices?: boolean;
+  defVal?: number | boolean | string | string[];
 }
