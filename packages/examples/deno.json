@@ -9,6 +9,7 @@
   },
   "license": "MIT",
   "tasks": {
+    "fmt": "deno fmt *.ts *.json test",
     "lint": "deno lint",
     "check": "deno check *.ts test/*.ts",
     "test": "deno test -A",

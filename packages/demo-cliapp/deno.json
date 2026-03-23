@@ -12,6 +12,7 @@
   },
   "tasks": {
     "test": "echo 'No tests yet'",
+    "fmt": "deno fmt *.ts *.json src",
     "lint": "deno lint *.ts *.json src",
     "check": "deno check *.ts *.json src",
     "docs": "deno doc --json src/mod.ts > library-docs.json",

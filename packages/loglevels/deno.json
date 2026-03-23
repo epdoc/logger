@@ -15,7 +15,8 @@
     "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs",
     "publish": "deno publish",
     "update": "output=$(deno update 2>&1); echo \"$output\"; [[ \"$output\" =~ \"Updated\" ]]",
-    "update:changed": "deno task update && deno task prepublish"
+    "update:changed": "deno task update && deno task prepublish",
+    "fmt": "deno fmt src test *.json"
   },
   "exports": "./src/mod.ts",
   "test": {

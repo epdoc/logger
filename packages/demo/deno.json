@@ -16,7 +16,8 @@
     "install": "deno install --global -A -f --config deno.json --name cliapp-demo main.ts",
     "run": "deno run -A ./main.ts",
     "update": "output=$(deno update 2>&1); echo \"$output\"; [[ \"$output\" =~ \"Updated\" ]]",
-    "update:changed": "deno task update && deno task prepublish"
+    "update:changed": "deno task update && deno task prepublish",
+    "fmt": "deno fmt src test *.ts *.json"
   },
   "exports": "./main.ts",
   "lint": {
