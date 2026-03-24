@@ -22,7 +22,7 @@
   "imports": {
     "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.1",
     "@epdoc/loglevels": "jsr:@epdoc/loglevels@^1.0.0",
-    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.8",
+    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.9",
     "@epdoc/progress": "jsr:@epdoc/progress@^0.0.9",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
     "@std/assert": "jsr:@std/assert@^1.0.19",
