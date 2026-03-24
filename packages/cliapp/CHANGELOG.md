@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.6] - 2026-03-24
+
+- Update dependencies
+
 ## [2.1.5] - 2026-03-23
 
 - Added options methodto AbstractBase.
