@@ -311,6 +311,9 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    * ```
    */
   relative(path: string): this {
+    if (!_.isString(path)) {
+      return this.path('?');
+    }
     const cwd = Deno.cwd();
 
     // Calculate relative paths
