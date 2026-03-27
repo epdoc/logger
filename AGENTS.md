@@ -232,6 +232,60 @@ const rootCmd = new RootCmd(ctx);
 await CliApp.run(ctx, rootCmd);
 ```
 
+### Nested Progress Indicators
+
+Use `CliApp.Progress.MsgBuilder` for interactive progress bars and spinners with **nesting support**:
+
+```typescript
+class AppContext extends CliApp.Ctx.AbstractBase {
+  protected override builderClass = CliApp.Progress.MsgBuilder;
+}
+
+// Basic progress
+ctx.log.info.text('Processing').start({ type: 'spinner' });
+await doWork();
+ctx.log.info.icheck().text('Done!').complete();
+
+// Nested progress - parent message restored when child completes
+ctx.log.info.text('Building project').start();
+
+ctx.log.info.text('  Compiling TypeScript').start();
+await compileTypeScript();
+ctx.log.info.text('  Compiled ✓').complete();  // Shows "Building project" again
+
+ctx.log.info.text('  Bundling assets').start();
+await bundleAssets();
+ctx.log.info.text('  Bundled ✓').complete();   // Shows "Building project" again
+
+ctx.log.info.icheck().text('Build complete!').complete();
+```
+
+**"Using" Pattern** — Automatic cleanup with TypeScript's `using` declaration:
+
+```typescript
+{
+  using _progress = ctx.log.info.text('Processing').start();
+  await doWork();  // Automatically completes on block exit
+}
+// Equivalent to: try { start(); await doWork(); } finally { complete(); }
+```
+
+**Progress Types:**
+- `spinner` — Indeterminate progress with rotating characters
+- `bounce` — Back-and-forth animation
+- `horizontal` — Progress bar (use `update(value)` with 0-100)
+- `vertical` — Vertical fill indicator
+
+```typescript
+// Progress bar example
+ctx.log.info.start({ type: 'horizontal', total: 100, width: 30 });
+for (let i = 0; i <= 100; i++) {
+  ctx.log.info.text(`Loading ${i}%`).update(i);
+  await delay(50);
+}
+ctx.log.info.complete();
+```
+
 ## Internal Import Aliases (logger package)
 
 The `logger` package uses these internal aliases defined in its `deno.json`:

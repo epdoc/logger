@@ -217,11 +217,22 @@ class AppContext extends CliApp.Ctx.AbstractBase {
   protected override builderClass = CliApp.Progress.MsgBuilder;
 }
 
-// In commands:
+// Basic usage
 this.log.info.text('Processing').start({ type: 'spinner', color: 'cyan' });
 await doWork();
 this.log.info.text('Halfway').update();
 this.log.info.icheck().text('Done!').complete();
+
+// Nested progress - parent restored when child completes
+this.log.info.text('Building').start();
+this.log.info.text('  Compiling').start();
+await compile();
+this.log.info.text('  Done').complete(); // Shows "Building" again
+this.log.info.icheck().text('Complete').complete();
+
+// "Using" pattern - automatic cleanup
+using _progress = this.log.info.text('Working').start();
+await doWork(); // Automatically completes on block exit
 ```
 
 ---

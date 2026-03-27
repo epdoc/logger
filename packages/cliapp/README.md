@@ -14,6 +14,8 @@ MCP server support.
 - **Type-Safe** — Full TypeScript support with generic constraints
 - **Production Ready** — Error handling, signal management, and cleanup
 - **Progress Spinners** - Supports progress bars and spinners, fully integrated with log messaging.
+- **Nested Progress** - Start multiple progress levels; parent messages are restored when children complete.
+- **"Using" Pattern** - Automatic progress cleanup with TypeScript's `using` declaration.
 
 ## Installation
 
@@ -253,6 +255,88 @@ Root commands (with `root: true`) automatically include:
 | `-A, --log-show-all`  | Show all metadata fields                                                               |
 | `--no-color`          | Disable ANSI colors                                                                    |
 | `-n, --dry-run`       | Enable dry-run mode (only if `dryRun: true` in constructor params)                     |
+
+### Progress Indicators
+
+Use `CliApp.Progress.MsgBuilder` for interactive progress bars and spinners that work seamlessly with logging:
+
+```typescript
+class AppContext extends CliApp.Ctx.AbstractBase {
+  protected override builderClass = CliApp.Progress.MsgBuilder;
+}
+
+// In your command:
+async execute(): Promise<void> {
+  // Start a spinner
+  ctx.log.info.text('Processing files').start({ type: 'spinner', color: 'cyan' });
+  await processFiles();
+  ctx.log.info.icheck().text('Done!').complete();
+}
+```
+
+**Nested Progress** — Start a new progress while another is running:
+
+```typescript
+// Parent progress
+ctx.log.info.text('Building project').start();
+
+// Nested: child progress temporarily replaces parent message
+ctx.log.info.text('  Compiling TypeScript').start();
+await compileTypeScript();
+ctx.log.info.text('  Compiled ✓').complete();  // Restores "Building project"
+
+// Another nested operation
+ctx.log.info.text('  Bundling assets').start();
+await bundleAssets();
+ctx.log.info.text('  Bundled ✓').complete();  // Restores "Building project"
+
+// Complete parent
+ctx.log.info.icheck().text('Build complete!').complete();
+```
+
+**"Using" Pattern** — Automatic cleanup with TypeScript's `using` declaration:
+
+```typescript
+{
+  // Progress automatically completes when exiting the block
+  using _progress = ctx.log.info.text('Processing').start();
+  await doWork();  // complete() called automatically here
+}
+
+// Equivalent to:
+const progress = ctx.log.info.text('Processing').start();
+try {
+  await doWork();
+} finally {
+  progress.complete();
+}
+```
+
+**Progress Types** — Choose from `spinner`, `bounce`, `horizontal` bar, or `vertical` fill:
+
+```typescript
+// Spinner for indeterminate progress
+ctx.log.info.start({ type: 'spinner', index: 0, color: 'cyan' });
+
+// Progress bar for determinate progress
+ctx.log.info.start({ 
+  type: 'horizontal', 
+  total: 100, 
+  width: 30, 
+  color: 'green' 
+});
+ctx.log.info.update(50);  // Update to 50%
+```
+
+**Cross-Level Updates** — Higher log levels can update the progress line:
+
+```typescript
+ctx.log.info.text('Processing').start();
+// ... later, a warning occurs:
+ctx.log.warn.text('Warning: slow connection').emit();  // Briefly updates progress line
+ctx.log.info.text('Still processing').update();  // Back to normal
+ctx.log.info.complete();
+```
 
 ### Context Flow
 

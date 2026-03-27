@@ -17,6 +17,23 @@ export interface IProgressLine {
 }
 
 /**
+ * Context for a single progress operation in the nesting stack.
+ * Stores all state needed to restore parent progress when nesting.
+ */
+export interface ProgressContext {
+  /** The progress line instance from @epdoc/progress */
+  line: IProgressLine;
+  /** Timestamp when this progress started */
+  startTime: number;
+  /** The log level name that started this progress */
+  levelName: string;
+  /** The message text for this progress level */
+  message: string;
+  /** Optional progress configuration */
+  options?: Record<string, unknown>;
+}
+
+/**
  * Manages a collection of log transports, handling the distribution of log
  * entries to each registered transport.
  */
@@ -29,10 +46,8 @@ export class TransportMgr {
    */
   transports: AbstractTransport[] = [];
 
-  // Active progress line storage for progress indicator support
-  #activeProgressLine?: IProgressLine;
-  #progressStartTime?: number;
-  #progressLevelName?: string;
+  // Stack-based progress tracking for nested progress support
+  #progressStack: ProgressContext[] = [];
 
   /**
    * Creates an instance of the `TransportMgr`.
@@ -47,7 +62,7 @@ export class TransportMgr {
    * @returns The active IProgressLine or undefined
    */
   get activeProgress(): IProgressLine | undefined {
-    return this.#activeProgressLine;
+    return this.#progressStack.length > 0 ? this.#progressStack[this.#progressStack.length - 1].line : undefined;
   }
 
   /**
@@ -55,7 +70,7 @@ export class TransportMgr {
    * @returns Timestamp when progress started, or undefined
    */
   get progressStartTime(): number | undefined {
-    return this.#progressStartTime;
+    return this.#progressStack.length > 0 ? this.#progressStack[this.#progressStack.length - 1].startTime : undefined;
   }
 
   /**
@@ -64,24 +79,120 @@ export class TransportMgr {
    * @returns Level name or undefined
    */
   get progressLevelName(): string | undefined {
-    return this.#progressLevelName;
+    return this.#progressStack.length > 0 ? this.#progressStack[this.#progressStack.length - 1].levelName : undefined;
+  }
+
+  /**
+   * Get the current nesting depth of progress operations.
+   * 0 means no active progress, 1 means single progress, 2+ means nested.
+   * @returns The nesting depth
+   */
+  get progressNestingDepth(): number {
+    return this.#progressStack.length;
+  }
+
+  /**
+   * Check if there is any active progress.
+   * @returns True if progress is active
+   */
+  get hasActiveProgress(): boolean {
+    return this.#progressStack.length > 0;
+  }
+
+  /**
+   * Get the parent progress context (the one before the current).
+   * @returns The parent ProgressContext or undefined if at top level
+   */
+  get parentProgressContext(): ProgressContext | undefined {
+    return this.#progressStack.length > 1 ? this.#progressStack[this.#progressStack.length - 2] : undefined;
   }
 
   /**
    * Set the active progress line.
-   * Automatically stops any previously active progress.
+   * For nested progress, the parent context is automatically pushed to the stack.
    *
    * @param line - The IProgressLine to activate, or undefined to clear
    * @param levelName - The log level name that started this progress
+   * @param message - The message text for this progress
+   * @param options - Optional progress configuration
    */
-  setActiveProgress(line: IProgressLine | undefined, levelName?: string): void {
-    // Auto-stop previous progress (handles developer error of forgetting stop)
-    if (this.#activeProgressLine?.isActive && this.#activeProgressLine !== line) {
-      this.#activeProgressLine.stop();
+  setActiveProgress(line: IProgressLine | undefined, levelName?: string, message?: string, options?: Record<string, unknown>): void {
+    if (line === undefined) {
+      // Clear entire stack
+      if (this.#progressStack.length > 0) {
+        const current = this.#progressStack[this.#progressStack.length - 1];
+        if (current.line.isActive) {
+          current.line.stop();
+        }
+      }
+      this.#progressStack = [];
+      return;
     }
-    this.#activeProgressLine = line;
-    this.#progressLevelName = levelName;
-    this.#progressStartTime = line ? performance.now() : undefined;
+
+    // Create new context and push to stack
+    const context: ProgressContext = {
+      line,
+      startTime: performance.now(),
+      levelName: levelName ?? 'INFO',
+      message: message ?? '',
+      options,
+    };
+    this.#progressStack.push(context);
+  }
+
+  /**
+   * Push a new nested progress context onto the stack.
+   * This adds a new level to the nesting without creating a new Progress.Line.
+   * The same progress line is used, but the message is updated.
+   *
+   * @param childMessage - The message for the nested progress level
+   * @param levelName - The log level name for this nesting level
+   * @returns True if successfully pushed
+   */
+  pushNestedProgress(childMessage: string, levelName: string): boolean {
+    if (this.#progressStack.length === 0) {
+      return false;
+    }
+    // Get the current progress line to reuse it
+    const currentContext = this.#progressStack[this.#progressStack.length - 1];
+    
+    // Create new context that shares the same progress line
+    const nestedContext: ProgressContext = {
+      line: currentContext.line,
+      startTime: performance.now(),  // Track nested start time separately
+      levelName: levelName,
+      message: childMessage,
+      options: currentContext.options,
+    };
+    
+    this.#progressStack.push(nestedContext);
+    return true;
+  }
+
+  /**
+   * Pop the current progress context and restore the parent.
+   * Called when completing a nested progress.
+   *
+   * @returns The parent ProgressContext or undefined if stack is empty
+   */
+  popProgressContext(): ProgressContext | undefined {
+    if (this.#progressStack.length === 0) {
+      return undefined;
+    }
+    
+    // Remove current context
+    this.#progressStack.pop();
+    
+    // Return the new current context (parent) if any
+    return this.#progressStack.length > 0 ? this.#progressStack[this.#progressStack.length - 1] : undefined;
+  }
+
+  /**
+   * Clear all progress state and stop any active progress.
+   * This is the nuclear option - use cancel() for cleanup.
+   */
+  clearActiveProgress(): void {
+    this.setActiveProgress(undefined);
   }
 
   /**
