@@ -283,12 +283,12 @@ ctx.log.info.text('Building project').start();
 // Nested: child progress temporarily replaces parent message
 ctx.log.info.text('  Compiling TypeScript').start();
 await compileTypeScript();
-ctx.log.info.text('  Compiled ✓').complete();  // Restores "Building project"
+ctx.log.info.text('  Compiled ✓').complete(); // Restores "Building project"
 
 // Another nested operation
 ctx.log.info.text('  Bundling assets').start();
 await bundleAssets();
-ctx.log.info.text('  Bundled ✓').complete();  // Restores "Building project"
+ctx.log.info.text('  Bundled ✓').complete(); // Restores "Building project"
 
 // Complete parent
 ctx.log.info.icheck().text('Build complete!').complete();
@@ -300,7 +300,7 @@ ctx.log.info.icheck().text('Build complete!').complete();
 {
   // Progress automatically completes when exiting the block
   using _progress = ctx.log.info.text('Processing').start();
-  await doWork();  // complete() called automatically here
+  await doWork(); // complete() called automatically here
 }
 
 // Equivalent to:
@@ -319,13 +319,13 @@ try {
 ctx.log.info.start({ type: 'spinner', index: 0, color: 'cyan' });
 
 // Progress bar for determinate progress
-ctx.log.info.start({ 
-  type: 'horizontal', 
-  total: 100, 
-  width: 30, 
-  color: 'green' 
+ctx.log.info.start({
+  type: 'horizontal',
+  total: 100,
+  width: 30,
+  color: 'green',
 });
-ctx.log.info.update(50);  // Update to 50%
+ctx.log.info.update(50); // Update to 50%
 ```
 
 **Cross-Level Updates** — Higher log levels can update the progress line:
@@ -333,8 +333,8 @@ ctx.log.info.update(50);  // Update to 50%
 ```typescript
 ctx.log.info.text('Processing').start();
 // ... later, a warning occurs:
-ctx.log.warn.text('Warning: slow connection').emit();  // Briefly updates progress line
-ctx.log.info.text('Still processing').update();  // Back to normal
+ctx.log.warn.text('Warning: slow connection').emit(); // Briefly updates progress line
+ctx.log.info.text('Still processing').update(); // Back to normal
 ctx.log.info.complete();
 ```
 

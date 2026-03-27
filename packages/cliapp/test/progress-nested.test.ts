@@ -61,7 +61,7 @@ describe('Nested Progress', () => {
     await ctx.setupLogging('info');
 
     ctx.log.info.text('Test').start();
-    const depthBefore = ctx.log.info.nestingDepth;
+    const _depthBefore = ctx.log.info.nestingDepth;
 
     // Use stop() instead of complete()
     ctx.log.info.stop();
@@ -78,7 +78,7 @@ describe('Nested Progress', () => {
     ctx.log.info.text('Level 2').start();
     ctx.log.info.text('Level 3').start();
 
-    const depthBefore = ctx.log.info.nestingDepth;
+    const _depthBefore = ctx.log.info.nestingDepth;
 
     // Cancel should clear entire stack
     ctx.log.info.cancel();

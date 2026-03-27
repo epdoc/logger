@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.7] - 2026-03-27
+
+- Added nested progress support
+
 ## [2.1.6] - 2026-03-24
 
 - Update dependencies

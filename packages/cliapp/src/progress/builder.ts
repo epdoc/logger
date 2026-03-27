@@ -28,15 +28,15 @@
  * // Nested progress - parent restored when child completes
  * async nestedExample(): Promise<void> {
  *   ctx.log.info.text('Building project').start();
- *   
+ *
  *   ctx.log.info.text('  Compiling TypeScript').start();
  *   await compileTypeScript();
  *   ctx.log.info.text('  Compiled').complete(); // Shows "Building project" again
- *   
+ *
  *   ctx.log.info.text('  Bundling assets').start();
  *   await bundleAssets();
  *   ctx.log.info.text('  Bundled').complete(); // Shows "Building project" again
- *   
+ *
  *   ctx.log.info.icheck().text('Build complete!').complete();
  * }
  *
@@ -223,7 +223,7 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
    * In progress mode, handles nested progress:
    * - If nested (depth > 1), pops the stack and restores the parent progress message
    * - If top-level (depth = 1), stops the progress indicator and shows final text
-   * 
+   *
    * In emit mode, emits a final log message.
    *
    * @returns This builder for chaining
@@ -232,7 +232,7 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
    * ```typescript
    * // Top-level completion
    * ctx.log.info.icheck().text('Done!').complete();
-   * 
+   *
    * // Nested completion - parent restored
    * ctx.log.info.text('Building').start();
    * ctx.log.info.text('  Compiling').start();
@@ -294,7 +294,7 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
 
   /**
    * Alias for complete(). Stops the progress with final message.
-   * 
+   *
    * @returns This builder for chaining
    * @see complete
    */
@@ -364,7 +364,7 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
   /**
    * Dispose handler for the "using" pattern.
    * Automatically completes progress when the builder goes out of scope.
-   * 
+   *
    * @example
    * ```typescript
    * using _progress = ctx.log.info.text('Processing').start();
