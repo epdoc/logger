@@ -6,27 +6,43 @@
  * to show interactive progress in TTY terminals or fall back to regular log
  * messages in non-TTY environments.
  *
+ * Supports **nested progress** - you can start a new progress while another is
+ * running. The progress line will show the nested message, and completing it
+ * restores the parent progress message.
+ *
+ * Supports the **"using" pattern** (TypeScript Disposable) for automatic cleanup.
+ *
  * @example
  * ```typescript
  * class MyContext extends CliApp.Ctx.AbstractBase {
  *   protected override builderClass = CliApp.Progress.ProgressMsgBuilder;
  * }
  *
- * // In your command:
+ * // Basic usage
  * async execute(): Promise<void> {
- *   // Start with full builder chain
- *   ctx.log.info.text('Processing').value(fileCount).start({ type: 'spinner', color: 'cyan' });
- *
+ *   ctx.log.info.text('Processing').start({ type: 'spinner', color: 'cyan' });
  *   await processFiles();
- *
- *   // Update with new builder chain - same level required!
- *   ctx.log.info.text('Halfway done').update();
- *
- *   await processMoreFiles();
- *
- *   // Complete with final builder chain
- *   ctx.log.info.icheck().text('All files processed!').complete();
+ *   ctx.log.info.text('Done!').complete();
  * }
+ *
+ * // Nested progress - parent restored when child completes
+ * async nestedExample(): Promise<void> {
+ *   ctx.log.info.text('Building project').start();
+ *   
+ *   ctx.log.info.text('  Compiling TypeScript').start();
+ *   await compileTypeScript();
+ *   ctx.log.info.text('  Compiled').complete(); // Shows "Building project" again
+ *   
+ *   ctx.log.info.text('  Bundling assets').start();
+ *   await bundleAssets();
+ *   ctx.log.info.text('  Bundled').complete(); // Shows "Building project" again
+ *   
+ *   ctx.log.info.icheck().text('Build complete!').complete();
+ * }
+ *
+ * // Using pattern - automatic cleanup
+ * using _progress = ctx.log.info.text('Processing').start();
+ * await doWork(); // Automatically completes on block exit
  * ```
  */
 import { assert } from '@std/assert';
@@ -55,14 +71,26 @@ export interface ProgressEmitter extends MsgBuilder.IEmitter {
  * Extends Console.Builder with methods for displaying progress bars, spinners,
  * and updating progress in-place using @epdoc/progress.
  *
+ * Supports **nested progress** - multiple progress levels can be active simultaneously.
+ * When you call `start()` during an active progress, it pushes the current context
+ * to a stack and shows the new message. When you call `complete()`, it pops the
+ * stack and restores the parent progress message.
+ *
+ * Implements **Disposable** for the "using" pattern - progress automatically
+ * completes when the builder goes out of scope.
+ *
  * Architecture:
- * - start() creates and stores ProgressLine on TransportMgr, returns builder
- * - update()/complete()/cancel() retrieve ProgressLine from TransportMgr
+ * - start() creates progress, supports nesting via stack on TransportMgr
+ * - update() updates the current progress line
+ * - complete()/stop() finish current level, restore parent if nested
+ * - cancel() clears entire stack (emergency cleanup)
  * - All methods use builder's formatted message via this.format()
- * - Auto-stops previous progress on new start()
- * - Asserts validate same level is used for start/update/complete
  */
-export class ProgressMsgBuilder extends Console.Builder {
+export class ProgressMsgBuilder extends Console.Builder implements Disposable {
+  #startLevelName?: string;
+  #startMessage?: string;
+  #isActive = false;
+
   /**
    * Creates a ProgressMsgBuilder instance.
    *
@@ -79,15 +107,27 @@ export class ProgressMsgBuilder extends Console.Builder {
    * progress indicator using @epdoc/progress. In emit mode, emits a regular
    * log message. In suppressed mode, does nothing.
    *
-   * Auto-stops any previously active progress (handles developer error).
+   * Supports **nested progress** - if a progress is already active, this call
+   * pushes the current context to a stack and shows the new message. When
+   * complete() is called, the parent progress message is restored.
    *
    * @param options - ProgressLineOptions from @epdoc/progress (type, index, color, etc.)
-   * @returns This builder for continued chaining
+   * @returns This builder for continued chaining. Can be used with "using" pattern.
    *
    * @example
    * ```typescript
+   * // Basic usage
    * ctx.log.info.text('Running').value('tasks').start({ type: 'spinner', index: 0, color: 'cyan' });
-   * ctx.log.info.start({ type: 'horizontal', total: 100, width: 30, color: 'green' });
+   *
+   * // Nested progress - parent restored when child completes
+   * ctx.log.info.text('Building').start();
+   * ctx.log.info.text('  Compiling').start(); // Shows "  Compiling"
+   * ctx.log.info.text('  Done').complete();    // Shows "Building" again
+   * ctx.log.info.text('Build complete').complete();
+   *
+   * // Using pattern - automatic cleanup
+   * using _progress = ctx.log.info.text('Processing').start();
+   * await doWork(); // Automatically completes on block exit
    * ```
    */
   start(options?: Progress.LineOptions): this {
@@ -100,21 +140,29 @@ export class ProgressMsgBuilder extends Console.Builder {
 
     const transportMgr = emitter.transportMgr;
     const levelName = emitter.level.name;
-
-    // Auto-stop previous progress (handles developer error of forgetting stop/complete)
-    if (transportMgr.activeProgress?.isActive) {
-      transportMgr.activeProgress.stop();
-    }
+    const message = this.format();
 
     if (emitter.progressEnabled) {
-      // PROGRESS mode: Show interactive progress
-      const progressLine = options ? new Progress.Line(options) : new Progress.Line({ type: 'spinner', index: 0 });
+      if (transportMgr.hasActiveProgress) {
+        // NESTED: Push new context to stack, update progress line with new message
+        transportMgr.pushNestedProgress(message, levelName);
+        // Update the existing progress line to show nested message
+        transportMgr.activeProgress?.update(message);
+      } else {
+        // NEW: Create new progress line
+        const progressLine = options ? new Progress.Line(options) : new Progress.Line({ type: 'spinner', index: 0 });
 
-      // Store on TransportMgr for later retrieval by update/complete
-      transportMgr.setActiveProgress(progressLine, levelName);
+        // Store on TransportMgr for later retrieval by update/complete
+        transportMgr.setActiveProgress(progressLine, levelName, message, options as Record<string, unknown>);
 
-      // Start with formatted message from this builder
-      progressLine.start(this.format());
+        // Start with formatted message from this builder
+        progressLine.start(message);
+      }
+
+      // Track this builder's state for "using" pattern
+      this.#isActive = true;
+      this.#startLevelName = levelName;
+      this.#startMessage = message;
     } else {
       // EMIT mode: Emit as regular log message
       this.emit();
@@ -129,7 +177,7 @@ export class ProgressMsgBuilder extends Console.Builder {
    * In progress mode, updates the in-place progress indicator.
    * In emit mode, emits a new log message.
    *
-   * Asserts that the same log level is used as start() (enforced by design).
+   * Works with nested progress - updates the current (most recent) progress level.
    *
    * @param progressValue - Optional progress value (for horizontal/vertical modes)
    * @returns This builder for chaining
@@ -152,20 +200,14 @@ export class ProgressMsgBuilder extends Console.Builder {
       // PROGRESS mode: Update in-place
       const transportMgr = emitter.transportMgr;
       const activeProgress = transportMgr.activeProgress;
-      const currentLevelName = emitter.level.name;
 
       // Assert: Must have active progress to update
       assert(
         activeProgress?.isActive,
-        `No active progress to update. Call start() first at level ${transportMgr.progressLevelName || 'unknown'}`,
+        `No active progress to update. Call start() first`,
       );
 
-      // Assert: Must use same level as start()
-      assert(
-        currentLevelName === transportMgr.progressLevelName,
-        `Progress update must use same level as start(). Expected ${transportMgr.progressLevelName}, got ${currentLevelName}`,
-      );
-
+      // Update the current progress line (works with nested progress)
       activeProgress.update(this.format(), progressValue);
     } else {
       // EMIT mode: Emit as new log message
@@ -178,18 +220,24 @@ export class ProgressMsgBuilder extends Console.Builder {
   /**
    * Complete the progress with final message.
    *
-   * In progress mode, clears the progress indicator and shows final text.
+   * In progress mode, handles nested progress:
+   * - If nested (depth > 1), pops the stack and restores the parent progress message
+   * - If top-level (depth = 1), stops the progress indicator and shows final text
+   * 
    * In emit mode, emits a final log message.
-   *
-   * Asserts that the same log level is used as start().
-   * Automatically clears the active progress from TransportMgr.
    *
    * @returns This builder for chaining
    *
    * @example
    * ```typescript
+   * // Top-level completion
    * ctx.log.info.icheck().text('Done!').complete();
-   * ctx.log.info.complete(); // Uses current formatted message
+   * 
+   * // Nested completion - parent restored
+   * ctx.log.info.text('Building').start();
+   * ctx.log.info.text('  Compiling').start();
+   * ctx.log.info.text('  Done').complete(); // Shows "Building" again
+   * ctx.log.info.text('Build complete').complete();
    * ```
    */
   complete(): this {
@@ -201,35 +249,41 @@ export class ProgressMsgBuilder extends Console.Builder {
     }
 
     if (emitter.progressEnabled) {
-      // PROGRESS mode: Stop progress line
+      // PROGRESS mode: Handle nested progress
       const transportMgr = emitter.transportMgr;
       const activeProgress = transportMgr.activeProgress;
-      const currentLevelName = emitter.level.name;
 
       // Assert: Must have active progress to complete
       assert(
         activeProgress?.isActive,
-        `No active progress to complete. Call start() first at level ${transportMgr.progressLevelName || 'unknown'}`,
+        `No active progress to complete. Call start() first`,
       );
 
-      // Assert: Must use same level as start()
-      assert(
-        currentLevelName === transportMgr.progressLevelName,
-        `Progress complete must use same level as start(). Expected ${transportMgr.progressLevelName}, got ${currentLevelName}`,
-      );
+      const nestingDepth = transportMgr.progressNestingDepth;
 
-      const startTime = transportMgr.progressStartTime;
-      const elapsed = startTime ? Math.round((performance.now() - startTime) / 10) / 100 : 0;
+      if (nestingDepth > 1) {
+        // NESTED: Pop context and restore parent
+        const parentContext = transportMgr.popProgressContext();
+        if (parentContext) {
+          // Update the progress line to show the parent's message again
+          activeProgress.update(parentContext.message);
+        }
+      } else {
+        // TOP-LEVEL: Stop the progress line
+        const startTime = transportMgr.progressStartTime;
+        const elapsed = startTime ? Math.round((performance.now() - startTime) / 10) / 100 : 0;
 
-      let text = this.format();
-      if (elapsed > 0) {
-        text += ` (${elapsed}s)`;
+        let text = this.format();
+        if (elapsed > 0) {
+          text += ` (${elapsed}s)`;
+        }
+
+        activeProgress.stop(text);
+        transportMgr.clearActiveProgress();
       }
 
-      activeProgress.stop(text);
-
-      // Clear from TransportMgr
-      transportMgr.setActiveProgress(undefined);
+      // Clear this builder's tracking state
+      this.#isActive = false;
     } else {
       // EMIT mode: Emit final message
       this.emit();
@@ -239,9 +293,20 @@ export class ProgressMsgBuilder extends Console.Builder {
   }
 
   /**
+   * Alias for complete(). Stops the progress with final message.
+   * 
+   * @returns This builder for chaining
+   * @see complete
+   */
+  stop(): this {
+    return this.complete();
+  }
+
+  /**
    * Cancel progress without showing final message.
    *
    * Clears any active progress indicator without showing final text.
+   * Clears the entire progress stack (all nested levels).
    * Can be called from any level (e.g., error handling at error level).
    *
    * @returns This builder for chaining
@@ -264,9 +329,12 @@ export class ProgressMsgBuilder extends Console.Builder {
     if (activeProgress?.isActive) {
       activeProgress.stop();
 
-      // Clear from TransportMgr
-      transportMgr.setActiveProgress(undefined);
+      // Clear entire stack from TransportMgr
+      transportMgr.clearActiveProgress();
     }
+
+    // Clear this builder's tracking state
+    this.#isActive = false;
 
     return this;
   }
@@ -282,6 +350,31 @@ export class ProgressMsgBuilder extends Console.Builder {
 
     return transportMgr.activeProgress?.isActive === true &&
       transportMgr.progressLevelName === emitter.level.name;
+  }
+
+  /**
+   * Get the current nesting depth of progress operations.
+   * 0 = no active progress, 1 = single progress, 2+ = nested
+   */
+  get nestingDepth(): number {
+    const emitter = this._emitter as ProgressEmitter;
+    return emitter.transportMgr.progressNestingDepth;
+  }
+
+  /**
+   * Dispose handler for the "using" pattern.
+   * Automatically completes progress when the builder goes out of scope.
+   * 
+   * @example
+   * ```typescript
+   * using _progress = ctx.log.info.text('Processing').start();
+   * await doWork(); // Automatically completes here
+   * ```
+   */
+  [Symbol.dispose](): void {
+    if (this.#isActive) {
+      this.complete();
+    }
   }
 }
 
