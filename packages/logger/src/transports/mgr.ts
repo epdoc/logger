@@ -116,7 +116,12 @@ export class TransportMgr {
    * @param message - The message text for this progress
    * @param options - Optional progress configuration
    */
-  setActiveProgress(line: IProgressLine | undefined, levelName?: string, message?: string, options?: Record<string, unknown>): void {
+  setActiveProgress(
+    line: IProgressLine | undefined,
+    levelName?: string,
+    message?: string,
+    options?: Record<string, unknown>,
+  ): void {
     if (line === undefined) {
       // Clear entire stack
       if (this.#progressStack.length > 0) {
@@ -155,16 +160,16 @@ export class TransportMgr {
     }
     // Get the current progress line to reuse it
     const currentContext = this.#progressStack[this.#progressStack.length - 1];
-    
+
     // Create new context that shares the same progress line
     const nestedContext: ProgressContext = {
       line: currentContext.line,
-      startTime: performance.now(),  // Track nested start time separately
+      startTime: performance.now(), // Track nested start time separately
       levelName: levelName,
       message: childMessage,
       options: currentContext.options,
     };
-    
+
     this.#progressStack.push(nestedContext);
     return true;
   }
@@ -179,10 +184,10 @@ export class TransportMgr {
     if (this.#progressStack.length === 0) {
       return undefined;
     }
-    
+
     // Remove current context
     this.#progressStack.pop();
-    
+
     // Return the new current context (parent) if any
     return this.#progressStack.length > 0 ? this.#progressStack[this.#progressStack.length - 1] : undefined;
   }
