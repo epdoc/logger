@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/cliapp-template",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Template for creating @epdoc/cliapp compatible commands",
   "exports": {
     ".": "./src/mod.ts",
@@ -16,8 +16,8 @@
   },
   "license": "MIT",
   "imports": {
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.1.7",
-    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.3",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.1.9",
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.5",
     "@epdoc/progress": "jsr:@epdoc/progress@^0.0.9",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
     "@std/assert": "jsr:@std/assert@^1.0.19",
