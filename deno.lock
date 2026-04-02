@@ -2,9 +2,12 @@
   "version": "5",
   "specifiers": {
     "jsr:@epdoc/datetime@^3.2.1": "3.2.3",
+    "jsr:@epdoc/datetime@^3.2.3": "3.2.3",
     "jsr:@epdoc/duration@~0.3.7": "0.3.7",
     "jsr:@epdoc/fs@^1.2.34": "1.2.34",
     "jsr:@epdoc/logger@^1003.3.4": "1003.3.4",
+    "jsr:@epdoc/loglevels@1": "1.0.0",
+    "jsr:@epdoc/msgbuilder@~0.1.10": "0.1.11",
     "jsr:@epdoc/msgbuilder@~0.1.11": "0.1.11",
     "jsr:@epdoc/progress@^0.0.9": "0.0.9",
     "jsr:@epdoc/string@~0.1.22": "0.1.22",
@@ -58,7 +61,7 @@
     "@epdoc/fs@1.2.34": {
       "integrity": "6748b51141a7e457245431b3337aa5e638a1c064a3f3dc1311c92161f6c5f86b",
       "dependencies": [
-        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/datetime@^3.2.1",
         "jsr:@epdoc/type@^1.2.6",
         "jsr:@std/assert@^1.0.15",
         "jsr:@std/bytes@^1.0.6",
@@ -71,7 +74,7 @@
     "@epdoc/logger@1003.3.4": {
       "integrity": "6a79d62fc74afe6523c3b71cf2a227fb9dc927bce0004be260c91551055e420a",
       "dependencies": [
-        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/datetime@^3.2.1",
         "jsr:@epdoc/duration",
         "jsr:@epdoc/string",
         "jsr:@epdoc/type@^1.2.6",
@@ -79,10 +82,17 @@
         "jsr:@std/fmt"
       ]
     },
+    "@epdoc/loglevels@1.0.0": {
+      "integrity": "47c6a5a1ecb612f2c57d943f22746256ef23371eebe766a4fcaa4cd18a3b344a",
+      "dependencies": [
+        "jsr:@epdoc/type@^1.2.6",
+        "jsr:@std/assert@^1.0.19"
+      ]
+    },
     "@epdoc/msgbuilder@0.1.11": {
       "integrity": "bc706d24baf5f0416203c5882e62f703724621182e9cfa1e9a72f95b78eaa230",
       "dependencies": [
-        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/datetime@^3.2.1",
         "jsr:@epdoc/string",
         "jsr:@epdoc/type@^1.2.6",
         "jsr:@std/fmt"
@@ -355,10 +365,10 @@
       },
       "packages/logger": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^3.2.1",
+          "jsr:@epdoc/datetime@^3.2.3",
           "jsr:@epdoc/duration@~0.3.7",
           "jsr:@epdoc/loglevels@1",
-          "jsr:@epdoc/msgbuilder@~0.1.10",
+          "jsr:@epdoc/msgbuilder@~0.1.11",
           "jsr:@epdoc/string@~0.1.22",
           "jsr:@epdoc/type@^1.2.6",
           "jsr:@std/assert@^1.0.19",
