@@ -460,6 +460,20 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   // ─── Icon methods ──────────────────────────────────────────────────────────
 
   /**
+   * Appends a boolean icon (✓ or ✗). Defaults to `success` style.
+   * @param {boolean} b - The boolean value.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   */
+  public ibool(b: boolean, color?: MsgBuilder.StyleFormatterFn): this {
+    if (b) {
+      return this.icheck(color);
+    } else {
+      return this.ierror(color);
+    }
+  }
+
+  /**
    * Appends a checkmark icon (✓). Defaults to `success` style.
    * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
    * @returns {this}

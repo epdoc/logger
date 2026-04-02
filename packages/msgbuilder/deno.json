@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/msgbuilder",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Message builder module with chainable formatting",
   "author": {
     "name": "James Pravetz",
