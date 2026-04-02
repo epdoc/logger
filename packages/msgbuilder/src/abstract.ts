@@ -381,7 +381,7 @@ export abstract class AbstractMsgBuilder implements IFormatter {
       parts.push(this._msgIndent);
     }
     this._msgParts.forEach((part: MsgPart) => {
-      if (part.style && !noColor) {
+      if (part.style && _.isFunction(part.style) && !noColor) {
         parts.push(part.style(part.str));
       } else {
         parts.push(part.str);
