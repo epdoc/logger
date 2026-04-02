@@ -406,6 +406,8 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
 
     // Convert to DateTime and format
     const dt = DateTime.from(firstArg);
+    if (dt.isNearMax()) return this.stylize(this.styles.date, 'distant future');
+    if (dt.isNearMin()) return this.stylize(this.styles.date, 'distant past');
     const formatted = dt.withTz(tz as Parameters<DateTime['withTz']>[0]).format(format);
     return this.stylize(this.styles.date, formatted);
   }
