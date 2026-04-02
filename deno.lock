@@ -339,7 +339,7 @@
         "dependencies": [
           "jsr:@epdoc/logger@^1003.3.7",
           "jsr:@epdoc/loglevels@1",
-          "jsr:@epdoc/msgbuilder@~0.1.14",
+          "jsr:@epdoc/msgbuilder@~0.1.15",
           "jsr:@epdoc/progress@^0.0.9",
           "jsr:@epdoc/type@^1.2.6",
           "jsr:@std/assert@^1.0.19",
