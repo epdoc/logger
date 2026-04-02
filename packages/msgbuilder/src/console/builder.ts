@@ -1,3 +1,4 @@
+import { DateTime } from '@epdoc/datetime';
 import { _, type Integer } from '@epdoc/type';
 import os from 'node:os';
 import { relative } from 'node:path';
@@ -336,12 +337,77 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   // ─── Data types ────────────────────────────────────────────────────────────
 
   /**
-   * Appends a date-styled message.
-   * @param {...MsgBuilder.StyleArg[]} args
+   * Appends a date-styled message. Accepts Date, DateTime, Temporal.Instant,
+   * Temporal.ZonedDateTime, or Temporal.PlainDateTime objects. Falls back to
+   * treating the first argument as a plain string if not a date-like object.
+   *
+   * Uses the 'yyyy-MM-dd HH:mm:ss' format and 'local' timezone by default.
+   *
+   * @param date - The date to format (Date, DateTime, or Temporal object)
+   * @param format - Optional format string (e.g., 'yyyy-MM-dd HH:mm:ss')
    * @returns {this}
+   *
+   * @example
+   * ```typescript
+   * // Simple usage with default format
+   * msg.date(new Date());
+   *
+   * // With custom format
+   * msg.date(new Date(), 'yyyy-MM-dd');
+   *
+   * // With DateTime object
+   * msg.date(DateTime.from('2024-03-15T10:30:00Z'));
+   *
+   * // With timezone override via options
+   * msg.date(someDate, { format: 'HH:mm', tz: 'utc' });
+   *
+   * // Fallback to string (backward compatibility)
+   * msg.date('2024-03-15');
+   * ```
    */
+  public date(
+    date: Date | DateTime | Temporal.Instant | Temporal.ZonedDateTime,
+    format?: string,
+  ): this;
+  public date(
+    date: Date | DateTime | Temporal.Instant | Temporal.ZonedDateTime,
+    options: { format?: string; tz?: 'local' | 'utc' | string },
+  ): this;
+  public date(...args: MsgBuilder.StyleArg[]): this;
   public date(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(this.styles.date, ...args);
+    if (args.length === 0) {
+      return this.stylize(this.styles.date, ...args);
+    }
+
+    const firstArg = args[0];
+    if (!DateTime.isDateLike(firstArg)) {
+      return this.stylize(this.styles.date, ...args);
+    }
+
+    // Default options
+    let format = 'yyyy-MM-dd HH:mm:ss';
+    let tz: 'local' | 'utc' | string = 'local';
+
+    // Parse second argument
+    if (args.length >= 2) {
+      const secondArg = args[1];
+      if (_.isString(secondArg)) {
+        format = secondArg;
+      } else if (_.isObject(secondArg) && !Array.isArray(secondArg)) {
+        const opts = secondArg as { format?: string; tz?: 'local' | 'utc' | string };
+        if (opts.format !== undefined) {
+          format = opts.format;
+        }
+        if (opts.tz !== undefined) {
+          tz = opts.tz;
+        }
+      }
+    }
+
+    // Convert to DateTime and format
+    const dt = DateTime.from(firstArg);
+    const formatted = dt.withTz(tz as Parameters<DateTime['withTz']>[0]).format(format);
+    return this.stylize(this.styles.date, formatted);
   }
 
   /**
