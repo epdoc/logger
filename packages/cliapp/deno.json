@@ -1,7 +1,7 @@
 {
   "name": "@epdoc/cliapp",
   "description": "A CLI application template for @epdoc/logger",
-  "version": "2.1.9",
+  "version": "2.1.10",
   "exports": "./src/mod.ts",
   "tasks": {
     "dev": "deno test --watch",
@@ -20,7 +20,7 @@
   },
   "license": "MIT",
   "imports": {
-    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.5",
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.6",
     "@epdoc/loglevels": "jsr:@epdoc/loglevels@^1.0.0",
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.11",
     "@epdoc/progress": "jsr:@epdoc/progress@^0.0.9",
