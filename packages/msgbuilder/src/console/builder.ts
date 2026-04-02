@@ -487,12 +487,78 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   }
 
   /**
-   * Appends a right-arrow icon (→). Defaults to `value` style.
+   * Appends a generic icon character.
+   *
+   * @param {string} char - The icon character to display.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override (defaults to `text` style).
+   * @returns {this}
+   *
+   * @example
+   * ```ts
+   * log.info.icon('→').text('Next step').emit();
+   * log.info.icon('★', this.styles.highlight).text('Featured').emit();
+   * ```
+   */
+  public icon(char: string, color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.text, char);
+  }
+
+  /**
+   * Appends an arrow icon. Defaults to right arrow (→) with `value` style.
+   *
    * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
    * @returns {this}
+   *
+   * @example
+   * ```ts
+   * log.info.iarrow().text('Next').emit();        // → Next
+   * log.info.iarrow('left').text('Back').emit();  // ← Back
+   * ```
    */
-  public iarrow(color?: MsgBuilder.StyleFormatterFn): this {
-    return this.stylize(color ?? this.styles.value, '→');
+  public iarrow(color?: MsgBuilder.StyleFormatterFn): this;
+  /**
+   * Appends an arrow icon with specified direction.
+   *
+   * @param {('right' | 'left' | 'up' | 'down' | 'double-right' | 'double-left')} arrowType - The arrow direction.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   *
+   * @example
+   * ```ts
+   * log.info.iarrow('right').text('Next').emit();       // → Next
+   * log.info.iarrow('left', styles.error).text('Back').emit();  // ← Back
+   * log.info.iarrow('up').text('Increase').emit();      // ↑ Increase
+   * ```
+   */
+  public iarrow(
+    arrowType: 'right' | 'left' | 'up' | 'down' | 'double-right' | 'double-left',
+    color?: MsgBuilder.StyleFormatterFn,
+  ): this;
+  public iarrow(
+    firstArg?: MsgBuilder.StyleFormatterFn | 'right' | 'left' | 'up' | 'down' | 'double-right' | 'double-left',
+    secondArg?: MsgBuilder.StyleFormatterFn,
+  ): this {
+    const arrows: Record<string, string> = {
+      'right': '→',
+      'left': '←',
+      'up': '↑',
+      'down': '↓',
+      'double-right': '⇒',
+      'double-left': '⇐',
+    };
+
+    let arrow: string;
+    let color: MsgBuilder.StyleFormatterFn | undefined;
+
+    if (typeof firstArg === 'string') {
+      arrow = arrows[firstArg] ?? '→';
+      color = secondArg;
+    } else {
+      arrow = '→';
+      color = firstArg;
+    }
+
+    return this.stylize(color ?? this.styles.value, arrow);
   }
 
   /**
