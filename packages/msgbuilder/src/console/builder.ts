@@ -503,6 +503,15 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   }
 
   /**
+   * Appends a bullet icon (•). Defaults to `text` style.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   */
+  public ibullet(color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.text, '•');
+  }
+
+  /**
    * Appends a generic icon character.
    *
    * @param {string} char - The icon character to display.
@@ -584,6 +593,10 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    */
   public istar(color?: MsgBuilder.StyleFormatterFn): this {
     return this.stylize(color ?? this.styles.highlight, '★');
+  }
+
+  public spaces(count: Integer): this {
+    return this.text(' '.repeat(count));
   }
 
   // ─── Composite helpers ─────────────────────────────────────────────────────
