@@ -285,6 +285,8 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    * where the home directory is `/Users/username`.
    *
    * @param path - The absolute or relative file path to format
+   * @param {string} [relativeTo] - The path to make the path relative to. Defaults to 'home'.
+   * @param {string} [prefix] - The prefix to prepend to the relative path. Defaults to './' if not home or cwd.
    * @returns The current instance for method chaining
    *
    * @example Basic usage with paths under home
@@ -311,7 +313,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    * // Displays as: ./bin/app (shorter than ~/../../usr/local/bin/app)
    * ```
    */
-  relative(path: string, relativeTo?: string | 'home' | 'cwd'): this {
+  relative(path: string, relativeTo?: string | 'home' | 'cwd', prefix?: string): this {
     if (!_.isString(path)) {
       return this.path('?');
     }
@@ -320,9 +322,10 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
       if (relativeTo === 'home') {
         displayPath = `~/${relative(home, path)}`;
       } else if (relativeTo === 'cwd') {
-        displayPath = `~/${relative(Deno.cwd(), path)}`;
+        displayPath = `./${relative(Deno.cwd(), path)}`;
       } else {
-        displayPath = relative(relativeTo, path);
+        const p = `${prefix}:/` || './';
+        displayPath = `${p}${relative(relativeTo, path)}`;
       }
     } else {
       const cwd = Deno.cwd();

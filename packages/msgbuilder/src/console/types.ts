@@ -105,9 +105,11 @@ export interface IConsoleMsgBuilder {
   /**
    * Appends a path relative to the home directory.
    * @param {string} path - The path to be made relative.
+   * @param {string} [relativeTo] - The path to make the path relative to. Defaults to 'home'.
+   * @param {string} [prefix] - The prefix to prepend to the relative path. Defaults to './' if not home or cwd.
    * @returns {this} The current instance for method chaining.
    */
-  relative(path: string, relativeTo?: string): this;
+  relative(path: string, relativeTo?: string, prefix?: string): this;
   /**
    * Appends a date-styled message.
    * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.
