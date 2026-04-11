@@ -1,5 +1,5 @@
-import type { StyleFormatterFn } from '../types.ts';
 import type * as MsgBuilder from '../types.ts';
+import type { StyleFormatterFn } from '../types.ts';
 
 /**
  * The complete set of style keys required by {@link ConsoleMsgBuilder} methods.
@@ -107,7 +107,7 @@ export interface IConsoleMsgBuilder {
    * @param {string} path - The path to be made relative.
    * @returns {this} The current instance for method chaining.
    */
-  relative(path: string): this;
+  relative(path: string, relativeTo?: string): this;
   /**
    * Appends a date-styled message.
    * @param {...MsgBuilder.StyleArg[]} args - The arguments to be styled.

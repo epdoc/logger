@@ -311,24 +311,33 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    * // Displays as: ./bin/app (shorter than ~/../../usr/local/bin/app)
    * ```
    */
-  relative(path: string): this {
+  relative(path: string, relativeTo?: string | 'home' | 'cwd'): this {
     if (!_.isString(path)) {
       return this.path('?');
     }
-    const cwd = Deno.cwd();
-
-    // Calculate relative paths
-    const relToHome = relative(home, path);
-    const relToCwd = relative(cwd, path);
-
     let displayPath: string;
-
-    // Prefer home-relative if it's shorter or equal to CWD-relative
-    // This handles cases where path is outside both home and CWD
-    if (relToHome.length <= relToCwd.length) {
-      displayPath = `~/${relToHome}`;
+    if (_.isString(relativeTo)) {
+      if (relativeTo === 'home') {
+        displayPath = `~/${relative(home, path)}`;
+      } else if (relativeTo === 'cwd') {
+        displayPath = `~/${relative(Deno.cwd(), path)}`;
+      } else {
+        displayPath = relative(relativeTo, path);
+      }
     } else {
-      displayPath = `./${relToCwd}`;
+      const cwd = Deno.cwd();
+
+      // Calculate relative paths
+      const relToHome = relative(home, path);
+      const relToCwd = relative(cwd, path);
+
+      // Prefer home-relative if it's shorter or equal to CWD-relative
+      // This handles cases where path is outside both home and CWD
+      if (relToHome.length <= relToCwd.length) {
+        displayPath = `~/${relToHome}`;
+      } else {
+        displayPath = `./${relToCwd}`;
+      }
     }
 
     return this.path(displayPath);
@@ -632,6 +641,9 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
     if (!this._allow) return this;
     if (_.isNonEmptyString(str)) {
       const len = (80 - str.length - 2) / 2;
+      if (len < 0) {
+        return this.h1('-'.repeat(2) + ' ' + str + ' ' + '-'.repeat(2));
+      }
       return this.h1('-'.repeat(Math.floor(len)) + ' ' + str + ' ' + '-'.repeat(Math.ceil(len)));
     } else {
       return this.h1('-'.repeat(80));
