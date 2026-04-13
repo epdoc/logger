@@ -196,7 +196,7 @@ export abstract class AbstractCommand<
         // 2. Hydrate context using parsed options for this command
         const opts = this.commander.opts() as TOpts;
         const args = this.commander.args as CliApp.CmdArgs;
-        this.hydrateContext(opts, args);
+        await this.hydrateContext(opts, args);
 
         // 3. Configure logging for root commands
         if (this.params.root) {
@@ -331,7 +331,7 @@ export abstract class AbstractCommand<
    * }
    * ```
    */
-  hydrateContext(_options: TOpts, _args: CliApp.CmdArgs): void {}
+  hydrateContext(_options: TOpts, _args: CliApp.CmdArgs): void | Promise<void> {}
 
   /**
    * Primary command logic. Override to implement what this command does.
