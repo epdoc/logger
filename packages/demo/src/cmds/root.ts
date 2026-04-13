@@ -26,6 +26,7 @@ export class RootCommand extends Ctx.BaseRootCmdClass<RootCmdOpts> {
     this.log.info.section('RootCommand createContext').emit();
     this.log.info.demo(parent).emit();
     this.log.info.h2('Returns the already assigned context for the RootCommand').emit();
+    this.log.info.text('May return a new context object or a Promise for the new context object').emit();
     this.log.info.section().emit();
     return parent;
   }
