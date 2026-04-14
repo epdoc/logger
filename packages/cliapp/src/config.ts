@@ -16,7 +16,7 @@ export const config: { help: Commander.HelpConfiguration; output: Commander.Outp
     },
     styleOptionText: (str) => colors.green(str),
     styleArgumentText: (str) => colors.yellow(str),
-    styleSubcommandText: (str) => colors.gray(str),
+    styleSubcommandText: (str) => colors.rgb24(str, 0xff981a),
     optionDescription: (option: Commander.Option) => {
       const extraInfo = [];
       if (option.argChoices) {
@@ -24,7 +24,7 @@ export const config: { help: Commander.HelpConfiguration; output: Commander.Outp
           // use stringify to match the display of the default value
           `choices: ${
             option.argChoices.map((choice) =>
-              colors.green(typeof choice === 'string' ? choice : JSON.stringify(choice))
+              colors.dim(colors.rgb24(typeof choice === 'string' ? choice : JSON.stringify(choice), 0xffb020))
             ).join(', ')
           }`,
         );

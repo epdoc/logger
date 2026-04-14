@@ -6,6 +6,7 @@
 import { FluentOptionBuilder } from '@epdoc/cliapp';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
+import { dim } from '@std/fmt/colors';
 import * as Commander from 'commander';
 import { FluentArgumentBuilder } from '../argument.ts';
 import { config } from '../config.ts';
@@ -448,7 +449,7 @@ export abstract class AbstractCommand<
   }
 
   #addLoggingOptions(): void {
-    this.option('--log-level <level>', 'Set the threshold log output level.')
+    this.option('--log-level <level>', dim('Set the threshold log output level.'))
       .choices([
         'FATAL',
         'CRITICAL',
@@ -462,16 +463,16 @@ export abstract class AbstractCommand<
         'SILLY',
       ])
       .argParser((val) => val.toUpperCase()).emit();
-    this.option('--verbose', 'Shortcut for --log-level verbose').emit();
-    this.option('-D, --debug', 'Shortcut for --log-level debug').emit();
-    this.option('-T, --trace', 'Shortcut for --log-level trace').emit();
-    this.option('-S, --spam', 'Shortcut for --log-level spam').emit();
-    this.option('--log-show [show]', 'Enable log message output properties with comma-separated list').argParser(
+    this.option('--verbose', dim('Shortcut for --log-level verbose')).emit();
+    this.option('-D, --debug', dim('Shortcut for --log-level debug')).emit();
+    this.option('-T, --trace', dim('Shortcut for --log-level trace')).emit();
+    this.option('-S, --spam', dim('Shortcut for --log-level spam')).emit();
+    this.option('--log-show [show]', dim('Enable log message output properties with comma-separated list')).argParser(
       commaList,
     )
       .choices(logShowValues).emit();
-    this.option('-A, --log-show-all', 'Shortcut for --log-show all').emit();
-    this.option('--no-color', 'Do not show color in output').emit();
+    this.option('-A, --log-show-all', dim('Shortcut for --log-show all')).emit();
+    this.option('--no-color', dim('Do not show color in output')).emit();
 
     if (this.params.dryRun) {
       this.option('-n, --dry-run', 'Perform a dry run without making changes')

@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.17] - 2026-04-14
+
+- Tweeked cliapp help text colors
+
 ## [2.1.16] - 2026-04-13
 
 - Allow hydrateContext to return a Promise
