@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/msgbuilder",
-  "version": "0.1.18",
+  "version": "0.1.19",
   "description": "Message builder module with chainable formatting",
   "author": {
     "name": "James Pravetz",
@@ -8,17 +8,23 @@
   },
   "license": "MIT",
   "tasks": {
-    "test": "deno test -A",
+    "fmt": "deno fmt src test *.json",
     "lint": "deno lint",
     "check": "deno check src test deno.json",
+    "test": "deno test -A",
     "docs": "deno doc --json src/mod.ts > library-docs.json",
-    "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs",
-    "publish": "deno publish",
-    "update": "output=$(deno update 2>&1); echo \"$output\"; [[ \"$output\" =~ \"Updated\" ]]",
-    "update:changed": "deno task update && deno task prepublish",
-    "fmt": "deno fmt src test *.json"
+    "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs",
+    "publish": "deno publish"
   },
   "exports": "./src/mod.ts",
+  "publish": {
+    "include": [
+      "src",
+      "deno.json",
+      "README.md",
+      "library-metadata.json"
+    ]
+  },
   "test": {
     "include": [
       "./src/**/*test.ts",
@@ -42,12 +48,12 @@
     "lineWidth": 120
   },
   "imports": {
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.3",
-    "@epdoc/duration": "jsr:@epdoc/duration@^0.3.7",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.4",
+    "@epdoc/duration": "jsr:@epdoc/duration@^0.3.8",
     "@std/expect": "jsr:@std/expect@^1.0.18",
     "@std/fmt/colors": "jsr:@std/fmt@^1.0.9/colors",
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
-    "@epdoc/string": "jsr:@epdoc/string@^0.1.24",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.8",
+    "@epdoc/string": "jsr:@epdoc/string@^0.1.26",
     "@std/assert": "jsr:@std/assert@^1.0.19",
     "@std/testing": "jsr:@std/testing@^1.0.17"
   }
