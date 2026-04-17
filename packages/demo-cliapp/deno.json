@@ -1,21 +1,22 @@
 {
   "name": "@epdoc/demo-cliapp",
-  "version": "0.1.11",
+  "version": "0.1.12",
   "description": "Demo of enhanced CliApp v2.0 with automatic context flow",
   "exports": "./main_class.ts",
   "imports": {
     "@epdoc/cliapp": "../cliapp/src/mod.ts",
     "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.8",
-    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.15",
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
+    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.18",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.8",
     "@std/fmt": "jsr:@std/fmt@^1.0.9"
   },
   "tasks": {
-    "test": "echo 'No tests yet'",
-    "fmt": "deno fmt *.ts *.json src",
+    "fmt": "deno fmt src test *.ts *.json",
     "lint": "deno lint *.ts *.json src",
     "check": "deno check *.ts *.json src",
+    "test": "echo 'No tests yet'",
+    "run": "deno run -A ./main.ts",
     "docs": "deno doc --json src/mod.ts > library-docs.json",
-    "prepublish": "deno fmt *.ts *.json src && deno task lint && deno task check && deno task docs"
+    "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   }
 }
