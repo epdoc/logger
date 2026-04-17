@@ -16,6 +16,8 @@ MCP server support.
 - **Progress Spinners** - Supports progress bars and spinners, fully integrated with log messaging.
 - **Nested Progress** - Start multiple progress levels; parent messages are restored when children complete.
 - **"Using" Pattern** - Automatic progress cleanup with TypeScript's `using` declaration.
+- **Command Runner** - Typed wrapper around `Deno.Command` for running external processes with captured or inherited
+  output.
 
 ## Installation
 
@@ -439,6 +441,79 @@ class MyService extends Base {
   process() {
     this.info.text('Starting').emit();
     this.debug.fileOp('WRITE', path).emit();
+  }
+}
+```
+
+### `runCommand(cmd, args, opts?)`
+
+Execute an external command with typed result handling.
+
+```typescript
+import { type CommandResult, runCommand } from '@epdoc/cliapp/runner';
+
+// Run with captured output (default)
+const result = await runCommand('git', ['status'], { cwd: '/my/project' });
+if (result.success) {
+  console.log(result.stdout);
+}
+
+// Run interactively (inherit stdio for user interaction)
+await runCommand('deno', ['publish'], { cwd: '/my/project', interactive: true });
+```
+
+**Options:**
+
+| Option        | Type                     | Description                                                                                                                           |
+| ------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `cwd`         | `string`                 | Working directory for the command (defaults to current directory)                                                                     |
+| `interactive` | `boolean`                | If `true`, inherits stdin/stdout/stderr for interactive commands. If `false` (default), captures output and returns it in the result. |
+| `env`         | `Record<string, string>` | Environment variables to set for the command                                                                                          |
+| `clearEnv`    | `boolean`                | If `true`, clears all environment variables and only uses those specified in `env`                                                    |
+
+**Returns:** `Promise<CommandResult>`
+
+```typescript
+interface CommandResult {
+  success: boolean; // true if exit code is 0
+  code: number; // the process exit code
+  stdout: string; // captured stdout (empty in interactive mode)
+  stderr: string; // captured stderr (empty in interactive mode)
+}
+```
+
+### `runCommandOrThrow(cmd, args, opts?)`
+
+Same as `runCommand` but throws a `CommandError` on non-zero exit code.
+
+```typescript
+import { CommandError, runCommandOrThrow } from '@epdoc/cliapp/runner';
+
+try {
+  const result = await runCommandOrThrow('git', ['push']);
+  console.log('Push succeeded');
+} catch (err) {
+  if (err instanceof CommandError) {
+    console.error('Push failed:', err.stderr);
+    console.error('Exit code:', err.exitCode);
+  }
+}
+```
+
+### `CommandError`
+
+Error thrown when a command exits with non-zero status. Contains the full `CommandResult` for inspection.
+
+```typescript
+try {
+  await runCommandOrThrow('deno', ['eval', 'Deno.exit(1)']);
+} catch (err) {
+  if (err instanceof CommandError) {
+    err.result; // Full CommandResult object
+    err.exitCode; // The exit code (number)
+    err.stdout; // Captured stdout
+    err.stderr; // Captured stderr
+    err.message; // Error message including command and exit code
   }
 }
 ```
