@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logger-examples",
-  "version": "0.0.1-alpha.19",
+  "version": "0.0.1-alpha.20",
   "exports": "./README.md",
   "description": "Logging module with chainable formatting, middleware mixins and extendable transports",
   "author": {
@@ -9,10 +9,12 @@
   },
   "license": "MIT",
   "tasks": {
-    "fmt": "deno fmt *.ts *.json test",
+    "fmt": "deno fmt src test *.json",
     "lint": "deno lint",
     "check": "deno check *.ts test/*.ts",
     "test": "deno test -A",
+    "docs": "deno doc --json src/mod.ts > library-docs.json",
+    "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs",
     "examples": "./run.sh"
   },
   "test": {
@@ -40,8 +42,8 @@
     "@epdoc/cliapp": "../cliapp/src/mod.ts",
     "@epdoc/logger": "../logger/src/mod.ts",
     "@epdoc/msgbuilder": "../msgbuilder/src/mod.ts",
-    "@epdoc/progress": "jsr:@epdoc/progress@^0.0.9",
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
+    "@epdoc/progress": "jsr:@epdoc/progress@^0.1.1",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.8",
     "@std/expect": "jsr:@std/expect@^1.0.18",
     "@std/testing": "jsr:@std/testing@^1.0.17"
   }
