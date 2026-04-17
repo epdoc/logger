@@ -1,25 +1,26 @@
 {
   "name": "@epdoc/cliapp-template",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Template for creating @epdoc/cliapp compatible commands",
   "exports": {
     ".": "./src/mod.ts",
     "./main": "./main.ts"
   },
   "tasks": {
-    "fmt": "deno fmt src test *.json",
+    "fmt": "deno fmt src test *.ts *.json",
     "lint": "deno lint src test",
     "check": "deno check *.ts *.json src test",
     "test": "deno test -A test",
+    "run": "deno run -A ./main.ts",
     "docs": "deno doc --json src/mod.ts > library-docs.json",
-    "prepublish": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
+    "ok": "deno fmt && deno task lint && deno task check && deno task test && deno task docs"
   },
   "license": "MIT",
   "imports": {
-    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.1.12",
+    "@epdoc/cliapp": "jsr:@epdoc/cliapp@^2.1.17",
     "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.8",
-    "@epdoc/progress": "jsr:@epdoc/progress@^0.0.9",
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.6",
+    "@epdoc/progress": "jsr:@epdoc/progress@^0.1.1",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.8",
     "@std/assert": "jsr:@std/assert@^1.0.19",
     "@std/fmt": "jsr:@std/fmt@^1.0.9"
   },
