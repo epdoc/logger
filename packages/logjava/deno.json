@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logjava",
-  "version": "0.0.1-beta.0",
+  "version": "0.0.1-beta.1",
   "description": "[DEPRECATED] Java-style logger implementation for @epdoc/logger with standard Java log levels",
   "deprecated": true,
   "author": {
@@ -41,7 +41,6 @@
     "@epdoc/logger": "../logger/src/mod.ts",
     "@epdoc/loglevels": "../loglevels/src/mod.ts",
     "@epdoc/msgbuilder": "../msgbuilder/src/mod.ts",
-    "@std/fmt/colors": "jsr:@std/fmt@^1.0.8/colors",
     "@epdoc/type": "jsr:@epdoc/type@^1.1.18",
     "@epdoc/duration": "jsr:@epdoc/duration@^0.2.3",
     "@std/assert": "jsr:@std/assert@^1.0.15",
