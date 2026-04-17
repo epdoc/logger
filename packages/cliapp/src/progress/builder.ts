@@ -45,12 +45,12 @@
  * await doWork(); // Automatically completes on block exit
  * ```
  */
-import { assert } from '@std/assert';
-import type * as Level from '@epdoc/loglevels';
 import type * as Log from '@epdoc/logger';
+import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { Console } from '@epdoc/msgbuilder';
 import * as Progress from '@epdoc/progress';
+import { assert } from '@std/assert';
 
 /**
  * Extended emitter interface that includes progress support and transportMgr access.
@@ -150,7 +150,9 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
         transportMgr.activeProgress?.update(message);
       } else {
         // NEW: Create new progress line
-        const progressLine = options ? new Progress.Line(options) : new Progress.Line({ type: 'spinner', index: 0 });
+        const progressLine = options
+          ? new Progress.Line(options)
+          : new Progress.Line({ type: 'spinner', index: 'braille' });
 
         // Store on TransportMgr for later retrieval by update/complete
         transportMgr.setActiveProgress(progressLine, levelName, message, options as Record<string, unknown>);
