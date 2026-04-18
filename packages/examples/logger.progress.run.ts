@@ -147,7 +147,7 @@ async function exampleWithLoggerFactory() {
   const logMgr = new Log.Mgr<CliApp.Progress.MsgBuilder>();
 
   // Set up the factory to create ProgressMsgBuilder instances
-  logMgr.msgBuilderFactory = (emitter) => new CliApp.Progress.MsgBuilder(emitter);
+  logMgr.msgBuilderFactory = (emitter) => new CliApp.Progress.MsgBuilder(emitter as CliApp.Progress.ProgressEmitter);
 
   // Create logger
   const logger = await logMgr.getLogger<Log.Std.Logger<CliApp.Progress.MsgBuilder>>();
@@ -157,7 +157,7 @@ async function exampleWithLoggerFactory() {
   // Now logger uses ProgressMsgBuilder for all messages
   logger.info.text('Processing via LogMgr factory...').start({
     type: 'bounce',
-    index: 1,
+    index: 'comet',
     color: 'magenta',
   });
 
