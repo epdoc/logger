@@ -5,8 +5,8 @@
   "exports": "./main_class.ts",
   "imports": {
     "@epdoc/cliapp": "../cliapp/src/mod.ts",
-    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.8",
-    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.18",
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.10",
+    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.19",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.8",
     "@std/fmt": "jsr:@std/fmt@^1.0.9"
   },
