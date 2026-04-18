@@ -1,5 +1,6 @@
 import type { HrMilliseconds } from '@epdoc/duration';
 import { _, type Dict, type Integer } from '@epdoc/type';
+import { Color } from '@epdoc/colors';
 import { bold, dim } from '@std/fmt/colors';
 import { ConsoleEmitter } from './emitter.ts';
 import type { EmitterData, FormatOpts, IEmitter, IFormatter, MsgPart, StyleArg, StyleFormatterFn } from './types.ts';
@@ -196,7 +197,7 @@ export abstract class AbstractMsgBuilder implements IFormatter {
    * @param {StyleArg[]} args - The content to stylize and append.
    * @returns {this} The current instance for chaining.
    */
-  public stylize(style: StyleFormatterFn | null, ...args: StyleArg[]): this {
+  public stylize(style: Color.Spec | null, ...args: StyleArg[]): this {
     if (!this._allow) return this;
     if (_.isNonEmptyArray(args)) {
       const str = args
@@ -209,12 +210,12 @@ export abstract class AbstractMsgBuilder implements IFormatter {
           return String(arg);
         })
         .join(' ');
-      let finalStyle = style;
-      if (_.isFunction(finalStyle) && this._dimMode) {
+      let finalStyle: StyleFormatterFn | null = style ? Color.toStyleFn(style) : null;
+      if (finalStyle && this._dimMode) {
         const prev = finalStyle;
         finalStyle = (s: string) => dim(prev(s));
       }
-      if (_.isFunction(finalStyle) && this._boldMode) {
+      if (finalStyle && this._boldMode) {
         const prev = finalStyle;
         finalStyle = (s: string) => bold(prev(s));
       }
