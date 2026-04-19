@@ -37,6 +37,7 @@
     "jsr:@std/yaml@^1.0.12": "1.0.12",
     "npm:@types/node@*": "22.15.15",
     "npm:checksum@1": "1.0.0",
+    "npm:commander@*": "14.0.3",
     "npm:commander@^14.0.3": "14.0.3",
     "npm:pdf-lib@*": "1.17.1",
     "npm:pdf-lib@^1.17.1": "1.17.1"
@@ -49,7 +50,7 @@
         "jsr:@epdoc/type",
         "jsr:@std/assert@^1.0.19",
         "jsr:@std/fmt",
-        "npm:commander"
+        "npm:commander@^14.0.3"
       ]
     },
     "@epdoc/colors@0.1.3": {
