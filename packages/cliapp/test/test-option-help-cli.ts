@@ -23,8 +23,10 @@ class RootCommand extends CliApp.Cmd.AbstractBase<RootContext, RootContext, Root
 
     // Option with help text using fluent API
     this.option('-c, --config <path>', 'Path to config file')
-      .helpText('The configuration file path. Supports JSON, YAML, and TOML formats.\n' +
-                'Default locations searched: ./config.json, ~/.apprc')
+      .helpText(
+        'The configuration file path. Supports JSON, YAML, and TOML formats.\n' +
+          'Default locations searched: ./config.json, ~/.apprc',
+      )
       .emit();
 
     // Option with help text using OptionDef
@@ -34,8 +36,8 @@ class RootCommand extends CliApp.Cmd.AbstractBase<RootContext, RootContext, Root
       params: '<number>',
       description: 'Port to listen on',
       help: 'The TCP port number to bind to. Must be between 1024 and 65535.\n' +
-            'Ports below 1024 require root privileges.',
-      argParser: (val) => parseInt(val, 10)
+        'Ports below 1024 require root privileges.',
+      argParser: (val) => parseInt(val, 10),
     }).emit();
   }
 

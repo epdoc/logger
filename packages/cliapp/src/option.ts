@@ -202,11 +202,7 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
       console.log(`  ${this.#helpText}\n`);
     }
 
-    if (typeof Deno !== 'undefined') {
-      Deno.exit(0);
-    } else if (typeof process !== 'undefined') {
-      process.exit(0);
-    }
+    Deno.exit(0);
     // Should never reach here, but satisfy TypeScript
     throw new Error('Help displayed');
   }
