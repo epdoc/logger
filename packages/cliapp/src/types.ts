@@ -168,6 +168,8 @@ export interface OptionDef {
   choices?: string[];
   validateChoices?: boolean;
   defVal?: number | boolean | string | string[];
+  /** Additional help text to display if params are set to '?' */
+  help?: string;
 }
 
 /**
