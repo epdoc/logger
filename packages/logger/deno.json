@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logger",
-  "version": "1003.3.12",
+  "version": "1003.3.13",
   "description": "Logging module with chainable formatting, middleware mixins and extendable transports",
   "author": {
     "name": "James Pravetz",
@@ -55,13 +55,13 @@
     "$transport": "./src/transports/mod.ts",
     "@epdoc/loglevels": "jsr:@epdoc/loglevels@^1.0.2",
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.20",
-    "@std/expect": "jsr:@std/expect@^1.0.18",
-    "@std/fmt/colors": "jsr:@std/fmt@^1.0.9/colors",
-    "@epdoc/type": "jsr:@epdoc/type@^1.2.11",
-    "@epdoc/string": "jsr:@epdoc/string@^0.1.28",
-    "@epdoc/duration": "jsr:@epdoc/duration@^0.3.10",
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.6",
+    "@std/expect": "jsr:@std/expect@^1.0.19",
+    "@std/fmt/colors": "jsr:@std/fmt@^1.0.10/colors",
+    "@epdoc/type": "jsr:@epdoc/type@^1.2.13",
+    "@epdoc/string": "jsr:@epdoc/string@^0.1.29",
+    "@epdoc/duration": "jsr:@epdoc/duration@^0.3.12",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^3.2.8",
     "@std/assert": "jsr:@std/assert@^1.0.19",
-    "@std/testing": "jsr:@std/testing@^1.0.17"
+    "@std/testing": "jsr:@std/testing@^1.0.18"
   }
 }
