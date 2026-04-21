@@ -377,14 +377,8 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    * msg.date('2024-03-15');
    * ```
    */
-  public date(
-    date: Date | DateTime | Temporal.Instant | Temporal.ZonedDateTime,
-    format?: string,
-  ): this;
-  public date(
-    date: Date | DateTime | Temporal.Instant | Temporal.ZonedDateTime,
-    options: { format?: string; tz?: 'local' | 'utc' | string },
-  ): this;
+  public date(date: DateTime, format?: string): this;
+  public date(date: DateTime, options: { format?: string; tz?: 'local' | 'utc' | string }): this;
   public date(...args: MsgBuilder.StyleArg[]): this;
   public date(...args: MsgBuilder.StyleArg[]): this {
     if (args.length === 0) {

@@ -1,6 +1,7 @@
+import { Color } from '@epdoc/colors';
+import { DateTime } from '@epdoc/datetime';
 import type { HrMilliseconds } from '@epdoc/duration';
 import { _, type Dict, type Integer } from '@epdoc/type';
-import { Color } from '@epdoc/colors';
 import { bold, dim } from '@std/fmt/colors';
 import { ConsoleEmitter } from './emitter.ts';
 import type { EmitterData, FormatOpts, IEmitter, IFormatter, MsgPart, StyleArg, StyleFormatterFn } from './types.ts';
@@ -25,7 +26,7 @@ const DEFAULT_TAB_SIZE = 2;
  */
 export abstract class AbstractMsgBuilder implements IFormatter {
   protected $$id: string = 'AbstractLogger';
-  protected _timestamp: Date = new Date();
+  protected _timestamp: DateTime = new DateTime().setTz();
   protected _elapsed: HrMilliseconds = 0;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
   protected _emitter: IEmitter;

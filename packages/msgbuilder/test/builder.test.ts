@@ -1,3 +1,4 @@
+import { DateTime } from '@epdoc/datetime';
 import { assertEquals } from '@std/assert';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
@@ -128,35 +129,35 @@ describe('MsgBuilder.Console', () => {
       const result = msgBuilder.date('date').format({ color: true });
       assertEquals(result, enable.date + 'date' + disable.date);
     });
-    test('date with Date object (default format)', () => {
+    test('date with DateTime object (default format)', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
-      const testDate = new Date('2024-03-15T10:30:45.000Z');
+      const testDate = DateTime.from('2024-03-15T10:30:45.000Z');
       const result = msgBuilder.date(testDate).format({ color: false });
       // Result will be in local timezone, so we just check it's formatted
       assertEquals(result.length > 0, true);
       assertEquals(result.includes('2024'), true);
     });
-    test('date with Date object (custom format)', () => {
+    test('date with DateTime object (custom format)', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
-      const testDate = new Date('2024-03-15T10:30:45.000Z');
+      const testDate = DateTime.from('2024-03-15T10:30:45.000Z');
       const result = msgBuilder.date(testDate, 'yyyy-MM-dd').format({ color: false });
       assertEquals(result.includes('2024-03-15'), true);
     });
-    test('date with Date object (options with tz)', () => {
+    test('date with DateTime object (options with tz)', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
-      const testDate = new Date('2024-03-15T10:30:45.000Z');
+      const testDate = DateTime.from('2024-03-15T10:30:45.000Z');
       const result = msgBuilder.date(testDate, { format: 'HH:mm', tz: 'utc' }).format({ color: false });
       assertEquals(result, '10:30');
     });
     test('date with Temporal.Instant', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
-      const instant = Temporal.Instant.from('2024-03-15T10:30:45.000Z');
+      const instant = DateTime.from(Temporal.Instant.from('2024-03-15T10:30:45.000Z'));
       const result = msgBuilder.date(instant, { format: 'yyyy-MM-dd', tz: 'utc' }).format({ color: false });
       assertEquals(result, '2024-03-15');
     });
     test('date with Temporal.ZonedDateTime', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
-      const zdt = Temporal.ZonedDateTime.from('2024-03-15T10:30:45.000Z[UTC]');
+      const zdt = DateTime.from(Temporal.ZonedDateTime.from('2024-03-15T10:30:45.000Z[UTC]'));
       const result = msgBuilder.date(zdt, { format: 'HH:mm:ss', tz: 'utc' }).format({ color: false });
       assertEquals(result, '10:30:45');
     });
@@ -401,7 +402,7 @@ describe('MsgBuilder.Console', () => {
       expect(result).toBeDefined();
       if (result) {
         expect(result.data).toBeUndefined();
-        expect(result.timestamp).toBeInstanceOf(Date);
+        expect(result.timestamp).toBeInstanceOf(DateTime);
         expect(result.formatter).toBeInstanceOf(MsgBuilder.Console.Builder);
         expect(tester.output).toEqual(enable.h2 + 'test' + disable.h2);
       }
@@ -414,7 +415,7 @@ describe('MsgBuilder.Console', () => {
       expect(result).toBeDefined();
       if (result) {
         expect(result.data).toBeUndefined();
-        expect(result.timestamp).toBeInstanceOf(Date);
+        expect(result.timestamp).toBeInstanceOf(DateTime);
         expect(result.formatter).toBeInstanceOf(MsgBuilder.Console.Builder);
         expect(tester.output).toEqual('test');
       }

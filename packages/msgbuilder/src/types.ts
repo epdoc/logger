@@ -1,3 +1,4 @@
+import type { DateTime } from '@epdoc/datetime';
 import type { HrMilliseconds } from '@epdoc/duration';
 import type { Dict, Integer } from '@epdoc/type';
 import type { AbstractMsgBuilder } from './abstract.ts';
@@ -46,7 +47,7 @@ export type EmitterData = {
   /**
    * The timestamp of the log message.
    */
-  timestamp: Date;
+  timestamp: DateTime;
   /**
    * The formatter to be used for the log message.
    */
