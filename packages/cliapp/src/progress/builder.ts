@@ -45,6 +45,7 @@
  * await doWork(); // Automatically completes on block exit
  * ```
  */
+import { DateTime } from '@epdoc/datetime';
 import type * as Log from '@epdoc/logger';
 import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
@@ -431,7 +432,7 @@ export function createStandaloneProgressEmitter(): ProgressEmitter {
       setActiveProgress: () => {},
     } as unknown as Log.Transport.Mgr,
     emit: () => ({
-      timestamp: new Date(),
+      timestamp: DateTime.now().setTz(),
       formatter: { format: () => '' } as MsgBuilder.IFormatter,
       data: undefined,
       elapsed: 0,
