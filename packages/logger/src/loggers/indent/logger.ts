@@ -2,6 +2,7 @@ import type * as Log from '$log';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { type Integer, isArray, isInteger, isPosInteger, isString } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
+import { DateTime } from '@epdoc/datetime';
 
 /**
  * Extends the {@link AbstractLogger} logger to provide indentation capabilities for log output.
@@ -20,7 +21,7 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    * The start time for time-based logging operations.
    * @protected
    */
-  protected _t0: Date = new Date();
+  protected _t0: DateTime = DateTime.now();
   /**
    * An array of strings representing the current indentation levels.
    * Each string in the array is prepended to the log message.
@@ -53,10 +54,10 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    * logger instance. Child loggers created via `getChild` will inherit their
    * parent's start time.
    *
-   * @param {Date} d - The date to set as the start time.
+   * @param {DateTime} d - The date to set as the start time.
    * @returns {this} The current logger instance for chaining.
    */
-  startTime(d: Date): this {
+  startTime(d: DateTime): this {
     this._t0 = d;
     return this;
   }

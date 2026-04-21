@@ -1,3 +1,4 @@
+import { DateTime } from '@epdoc/datetime';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
@@ -23,7 +24,7 @@ describe('Logger Nesting', () => {
 
     expect(entry).toBeDefined();
     if (entry) {
-      expect(entry.timestamp).toBeInstanceOf(Date);
+      expect(entry.timestamp).toBeInstanceOf(DateTime);
     }
   });
 
@@ -46,7 +47,7 @@ describe('Logger Nesting', () => {
 
     expect(entry).toBeDefined();
     if (entry) {
-      expect(entry.timestamp).toBeInstanceOf(Date);
+      expect(entry.timestamp).toBeInstanceOf(DateTime);
     }
   });
 

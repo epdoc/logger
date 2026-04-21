@@ -1,3 +1,4 @@
+import type { DateTime } from '@epdoc/datetime';
 import type * as Transport from '../types.ts';
 
 /**
@@ -22,7 +23,7 @@ export interface Options extends Transport.IExtendedOptions {
  */
 export interface DroppedMessageStats {
   total: number;
-  first: Date;
-  last: Date;
+  first: DateTime;
+  last: DateTime;
   byLevel: Record<string, number>;
 }

@@ -1,4 +1,5 @@
 import type { Entry } from '$log';
+import { DateTime } from '@epdoc/datetime';
 import type { Milliseconds } from '@epdoc/duration';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { _, type Integer } from '@epdoc/type';
@@ -73,11 +74,11 @@ export class InfluxTransport extends Base.Transport {
     }
 
     // Keep duration in milliseconds (more intuitive than nanoseconds)
-    if (_.isDefined(msg.time)) {
-      fields.set('duration_ms', msg.time!);
+    if (_.isDefined(msg.hrMsTime)) {
+      fields.set('duration_ms', msg.hrMsTime!);
     }
 
-    const timestampNs = (msg.timestamp!.getTime() * 1_000_000).toString();
+    const timestampNs = (msg.timestamp!.epochMilliseconds * 1_000_000).toString();
     const line = this.#formatLineProtocol(tags, fields, timestampNs);
     this.#addToBuffer(line);
   }
@@ -218,7 +219,7 @@ export class InfluxTransport extends Base.Transport {
   }
 
   #trackDroppedMessages(lines: string[]): void {
-    const now = new Date();
+    const now = DateTime.now();
 
     if (!this.#droppedStats) {
       this.#droppedStats = {
@@ -257,8 +258,8 @@ export class InfluxTransport extends Base.Transport {
 
     // Serialize dropped data as JSON (same logic as lines 66-73)
     const droppedData = {
-      first: this.#droppedStats.first.toISOString(),
-      last: this.#droppedStats.last.toISOString(),
+      first: this.#droppedStats.first.toISOString({ fractionalSecondDigits: 3 }),
+      last: this.#droppedStats.last.toISOString({ fractionalSecondDigits: 3 }),
       total: this.#droppedStats.total,
       ...this.#droppedStats.byLevel,
     };

@@ -1,5 +1,5 @@
+import { DateTime } from '@epdoc/datetime';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import { isDate } from '@epdoc/type';
 import { expect } from '@std/expect';
 import { describe, test } from '@std/testing/bdd';
 import * as Log from '../src/mod.ts';
@@ -30,11 +30,11 @@ describe('Log.Entity', () => {
     expect(record).toBeDefined();
     if (record) {
       // EmitterData has timestamp, formatter, and data - not level, msg, pkgs, etc.
-      expect(record.timestamp).toBeInstanceOf(Date);
+      expect(record.timestamp).toBeInstanceOf(DateTime);
       expect(record.formatter).toBeDefined();
 
-      if (isDate(record.timestamp)) {
-        const diff = Math.abs(record.timestamp.getTime() - new Date().getTime());
+      if (record.timestamp instanceof DateTime) {
+        const diff = Math.abs(record.timestamp.epochMilliseconds - DateTime.now().epochMilliseconds);
         expect(diff).toBeLessThan(100); // Increased tolerance
       }
     }

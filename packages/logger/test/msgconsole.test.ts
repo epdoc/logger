@@ -5,6 +5,7 @@ import { describe, test } from '@std/testing/bdd';
 import os from 'node:os';
 import { disable, enable } from '../../../test-utils/color-map.ts';
 import * as Log from '../src/mod.ts';
+import { DateTime } from '@epdoc/datetime';
 
 type M = MsgBuilder.Console.Builder;
 
@@ -27,7 +28,7 @@ describe('MsgBuilder.Console', () => {
       const obj = msgBuilder.emit();
       expect(obj).toBeDefined();
       if (obj) {
-        expect(obj.timestamp).toBeInstanceOf(Date);
+        expect(obj.timestamp).toBeInstanceOf(DateTime);
       }
     });
 

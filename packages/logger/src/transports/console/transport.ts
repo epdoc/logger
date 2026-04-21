@@ -219,17 +219,17 @@ export class ConsoleTransport extends Base.Transport {
     if (entry.msg) {
       parts.push(entry.msg);
     }
-    if (this.show.time && _.isNumber(entry.time) && entry.time) {
+    if (this.show.time && _.isNumber(entry.hrMsTime) && entry.hrMsTime) {
       // Format duration with appropriate precision
       let digits = 3;
-      if (entry.time > 100) {
+      if (entry.hrMsTime > 100) {
         digits = 0;
-      } else if (entry.time > 10) {
+      } else if (entry.hrMsTime > 10) {
         digits = 1;
-      } else if (entry.time > 1) {
+      } else if (entry.hrMsTime > 1) {
         digits = 2;
       }
-      parts.push(this._styledString(`(${entry.time.toFixed(digits)} ms)`, false, '_elapsed'));
+      parts.push(this._styledString(`(${entry.hrMsTime.toFixed(digits)} ms)`, false, '_elapsed'));
     }
 
     if (!_.isNullOrUndefined(msg.data) && this.show.data) {
@@ -252,7 +252,7 @@ export class ConsoleTransport extends Base.Transport {
     parts.push(entry.sid ?? null);
     parts.push(entry.reqId ?? null);
     parts.push(entry.msg ?? null);
-    parts.push(entry.time ?? null);
+    parts.push(entry.hrMsTime ?? null);
     parts.push(entry.data ?? null);
     return JSON.stringify(parts);
   }

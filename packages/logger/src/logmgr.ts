@@ -1,5 +1,6 @@
 import * as Logger from '$logger';
 import * as Transport from '$transport';
+import { DateTime } from '@epdoc/datetime';
 import type * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { assert } from '@std/assert';
@@ -44,7 +45,7 @@ import type * as Log from './types.ts';
 export class LogMgr<
   M extends MsgBuilder.Abstract = MsgBuilder.Console.Builder,
 > implements Transport.IBaseOptions, ITransportEmitter {
-  #t0: Date = new Date();
+  #t0: DateTime = DateTime.now();
   #logLevels: Level.LogLevels | undefined;
   #rootLogger: Logger.ILoggerEmitter | undefined;
   #threshold: Level.Spec | null = null;
@@ -296,7 +297,7 @@ export class LogMgr<
    * Gets the start time of the LogMgr instance.
    * @returns {Date} The start time.
    */
-  get startTime(): Date {
+  get startTime(): DateTime {
     return this.#t0;
   }
 
@@ -387,7 +388,7 @@ export class LogMgr<
   public emit(msg: Log.Entry): void {
     if (this.transportMgr.meetsAnyThreshold(msg.level)) {
       if (!msg.timestamp) {
-        msg.timestamp = new Date();
+        msg.timestamp = DateTime.now();
       }
       this.transportMgr.emit(msg);
     }

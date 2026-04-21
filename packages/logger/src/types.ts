@@ -1,3 +1,4 @@
+import type { DateTime } from '@epdoc/datetime';
 import type { HrMilliseconds } from '@epdoc/duration';
 import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
@@ -22,7 +23,7 @@ export type Entry = {
   /** The severity level of the log entry. */
   level: Level.Spec;
   /** The timestamp of when the log entry was created. */
-  timestamp?: Date;
+  timestamp?: DateTime;
   /** A namespace, such as a class or module name, for context. */
   pkg?: string;
   /** A session identifier, often tied to a user. */
@@ -32,7 +33,7 @@ export type Entry = {
   /** The log message, which can be a simple string or a formatable object. */
   msg: string | MsgBuilder.IFormatter | undefined;
   /** A 'response time' to be output by the transport. */
-  time?: HrMilliseconds;
+  hrMsTime?: HrMilliseconds;
   /** Any structured data associated with the log entry. */
   data?: unknown | undefined;
   /** The number of spaces to output between parts of a message, defaults to 1 */

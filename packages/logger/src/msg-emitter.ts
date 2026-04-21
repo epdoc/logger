@@ -227,7 +227,7 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
     const entry: Log.Entry = {
       level: this.#level,
       timestamp: data.timestamp,
-      time: data.elapsed,
+      hrMsTime: data.elapsed,
       sid: this.#sid,
       reqId: this.#reqId,
       pkg: this.#pkg,

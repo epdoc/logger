@@ -1,3 +1,4 @@
+import type { DateTime } from '@epdoc/datetime';
 import type { HrMilliseconds } from '@epdoc/duration';
 import type * as Level from '@epdoc/loglevels';
 import type { EmitterShowOpts } from '../types.ts';
@@ -11,7 +12,7 @@ export interface IBaseOptions {
   logLevels: Level.LogLevels;
   threshold: Level.Spec;
   show: EmitterShowOpts;
-  startTime: Date;
+  startTime: DateTime;
 }
 
 export interface IExtendedOptions {
@@ -49,7 +50,7 @@ export type Entry = Partial<{
   /** The formatted log message. */
   msg: string;
   /** The response time to be displayed. */
-  time: HrMilliseconds;
+  hrMsTime: HrMilliseconds;
   /** Structured data associated with the log. */
   data: unknown;
 }>;

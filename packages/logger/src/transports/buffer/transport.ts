@@ -1,7 +1,7 @@
-import type * as Log from '../../types.ts';
-import { DateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { _ } from '@epdoc/type';
+import type * as Log from '../../types.ts';
 import * as Base from '../base/mod.ts';
 import type * as Transport from '../types.ts';
 import type { IBufferOptions } from './types.ts';
@@ -78,10 +78,10 @@ export class BufferTransport extends Base.Transport {
     }
 
     const entry: Transport.Entry = {
-      timestamp: new DateEx(msg.timestamp ? msg.timestamp : new Date()).toISOLocalString(),
+      timestamp: (msg.timestamp ? msg.timestamp : DateTime.now()).setTz().toISOString({ fractionalSecondDigits: 3 }),
       level: msg.level,
       msg: message,
-      time: msg.time,
+      hrMsTime: msg.hrMsTime,
       pkg: msg.pkg,
       reqId: msg.reqId,
       sid: msg.sid,

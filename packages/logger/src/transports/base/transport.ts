@@ -1,9 +1,9 @@
-import type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from '$log';
-import { dateEx } from '@epdoc/datetime';
+import { DateTime } from '@epdoc/datetime';
 import { duration } from '@epdoc/duration';
 import type * as Level from '@epdoc/loglevels';
 import { _, type CompareResult } from '@epdoc/type';
 import { isTimestampFormat } from '../../consts.ts';
+import type { EmitterShowKey, EmitterShowOpts, Entry, TimestampFormatType } from '../../types.ts';
 import type * as Transport from '../types.ts';
 
 /**
@@ -30,7 +30,7 @@ export abstract class AbstractTransport {
   #logLevels: Level.LogLevels;
   #threshold: Level.Spec;
   #show: EmitterShowOpts = { pkgSep: '.' };
-  #startTime: Date;
+  #startTime: DateTime;
 
   private static _nextId = 1;
 
@@ -152,14 +152,14 @@ export abstract class AbstractTransport {
    * @param {Log.TimestampFormat} [format] - The desired output format.
    * @returns {string | undefined} The formatted date string or `undefined`.
    */
-  dateToString(d: Date | undefined, format: TimestampFormatType | undefined): string | undefined {
-    if (_.isValidDate(d) && isTimestampFormat(format)) {
+  dateToString(d: DateTime | undefined, format: TimestampFormatType | undefined): string | undefined {
+    if (d instanceof DateTime && isTimestampFormat(format)) {
       if (format === 'utc') {
-        return d.toISOString();
+        return d.toISOString({ fractionalSecondDigits: 3 });
       } else if (format === 'local') {
-        return dateEx(d).toISOLocalString();
+        return d.withTz().toISOString({ fractionalSecondDigits: 3 });
       } else if (format === 'elapsed') {
-        return duration().narrow.format(d.getTime() - this.#startTime.getTime());
+        return duration().narrow.format(d.epochMilliseconds - this.#startTime.epochMilliseconds);
       }
     }
     return undefined;

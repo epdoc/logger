@@ -1,3 +1,4 @@
+import { DateTime } from '@epdoc/datetime';
 import * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
 import { assertEquals, assertStringIncludes } from '@std/assert';
@@ -482,8 +483,8 @@ Deno.test('InfluxTransport - message formatting with metadata', async () => {
     reqId: 'req-123',
     sid: 'session-456',
     data: { userId: 789, action: 'login' },
-    time: 1500, // 1.5 seconds
-    timestamp: new Date('2024-01-01T12:00:00Z'),
+    hrMsTime: 1500, // 1.5 seconds
+    timestamp: DateTime.from('2024-01-01T12:00:00Z'),
   };
 
   influxTransport.emit(entry);

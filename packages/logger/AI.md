@@ -114,7 +114,7 @@ TransportMgr computes flush flag: `level.severity >= logLevels.flushLevel.severi
 ```typescript
 type Entry = {
   level: Level.Spec;           // Full Spec object with name, severity, fmtFn, icon
-  timestamp?: Date;
+  timestamp?: DateTime;
   time?: HrMilliseconds;       // Elapsed wall time for EWT
   sid?: string;
   reqId?: string;
