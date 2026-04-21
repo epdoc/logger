@@ -5,6 +5,7 @@
  * OTEL_DENO=true OTEL_SERVICE_NAME=demo-service deno run logger.otlp.run.ts
  */
 
+import { DateTime } from '@epdoc/datetime';
 import * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
 
@@ -15,7 +16,11 @@ const showOpts: Log.EmitterShowOpts = { level: true, timestamp: 'local', data: t
 const logMgr = new Log.Mgr<Console.Builder>();
 logMgr.initLevels();
 logMgr.show = showOpts;
-logMgr.emit({ level: logMgr.logLevels.defaultLevel, msg: 'Logger initialized (manual emit)', timestamp: new Date() });
+logMgr.emit({
+  level: logMgr.logLevels.defaultLevel,
+  msg: 'Logger initialized (manual emit)',
+  timestamp: DateTime.now(),
+});
 
 const influxOpts: Log.Transport.Influx.Options = {
   host: Deno.env.get('INFLUX_HOST')!, // http://10.0.10.35:8086

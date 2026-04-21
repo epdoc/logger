@@ -373,6 +373,7 @@
       },
       "packages/examples": {
         "dependencies": [
+          "jsr:@epdoc/datetime@^3.2.8",
           "jsr:@epdoc/progress@~0.1.4",
           "jsr:@epdoc/type@^1.2.13",
           "jsr:@std/expect@^1.0.19",
