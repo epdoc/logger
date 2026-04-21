@@ -1,6 +1,6 @@
-import { Mgr as LogMgr, Transport } from '@epdoc/logger';
-import type * as MsgBuilder from '@epdoc/msgbuilder';
-import type { Entry } from '@epdoc/logger';
+import { DateTime } from "@epdoc/datetime";
+import type { Entry } from "@epdoc/logger";
+import { Mgr as LogMgr, Transport } from "@epdoc/logger";
 
 /**
  * Configuration options for the Logdy transport.
@@ -54,7 +54,7 @@ interface LogdyLogEntry {
  * ```
  */
 export class LogdyTransport extends Transport.Base.Transport {
-  public override readonly type = 'logdy';
+  public override readonly type = "logdy";
 
   private readonly _url: string;
   private readonly _apiKey?: string;
@@ -77,19 +77,19 @@ export class LogdyTransport extends Transport.Base.Transport {
   constructor(logMgr: LogMgr<any>, options: LogdyTransportOptions = {}) {
     super(logMgr, options);
 
-    this._url = options.url ?? 'http://localhost:8080/api/v1/logs';
+    this._url = options.url ?? "http://localhost:8080/api/v1/logs";
     this._apiKey = options.apiKey;
     this._batchSize = options.batchSize ?? 50;
     this._flushInterval = options.flushInterval ?? 2000;
     this._timeout = options.timeout ?? 5000;
     this._retryAttempts = options.retryAttempts ?? 2;
     this._headers = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options.headers,
     };
 
     if (this._apiKey) {
-      this._headers['Authorization'] = `Bearer ${this._apiKey}`;
+      this._headers["Authorization"] = `Bearer ${this._apiKey}`;
     }
 
     this._startFlushTimer();
@@ -143,7 +143,8 @@ export class LogdyTransport extends Transport.Base.Transport {
    */
   private _convertToLogdyFormat(entry: Entry): LogdyLogEntry {
     const logdyEntry: LogdyLogEntry = {
-      timestamp: entry.timestamp?.toISOString() ?? new Date().toISOString(),
+      timestamp: entry.timestamp?.toISOString({ fractionalSecondDigits: 3 }) ??
+        DateTime.now().toISOString({ fractionalSecondDigits: 3 }),
       level: this._mapLogLevel(entry.level),
       message: this._extractMessage(entry),
     };
@@ -168,46 +169,46 @@ export class LogdyTransport extends Transport.Base.Transport {
    */
   private _mapLogLevel(level: string): string {
     const levelMap: Record<string, string> = {
-      'FATAL': 'error',
-      'CRITICAL': 'error',
-      'ERROR': 'error',
-      'SEVERE': 'error',
-      'WARN': 'warn',
-      'WARNING': 'warn',
-      'INFO': 'info',
-      'CONFIG': 'info',
-      'HELP': 'info',
-      'DATA': 'info',
-      'DEBUG': 'debug',
-      'VERBOSE': 'debug',
-      'TRACE': 'debug',
-      'FINE': 'debug',
-      'FINER': 'debug',
-      'FINEST': 'debug',
-      'SPAM': 'debug',
-      'SILLY': 'debug',
+      "FATAL": "error",
+      "CRITICAL": "error",
+      "ERROR": "error",
+      "SEVERE": "error",
+      "WARN": "warn",
+      "WARNING": "warn",
+      "INFO": "info",
+      "CONFIG": "info",
+      "HELP": "info",
+      "DATA": "info",
+      "DEBUG": "debug",
+      "VERBOSE": "debug",
+      "TRACE": "debug",
+      "FINE": "debug",
+      "FINER": "debug",
+      "FINEST": "debug",
+      "SPAM": "debug",
+      "SILLY": "debug",
     };
 
-    return levelMap[level.toUpperCase()] ?? 'info';
+    return levelMap[level.toUpperCase()] ?? "info";
   }
 
   /**
    * Extracts message text from Entry.
    */
   private _extractMessage(entry: Entry): string {
-    if (typeof entry.msg === 'string') {
+    if (typeof entry.msg === "string") {
       return entry.msg;
     }
 
-    if (entry.msg && typeof entry.msg === 'object' && 'format' in entry.msg) {
+    if (entry.msg && typeof entry.msg === "object" && "format" in entry.msg) {
       try {
         return entry.msg.format({ color: false });
       } catch {
-        return '[Message formatting error]';
+        return "[Message formatting error]";
       }
     }
 
-    return '[No message]';
+    return "[No message]";
   }
 
   /**
@@ -226,7 +227,7 @@ export class LogdyTransport extends Transport.Base.Transport {
     } catch (error) {
       // Re-queue logs on failure for retry
       this._logQueue.unshift(...logsToSend);
-      console.error('Logdy transport error:', error);
+      console.error("Logdy transport error:", error);
     }
   }
 
@@ -250,14 +251,14 @@ export class LogdyTransport extends Transport.Base.Transport {
     try {
       // Format log according to Logdy flat JSON specification
       const logdyPayload = {
-        timestamp: new Date(log.timestamp).getTime(),
+        timestamp: new DateTime(log.timestamp).epochMilliseconds(),
         level: log.level,
         message: log.message,
         ...(log.fields || {}),
       };
 
       const response = await fetch(this._url, {
-        method: 'POST',
+        method: "POST",
         headers: this._headers,
         body: JSON.stringify(logdyPayload),
         signal: controller.signal,
