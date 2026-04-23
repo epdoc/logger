@@ -91,6 +91,8 @@ export type CmdParams = Partial<CmdMetadata> & {
   aliases?: string[];
 };
 
+export type OptionHelpText = string | (() => string) | undefined;
+
 /**
  * Position for help text injection
  */
@@ -169,7 +171,7 @@ export interface OptionDef {
   validateChoices?: boolean;
   defVal?: number | boolean | string | string[];
   /** Additional help text to display if params are set to '?' */
-  help?: string;
+  help?: OptionHelpText;
 }
 
 /**

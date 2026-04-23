@@ -2,7 +2,7 @@ import { _ } from '@epdoc/type';
 import * as colors from '@std/fmt/colors';
 import * as Commander from 'commander';
 import type { Logger } from './context.ts';
-import type { OptionDef } from './types.ts';
+import type { OptionDef, OptionHelpText } from './types.ts';
 
 /**
  * Minimal interface for commands that provide logging.
@@ -41,7 +41,7 @@ interface ICommandWithLogger_Internal {
 export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
   #command: T;
   #option: Commander.Option;
-  #helpText?: string;
+  #helpText?: OptionHelpText;
   // deno-lint-ignore no-explicit-any
   #customParser?: (val: string, previous: any) => any;
 
@@ -161,7 +161,7 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
    * @param text - Help text to display
    * @returns This builder for method chaining
    */
-  helpText(text: string): this {
+  helpText(text: OptionHelpText): this {
     this.#helpText = text;
     return this;
   }
@@ -172,7 +172,7 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
    *
    * @returns The help text
    */
-  getHelpText(): string | undefined {
+  getHelpText(): OptionHelpText {
     return this.#helpText;
   }
 
@@ -193,13 +193,14 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
   #displayHelp(): never {
     const log = this.#getLogger();
 
+    const helpContent = _.isFunction(this.#helpText) ? this.#helpText() : this.#helpText;
     if (log) {
       log.info.h1(`Help for ${this.#option.flags}`).emit();
-      log.info.text(this.#helpText!).emit();
+      log.info.plain(helpContent).emit();
     } else {
       // Fallback to console if no logger available
       console.log(`\nHelp for ${this.#option.flags}:`);
-      console.log(`  ${this.#helpText}\n`);
+      console.log(`  ${helpContent}\n`);
     }
 
     Deno.exit(0);
