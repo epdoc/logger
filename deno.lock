@@ -410,7 +410,7 @@
       },
       "packages/logger": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^3.2.9",
+          "jsr:@epdoc/datetime@^3.2.11",
           "jsr:@epdoc/duration@~0.3.12",
           "jsr:@epdoc/loglevels@^1.0.3",
           "jsr:@epdoc/msgbuilder@~0.1.24",
