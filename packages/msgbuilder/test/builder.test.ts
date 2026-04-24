@@ -241,7 +241,7 @@ describe('MsgBuilder.Console', () => {
     test('iarrow with default color (value)', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
       const result = msgBuilder.iarrow().format({ color: true });
-      assertEquals(result, enable.value + '→' + disable.value);
+      assertEquals(result, enable.text + '→' + disable.text);
     });
     test('iarrow with custom color', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();

@@ -589,7 +589,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
       color = firstArg;
     }
 
-    return this.stylize(color ?? this.styles.value, arrow);
+    return this.stylize(color ?? this.styles.text, arrow);
   }
 
   /**
