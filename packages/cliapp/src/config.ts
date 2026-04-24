@@ -22,11 +22,10 @@ export const config: { help: Commander.HelpConfiguration; output: Commander.Outp
       if (option.argChoices) {
         extraInfo.push(
           // use stringify to match the display of the default value
-          `choices: ${
+          colors.dim('choices: ') +
             option.argChoices.map((choice) =>
               colors.dim(colors.rgb24(typeof choice === 'string' ? choice : JSON.stringify(choice), 0xffb020))
-            ).join(', ')
-          }`,
+            ).join(', '),
         );
       }
       if (option.defaultValue !== undefined) {
@@ -37,7 +36,8 @@ export const config: { help: Commander.HelpConfiguration; output: Commander.Outp
           (option.isBoolean() && typeof option.defaultValue === 'boolean');
         if (showDefault) {
           extraInfo.push(
-            `default: ${colors.green(option.defaultValueDescription || JSON.stringify(option.defaultValue))}`,
+            colors.dim('default: ') +
+              colors.rgb24(option.defaultValueDescription || JSON.stringify(option.defaultValue), 0xffb020),
           );
         }
       }

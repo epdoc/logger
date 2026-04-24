@@ -164,7 +164,7 @@ export abstract class AbstractCommand<
       this.commander.name(this.params.name);
     }
     if (this.params.root && this.params.version) {
-      this.commander.version(this.params.version);
+      this.commander.version(this.params.version, '-v, --version', dim('Output the current version'));
     }
     if (this.params.description) {
       this.commander.description(this.params.description);
@@ -172,6 +172,7 @@ export abstract class AbstractCommand<
     if (!this.params.root && _.isNonEmptyArray(this.params.aliases)) {
       this.commander.aliases(this.params.aliases);
     }
+    this.commander.helpOption('-h, --help', dim('Display help for command'));
 
     // Subclasses define their CLI interface here
     await this.defineOptions();
