@@ -4,6 +4,10 @@ import * as Commander from 'commander';
 import type { Logger } from './context.ts';
 import type { OptionDef, OptionHelpText } from './types.ts';
 
+const REG = {
+  displayHelp: new RegExp(/^(\?|h|help)$/i),
+};
+
 /**
  * Minimal interface for commands that provide logging.
  * Satisfied by AbstractBase - allows FluentOptionBuilder to access
@@ -257,7 +261,7 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
       const customParser = this.#customParser;
       // deno-lint-ignore no-explicit-any
       this.#option.argParser((val: string, previous: any) => {
-        if (val === '?') {
+        if (REG.displayHelp.test(val)) {
           this.#displayHelp();
         }
         // Call custom parser if provided, otherwise return the value as-is
