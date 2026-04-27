@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-explicit-any
+
 import { DateTime } from '@epdoc/datetime';
 import { assertEquals } from '@std/assert';
 import { expect } from '@std/expect';
@@ -402,7 +404,7 @@ describe('MsgBuilder.Console', () => {
       expect(result).toBeDefined();
       if (result) {
         expect(result.data).toBeUndefined();
-        expect(result.timestamp).toBeInstanceOf(DateTime);
+        expect(result.timestamp).toBeInstanceOf(DateTime as any);
         expect(result.formatter).toBeInstanceOf(MsgBuilder.Console.Builder);
         expect(tester.output).toEqual(enable.h2 + 'test' + disable.h2);
       }
@@ -415,7 +417,7 @@ describe('MsgBuilder.Console', () => {
       expect(result).toBeDefined();
       if (result) {
         expect(result.data).toBeUndefined();
-        expect(result.timestamp).toBeInstanceOf(DateTime);
+        expect(result.timestamp).toBeInstanceOf(DateTime as any);
         expect(result.formatter).toBeInstanceOf(MsgBuilder.Console.Builder);
         expect(tester.output).toEqual('test');
       }

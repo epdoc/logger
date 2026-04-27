@@ -26,7 +26,7 @@ const DEFAULT_TAB_SIZE = 2;
  */
 export abstract class AbstractMsgBuilder implements IFormatter {
   protected $$id: string = 'AbstractLogger';
-  protected _timestamp: DateTime = new DateTime().setTz();
+  protected _timestamp: DateTime = DateTime.now().setTz();
   protected _elapsed: HrMilliseconds = 0;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
   protected _emitter: IEmitter;
