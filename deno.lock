@@ -3,7 +3,6 @@
   "specifiers": {
     "jsr:@epdoc/colors@~0.1.3": "0.1.3",
     "jsr:@epdoc/datetime@4": "4.0.0",
-    "jsr:@epdoc/datetime@^3.2.11": "3.2.11",
     "jsr:@epdoc/duration@~0.3.12": "0.3.12",
     "jsr:@epdoc/fs@^1.3.10": "1.3.10",
     "jsr:@epdoc/progress@~0.1.5": "0.1.5",
@@ -49,12 +48,6 @@
         "jsr:@std/fmt@^1.0.9"
       ]
     },
-    "@epdoc/datetime@3.2.11": {
-      "integrity": "77696201bf6f827a409f77f0f3e95d02f50306a68e7d2fd98a1b71f80764bbf7",
-      "dependencies": [
-        "jsr:@epdoc/type"
-      ]
-    },
     "@epdoc/datetime@4.0.0": {
       "integrity": "2a989e93e52a0883ee99767e9eabae91e55144ca12813d75c70d556e6f2fbb4c",
       "dependencies": [
@@ -70,7 +63,7 @@
     "@epdoc/fs@1.3.10": {
       "integrity": "8afd0b873be1d0faf66b6cfbbe9c0ad5ca53cab45dc64400ce019e9560c879cc",
       "dependencies": [
-        "jsr:@epdoc/datetime@4",
+        "jsr:@epdoc/datetime",
         "jsr:@epdoc/type",
         "jsr:@std/assert@^1.0.19",
         "jsr:@std/bytes@^1.0.6",
@@ -349,7 +342,7 @@
       },
       "packages/examples": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^3.2.11",
+          "jsr:@epdoc/datetime@4",
           "jsr:@epdoc/progress@~0.1.5",
           "jsr:@epdoc/type@^1.2.13",
           "jsr:@std/expect@^1.0.19",
