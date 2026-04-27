@@ -518,6 +518,15 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   }
 
   /**
+   * Appends a bullet icon (•). Defaults to `text` style.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   */
+  public ielipse(color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.text, '…');
+  }
+
+  /**
    * Appends a generic icon character.
    *
    * @param {string} char - The icon character to display.
