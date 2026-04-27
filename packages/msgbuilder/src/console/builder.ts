@@ -518,12 +518,21 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   }
 
   /**
-   * Appends a bullet icon (•). Defaults to `text` style.
+   * Appends an elipse character. Defaults to `text` style.
    * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
    * @returns {this}
    */
   public ielipse(color?: MsgBuilder.StyleFormatterFn): this {
     return this.stylize(color ?? this.styles.text, '…');
+  }
+
+  /**
+   * Appends three dots. Defaults to `text` style.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   */
+  public elipse(color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.text, '...');
   }
 
   /**
