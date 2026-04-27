@@ -121,10 +121,11 @@ function formatPlainWithTheme(themeStyles: typeof consoleStyleFormatters, colore
 
 /**
  * Calculates the display width of a string, accounting for ANSI escape codes.
+ * Matches CSI sequences (ESC [ ... m) which control colors and styles.
  */
 function displayWidth(str: string): number {
-  // Strip ANSI escape sequences and return length
-  return str.replace(/\x1b\[[0-9;]*m/g, '').length;
+  // deno-lint-ignore no-control-regex
+  return str.replace(/\x1b\[[0-9;]*m/gu, '').length;
 }
 
 /**
