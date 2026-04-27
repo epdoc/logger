@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import { DateTime } from '@epdoc/datetime';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { expect } from '@std/expect';
@@ -24,7 +25,7 @@ describe('Logger Recursion', () => {
     const obj = mb.emit();
     expect(obj).toBeDefined();
     if (obj) {
-      expect(obj.timestamp).toBeInstanceOf(DateTime);
+      expect(obj.timestamp).toBeInstanceOf(DateTime as any);
       expect(obj.formatter).toBeDefined();
     }
 
@@ -39,7 +40,7 @@ describe('Logger Recursion', () => {
     const obj3 = mb3.emit();
     expect(obj3).toBeDefined();
     if (obj3) {
-      expect(obj3.timestamp).toBeInstanceOf(DateTime);
+      expect(obj3.timestamp).toBeInstanceOf(DateTime as any);
       expect(obj3.formatter).toBeDefined();
     }
   });

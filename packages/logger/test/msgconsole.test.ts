@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import * as MsgBuilder from '@epdoc/msgbuilder';
 import { assertEquals } from '@std/assert';
 import { expect } from '@std/expect';
@@ -28,7 +29,7 @@ describe('MsgBuilder.Console', () => {
       const obj = msgBuilder.emit();
       expect(obj).toBeDefined();
       if (obj) {
-        expect(obj.timestamp).toBeInstanceOf(DateTime);
+        expect(obj.timestamp).toBeInstanceOf(DateTime as any);
       }
     });
 

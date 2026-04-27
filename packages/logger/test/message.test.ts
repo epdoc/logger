@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import { DateTime } from '@epdoc/datetime';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { expect } from '@std/expect';
@@ -30,7 +31,7 @@ describe('Log.Entity', () => {
     expect(record).toBeDefined();
     if (record) {
       // EmitterData has timestamp, formatter, and data - not level, msg, pkgs, etc.
-      expect(record.timestamp).toBeInstanceOf(DateTime);
+      expect(record.timestamp).toBeInstanceOf(DateTime as any);
       expect(record.formatter).toBeDefined();
 
       if (record.timestamp instanceof DateTime) {

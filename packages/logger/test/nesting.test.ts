@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import { DateTime } from '@epdoc/datetime';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { expect } from '@std/expect';
@@ -24,7 +25,7 @@ describe('Logger Nesting', () => {
 
     expect(entry).toBeDefined();
     if (entry) {
-      expect(entry.timestamp).toBeInstanceOf(DateTime);
+      expect(entry.timestamp).toBeInstanceOf(DateTime as any);
     }
   });
 
@@ -47,7 +48,7 @@ describe('Logger Nesting', () => {
 
     expect(entry).toBeDefined();
     if (entry) {
-      expect(entry.timestamp).toBeInstanceOf(DateTime);
+      expect(entry.timestamp).toBeInstanceOf(DateTime as any);
     }
   });
 
