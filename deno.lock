@@ -374,7 +374,7 @@
     "members": {
       "packages/cliapp": {
         "dependencies": [
-          "jsr:@epdoc/datetime@4",
+          "jsr:@epdoc/datetime@^4.0.1",
           "jsr:@epdoc/logger@^1003.3.23",
           "jsr:@epdoc/loglevels@^1.0.3",
           "jsr:@epdoc/msgbuilder@~0.1.30",
