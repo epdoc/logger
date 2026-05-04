@@ -86,8 +86,10 @@ export type FormatOpts = {
    * The number of spaces used to separate message parts. Defaults to 1.
    */
   msgSep?: Integer;
-  /** If not set, then reset the MsgBuilder state, essentially setting it to a blank string once format is called. */
-  keep?: boolean;
+  /** If set then reset the MsgBuilder state, essentially setting it to a blank string once format
+   * is called. Reasons to not do this are when there are multiple transports that all share the
+   * same formatted string. */
+  reset?: boolean;
 };
 
 /**

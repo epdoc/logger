@@ -372,13 +372,13 @@ export abstract class AbstractMsgBuilder implements IFormatter {
    */
   format(opts?: FormatOpts): string {
     let noColor = Deno.noColor;
-    let keep = false;
+    let reset = false;
     let sep = ' ';
     if (opts) {
       if (opts.color === true) noColor = false;
       if (opts.color === false) noColor = true;
       if (_.isInteger(opts.msgSep)) sep = ' '.repeat(opts.msgSep);
-      if (opts.keep === true) keep = true;
+      if (opts.reset === true) reset = true;
     }
     const parts: string[] = [];
     if (_.isNonEmptyString(this._msgIndent)) {
@@ -391,7 +391,7 @@ export abstract class AbstractMsgBuilder implements IFormatter {
         parts.push(part.str);
       }
     });
-    if (!keep) this.clear();
+    if (reset) this.clear();
     return parts.join(sep);
   }
 
