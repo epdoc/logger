@@ -354,7 +354,6 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
     } else {
       displayPath = `~/${relative(home, p)}`;
     }
-    console.log('p:', p, 'displayPath:', displayPath);
     return this.path(displayPath);
   }
 
