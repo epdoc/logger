@@ -86,6 +86,8 @@ export type FormatOpts = {
    * The number of spaces used to separate message parts. Defaults to 1.
    */
   msgSep?: Integer;
+  /** If not set, then reset the MsgBuilder state, essentially setting it to a blank string once format is called. */
+  keep?: boolean;
 };
 
 /**

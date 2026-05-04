@@ -9,6 +9,26 @@ import type { ConsoleStyleMap, IConsoleErrOpts, IConsoleMsgBuilder } from './typ
 
 const home = os.userInfo().homedir;
 
+const ARROWS = {
+  // Line arrows (Standard)
+  right: '→',
+  left: '←',
+  up: '↑',
+  down: '↓',
+  // Double-line arrows (Heavy/Emphasis)
+  doubleRight: '⇒',
+  doubleLeft: '⇐',
+  doubleUp: '⇑',
+  doubleDown: '⇓',
+  // Solid triangles (Pointers)
+  pRight: '▸',
+  pLeft: '◂',
+  pUp: '▴',
+  pDown: '▾',
+} as const;
+
+type ArrowType = keyof typeof ARROWS;
+
 /**
  * A message builder for creating styled console messages.
  *
@@ -274,6 +294,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   }
 
   /**
+   * TODO: Update this jsdoc
    * Formats a file path as a relative path, preferring the shorter of home-relative or CWD-relative.
    *
    * This method always returns a relative path (never absolute), choosing whichever is shorter:
@@ -313,36 +334,27 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    * // Displays as: ./bin/app (shorter than ~/../../usr/local/bin/app)
    * ```
    */
-  relative(path: string, relativeTo?: string | 'home' | 'cwd', prefix?: string): this {
-    if (!_.isString(path)) {
+  relative(path: string | { path: string }, relativeTo?: string | 'home' | 'cwd', prefix?: string): this {
+    const p = _.isString(path)
+      ? path
+      : (_.isObject(path) && 'path' in path && _.isString(path.path))
+      ? path.path
+      : undefined;
+    if (!_.isString(p)) {
       return this.path('?');
     }
     let displayPath: string;
-    if (_.isString(relativeTo)) {
-      if (relativeTo === 'home') {
-        displayPath = `~/${relative(home, path)}`;
-      } else if (relativeTo === 'cwd') {
-        displayPath = `./${relative(Deno.cwd(), path)}`;
-      } else {
-        const p = `${prefix}:/` || './';
-        displayPath = `${p}${relative(relativeTo, path)}`;
-      }
+    if (relativeTo === 'home') {
+      displayPath = `~/${relative(home, p)}`;
+    } else if (relativeTo === 'cwd') {
+      displayPath = `./${relative(Deno.cwd(), p)}`;
+    } else if (_.isString(relativeTo) && prefix) {
+      const p2 = `${prefix}:/` || './';
+      displayPath = `${p}${relative(relativeTo, p2)}`;
     } else {
-      const cwd = Deno.cwd();
-
-      // Calculate relative paths
-      const relToHome = relative(home, path);
-      const relToCwd = relative(cwd, path);
-
-      // Prefer home-relative if it's shorter or equal to CWD-relative
-      // This handles cases where path is outside both home and CWD
-      if (relToHome.length <= relToCwd.length) {
-        displayPath = `~/${relToHome}`;
-      } else {
-        displayPath = `./${relToCwd}`;
-      }
+      displayPath = `~/${relative(home, p)}`;
     }
-
+    console.log('p:', p, 'displayPath:', displayPath);
     return this.path(displayPath);
   }
 
@@ -480,6 +492,13 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
       return this.ierror(color);
     }
   }
+  public iboolb(b: boolean, color?: MsgBuilder.StyleFormatterFn): this {
+    if (b) {
+      return this.icheckb(color);
+    } else {
+      return this.ierrorb(color);
+    }
+  }
 
   /**
    * Appends a checkmark icon (✓). Defaults to `success` style.
@@ -488,6 +507,10 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    */
   public icheck(color?: MsgBuilder.StyleFormatterFn): this {
     return this.stylize(color ?? this.styles.success, '✓');
+  }
+
+  public icheckb(color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.success, '✔');
   }
 
   /**
@@ -507,6 +530,27 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   public ierror(color?: MsgBuilder.StyleFormatterFn): this {
     return this.stylize(color ?? this.styles.error, '✗');
   }
+  public ierrorb(color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.error, '✘');
+  }
+
+  /**
+   * Appends a bullet icon (•). Defaults to `text` style.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   */
+  public iinfo(color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.text, 'ℹ');
+  }
+
+  /**
+   * Appends a bullet icon (•). Defaults to `text` style.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   */
+  public iplay(color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.text, '▶');
+  }
 
   /**
    * Appends a bullet icon (•). Defaults to `text` style.
@@ -522,7 +566,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
    * @returns {this}
    */
-  public ielipse(color?: MsgBuilder.StyleFormatterFn): this {
+  public iellipsis(color?: MsgBuilder.StyleFormatterFn): this {
     return this.stylize(color ?? this.styles.text, '…');
   }
 
@@ -531,7 +575,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
    * @returns {this}
    */
-  public elipse(color?: MsgBuilder.StyleFormatterFn): this {
+  public ellipsis(color?: MsgBuilder.StyleFormatterFn): this {
     return this.stylize(color ?? this.styles.text, '...');
   }
 
@@ -553,61 +597,20 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
   }
 
   /**
-   * Appends an arrow icon. Defaults to right arrow (→) with `value` style.
-   *
-   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
-   * @returns {this}
-   *
-   * @example
-   * ```ts
-   * log.info.iarrow().text('Next').emit();        // → Next
-   * log.info.iarrow('left').text('Back').emit();  // ← Back
-   * ```
+   * Appends an arrow icon.
+   * @param type Or color if using default right arrow.
+   * @param color Optional style override.
    */
-  public iarrow(color?: MsgBuilder.StyleFormatterFn): this;
-  /**
-   * Appends an arrow icon with specified direction.
-   *
-   * @param {('right' | 'left' | 'up' | 'down' | 'double-right' | 'double-left')} arrowType - The arrow direction.
-   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
-   * @returns {this}
-   *
-   * @example
-   * ```ts
-   * log.info.iarrow('right').text('Next').emit();       // → Next
-   * log.info.iarrow('left', styles.error).text('Back').emit();  // ← Back
-   * log.info.iarrow('up').text('Increase').emit();      // ↑ Increase
-   * ```
-   */
-  public iarrow(
-    arrowType: 'right' | 'left' | 'up' | 'down' | 'double-right' | 'double-left',
-    color?: MsgBuilder.StyleFormatterFn,
-  ): this;
-  public iarrow(
-    firstArg?: MsgBuilder.StyleFormatterFn | 'right' | 'left' | 'up' | 'down' | 'double-right' | 'double-left',
-    secondArg?: MsgBuilder.StyleFormatterFn,
-  ): this {
-    const arrows: Record<string, string> = {
-      'right': '→',
-      'left': '←',
-      'up': '↑',
-      'down': '↓',
-      'double-right': '⇒',
-      'double-left': '⇐',
-    };
+  public iarrow(type?: ArrowType | MsgBuilder.StyleFormatterFn, color?: MsgBuilder.StyleFormatterFn): this {
+    let char: string = ARROWS.right;
+    let style = color;
 
-    let arrow: string;
-    let color: MsgBuilder.StyleFormatterFn | undefined;
-
-    if (typeof firstArg === 'string') {
-      arrow = arrows[firstArg] ?? '→';
-      color = secondArg;
-    } else {
-      arrow = '→';
-      color = firstArg;
+    if (_.isString(type) && type in ARROWS) {
+      char = ARROWS[type as ArrowType];
+    } else if (_.isFunction(type)) {
+      style = type;
     }
-
-    return this.stylize(color ?? this.styles.text, arrow);
+    return this.stylize(style ?? this.styles.text, char);
   }
 
   /**
@@ -689,7 +692,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
       this.label('cause:').value(err.cause);
     }
     if (opts.path !== false && 'path' in err) {
-      this.relative((err as { path: string }).path);
+      this.relative(err as { path: string }, 'home');
     }
     if (opts.stack !== false && (this._emitter.stackEnabled || opts.stack === true)) {
       this.text('\n' + err.stack);

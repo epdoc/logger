@@ -180,7 +180,7 @@ describe('MsgBuilder.Console', () => {
         .error('error')
         .dim('dim')
         .bold('bold');
-      const result = builder.format({ color: true });
+      const result = builder.format({ color: true, keep: true });
       console.log(result);
       expect(result).toMatch(
         /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*url.*path.*code.*date.*success.*strikethru.*warn.*error.*dim.*bold.*$/,

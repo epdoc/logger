@@ -34,7 +34,7 @@ describe('MsgBuilder.Console', () => {
         .strikethru('strikethru')
         .warn('warn')
         .error('error');
-      const result = builder.format({ color: true });
+      const result = builder.format({ color: true, keep: true });
       console.log(result);
       expect(result).toMatch(
         /^.*h1.*h2.*h3.*action.*label.*highlight.*value.*url.*path.*code.*date.*success.*strikethru.*warn.*error.*$/,
@@ -117,14 +117,10 @@ describe('MsgBuilder.Console', () => {
     test('relative to home', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
       const path = `${home}/relative/to/home`;
-      const result = msgBuilder.relative(path).format({ color: true });
+      const result = msgBuilder.relative(path, 'home').format({ color: true });
       assertEquals(result, enable.path + '~/relative/to/home' + disable.path);
-    });
-    test('relative to root', () => {
-      const msgBuilder = new MsgBuilder.Console.Builder();
-      const path = '/relative/to/root';
-      const result = msgBuilder.relative(path).format({ color: true });
-      assertEquals(result, enable.path + '~/../../relative/to/root' + disable.path);
+      const result2 = msgBuilder.relative(path).format({ color: true });
+      assertEquals(result2, enable.path + '~/relative/to/home' + disable.path);
     });
     test('date with string (fallback)', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
