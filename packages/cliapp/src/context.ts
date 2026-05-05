@@ -143,6 +143,7 @@ export abstract class AbstractBase<
   dryRun = false;
   pkg: DenoPkg;
   mcpResult?: IMcpResult;
+  noBanner = false;
 
   /**
    * Optional builder class that can be specified by subclasses to automatically

@@ -93,6 +93,11 @@ export async function run<TCtx extends Ctx.AbstractBase = Ctx.AbstractBase>(
   Deno.addSignalListener('SIGINT', sigintHandler);
 
   try {
+    // TODO: Run this later after we have determined noColor value
+    // if (ctx.pkg && ctx.pkg.name) {
+    //   ctx.log.nodent().info.h1(ctx.pkg.name).label('version').value(ctx.pkg.version).emit();
+    // }
+
     // Handle both function and Command overloads
     if (typeof appFnOrCommand === 'function') {
       // Original function-based approach

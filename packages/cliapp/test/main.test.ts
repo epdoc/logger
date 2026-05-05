@@ -29,6 +29,7 @@ describe('CliApp.run', () => {
 
     const ctx = new TestContext(pkg);
     await ctx.setupLogging();
+    ctx.noBanner = true;
     const cmd = new SuccessCmd(ctx);
 
     const originalExit = Deno.exit;

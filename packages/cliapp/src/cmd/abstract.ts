@@ -215,6 +215,10 @@ export abstract class AbstractCommand<
 
     // Final execution handler
     this.commander.action(async (...params: unknown[]) => {
+      const ctx = this.activeContext();
+      if (ctx && !ctx.noBanner && ctx.pkg && ctx.pkg.name) {
+        ctx.log.nodent().info.h1(ctx.pkg.name).label('version').value(ctx.pkg.version).emit();
+      }
       const opts = params[params.length - 2] as TOpts;
       const rawArgs = params.slice(0, -2);
       const args = (rawArgs.length === 1 && Array.isArray(rawArgs[0])) ? rawArgs[0] as string[] : rawArgs as string[];

@@ -69,6 +69,7 @@ describe('CliApp Examples System Tests', () => {
       'file1',
     ]);
     expect(code).toBe(0);
+    console.log(outStr);
     // Check for ANSI escape sequences
     // deno-lint-ignore no-control-regex
     const hasColor = /\x1b\[\d+m/.test(outStr);
