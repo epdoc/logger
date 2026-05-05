@@ -24,6 +24,7 @@ if (import.meta.main) {
     // Standard CLI mode
     const ctx = new App.Ctx.RootContext(pkg);
     await ctx.setupLogging({ pkg: 'app' });
+    // ctx.noBanner = true;
     const rootCmd = new App.Cmd.Root(ctx);
     await CliApp.run(ctx, rootCmd);
   }
