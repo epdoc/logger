@@ -226,6 +226,21 @@ export abstract class AbstractMsgBuilder implements IFormatter {
   }
 
   /**
+   * Appends lines of text to the message, also splitting on '\n'.
+   *
+   * @param {unknown[]} args - The content to append.
+   * @returns {this} The current instance for chaining.
+   */
+  public lines(...args: string[]): this {
+    if (!this._allow) return this;
+    const lines = args.flatMap((arg) => arg.split('\n'));
+    for (const line of lines) {
+      this.appendMsg(line);
+    }
+    return this;
+  }
+
+  /**
    * Appends unstyled (plain) text to the message.
    *
    * @param {unknown[]} args - The content to append.
