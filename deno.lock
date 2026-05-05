@@ -7,6 +7,9 @@
     "jsr:@epdoc/duration@~0.3.12": "0.3.12",
     "jsr:@epdoc/fs@^1.4.4": "1.4.4",
     "jsr:@epdoc/logger@^1003.3.27": "1003.3.27",
+    "jsr:@epdoc/loglevels@^1.0.3": "1.0.3",
+    "jsr:@epdoc/msgbuilder@~0.1.34": "0.1.35",
+    "jsr:@epdoc/msgbuilder@~0.1.35": "0.1.35",
     "jsr:@epdoc/progress@~0.1.5": "0.1.5",
     "jsr:@epdoc/string@~0.1.29": "0.1.29",
     "jsr:@epdoc/terminal@^0.0.12": "0.0.12",
@@ -94,6 +97,23 @@
         "jsr:@epdoc/string",
         "jsr:@epdoc/type",
         "jsr:@std/assert@^1.0.19",
+        "jsr:@std/fmt@^1.0.10"
+      ]
+    },
+    "@epdoc/loglevels@1.0.3": {
+      "integrity": "fced4e99fcebcb1c7800d6d9ccf1d4d83eb572c06c588a33761105e818e7ecf3",
+      "dependencies": [
+        "jsr:@epdoc/type",
+        "jsr:@std/assert@^1.0.19"
+      ]
+    },
+    "@epdoc/msgbuilder@0.1.35": {
+      "integrity": "84b8dc61cbb9e445df51b00c65e754d61b1288471ea880b2026b9b96b5a07750",
+      "dependencies": [
+        "jsr:@epdoc/colors",
+        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/string",
+        "jsr:@epdoc/type",
         "jsr:@std/fmt@^1.0.10"
       ]
     },
@@ -378,7 +398,7 @@
           "jsr:@epdoc/datetime@^4.0.1",
           "jsr:@epdoc/duration@~0.3.12",
           "jsr:@epdoc/loglevels@^1.0.3",
-          "jsr:@epdoc/msgbuilder@~0.1.34",
+          "jsr:@epdoc/msgbuilder@~0.1.35",
           "jsr:@epdoc/string@~0.1.29",
           "jsr:@epdoc/type@^1.2.13",
           "jsr:@std/assert@^1.0.19",
