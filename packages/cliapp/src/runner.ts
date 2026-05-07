@@ -106,14 +106,26 @@ export async function runCommand(
       clearEnv: opts.clearEnv,
     });
 
-    const { code } = await command.output();
+    const child = command.spawn();
 
-    return {
-      success: code === 0,
-      code,
-      stdout: '',
-      stderr: '',
+    // Handle SIGINT by forwarding it to the child process
+    const sigintHandler = () => {
+      child.kill('SIGINT');
     };
+    Deno.addSignalListener('SIGINT', sigintHandler);
+
+    try {
+      const { code } = await child.output();
+
+      return {
+        success: code === 0,
+        code,
+        stdout: '',
+        stderr: '',
+      };
+    } finally {
+      Deno.removeSignalListener('SIGINT', sigintHandler);
+    }
   } else {
     // For non-interactive commands, capture output
     const command = new Deno.Command(cmd, {
