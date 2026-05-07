@@ -36,8 +36,8 @@ export abstract class AbstractMsgBuilder implements IFormatter {
   protected _data: Dict | undefined;
   protected _suffix: string[] = [];
   protected _showElapsed: boolean = false;
-  protected _allow: boolean = true;
-  protected _conditionMet = false;
+  protected _allowStack: boolean[] = [];
+  protected _conditionMetStack: boolean[] = [];
   protected _dimMode: boolean = false;
   protected _boldMode: boolean = false;
 
@@ -106,37 +106,75 @@ export abstract class AbstractMsgBuilder implements IFormatter {
   }
 
   public if(val: boolean): this {
-    this._conditionMet = val;
-    this._allow = val;
+    // Calculate effective allow based on parent conditions (if any)
+    const parentAllows = this._allowStack.length === 0 || this._allowStack[this._allowStack.length - 1];
+    const effectiveAllow = parentAllows && val;
+
+    this._conditionMetStack.push(val);
+    this._allowStack.push(effectiveAllow);
     return this;
   }
 
   public elif(val: boolean): this {
-    if (this._conditionMet) {
-      this._allow = false;
+    if (this._conditionMetStack.length === 0) {
+      throw new Error('elif() called without a matching if()');
+    }
+
+    const parentAllows = this._allowStack.length <= 1 || this._allowStack[this._allowStack.length - 2];
+    const conditionMet = this._conditionMetStack[this._conditionMetStack.length - 1];
+
+    if (conditionMet) {
+      // A previous condition was met, so this branch should not execute
+      this._allowStack[this._allowStack.length - 1] = false;
     } else {
-      this._allow = val;
+      // No previous condition was met, check this one
+      const effectiveAllow = parentAllows && val;
+      this._allowStack[this._allowStack.length - 1] = effectiveAllow;
       if (val) {
-        this._conditionMet = true;
+        this._conditionMetStack[this._conditionMetStack.length - 1] = true;
       }
     }
     return this;
   }
 
   public else(): this {
-    if (this._conditionMet) {
-      this._allow = false;
+    if (this._conditionMetStack.length === 0) {
+      throw new Error('else() called without a matching if()');
+    }
+
+    const parentAllows = this._allowStack.length <= 1 || this._allowStack[this._allowStack.length - 2];
+    const conditionMet = this._conditionMetStack[this._conditionMetStack.length - 1];
+
+    if (conditionMet) {
+      // A previous condition was met, so else branch should not execute
+      this._allowStack[this._allowStack.length - 1] = false;
     } else {
-      this._allow = true;
-      this._conditionMet = true;
+      // No previous condition was met, execute else branch
+      this._allowStack[this._allowStack.length - 1] = parentAllows;
+      this._conditionMetStack[this._conditionMetStack.length - 1] = true;
     }
     return this;
   }
 
   public endif(): this {
-    this._allow = true;
-    this._conditionMet = false;
+    if (this._allowStack.length === 0) {
+      throw new Error('endif() called without a matching if()');
+    }
+    this._allowStack.pop();
+    this._conditionMetStack.pop();
     return this;
+  }
+
+  /**
+   * Returns true if the current state allows adding content to the message.
+   * This is true when there are no conditions or when all nested conditions are met.
+   * @protected
+   */
+  protected get _allow(): boolean {
+    if (this._allowStack.length === 0) {
+      return true;
+    }
+    return this._allowStack[this._allowStack.length - 1];
   }
 
   /**
