@@ -63,22 +63,30 @@ describe('MsgBuilder.Console conditional', () => {
   describe('nested if/endif', () => {
     test('if(true).if(true) - both true', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
-      const result = msgBuilder.if(true).text('a').if(true).text('b').endif().text('c').endif().text('d').format({ color: false });
+      const result = msgBuilder.if(true).text('a').if(true).text('b').endif().text('c').endif().text('d').format({
+        color: false,
+      });
       expect(result).toBe('a b c d');
     });
     test('if(true).if(false) - outer true, inner false', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
-      const result = msgBuilder.if(true).text('a').if(false).text('b').endif().text('c').endif().text('d').format({ color: false });
+      const result = msgBuilder.if(true).text('a').if(false).text('b').endif().text('c').endif().text('d').format({
+        color: false,
+      });
       expect(result).toBe('a c d');
     });
     test('if(false).if(true) - outer false, inner true', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
-      const result = msgBuilder.if(false).text('a').if(true).text('b').endif().text('c').endif().text('d').format({ color: false });
+      const result = msgBuilder.if(false).text('a').if(true).text('b').endif().text('c').endif().text('d').format({
+        color: false,
+      });
       expect(result).toBe('d');
     });
     test('if(false).if(false) - both false', () => {
       const msgBuilder = new MsgBuilder.Console.Builder();
-      const result = msgBuilder.if(false).text('a').if(false).text('b').endif().text('c').endif().text('d').format({ color: false });
+      const result = msgBuilder.if(false).text('a').if(false).text('b').endif().text('c').endif().text('d').format({
+        color: false,
+      });
       expect(result).toBe('d');
     });
     test('triple nesting - all true', () => {
