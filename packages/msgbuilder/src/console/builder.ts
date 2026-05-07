@@ -280,8 +280,13 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    * @param {...MsgBuilder.StyleArg[]} args
    * @returns {this}
    */
-  public path(...args: MsgBuilder.StyleArg[]): this {
-    return this.stylize(this.styles.path, ...args);
+  public path(path: string | { path: string }): this {
+    const p = _.isString(path)
+      ? path
+      : (_.isObject(path) && 'path' in path && _.isString(path.path))
+      ? path.path
+      : undefined;
+    return this.stylize(this.styles.path, p ? p : '?');
   }
 
   /**
@@ -341,7 +346,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
       ? path.path
       : undefined;
     if (!_.isString(p)) {
-      return this.path('?');
+      return this.stylize(this.styles.path, '?');
     }
     let displayPath: string;
     if (relativeTo === 'home') {
