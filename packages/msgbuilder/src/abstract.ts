@@ -60,6 +60,8 @@ export abstract class AbstractMsgBuilder implements IFormatter {
   public clear(): this {
     this._msgParts = [];
     this._data = undefined;
+    this._dimMode = false;
+    this._boldMode = false;
     return this;
   }
 
@@ -185,9 +187,18 @@ export abstract class AbstractMsgBuilder implements IFormatter {
    * @returns {this} The current instance for chaining.
    */
   appendMsgPart(str: string, style?: StyleFormatterFn | null): this {
+    let finalStyle = style;
+    if (this._dimMode) {
+      const prev = finalStyle ?? ((s: string) => s);
+      finalStyle = (s: string) => dim(prev(s));
+    }
+    if (this._boldMode) {
+      const prev = finalStyle ?? ((s: string) => s);
+      finalStyle = (s: string) => bold(prev(s));
+    }
     const part: MsgPart = { str: str };
-    if (style) {
-      part.style = style;
+    if (finalStyle) {
+      part.style = finalStyle;
     }
     this._msgParts.push(part);
     return this;
@@ -201,9 +212,18 @@ export abstract class AbstractMsgBuilder implements IFormatter {
    * @returns {this} The current instance for chaining.
    */
   prependMsgPart(str: string, style?: StyleFormatterFn | null): this {
+    let finalStyle = style;
+    if (this._dimMode) {
+      const prev = finalStyle ?? ((s: string) => s);
+      finalStyle = (s: string) => dim(prev(s));
+    }
+    if (this._boldMode) {
+      const prev = finalStyle ?? ((s: string) => s);
+      finalStyle = (s: string) => bold(prev(s));
+    }
     const part: MsgPart = { str: str };
-    if (style) {
-      part.style = style;
+    if (finalStyle) {
+      part.style = finalStyle;
     }
     this._msgParts.unshift(part);
     return this;
@@ -249,15 +269,7 @@ export abstract class AbstractMsgBuilder implements IFormatter {
           return String(arg);
         })
         .join(' ');
-      let finalStyle: StyleFormatterFn | null = style ? Color.toStyleFn(style) : null;
-      if (finalStyle && this._dimMode) {
-        const prev = finalStyle;
-        finalStyle = (s: string) => dim(prev(s));
-      }
-      if (finalStyle && this._boldMode) {
-        const prev = finalStyle;
-        finalStyle = (s: string) => bold(prev(s));
-      }
+      const finalStyle: StyleFormatterFn | null = style ? Color.toStyleFn(style) : null;
       this.appendMsgPart(str, finalStyle);
     }
     return this;
