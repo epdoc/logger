@@ -170,6 +170,8 @@ export interface OptionDef {
   choices?: string[];
   validateChoices?: boolean;
   defVal?: number | boolean | string | string[];
+  /** Allow the option to be specified multiple times, collecting values into an array */
+  collect?: boolean;
   /** Additional help text to display if params are set to '?' */
   help?: OptionHelpText;
 }

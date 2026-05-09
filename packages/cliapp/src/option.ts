@@ -46,6 +46,7 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
   #command: T;
   #option: Commander.Option;
   #helpText?: OptionHelpText;
+  #collect: boolean = false;
   // deno-lint-ignore no-explicit-any
   #customParser?: (val: string, previous: any) => any;
 
@@ -75,6 +76,9 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
       }
       if (def.argParser) {
         this.#customParser = def.argParser;
+      }
+      if (def.collect) {
+        this.#collect = true;
       }
       if (def.choices && def.validateChoices !== false) {
         this.#option.choices(def.choices);
@@ -234,6 +238,17 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
   }
 
   /**
+   * Allow this option to be specified multiple times.
+   * Values will be collected into an array.
+   *
+   * @returns This builder for method chaining
+   */
+  repeatable(): this {
+    this.#collect = true;
+    return this;
+  }
+
+  /**
    * Finalize the option and return to the command for continued chaining
    *
    * @returns The original command instance
@@ -245,9 +260,9 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
     const cmd = (this.#command as unknown as { commander?: Commander.Command }).commander ||
       (this.#command as unknown as Commander.Command);
 
-    if (this.#helpText) {
+    if (this.#helpText || this.#collect || this.#customParser) {
       // Only show hint if option accepts a parameter
-      if (this.#option.flags.includes('<') || this.#option.flags.includes('[')) {
+      if (this.#helpText && (this.#option.flags.includes('<') || this.#option.flags.includes('['))) {
         const flagMatch = this.#option.flags.match(/--[\w-]+/);
         const flagStr = flagMatch ? flagMatch[0] : this.#option.flags.split(' ')[0];
         const helpHint = `(enter ${flagStr} ? for help)`;
@@ -256,20 +271,31 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
         }
       }
 
-      // ALWAYS set an argParser when helpText is present to intercept '?' values
-      // This ensures '?' detection works even without a custom argParser
+      // Ensure default is an array if collecting and no default set
+      if (this.#collect && this.#option.defaultValue === undefined) {
+        this.#option.default([]);
+      }
+
       const customParser = this.#customParser;
+      const collect = this.#collect;
+
       // deno-lint-ignore no-explicit-any
       this.#option.argParser((val: string, previous: any) => {
-        if (REG.displayHelp.test(val)) {
+        if (this.#helpText && REG.displayHelp.test(val)) {
           this.#displayHelp();
         }
-        // Call custom parser if provided, otherwise return the value as-is
-        return customParser ? customParser(val, previous) : val;
+
+        // If we are collecting, the custom parser should treat 'previous' as undefined
+        // so it doesn't try to collect itself, unless the user specifically wanted that.
+        // But with our 'repeatable()' API, we handle the collection.
+        const result = customParser ? customParser(val, collect ? undefined : previous) : val;
+
+        if (collect) {
+          const prev = Array.isArray(previous) ? previous : (previous !== undefined ? [previous] : []);
+          return [...prev, result];
+        }
+        return result;
       });
-    } else if (this.#customParser) {
-      // No help text but custom parser exists - use it directly
-      this.#option.argParser(this.#customParser);
     }
 
     cmd.addOption(this.#option);
