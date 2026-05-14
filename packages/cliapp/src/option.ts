@@ -103,7 +103,7 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
    * @param values - Array of valid values
    * @returns This builder for method chaining
    */
-  choices(values: string[]): this {
+  choices(values: readonly string[]): this {
     this.#option.choices(values);
     return this;
   }
