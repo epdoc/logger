@@ -23,7 +23,7 @@
  */
 
 /** Result of a command execution */
-export interface CommandResult {
+export interface CmdResult {
   /** Whether the command exited with code 0 */
   success: boolean;
   /** The process exit code */
@@ -32,10 +32,12 @@ export interface CommandResult {
   stdout: string;
   /** Standard error (empty string in interactive mode) */
   stderr: string;
+  /** The command that was run (for logging purposes) */
+  command: string;
 }
 
 /** Options for running a command */
-export interface RunCommandOptions {
+export interface CmdOptions {
   /** Working directory for the command. Defaults to current directory. */
   cwd?: string;
   /**
@@ -47,6 +49,8 @@ export interface RunCommandOptions {
   env?: Record<string, string>;
   /** Clear environment variables and only use those specified in `env`. Default: false */
   clearEnv?: boolean;
+  /** If true then do not execute the command. We will mock the result. */
+  dryRun?: boolean;
 }
 
 /**
@@ -89,10 +93,21 @@ export interface RunCommandOptions {
 export async function runCommand(
   cmd: string,
   args: string[],
-  opts: RunCommandOptions = {},
-): Promise<CommandResult> {
+  opts: CmdOptions = {},
+): Promise<CmdResult> {
   const cwd = opts.cwd ?? Deno.cwd();
   const interactive = opts.interactive ?? false;
+  const commandStr = [cmd, ...args].join(' ');
+
+  if (opts.dryRun) {
+    return {
+      success: true,
+      code: 0,
+      stdout: '',
+      stderr: '',
+      command: commandStr,
+    };
+  }
 
   if (interactive) {
     // For interactive commands, inherit stdio
@@ -122,6 +137,7 @@ export async function runCommand(
         code,
         stdout: '',
         stderr: '',
+        command: commandStr,
       };
     } finally {
       Deno.removeSignalListener('SIGINT', sigintHandler);
@@ -144,6 +160,7 @@ export async function runCommand(
       code,
       stdout: new TextDecoder().decode(stdout),
       stderr: new TextDecoder().decode(stderr),
+      command: commandStr,
     };
   }
 }
@@ -174,8 +191,8 @@ export async function runCommand(
 export async function runCommandOrThrow(
   cmd: string,
   args: string[],
-  opts: RunCommandOptions = {},
-): Promise<CommandResult> {
+  opts: CmdOptions = {},
+): Promise<CmdResult> {
   const result = await runCommand(cmd, args, opts);
 
   if (!result.success) {
@@ -195,9 +212,9 @@ export async function runCommandOrThrow(
  */
 export class CommandError extends Error {
   /** The command result that caused this error */
-  readonly result: CommandResult;
+  readonly result: CmdResult;
 
-  constructor(message: string, result: CommandResult) {
+  constructor(message: string, result: CmdResult) {
     super(message);
     this.result = result;
   }

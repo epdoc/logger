@@ -11,7 +11,7 @@ export * as Cmd from './cmd/mod.ts';
 export * as Ctx from './context.ts';
 export * as Mcp from './mcp/mod.ts';
 export * as Progress from './progress/mod.ts';
-export * from './runner.ts';
+export * as Runner from './runner.ts';
 export { FluentOptionBuilder } from './option.ts';
 export * from './pkg-type.ts';
 export { run } from './run.ts';

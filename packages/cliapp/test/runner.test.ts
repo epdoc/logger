@@ -144,6 +144,7 @@ describe('runner', () => {
         code: 1,
         stdout: '',
         stderr: 'error message',
+        command: 'mock command',
       };
       const err = new CommandError('test error', result);
 
@@ -157,6 +158,7 @@ describe('runner', () => {
         code: 42,
         stdout: 'output',
         stderr: 'error',
+        command: 'mock command',
       };
       const err = new CommandError('test', result);
 
