@@ -32,6 +32,8 @@ export interface CmdResult {
   stdout: string;
   /** Standard error (empty string in interactive mode) */
   stderr: string;
+  /** Set to true if this was a dry run and the command was not executed */
+  dryRun?: boolean;
   /** The command that was run (for logging purposes) */
   command: string;
 }
@@ -99,12 +101,13 @@ export async function runCommand(
   const interactive = opts.interactive ?? false;
   const commandStr = [cmd, ...args].join(' ');
 
-  if (opts.dryRun) {
+  if (opts.dryRun === true) {
     return {
       success: true,
       code: 0,
       stdout: '',
       stderr: '',
+      dryRun: true,
       command: commandStr,
     };
   }

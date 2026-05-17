@@ -118,7 +118,8 @@ export abstract class BaseClass<
   }
 
   /**
-   * Run an external command, respecting the context's dryRun setting.
+   * Run an external command, respecting the context's dryRun setting. For read-only commands, the
+   * dryRun parameter can be explicitly set to false to enable the command to be run.
    *
    * @param cmd - The command to execute
    * @param args - Array of command arguments
