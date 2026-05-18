@@ -34,4 +34,28 @@ describe('TextBuilder', () => {
     const expected = '[CUSTOM] Line 1\n[CUSTOM] Line 2\n\n[CUSTOM] Line 3';
     assertEquals(tb.emit(), expected);
   });
+
+  it('should support indentation levels', () => {
+    const tb = new TextBuilder();
+
+    tb.line.plain('No indent');
+    tb.indent();
+    tb.line.plain('Level 1');
+    tb.indent(2);
+    tb.line.plain('Level 3');
+    tb.outdent();
+    tb.line.plain('Level 2');
+    tb.nodent();
+    tb.line.plain('Back to root');
+
+    const expected = [
+      'No indent',
+      '  Level 1',
+      '      Level 3',
+      '    Level 2',
+      'Back to root',
+    ].join('\n');
+
+    assertEquals(tb.emit(), expected);
+  });
 });

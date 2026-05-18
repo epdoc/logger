@@ -348,6 +348,9 @@ Use `CliApp.TextBuilder` to construct multi-line formatted text blocks before di
 to build lines using the custom/default message builder, but instead of logging immediately, they are stored in memory
 and compiled on demand.
 
+It also supports persistent indentation levels (`indent()`, `outdent()`, `nodent()`) that automatically apply to all
+subsequent lines.
+
 ```typescript
 import * as CliApp from '@epdoc/cliapp';
 
@@ -355,14 +358,22 @@ import * as CliApp from '@epdoc/cliapp';
 const tb = new CliApp.TextBuilder();
 
 tb.line.h2('Header 2');
+tb.indent(); // Increase indent (defaults to 2 spaces)
 tb.line.text('Key:').bold('Value');
+tb.indent(); // Increase indent again (total 4 spaces)
+tb.line.text('Nested item');
+tb.outdent(); // Decrease indent back to 2 spaces
+tb.line.text('Another item');
+tb.nodent(); // Reset all indentation to root
 tb.nl();
 tb.line.text('Done!');
 
 console.log(tb.emit());
 // Output:
 // Header 2
-// Key: Value
+//   Key: Value
+//     Nested item
+//   Another item
 //
 // Done!
 ```

@@ -239,7 +239,8 @@ await doWork(); // Automatically completes on block exit
 
 ## TextBuilder
 
-Accumulate multiple lines of formatted text in memory using `MsgBuilder` without emitting them immediately.
+Accumulate multiple lines of formatted text in memory using `MsgBuilder` without emitting them immediately. Supports
+persistent indentation.
 
 ```typescript
 import * as CliApp from '@epdoc/cliapp';
@@ -247,6 +248,10 @@ import * as CliApp from '@epdoc/cliapp';
 // Default MsgBuilder
 const tb = new CliApp.TextBuilder();
 tb.line.text('Hello').bold('World');
+tb.indent(); // +2 spaces
+tb.line.text('Nested');
+tb.outdent(); // -2 spaces
+tb.nodent(); // Reset
 tb.nl();
 tb.line.plain('Done');
 
