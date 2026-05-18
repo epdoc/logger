@@ -237,6 +237,29 @@ await doWork(); // Automatically completes on block exit
 
 ---
 
+## TextBuilder
+
+Accumulate multiple lines of formatted text in memory using `MsgBuilder` without emitting them immediately.
+
+```typescript
+import * as CliApp from '@epdoc/cliapp';
+
+// Default MsgBuilder
+const tb = new CliApp.TextBuilder();
+tb.line.text('Hello').bold('World');
+tb.nl();
+tb.line.plain('Done');
+
+console.log(tb.emit()); // Returns multi-line string
+
+// Custom MsgBuilder
+const tbCustom = new CliApp.TextBuilder(AppBuilder);
+tbCustom.line.customMethod();
+console.log(tbCustom.emit());
+```
+
+---
+
 ## Key Types
 
 ```typescript

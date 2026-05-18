@@ -15,6 +15,7 @@ export * as Runner from './runner.ts';
 export { FluentOptionBuilder } from './option.ts';
 export * from './pkg-type.ts';
 export { run } from './run.ts';
+export { TextBuilder } from './text-builder.ts';
 export * from './types.ts';
 export * from './utils.ts';
 

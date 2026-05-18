@@ -18,6 +18,8 @@ MCP server support.
 - **"Using" Pattern** - Automatic progress cleanup with TypeScript's `using` declaration.
 - **Command Runner** - Typed wrapper around `Deno.Command` for running external processes with captured or inherited
   output.
+- **TextBuilder** — Utility to accumulate multiple lines of formatted text in memory using MsgBuilder before
+  logging/printing.
 
 ## Installation
 
@@ -338,6 +340,38 @@ ctx.log.info.text('Processing').start();
 ctx.log.warn.text('Warning: slow connection').emit(); // Briefly updates progress line
 ctx.log.info.text('Still processing').update(); // Back to normal
 ctx.log.info.complete();
+```
+
+### TextBuilder
+
+Use `CliApp.TextBuilder` to construct multi-line formatted text blocks before displaying or saving them. It allows you
+to build lines using the custom/default message builder, but instead of logging immediately, they are stored in memory
+and compiled on demand.
+
+```typescript
+import * as CliApp from '@epdoc/cliapp';
+
+// Build text using the standard MsgBuilder
+const tb = new CliApp.TextBuilder();
+
+tb.line.h2('Header 2');
+tb.line.text('Key:').bold('Value');
+tb.nl();
+tb.line.text('Done!');
+
+console.log(tb.emit());
+// Output:
+// Header 2
+// Key: Value
+//
+// Done!
+```
+
+You can also use custom `MsgBuilder` types by providing the builder class constructor:
+
+```typescript
+const tb = new CliApp.TextBuilder(AppBuilder);
+tb.line.fileOp('WRITE', '/path/to/file');
 ```
 
 ### Context Flow
