@@ -256,6 +256,103 @@ describe('MsgBuilder.Console', () => {
       const result = msgBuilder.istar((s: string) => '\x1b[93m' + s + '\x1b[39m').format({ color: true });
       assertEquals(result, '\x1b[93m★\x1b[39m');
     });
+    describe('bool method', () => {
+      test('bool(true) with default preset (check)', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.bool(true).format({ color: true });
+        assertEquals(result, enable.success + '✓' + disable.success);
+      });
+      test('bool(false) with default preset (check)', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.bool(false).format({ color: true });
+        assertEquals(result, enable.error + '✗' + disable.error);
+      });
+      test('bool(true) with checkBold preset', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.bool(true, 'checkBold').format({ color: true });
+        assertEquals(result, enable.success + '✔' + disable.success);
+      });
+      test('bool(false) with checkBold preset', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.bool(false, 'checkBold').format({ color: true });
+        assertEquals(result, enable.error + '✖' + disable.error);
+      });
+      test('bool(true) with circle preset', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.bool(true, 'circle').format({ color: true });
+        assertEquals(result, enable.success + '●' + disable.success);
+      });
+      test('bool(false) with circle preset', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.bool(false, 'circle').format({ color: true });
+        assertEquals(result, enable.error + '‧' + disable.error);
+      });
+      test('bool(true) with yesno preset', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.bool(true, 'yesno').format({ color: true });
+        assertEquals(result, enable.success + 'yes' + disable.success);
+      });
+      test('bool(false) with yesno preset', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.bool(false, 'yesno').format({ color: true });
+        assertEquals(result, enable.error + 'no' + disable.error);
+      });
+      test('bool(true) with truefalse preset', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.bool(true, 'truefalse').format({ color: true });
+        assertEquals(result, enable.success + 'true' + disable.success);
+      });
+      test('bool(false) with truefalse preset', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.bool(false, 'truefalse').format({ color: true });
+        assertEquals(result, enable.error + 'false' + disable.error);
+      });
+      test('bool(true) with custom config', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder
+          .bool(true, { trueChar: '👍', falseChar: '👎' })
+          .format({ color: true });
+        assertEquals(result, enable.success + '👍' + disable.success);
+      });
+      test('bool(false) with custom config', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder
+          .bool(false, { trueChar: '👍', falseChar: '👎' })
+          .format({ color: true });
+        assertEquals(result, enable.error + '👎' + disable.error);
+      });
+      test('bool(true) with custom trueColor', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const customColor = (s: string) => '\x1b[32m' + s + '\x1b[39m';
+        const result = msgBuilder
+          .bool(true, { trueChar: '✓', falseChar: '✗', trueColor: customColor })
+          .format({ color: true });
+        assertEquals(result, '\x1b[32m✓\x1b[39m');
+      });
+      test('bool(false) with custom falseColor', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const customColor = (s: string) => '\x1b[31m' + s + '\x1b[39m';
+        const result = msgBuilder
+          .bool(false, { trueChar: '✓', falseChar: '✗', falseColor: customColor })
+          .format({ color: true });
+        assertEquals(result, '\x1b[31m✗\x1b[39m');
+      });
+      test('bool(true) without colors', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.bool(true).format({ color: false });
+        assertEquals(result, '✓');
+      });
+      test('bool(false) without colors', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.bool(false).format({ color: false });
+        assertEquals(result, '✗');
+      });
+      test('bool method chains with other methods', () => {
+        const msgBuilder = new MsgBuilder.Console.Builder();
+        const result = msgBuilder.text('Result:').bool(true).format({ color: false });
+        assertEquals(result, 'Result: ✓');
+      });
+    });
   });
   describe('err method', () => {
     const err = new Error('message');

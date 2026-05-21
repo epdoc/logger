@@ -3,7 +3,9 @@ import { _, type Integer } from '@epdoc/type';
 import os from 'node:os';
 import { relative } from 'node:path';
 import { AbstractMsgBuilder } from '../abstract.ts';
+import { BOOL_PRESETS } from '../consts.ts';
 import type * as MsgBuilder from '../types.ts';
+import type { BoolPresetName, BoolStyleOptions } from '../types.ts';
 import { consoleStyleFormatters } from './const.ts';
 import type { ConsoleStyleMap, IConsoleErrOpts, IConsoleMsgBuilder } from './types.ts';
 
@@ -488,6 +490,7 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    * @param {boolean} b - The boolean value.
    * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
    * @returns {this}
+   * @deprecated - Use the more flexible `bool()` method instead, which supports presets and custom configurations.
    */
   public ibool(b: boolean, color?: MsgBuilder.StyleFormatterFn): this {
     if (b) {
@@ -496,12 +499,48 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
       return this.ierror(color);
     }
   }
+
+  /**
+   * @deprecated - Use the more flexible `bool()` method instead, which supports presets and custom configurations.
+   */
   public iboolb(b: boolean, color?: MsgBuilder.StyleFormatterFn): this {
     if (b) {
       return this.icheckb(color);
     } else {
       return this.ierrorb(color);
     }
+  }
+
+  /**
+   * Appends a boolean icon (✓ or ✗ are the defaults). Defaults to `success` style for true and
+   * `error` style for false.
+   *
+   * You can customize the characters and colors using the `options` parameter:
+   * - Pass a preset name from `BOOL_PRESETS` (e.g. 'check', 'checkBold', 'circle', 'yesno) to use
+   *   predefined styles.
+   * - Or pass a custom configuration object with `trueChar`, `falseChar`, and optional `trueColor`
+   *   and `falseColor`.
+   * @param {boolean} b - The boolean value.
+   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @returns {this}
+   */
+  public bool(b: boolean, options?: BoolPresetName | Partial<BoolStyleOptions>): this {
+    // 1. Resolve configuration based on type input
+    let config: BoolStyleOptions = { ...BOOL_PRESETS.check };
+
+    if (typeof options === 'string') {
+      config = { ...BOOL_PRESETS[options] };
+    } else if (options && typeof options === 'object') {
+      config = { ...config, ...options };
+    }
+
+    // 2. Select character and fallback color mappings
+    const char = b ? config.trueChar : config.falseChar;
+    const defaultColor = b ? this.styles.success : this.styles.error;
+    const colorFn = (b ? config.trueColor : config.falseColor) ?? defaultColor;
+
+    // 3. Delegate to your rendering engine
+    return this.stylize(colorFn, char);
   }
 
   /**
