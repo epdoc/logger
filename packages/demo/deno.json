@@ -38,7 +38,7 @@
   },
   "imports": {
     "@epdoc/cliapp": "file:../cliapp/src/mod.ts",
-    "@epdoc/fs": "jsr:@epdoc/fs@^1.4.5",
+    "@epdoc/fs": "jsr:@epdoc/fs@^1.4.7",
     "@epdoc/logger": "file:../logger/src/mod.ts",
     "@epdoc/loglevels": "file:../loglevels/src/mod.ts",
     "@epdoc/msgbuilder": "file:../msgbuilder/src/mod.ts",
