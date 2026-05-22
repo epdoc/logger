@@ -1,11 +1,11 @@
+import { toStyleFn } from '@epdoc/colors';
 import { DateTime } from '@epdoc/datetime';
+import { BOOL_PRESETS, type BoolFormatterOptions, type BoolPresetName } from '@epdoc/fmt';
 import { _, type Integer } from '@epdoc/type';
 import os from 'node:os';
 import { relative } from 'node:path';
 import { AbstractMsgBuilder } from '../abstract.ts';
-import { BOOL_PRESETS } from '../consts.ts';
 import type * as MsgBuilder from '../types.ts';
-import type { BoolPresetName, BoolStyleOptions } from '../types.ts';
 import { consoleStyleFormatters } from './const.ts';
 import type { ConsoleStyleMap, IConsoleErrOpts, IConsoleMsgBuilder } from './types.ts';
 
@@ -516,31 +516,30 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    * `error` style for false.
    *
    * You can customize the characters and colors using the `options` parameter:
-   * - Pass a preset name from `BOOL_PRESETS` (e.g. 'check', 'checkBold', 'circle', 'yesno) to use
+   * - Pass a preset name from `BOOL_PRESETS` (e.g. 'check', 'checkBold', 'circle', 'yesno') to use
    *   predefined styles.
    * - Or pass a custom configuration object with `trueChar`, `falseChar`, and optional `trueColor`
-   *   and `falseColor`.
+   *   and `falseColor` as hex values from the `@epdoc/colors` palette.
    * @param {boolean} b - The boolean value.
-   * @param {MsgBuilder.StyleFormatterFn} [color] - Optional style override.
+   * @param {BoolPresetName | Partial<BoolFormatterOptions>} [options] - Preset name or custom config.
    * @returns {this}
    */
-  public bool(b: boolean, options?: BoolPresetName | Partial<BoolStyleOptions>): this {
-    // 1. Resolve configuration based on type input
-    let config: BoolStyleOptions = { ...BOOL_PRESETS.check };
+  public bool(b: boolean, options?: BoolPresetName | Partial<BoolFormatterOptions>): this {
+    let config: BoolFormatterOptions = { ...BOOL_PRESETS.check };
 
     if (typeof options === 'string') {
-      config = { ...BOOL_PRESETS[options] };
+      const preset = BOOL_PRESETS[options] ?? BOOL_PRESETS.check;
+      config = { ...preset };
     } else if (options && typeof options === 'object') {
       config = { ...config, ...options };
     }
 
-    // 2. Select character and fallback color mappings
     const char = b ? config.trueChar : config.falseChar;
-    const defaultColor = b ? this.styles.success : this.styles.error;
-    const colorFn = (b ? config.trueColor : config.falseColor) ?? defaultColor;
+    const colorSpec = b ? config.trueColor : config.falseColor;
+    const defaultStyle = b ? this.styles.success : this.styles.error;
+    const colorFn = colorSpec !== undefined ? toStyleFn(colorSpec) : defaultStyle;
 
-    // 3. Delegate to your rendering engine
-    return this.stylize(colorFn, char);
+    return this.stylize(colorFn, char!);
   }
 
   /**

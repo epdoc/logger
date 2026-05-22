@@ -2,7 +2,6 @@ import type { DateTime } from '@epdoc/datetime';
 import type { HrMilliseconds } from '@epdoc/duration';
 import type { Dict, Integer } from '@epdoc/type';
 import type { AbstractMsgBuilder } from './abstract.ts';
-import type { BOOL_PRESETS } from './consts.ts';
 
 /**
  * Defines the interface for an emitter, which is responsible for outputting log messages.
@@ -162,12 +161,4 @@ export type FactoryMethod = (
 
 export type StyleMap = Record<string, StyleFormatterFn>;
 
-export interface BoolStyleOptions {
-  trueChar: string;
-  trueColor?: StyleFormatterFn;
-  falseChar: string;
-  falseColor?: StyleFormatterFn;
-}
-
-// Inferred from the consts object to maintain SSoT
-export type BoolPresetName = keyof typeof BOOL_PRESETS;
+export { type BoolFormatterOptions, type BoolPresetName } from '@epdoc/fmt';

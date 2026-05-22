@@ -260,82 +260,80 @@ describe('MsgBuilder.Console', () => {
       test('bool(true) with default preset (check)', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
         const result = msgBuilder.bool(true).format({ color: true });
-        assertEquals(result, enable.success + '✓' + disable.success);
+        assertEquals(result, '\x1b[38;2;81;214;124m✓\x1b[39m');
       });
       test('bool(false) with default preset (check)', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
         const result = msgBuilder.bool(false).format({ color: true });
-        assertEquals(result, enable.error + '✗' + disable.error);
+        assertEquals(result, '\x1b[38;2;239;68;68m✗\x1b[39m');
       });
       test('bool(true) with checkBold preset', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
         const result = msgBuilder.bool(true, 'checkBold').format({ color: true });
-        assertEquals(result, enable.success + '✔' + disable.success);
+        assertEquals(result, '\x1b[38;2;81;214;124m✔\x1b[39m');
       });
       test('bool(false) with checkBold preset', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
         const result = msgBuilder.bool(false, 'checkBold').format({ color: true });
-        assertEquals(result, enable.error + '✖' + disable.error);
+        assertEquals(result, '\x1b[38;2;239;68;68m✖\x1b[39m');
       });
       test('bool(true) with circle preset', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
         const result = msgBuilder.bool(true, 'circle').format({ color: true });
-        assertEquals(result, enable.success + '●' + disable.success);
+        assertEquals(result, '\x1b[38;2;81;214;124m●\x1b[39m');
       });
       test('bool(false) with circle preset', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
         const result = msgBuilder.bool(false, 'circle').format({ color: true });
-        assertEquals(result, enable.error + '‧' + disable.error);
+        assertEquals(result, '\x1b[38;2;100;116;139m○\x1b[39m');
       });
       test('bool(true) with yesno preset', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
         const result = msgBuilder.bool(true, 'yesno').format({ color: true });
-        assertEquals(result, enable.success + 'yes' + disable.success);
+        assertEquals(result, '\x1b[38;2;81;214;124myes\x1b[39m');
       });
       test('bool(false) with yesno preset', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
         const result = msgBuilder.bool(false, 'yesno').format({ color: true });
-        assertEquals(result, enable.error + 'no' + disable.error);
+        assertEquals(result, '\x1b[38;2;239;68;68mno\x1b[39m');
       });
       test('bool(true) with truefalse preset', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
         const result = msgBuilder.bool(true, 'truefalse').format({ color: true });
-        assertEquals(result, enable.success + 'true' + disable.success);
+        assertEquals(result, '\x1b[38;2;81;214;124mtrue\x1b[39m');
       });
       test('bool(false) with truefalse preset', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
         const result = msgBuilder.bool(false, 'truefalse').format({ color: true });
-        assertEquals(result, enable.error + 'false' + disable.error);
+        assertEquals(result, '\x1b[38;2;239;88;103mfalse\x1b[39m');
       });
       test('bool(true) with custom config', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
         const result = msgBuilder
           .bool(true, { trueChar: '👍', falseChar: '👎' })
           .format({ color: true });
-        assertEquals(result, enable.success + '👍' + disable.success);
+        assertEquals(result, '\x1b[38;2;81;214;124m👍\x1b[39m');
       });
       test('bool(false) with custom config', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
         const result = msgBuilder
           .bool(false, { trueChar: '👍', falseChar: '👎' })
           .format({ color: true });
-        assertEquals(result, enable.error + '👎' + disable.error);
+        assertEquals(result, '\x1b[38;2;239;68;68m👎\x1b[39m');
       });
       test('bool(true) with custom trueColor', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
-        const customColor = (s: string) => '\x1b[32m' + s + '\x1b[39m';
         const result = msgBuilder
-          .bool(true, { trueChar: '✓', falseChar: '✗', trueColor: customColor })
+          .bool(true, { trueChar: '✓', falseChar: '✗', trueColor: 0x00ff00 })
           .format({ color: true });
-        assertEquals(result, '\x1b[32m✓\x1b[39m');
+        assertEquals(result, '\x1b[38;2;0;255;0m✓\x1b[39m');
       });
       test('bool(false) with custom falseColor', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();
-        const customColor = (s: string) => '\x1b[31m' + s + '\x1b[39m';
         const result = msgBuilder
-          .bool(false, { trueChar: '✓', falseChar: '✗', falseColor: customColor })
+          .bool(false, { trueChar: '✓', falseChar: '✗', falseColor: 0xff0000 })
           .format({ color: true });
-        assertEquals(result, '\x1b[31m✗\x1b[39m');
+        assertEquals(result, '\x1b[38;2;255;0;0m✗\x1b[39m');
       });
       test('bool(true) without colors', () => {
         const msgBuilder = new MsgBuilder.Console.Builder();

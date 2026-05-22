@@ -1,4 +1,4 @@
-import { Color } from '@epdoc/colors';
+import { palette } from '@epdoc/colors';
 import * as colors from '@std/fmt/colors';
 import { bold, rgb24 } from '@std/fmt/colors';
 import type { IEmitter } from '../types.ts';
@@ -57,7 +57,7 @@ export const consoleStyleFormattersV1: ConsoleStyleMap = {
   bold: (str: string) => colors.bold(colors.white(str)),
 };
 
-const { white, gold, amber, orange, pink, green, teal, cyan, steel, lavender, lilac } = Color.palette;
+const { white, gold, amber, orange, pink, green, teal, cyan, steel, lavender, lilac } = palette;
 
 /**
  * The default console style theme using a rich 24-bit RGB color palette.
