@@ -57,6 +57,10 @@ export class TransportMgr {
     this._logMgr = logMgr;
   }
 
+  get logMgr(): IBaseOptions {
+    return this._logMgr;
+  }
+
   /**
    * Get the currently active progress line, if any.
    * @returns The active IProgressLine or undefined

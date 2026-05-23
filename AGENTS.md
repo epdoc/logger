@@ -286,6 +286,33 @@ for (let i = 0; i <= 100; i++) {
 ctx.log.info.complete();
 ```
 
+**Level Constraints** — Use the `level` option to control when progress shows vs regular logs:
+
+```typescript
+// Only show progress when threshold matches the specified level
+ctx.log.info.text('Building project').start({ level: 'info' });
+ctx.log.verbose.text('  Compiling TypeScript').emit();     // Regular log
+ctx.log.verbose.text('  Bundling assets').emit();          // Regular log
+ctx.log.info.text('Build complete!').stop();               // Complete progress (or emit if no match)
+```
+
+With `threshold = 'info'`: Shows "Building project" as an in-place progress line, then "Build complete!" on completion.  
+With `threshold = 'verbose'`: All messages emit as regular logs (the level constraint doesn't match).
+
+Use this when you want a clean progress display at normal log levels but full detail when debugging:
+
+```typescript
+// At info: Shows clean progress line
+// At verbose: Shows all messages as individual log lines
+ctx.log.info.text('Processing files').start({ level: 'info' });
+for (const file of files) {
+  ctx.log.verbose.text(`  Processing ${file}...`).start({ level: 'verbose' });
+  await process(file);
+  ctx.log.verbose.text(`  Done`).complete();
+}
+ctx.log.info.text('All files processed').stop();
+```
+
 ## Internal Import Aliases (logger package)
 
 The `logger` package uses these internal aliases defined in its `deno.json`:
