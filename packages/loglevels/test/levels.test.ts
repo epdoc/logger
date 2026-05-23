@@ -1,6 +1,5 @@
-import { assertEquals } from '@std/assert';
+import * as assert from 'node:assert';
 import * as colors from '@std/fmt/colors';
-import { describe, test } from '@std/testing/bdd';
 import * as Level from '../src/mod.ts';
 import { applyColors, compareLevels } from '../src/utils.ts';
 import { reset, set } from './color-map.ts';
@@ -49,11 +48,11 @@ const colorResult: string[] = [
   'hello',
 ];
 
-describe('levels cli', () => {
+Deno.test('levels cli', async (t) => {
   const logLevels = new Level.LogLevels(DEFS);
 
-  test('specMap keys and values', () => {
-    assertEquals(Array.from(logLevels.specMap.keys()), [
+  await t.step('specMap keys and values', () => {
+    assert.deepStrictEqual(Array.from(logLevels.specMap.keys()), [
       'ERROR',
       'WARN',
       'HELP',
@@ -65,56 +64,50 @@ describe('levels cli', () => {
       'INPUT',
       'SILLY',
     ]);
-    assertEquals(logLevels.$$id, 'test1');
-    assertEquals(logLevels.asSpec('info')!.severity, 9);
-    assertEquals(logLevels.asSpec(4), null);
-    // // Test that invalid severity throws
-    // try {
-    //   logLevels.asSpec(4)!.name;
-    //   throw new Error('Expected asName(4) to throw');
-    // } catch (e) {
-    //   assertEquals((e as Error).message, 'Cannot get log level: no name for level: 4');
-    // }
-    assertEquals(logLevels.asSpec(2)!.name, 'INPUT');
-    assertEquals(logLevels.asSpec(3)!.name, 'VERBOSE');
-    assertEquals(logLevels.asSpec(1)!.name, 'SILLY');
-    assertEquals(logLevels.asSpec(11)!.name, 'DATA');
-    assertEquals(logLevels.asSpec(15)!.name, 'HELP');
-    assertEquals(logLevels.asSpec(13)!.name, 'WARN');
-    assertEquals(logLevels.asSpec(17)!.name, 'ERROR');
+    assert.strictEqual(logLevels.$$id, 'test1');
+    assert.strictEqual(logLevels.asSpec('info')!.severity, 9);
+    assert.strictEqual(logLevels.asSpec(4), null);
+    assert.strictEqual(logLevels.asSpec(2)!.name, 'INPUT');
+    assert.strictEqual(logLevels.asSpec(3)!.name, 'VERBOSE');
+    assert.strictEqual(logLevels.asSpec(1)!.name, 'SILLY');
+    assert.strictEqual(logLevels.asSpec(11)!.name, 'DATA');
+    assert.strictEqual(logLevels.asSpec(15)!.name, 'HELP');
+    assert.strictEqual(logLevels.asSpec(13)!.name, 'WARN');
+    assert.strictEqual(logLevels.asSpec(17)!.name, 'ERROR');
   });
 
-  test('width', () => {
-    assertEquals(logLevels.maxWidth(logLevels.asSpec('INFO')!), 5);
-    assertEquals(logLevels.maxWidth(logLevels.asSpec('PROMPT')!), 6);
-    assertEquals(logLevels.maxWidth(logLevels.asSpec('SILLY')!), 7);
-  });
-  test('marked levels', () => {
-    assertEquals(logLevels.warnLevel!.name, 'WARN');
-    assertEquals(logLevels.warnLevel!.severity, 13);
-    assertEquals(logLevels.defaultLevel!.severity, 9);
-    assertEquals(logLevels.defaultLevel!.name, 'INFO');
+  await t.step('width', () => {
+    assert.strictEqual(logLevels.maxWidth(logLevels.asSpec('INFO')!), 5);
+    assert.strictEqual(logLevels.maxWidth(logLevels.asSpec('PROMPT')!), 6);
+    assert.strictEqual(logLevels.maxWidth(logLevels.asSpec('SILLY')!), 7);
   });
 
-  test('compare levels', () => {
+  await t.step('marked levels', () => {
+    assert.strictEqual(logLevels.warnLevel!.name, 'WARN');
+    assert.strictEqual(logLevels.warnLevel!.severity, 13);
+    assert.strictEqual(logLevels.defaultLevel!.severity, 9);
+    assert.strictEqual(logLevels.defaultLevel!.name, 'INFO');
+  });
+
+  await t.step('compare levels', () => {
     // Using Def objects
     const errorDef = logLevels.asSpec('error')!;
     const warnDef = logLevels.asSpec('warn')!;
     const infoDef = logLevels.asSpec('info')!;
     const debugDef = logLevels.asSpec('debug')!;
 
-    assertEquals(compareLevels(errorDef, errorDef), 0);
-    assertEquals(compareLevels(warnDef, errorDef), -1);
-    assertEquals(compareLevels(errorDef, warnDef), +1);
-    assertEquals(compareLevels(infoDef, debugDef), +1);
-    assertEquals(compareLevels(debugDef, infoDef), -1);
+    assert.strictEqual(compareLevels(errorDef, errorDef), 0);
+    assert.strictEqual(compareLevels(warnDef, errorDef), -1);
+    assert.strictEqual(compareLevels(errorDef, warnDef), +1);
+    assert.strictEqual(compareLevels(infoDef, debugDef), +1);
+    assert.strictEqual(compareLevels(debugDef, infoDef), -1);
   });
 
-  test('color', () => {
+  await t.step('color', () => {
     for (let severity = 1; severity <= 24; ++severity) {
       const spec: Level.Spec | null = logLevels.specArray[severity];
       const s: string = applyColors('hello', spec);
-      assertEquals(s, colorResult[severity]);
+      assert.strictEqual(s, colorResult[severity]);
     }
   });
 });
