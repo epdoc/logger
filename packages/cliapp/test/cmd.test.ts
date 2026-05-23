@@ -1,5 +1,4 @@
-import { assertEquals, assertExists } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 import * as CliApp from '../src/mod.ts';
 
 type M = CliApp.Ctx.MsgBuilder;
@@ -10,8 +9,8 @@ class TestContext extends CliApp.Ctx.AbstractBase<M, L> {
 
 const pkg = { name: 'test-app', version: '1.2.3', description: 'Test description' };
 
-describe('BaseCommand', () => {
-  it('should apply metadata from params in constructor', async () => {
+Deno.test('BaseCommand', async (t) => {
+  await t.step('should apply metadata from params in constructor', async () => {
     class MyCommand extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
         super(ctx, { ...pkg, root: true });
@@ -27,12 +26,12 @@ describe('BaseCommand', () => {
     const cmd = new MyCommand(ctx);
     await cmd.init();
 
-    assertEquals(cmd.commander.name(), 'test-app');
-    assertEquals(cmd.commander.version(), '1.2.3');
-    assertEquals(cmd.commander.description(), 'Test description');
+    assert.strictEqual(cmd.commander.name(), 'test-app');
+    assert.strictEqual(cmd.commander.version(), '1.2.3');
+    assert.strictEqual(cmd.commander.description(), 'Test description');
   });
 
-  it('should apply aliases to subcommands but not root', async () => {
+  await t.step('should apply aliases to subcommands but not root', async () => {
     class RootCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
         super(ctx, { name: 'root', aliases: ['r'], root: true });
@@ -59,11 +58,11 @@ describe('BaseCommand', () => {
     await root.init();
     await sub.init();
 
-    assertEquals(root.commander.aliases(), []);
-    assertEquals(sub.commander.aliases(), ['s']);
+    assert.deepStrictEqual(root.commander.aliases(), []);
+    assert.deepStrictEqual(sub.commander.aliases(), ['s']);
   });
 
-  it('should add logging options and dry-run when requested', async () => {
+  await t.step('should add logging options and dry-run when requested', async () => {
     class RootCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
         super(ctx, { root: true, dryRun: true });
@@ -80,11 +79,11 @@ describe('BaseCommand', () => {
     await root.init();
     const options = root.commander.options;
 
-    assertExists(options.find((o) => o.long === '--log-level'));
-    assertExists(options.find((o) => o.long === '--dry-run'));
+    assert.ok(options.find((o) => o.long === '--log-level'));
+    assert.ok(options.find((o) => o.long === '--dry-run'));
   });
 
-  it('should register subcommands from getSubCommands', async () => {
+  await t.step('should register subcommands from getSubCommands', async () => {
     class SubCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx?: TestContext) {
         super(ctx, { name: 'sub' });
@@ -112,10 +111,10 @@ describe('BaseCommand', () => {
     const root = new RootCmd(ctx);
     await root.init();
 
-    assertExists(root.commander.commands.find((c) => c.name() === 'sub'));
+    assert.ok(root.commander.commands.find((c) => c.name() === 'sub'));
   });
 
-  it('should allow omitting defineOptions and hydrateContext', async () => {
+  await t.step('should allow omitting defineOptions and hydrateContext', async () => {
     class SimpleCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
         super(ctx, { name: 'simple' });
@@ -130,6 +129,6 @@ describe('BaseCommand', () => {
     await ctx.setupLogging();
     const cmd = new SimpleCmd(ctx);
     await cmd.init();
-    assertExists(cmd);
+    assert.ok(cmd);
   });
 });

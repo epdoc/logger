@@ -233,6 +233,11 @@ this.log.info.icheck().text('Complete').complete();
 // "Using" pattern - automatic cleanup
 using _progress = this.log.info.text('Working').start();
 await doWork(); // Automatically completes on block exit
+
+// Level constraints - only show progress at specific levels
+this.log.info.text('Building').start({ level: 'info' });
+this.log.verbose.text('  Details...').emit(); // Regular log
+this.log.info.text('Done').stop(); // Only progress if threshold is info
 ```
 
 ---

@@ -342,6 +342,36 @@ ctx.log.info.text('Still processing').update(); // Back to normal
 ctx.log.info.complete();
 ```
 
+**Level Constraints** — Control when progress vs regular log messages are used:
+
+Use the `level` option in `start()` to specify which log level should trigger progress mode. If the specified level does
+not match the current threshold, `start()` emits a regular log message instead of showing a progress indicator. This is
+useful for creating progress indicators that only display at specific log levels.
+
+```typescript
+// Progress only shows when threshold is 'info'
+ctx.log.info.text('Building project').start({ level: 'info' });
+
+// Verbose details emit as regular logs (won't affect the progress line)
+ctx.log.verbose.text('  Parsing files...').emit();
+ctx.log.verbose.text('  Compiling...').emit();
+
+// Complete the progress (or emit if no progress was started)
+ctx.log.info.text('Build complete').stop();
+```
+
+With `threshold = 'info'`, the above shows a progress line that updates in place. With `threshold = 'verbose'`, all
+messages emit as regular logs since the `level: 'info'` constraint doesn't match.
+
+```typescript
+// Mixed levels with constraints at verbose threshold
+ctx.log.info.text('Starting build').start({ level: 'info' }); // Emits (constraint mismatch)
+ctx.log.verbose.text('  Compiling TypeScript').start({ level: 'verbose' }); // Progress
+ctx.log.verbose.text('    Parsed 100 files').emit();
+ctx.log.verbose.text('  Compiled').complete(); // Complete the verbose progress
+ctx.log.info.text('Build finished').stop(); // Emits (no active progress to complete)
+```
+
 ### TextBuilder
 
 Use `CliApp.TextBuilder` to construct multi-line formatted text blocks before displaying or saving them. It allows you

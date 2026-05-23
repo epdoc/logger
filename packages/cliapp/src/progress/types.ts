@@ -5,6 +5,7 @@
  * with @epdoc/progress.
  */
 
+import type * as Level from '@epdoc/loglevels';
 import type * as Progress from '@epdoc/progress';
 
 /**
@@ -24,3 +25,6 @@ export interface ProgressState {
   /** Whether progress is currently active */
   isActive: boolean;
 }
+
+/** If level matches the current threshold then a progress is started, otherwise an emit is executed. */
+export type StartOptions = Progress.LineOptions & { level: Level.Name };

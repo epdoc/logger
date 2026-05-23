@@ -51,7 +51,9 @@ import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { Console } from '@epdoc/msgbuilder';
 import * as Progress from '@epdoc/progress';
+import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
+import type { StartOptions } from './types.ts';
 
 /**
  * Extended emitter interface that includes progress support and transportMgr access.
@@ -112,7 +114,14 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
    * pushes the current context to a stack and shows the new message. When
    * complete() is called, the parent progress message is restored.
    *
+   * Supports **level constraints** - Use the `level` option to specify which log
+   * level should trigger progress mode. If the specified level does not match
+   * the current threshold, `start()` will emit instead of showing progress.
+   * This allows creating progress indicators that only display at specific
+   * log levels, falling back to regular log messages at other levels.
+   *
    * @param options - ProgressLineOptions from @epdoc/progress (type, index, color, etc.)
+   *                  plus optional `level` to constrain progress to a specific level
    * @returns This builder for continued chaining. Can be used with "using" pattern.
    *
    * @example
@@ -129,9 +138,15 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
    * // Using pattern - automatic cleanup
    * using _progress = ctx.log.info.text('Processing').start();
    * await doWork(); // Automatically completes on block exit
+   *
+   * // Level-constrained progress - only use progress at info level
+   * ctx.log.info.text('Building').start({ level: 'info' });
+   * ctx.log.verbose.text('Compiling...').emit();
+   * ctx.log.verbose.text('Done').emit();
+   * ctx.log.info.text('Build complete').stop(); // Only shows progress line if threshold is info
    * ```
    */
-  start(options?: Progress.LineOptions): this {
+  start(options?: StartOptions): this {
     const emitter = this._emitter as ProgressEmitter;
 
     // Check SUPPRESSED mode
@@ -142,8 +157,14 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
     const transportMgr = emitter.transportMgr;
     const levelName = emitter.level.name;
     const message = this.format();
+    let levelConstrain = false;
+    if (options && _.isNonEmptyString(options.level)) {
+      if (options.level !== transportMgr.logMgr.threshold.name) {
+        levelConstrain = true;
+      }
+    }
 
-    if (emitter.progressEnabled) {
+    if (emitter.progressEnabled && !levelConstrain) {
       if (transportMgr.hasActiveProgress) {
         // NESTED: Push new context to stack, update progress line with new message
         transportMgr.pushNestedProgress(message, levelName);
@@ -227,7 +248,10 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
    * - If nested (depth > 1), pops the stack and restores the parent progress message
    * - If top-level (depth = 1), stops the progress indicator and shows final text
    *
-   * In emit mode, emits a final log message.
+   * In emit mode, emits a final log message. This also occurs if no progress is
+   * currently active (e.g., when `start()` was called with a level constraint
+   * that did not match the threshold, causing it to emit instead of starting
+   * progress mode).
    *
    * @returns This builder for chaining
    *
@@ -241,6 +265,10 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
    * ctx.log.info.text('  Compiling').start();
    * ctx.log.info.text('  Done').complete(); // Shows "Building" again
    * ctx.log.info.text('Build complete').complete();
+   *
+   * // Completion after level-constrained start that fell back to emit
+   * ctx.log.info.text('Task').start({ level: 'debug' }); // Emits if threshold is info
+   * ctx.log.info.text('Task done').complete();           // Also emits since no progress active
    * ```
    */
   complete(): this {
@@ -251,16 +279,18 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
       return this;
     }
 
-    if (emitter.progressEnabled) {
+    const transportMgr = emitter.transportMgr;
+    const activeProgress = transportMgr.activeProgress;
+
+    if (emitter.progressEnabled && activeProgress?.isActive) {
       // PROGRESS mode: Handle nested progress
-      const transportMgr = emitter.transportMgr;
-      const activeProgress = transportMgr.activeProgress;
 
       // Assert: Must have active progress to complete
-      assert(
-        activeProgress?.isActive,
-        `No active progress to complete. Call start() first`,
-      );
+      // NOW we just emit
+      // assert(
+      //   activeProgress?.isActive,
+      //   `No active progress to complete. Call start() first`,
+      // );
 
       const nestingDepth = transportMgr.progressNestingDepth;
 
