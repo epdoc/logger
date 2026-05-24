@@ -286,7 +286,8 @@ async execute(): Promise<void> {
 
 This automatic behavior eliminates the need for manual level constraints.
 
-**Indent Suppression During Progress** — `indent()` and `outdent()` are automatically suppressed when progress is active to prevent disrupting the in-place display:
+**Indent Suppression During Progress** — `indent()` and `outdent()` are automatically suppressed when progress is active
+to prevent disrupting the in-place display:
 
 ```typescript
 ctx.log.info.text('Building project').start();
@@ -368,7 +369,7 @@ ctx.log.info.complete();
 ```typescript
 // Good: Use different levels
 ctx.log.info.text('Building project').start();
-ctx.log.verbose.text('  Parsing files...').emit();  // Won't show at info threshold
+ctx.log.verbose.text('  Parsing files...').emit(); // Won't show at info threshold
 ctx.log.verbose.text('  Compiling...').emit();
 ctx.log.info.text('Build complete').stop();
 

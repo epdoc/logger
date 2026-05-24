@@ -71,10 +71,10 @@ Deno.test('Progress with Indent/Outdent', async (t) => {
 
     // Indent applies before progress starts
     ctx.log.indent();
-    
+
     // This message should have indent (but verbose is suppressed at info)
     ctx.log.verbose.text('Preparing...').emit();
-    
+
     // Outdent applies after progress ends
     ctx.log.outdent();
 
@@ -89,10 +89,10 @@ Deno.test('Progress with Indent/Outdent', async (t) => {
     // So indent should work normally
     ctx.log.indent();
     ctx.log.info.text('Main task').emit();
-    
+
     // This emit will include indentation
     ctx.log.info.text('Sub-task completed').emit();
-    
+
     ctx.log.outdent();
     ctx.log.info.text('Main task complete').emit();
 
@@ -111,11 +111,11 @@ Deno.test('Progress with Indent/Outdent', async (t) => {
 
     // Indent suppressed during progress
     ctx.log.indent();
-    
+
     // These verbose messages are suppressed (below threshold)
     ctx.log.verbose.text('Step 1...').emit();
     ctx.log.verbose.text('Step 2...').emit();
-    
+
     // Outdent suppressed during progress
     ctx.log.outdent();
 

@@ -51,7 +51,6 @@ import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { Console } from '@epdoc/msgbuilder';
 import * as Progress from '@epdoc/progress';
-import { _ } from '@epdoc/type';
 import { assert } from '@std/assert';
 import type { StartOptions } from './types.ts';
 
@@ -155,10 +154,18 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
     }
 
     const transportMgr = emitter.transportMgr;
+    const logMgr = transportMgr.logMgr;
+    let startSeverity = 6; // verbose
+    if (options && options.level) {
+      const spec = logMgr.logLevels.asSpec(options.level);
+      assert(spec, `Invalid threshold ${options.level}`);
+      startSeverity = spec.severity;
+    }
+    const meetsThreshold = startSeverity >= logMgr.threshold.severity;
     const levelName = emitter.level.name;
     const message = this.format();
 
-    if (emitter.progressEnabled) {
+    if (emitter.progressEnabled && meetsThreshold) {
       if (transportMgr.hasActiveProgress) {
         // NESTED: Push new context to stack, update progress line with new message
         transportMgr.pushNestedProgress(message, levelName);
@@ -214,17 +221,10 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
       return this;
     }
 
-    if (emitter.progressEnabled) {
-      // PROGRESS mode: Update in-place
-      const transportMgr = emitter.transportMgr;
-      const activeProgress = transportMgr.activeProgress;
+    const transportMgr = emitter.transportMgr;
+    const activeProgress = transportMgr.activeProgress;
 
-      // Assert: Must have active progress to update
-      assert(
-        activeProgress?.isActive,
-        `No active progress to update. Call start() first`,
-      );
-
+    if (emitter.progressEnabled && activeProgress?.isActive) {
       // Update the current progress line (works with nested progress)
       activeProgress.update(this.format(), progressValue);
     } else {

@@ -26,5 +26,7 @@ export interface ProgressState {
   isActive: boolean;
 }
 
+export type ProgressThreshold = { level: Level.Name | Level.Severity | Level.Spec };
+
 /** Options for starting progress. Same as Progress.LineOptions. */
-export type StartOptions = Progress.LineOptions;
+export type StartOptions = ProgressThreshold & Progress.LineOptions;

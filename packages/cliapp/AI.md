@@ -236,10 +236,22 @@ await doWork(); // Automatically completes on block exit
 
 // Indent/outdent are automatically suppressed during active progress
 this.log.info.text('Building').start();
-this.log.indent();  // No-op during progress
+this.log.indent(); // No-op during progress
 this.log.verbose.text('Details...').emit(); // Use different level to avoid display issues
 this.log.outdent(); // No-op during progress
 this.log.info.text('Done').stop();
+
+// Level constraints - control when progress vs emit mode is used
+// Use { level: 'xxx' } to specify the minimum log level at which progress activates
+// Default is 'verbose' - progress only shows at verbose or more detailed thresholds
+this.log.info.text('Building project').start({ level: 'info' }); // Progress at info+
+this.log.verbose.text('  Compiling TypeScript...').emit(); // Detail logs
+this.log.verbose.text('  Bundling assets...').emit();
+this.log.info.text('Build complete!').stop(); // Complete progress
+
+// Severity comparison (OTLP-based): higher numbers = more severe
+// TRACE(1) < DEBUG(5) < INFO(9) < WARN(13) < ERROR(17) < FATAL(21)
+// When threshold is info(9): info+ messages show, verbose(6) and debug(5) are suppressed
 ```
 
 ---
