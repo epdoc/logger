@@ -156,22 +156,22 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
     }
 
     const transportMgr = emitter.transportMgr;
-    const logMgr = transportMgr.logMgr;
-    let startSeverity = 6; // verbose
+    let startThreshold = 6; // verbose by default
     if (options && options.level) {
-      const spec = logMgr.logLevels.asSpec(options.level);
+      const spec = transportMgr.logMgr.logLevels.asSpec(options.level);
       assert(spec, `Invalid threshold ${options.level}`);
-      startSeverity = spec.severity;
+      startThreshold = spec.severity;
     }
-    const meetsThreshold = startSeverity >= logMgr.threshold.severity;
-    const levelName = emitter.level.name;
-    const message = this.format();
+    // logMgr.threshold.severity
+    const meetsThreshold = emitter.level.severity >= startThreshold;
 
     // When level option is provided, use progressCapable (transport capability only)
     // Otherwise use progressEnabled (which includes level threshold check)
     const canShowProgress = options?.level ? emitter.progressCapable : emitter.progressEnabled;
 
     if (canShowProgress && meetsThreshold) {
+      const levelName = emitter.level.name;
+      const message = this.format();
       if (transportMgr.hasActiveProgress) {
         // NESTED: Push new context to stack, update progress line with new message
         transportMgr.pushNestedProgress(message, levelName);

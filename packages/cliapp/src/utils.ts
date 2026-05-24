@@ -64,7 +64,7 @@ export function configureLogging(ctx: Ctx.AbstractBase, opts: LogCmdOptions): vo
     logOptions.push(`--log-level ${opts.logLevel}`);
   }
   if (opts.verbose) {
-    threshold = 'info';
+    threshold = 'verbose';
     logOptions.push('--verbose');
   }
   if (opts.debug) {
