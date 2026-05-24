@@ -1,10 +1,11 @@
 import type * as CliApp from '@epdoc/cliapp';
 import * as Ctx from '../context.ts';
 import { ListCommand } from './list.ts';
+import { ProgressCommand } from './progress.ts';
 import { QueryCommand } from './query.ts';
 import { SubCommand } from './sub.ts';
 
-type RootCmdOpts = CliApp.CmdOptions & { happyMode?: boolean; name?: string };
+type RootCmdOpts = CliApp.CmdOptions & { happyMode?: boolean; name?: string; quiet?: boolean };
 
 export class RootCommand extends Ctx.BaseRootCmdClass<RootCmdOpts> {
   constructor(ctx: Ctx.RootContext) {
@@ -13,6 +14,7 @@ export class RootCommand extends Ctx.BaseRootCmdClass<RootCmdOpts> {
 
   override defineOptions(): void {
     this.log.info.section('RootCommand defineOptions').emit();
+    this.option('-q, --quiet', 'Enable global quiet').emit();
     this.option('--happy-mode', 'Enable special happy mode on the RootCommand')
       .emit();
     this.option('--name <name>', 'Name to use for greeting').emit();
@@ -34,6 +36,7 @@ export class RootCommand extends Ctx.BaseRootCmdClass<RootCmdOpts> {
   override hydrateContext(opts: RootCmdOpts, _args: CliApp.CmdArgs): void {
     this.log.info.section('RootCommand hydrateContext').emit();
     // We can apply the options to the context here, or in the action method
+    this.ctx.quiet = opts.quiet ? true : false;
     this.ctx.name = opts.name ? opts.name : undefined;
     this.ctx.happyMode = opts.happyMode ? true : false;
     this.log.info.demo(this.ctx).emit();
@@ -46,13 +49,14 @@ export class RootCommand extends Ctx.BaseRootCmdClass<RootCmdOpts> {
   }
 
   override execute(_opts: RootCmdOpts, _args: CliApp.CmdArgs): void {
-    this.log.info.section('Root command execute').emit();
-    this.log.info.demo(this.ctx).emit();
-    this.log.info.logShow(this.ctx).emit();
-    this.log.info.h2('Only executed when no subcommand is specified.').emit();
-    this.log.info.h2('You can safely not implement the execute method and help will be shown instead.').emit();
-    this.log.info.section().emit();
-    // this.commander.help();
+    if (!this.ctx.quiet) {
+      this.log.info.section('Root command execute').emit();
+      this.log.info.demo(this.ctx).emit();
+      this.log.info.logShow(this.ctx).emit();
+      this.log.info.h2('Only executed when no subcommand is specified.').emit();
+      this.log.info.h2('You can safely not implement the execute method and help will be shown instead.').emit();
+      this.log.info.section().emit();
+    } // this.commander.help();
   }
 
   protected override getSubCommands() {
@@ -60,6 +64,7 @@ export class RootCommand extends Ctx.BaseRootCmdClass<RootCmdOpts> {
       new SubCommand(this.parentContext),
       new QueryCommand(this.parentContext),
       new ListCommand(this.parentContext),
+      new ProgressCommand(this.parentContext),
     ];
   }
 }

@@ -1,4 +1,5 @@
 import * as FS from '@epdoc/fs/fs';
+import { _ } from '@epdoc/type';
 import * as Ctx from '../context.ts';
 import type { ListOpts, ProcessOpts } from './types.ts';
 
@@ -33,5 +34,30 @@ export class AppMain extends Ctx.BaseClass {
     this.info.section('Processing nothing').emit();
     this.info.opts(opts).emit();
     this.info.section().emit();
+  }
+
+  async progressDemo(): Promise<void> {
+    this.info.label('LogMgr Threshold:').value(this.ctx.logMgr.threshold).emit();
+    this.info.text('Chapter 1 Waiting').ellipsis().start();
+    await _.delayPromise(2000);
+    this.info.icheck().text('Chapter 1 Finished').stop();
+    this.info.text('Chapter 2 Waiting').ellipsis().start({ type: 'horizontal', total: 10, width: 10 });
+    this.info.text('Chapter 2 Waiting').ellipsis().update(1);
+    await _.delayPromise(1200);
+    this.verbose.ibullet().text('step 1').emit();
+    this.info.text('Chapter 2 still going').ellipsis().update(2);
+    await _.delayPromise(1200);
+    this.verbose.text('step 2').ellipsis().start();
+    await _.delayPromise(1200);
+    // this.info.text('Chapter 2 still going').ellipsis().update(5);
+    await _.delayPromise(1200);
+    this.verbose.text('step 2 still going').ellipsis().update();
+    await _.delayPromise(1200);
+    this.verbose.icheck().text('step 2 finished').stop();
+    await _.delayPromise(1200);
+    this.info.text('Chapter 2 still going').ellipsis().update(9);
+    this.verbose.ibullet().text('step 3').emit();
+    await _.delayPromise(1200);
+    this.info.icheck().text('Chapter 2 Finished').stop();
   }
 }

@@ -9,7 +9,7 @@ import * as App from './app/mod.ts';
  *
  * Adds application-specific formatting methods for consistent logging.
  */
-export class CustomMsgBuilder extends CliApp.Ctx.MsgBuilder {
+export class CustomMsgBuilder extends CliApp.Progress.MsgBuilder {
   fileOp(item: FS.Typed, size: number = 0, units = 'byte') {
     if (item instanceof FS.Folder) {
       return this.label('Folder:').relative(item.path);
@@ -48,6 +48,7 @@ export class RootContext extends CliApp.Ctx.AbstractBase<CustomMsgBuilder, Custo
   app!: App.Main;
   name?: string;
   happyMode = false;
+  quiet = false;
 
   protected override builderClass = CustomMsgBuilder;
 
