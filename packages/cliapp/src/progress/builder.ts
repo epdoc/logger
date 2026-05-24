@@ -169,9 +169,7 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
 
     // When level option is provided, use progressCapable (transport capability only)
     // Otherwise use progressEnabled (which includes level threshold check)
-    const canShowProgress = options?.level
-      ? emitter.progressCapable
-      : emitter.progressEnabled;
+    const canShowProgress = options?.level ? emitter.progressCapable : emitter.progressEnabled;
 
     if (canShowProgress && meetsThreshold) {
       if (transportMgr.hasActiveProgress) {
