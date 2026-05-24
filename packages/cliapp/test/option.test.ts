@@ -1,26 +1,25 @@
-import { assertEquals } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 import { Command } from 'commander';
 import { FluentOptionBuilder } from '../src/option.ts';
 
-describe('FluentOptionBuilder', () => {
+Deno.test('FluentOptionBuilder', async (t) => {
   const mockCommand = (commander: Command) => ({
     commander,
     ctx: { log: undefined },
     // deno-lint-ignore no-explicit-any
   } as any);
 
-  it('should build a basic option', () => {
+  await t.step('should build a basic option', () => {
     const commander = new Command();
     const builder = new FluentOptionBuilder(mockCommand(commander), '-f, --flag', 'test flag');
     builder.emit();
 
     const option = commander.options.find((o) => o.long === '--flag');
-    assertEquals(option?.description, 'test flag');
-    assertEquals(option?.short, '-f');
+    assert.strictEqual(option?.description, 'test flag');
+    assert.strictEqual(option?.short, '-f');
   });
 
-  it('should support repeatable options using fluent API', () => {
+  await t.step('should support repeatable options using fluent API', () => {
     const commander = new Command();
     new FluentOptionBuilder(mockCommand(commander), '-m, --message <value>', 'repeatable message')
       .repeatable()
@@ -29,10 +28,10 @@ describe('FluentOptionBuilder', () => {
     commander.parse(['-m', 'line0', '-m', 'line 1'], { from: 'user' });
     const opts = commander.opts();
 
-    assertEquals(opts.message, ['line0', 'line 1']);
+    assert.deepStrictEqual(opts.message, ['line0', 'line 1']);
   });
 
-  it('should support repeatable options with argParser', () => {
+  await t.step('should support repeatable options with argParser', () => {
     const commander = new Command();
     new FluentOptionBuilder(mockCommand(commander), '-n, --number <value>', 'repeatable numbers')
       .argParser((val) => parseInt(val, 10))
@@ -42,10 +41,10 @@ describe('FluentOptionBuilder', () => {
     commander.parse(['-n', '10', '-n', '20'], { from: 'user' });
     const opts = commander.opts();
 
-    assertEquals(opts.number, [10, 20]);
+    assert.deepStrictEqual(opts.number, [10, 20]);
   });
 
-  it('should support repeatable options using OptionDef', () => {
+  await t.step('should support repeatable options using OptionDef', () => {
     const commander = new Command();
     new FluentOptionBuilder(mockCommand(commander), {
       name: 'message',
@@ -58,10 +57,10 @@ describe('FluentOptionBuilder', () => {
     commander.parse(['-m', 'line0', '-m', 'line 1'], { from: 'user' });
     const opts = commander.opts();
 
-    assertEquals(opts.message, ['line0', 'line 1']);
+    assert.deepStrictEqual(opts.message, ['line0', 'line 1']);
   });
 
-  it('should initialize default value to empty array when repeatable', () => {
+  await t.step('should initialize default value to empty array when repeatable', () => {
     const commander = new Command();
     new FluentOptionBuilder(mockCommand(commander), '-m, --message <value>', 'repeatable message')
       .repeatable()
@@ -70,10 +69,10 @@ describe('FluentOptionBuilder', () => {
     commander.parse([], { from: 'user' });
     const opts = commander.opts();
 
-    assertEquals(opts.message, []);
+    assert.deepStrictEqual(opts.message, []);
   });
 
-  it('should respect provided default value for repeatable options', () => {
+  await t.step('should respect provided default value for repeatable options', () => {
     const commander = new Command();
     new FluentOptionBuilder(mockCommand(commander), '-m, --message <value>', 'repeatable message')
       .repeatable()
@@ -83,6 +82,6 @@ describe('FluentOptionBuilder', () => {
     commander.parse([], { from: 'user' });
     const opts = commander.opts();
 
-    assertEquals(opts.message, ['default']);
+    assert.deepStrictEqual(opts.message, ['default']);
   });
 });

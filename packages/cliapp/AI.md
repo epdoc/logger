@@ -217,7 +217,7 @@ class AppContext extends CliApp.Ctx.AbstractBase {
   protected override builderClass = CliApp.Progress.MsgBuilder;
 }
 
-// Basic usage
+// Basic usage - progress activates automatically when log level matches threshold
 this.log.info.text('Processing').start({ type: 'spinner', color: 'cyan' });
 await doWork();
 this.log.info.text('Halfway').update();
@@ -234,10 +234,12 @@ this.log.info.icheck().text('Complete').complete();
 using _progress = this.log.info.text('Working').start();
 await doWork(); // Automatically completes on block exit
 
-// Level constraints - only show progress at specific levels
-this.log.info.text('Building').start({ level: 'info' });
-this.log.verbose.text('  Details...').emit(); // Regular log
-this.log.info.text('Done').stop(); // Only progress if threshold is info
+// Indent/outdent are automatically suppressed during active progress
+this.log.info.text('Building').start();
+this.log.indent();  // No-op during progress
+this.log.verbose.text('Details...').emit(); // Use different level to avoid display issues
+this.log.outdent(); // No-op during progress
+this.log.info.text('Done').stop();
 ```
 
 ---

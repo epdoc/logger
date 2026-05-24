@@ -1,42 +1,41 @@
-import { assertEquals, assertRejects, assertStrictEquals } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 import { CommandError, runCommand, runCommandOrThrow } from '../src/runner.ts';
 
-describe('runner', () => {
-  describe('runCommand', () => {
-    it('should run a command and return success for exit code 0', async () => {
+Deno.test('runner', async (t) => {
+  await t.step('runCommand', async (t) => {
+    await t.step('should run a command and return success for exit code 0', async () => {
       const result = await runCommand('deno', ['--version']);
 
-      assertStrictEquals(result.success, true);
-      assertStrictEquals(result.code, 0);
-      assertEquals(result.stdout.includes('deno'), true);
-      assertStrictEquals(result.stderr, '');
+      assert.strictEqual(result.success, true);
+      assert.strictEqual(result.code, 0);
+      assert.ok(result.stdout.includes('deno'));
+      assert.strictEqual(result.stderr, '');
     });
 
-    it('should return failure for non-zero exit code', async () => {
+    await t.step('should return failure for non-zero exit code', async () => {
       const result = await runCommand('deno', ['eval', 'Deno.exit(1)']);
 
-      assertStrictEquals(result.success, false);
-      assertStrictEquals(result.code, 1);
+      assert.strictEqual(result.success, false);
+      assert.strictEqual(result.code, 1);
     });
 
-    it('should capture stderr on failure', async () => {
+    await t.step('should capture stderr on failure', async () => {
       // deno eval with syntax error produces stderr
       const result = await runCommand('deno', ['eval', 'invalid syntax here!!!']);
 
-      assertStrictEquals(result.success, false);
-      assertEquals(result.stderr.length > 0, true);
+      assert.strictEqual(result.success, false);
+      assert.ok(result.stderr.length > 0);
     });
 
-    it('should run command in specified working directory', async () => {
+    await t.step('should run command in specified working directory', async () => {
       const result = await runCommand('pwd', [], { cwd: '/tmp' });
 
-      assertStrictEquals(result.success, true);
+      assert.strictEqual(result.success, true);
       // On macOS /tmp is a symlink to /private/tmp, so we check the path ends with /tmp
-      assertEquals(result.stdout.trim().endsWith('/tmp'), true);
+      assert.ok(result.stdout.trim().endsWith('/tmp'));
     });
 
-    it('should pass environment variables', async () => {
+    await t.step('should pass environment variables', async () => {
       const result = await runCommand('deno', [
         'eval',
         'console.log(Deno.env.get("TEST_VAR"))',
@@ -44,32 +43,32 @@ describe('runner', () => {
         env: { TEST_VAR: 'hello_world' },
       });
 
-      assertStrictEquals(result.success, true);
-      assertEquals(result.stdout.trim(), 'hello_world');
+      assert.strictEqual(result.success, true);
+      assert.strictEqual(result.stdout.trim(), 'hello_world');
     });
 
-    it('should work in interactive mode', async () => {
+    await t.step('should work in interactive mode', async () => {
       // Interactive mode inherits stdio, so output is empty in result
       const result = await runCommand('deno', ['--version'], {
         interactive: true,
       });
 
-      assertStrictEquals(result.success, true);
-      assertStrictEquals(result.code, 0);
+      assert.strictEqual(result.success, true);
+      assert.strictEqual(result.code, 0);
       // In interactive mode, stdout/stderr are empty strings
-      assertStrictEquals(result.stdout, '');
-      assertStrictEquals(result.stderr, '');
+      assert.strictEqual(result.stdout, '');
+      assert.strictEqual(result.stderr, '');
     });
 
-    it('should default to current directory when cwd not specified', async () => {
+    await t.step('should default to current directory when cwd not specified', async () => {
       const currentDir = Deno.cwd();
       const result = await runCommand('pwd', []);
 
-      assertStrictEquals(result.success, true);
-      assertEquals(result.stdout.trim(), currentDir);
+      assert.strictEqual(result.success, true);
+      assert.strictEqual(result.stdout.trim(), currentDir);
     });
 
-    it('should handle commands with multiple arguments', async () => {
+    await t.step('should handle commands with multiple arguments', async () => {
       const result = await runCommand('deno', [
         'eval',
         'console.log(Deno.args.join(","))',
@@ -78,21 +77,21 @@ describe('runner', () => {
         'arg3',
       ]);
 
-      assertStrictEquals(result.success, true);
-      assertEquals(result.stdout.trim(), 'arg1,arg2,arg3');
+      assert.strictEqual(result.success, true);
+      assert.strictEqual(result.stdout.trim(), 'arg1,arg2,arg3');
     });
   });
 
-  describe('runCommandOrThrow', () => {
-    it('should return result on success', async () => {
+  await t.step('runCommandOrThrow', async (t) => {
+    await t.step('should return result on success', async () => {
       const result = await runCommandOrThrow('deno', ['--version']);
 
-      assertStrictEquals(result.success, true);
-      assertStrictEquals(result.code, 0);
+      assert.strictEqual(result.success, true);
+      assert.strictEqual(result.code, 0);
     });
 
-    it('should throw CommandError on failure', async () => {
-      await assertRejects(
+    await t.step('should throw CommandError on failure', async () => {
+      await assert.rejects(
         async () => {
           await runCommandOrThrow('deno', ['eval', 'Deno.exit(42)']);
         },
@@ -100,7 +99,7 @@ describe('runner', () => {
       );
     });
 
-    it('should include full result in CommandError', async () => {
+    await t.step('should include full result in CommandError', async () => {
       try {
         await runCommandOrThrow('deno', [
           'eval',
@@ -109,16 +108,16 @@ describe('runner', () => {
         throw new Error('Should have thrown');
       } catch (err) {
         if (err instanceof CommandError) {
-          assertStrictEquals(err.exitCode, 1);
-          assertEquals(err.stderr.includes('error output'), true);
-          assertStrictEquals(err.result.success, false);
+          assert.strictEqual(err.exitCode, 1);
+          assert.ok(err.stderr.includes('error output'));
+          assert.strictEqual(err.result.success, false);
         } else {
           throw err;
         }
       }
     });
 
-    it('should have accessible error properties', async () => {
+    await t.step('should have accessible error properties', async () => {
       try {
         await runCommandOrThrow('deno', [
           'eval',
@@ -127,9 +126,9 @@ describe('runner', () => {
         throw new Error('Should have thrown');
       } catch (err) {
         if (err instanceof CommandError) {
-          assertEquals(err.stdout.trim(), 'stdout content');
-          assertEquals(err.stderr.trim(), 'stderr content');
-          assertEquals(err.message.includes('exit code: 2'), true);
+          assert.strictEqual(err.stdout.trim(), 'stdout content');
+          assert.strictEqual(err.stderr.trim(), 'stderr content');
+          assert.ok(err.message.includes('exit code: 2'));
         } else {
           throw err;
         }
@@ -137,8 +136,8 @@ describe('runner', () => {
     });
   });
 
-  describe('CommandError', () => {
-    it('should be instance of Error', () => {
+  await t.step('CommandError', async (t) => {
+    await t.step('should be instance of Error', () => {
       const result = {
         success: false,
         code: 1,
@@ -148,11 +147,11 @@ describe('runner', () => {
       };
       const err = new CommandError('test error', result);
 
-      assertEquals(err instanceof Error, true);
-      assertEquals(err.message, 'test error');
+      assert.strictEqual(err instanceof Error, true);
+      assert.strictEqual(err.message, 'test error');
     });
 
-    it('should store result and provide accessors', () => {
+    await t.step('should store result and provide accessors', () => {
       const result = {
         success: false,
         code: 42,
@@ -162,10 +161,10 @@ describe('runner', () => {
       };
       const err = new CommandError('test', result);
 
-      assertStrictEquals(err.result, result);
-      assertStrictEquals(err.exitCode, 42);
-      assertStrictEquals(err.stdout, 'output');
-      assertStrictEquals(err.stderr, 'error');
+      assert.strictEqual(err.result, result);
+      assert.strictEqual(err.exitCode, 42);
+      assert.strictEqual(err.stdout, 'output');
+      assert.strictEqual(err.stderr, 'error');
     });
   });
 });

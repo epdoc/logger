@@ -1,7 +1,6 @@
 import type * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
-import { assertEquals } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 import * as CliApp from '../src/mod.ts';
 
 type M = Console.Builder;
@@ -12,8 +11,8 @@ class TestContext extends CliApp.Ctx.AbstractBase<M, L> {
 
 const pkg = { name: 'test-app', version: '1.2.3', description: 'Test description' };
 
-describe('CliApp.run', () => {
-  it('should execute command and return successfully', async () => {
+Deno.test('CliApp.run', async (t) => {
+  await t.step('should execute command and return successfully', async () => {
     let executed = false;
     class SuccessCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
@@ -45,7 +44,7 @@ describe('CliApp.run', () => {
 
     try {
       await CliApp.run(ctx, cmd, { noExit: true });
-      assertEquals(executed, true);
+      assert.strictEqual(executed, true);
     } finally {
       Deno.exit = originalExit;
       // @ts-ignore: Restoring Deno.args
@@ -53,7 +52,7 @@ describe('CliApp.run', () => {
     }
   });
 
-  it('should handle SilentError with exit code 1', async () => {
+  await t.step('should handle SilentError with exit code 1', async () => {
     class ErrorCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
         super(ctx, { name: 'test' });
@@ -83,7 +82,7 @@ describe('CliApp.run', () => {
 
     try {
       await CliApp.run(ctx, cmd, { noExit: false });
-      assertEquals(exitCode, 1);
+      assert.strictEqual(exitCode, 1);
     } finally {
       Deno.exit = originalExit;
       // @ts-ignore: Restoring Deno.args
@@ -91,7 +90,7 @@ describe('CliApp.run', () => {
     }
   });
 
-  it('should handle regular Error with exit code 1', async () => {
+  await t.step('should handle regular Error with exit code 1', async () => {
     class CrashCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx: TestContext) {
         super(ctx, { name: 'test' });
@@ -121,7 +120,7 @@ describe('CliApp.run', () => {
 
     try {
       await CliApp.run(ctx, cmd, { noExit: false });
-      assertEquals(exitCode, 1);
+      assert.strictEqual(exitCode, 1);
     } finally {
       Deno.exit = originalExit;
       // @ts-ignore: Restoring Deno.args

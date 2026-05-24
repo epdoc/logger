@@ -3,8 +3,7 @@
  *
  * Run: deno test -A test/progress-nested.test.ts
  */
-import { assertEquals } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 import * as CliApp from '../src/mod.ts';
 
 // Test context with ProgressMsgBuilder
@@ -14,49 +13,49 @@ class TestContext extends CliApp.Ctx.AbstractBase {
 
 const pkg = { name: 'test-app', version: '1.0.0', description: 'Test' };
 
-describe('Nested Progress', () => {
-  it('should track nesting depth correctly', async () => {
+Deno.test('Nested Progress', async (t) => {
+  await t.step('should track nesting depth correctly', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
     // Initially no progress
-    assertEquals(ctx.log.info.nestingDepth, 0);
+    assert.strictEqual(ctx.log.info.nestingDepth, 0);
 
     // Start first progress
     ctx.log.info.text('Level 1').start();
-    assertEquals(ctx.log.info.nestingDepth, ctx.log.info.isProgressActive ? 1 : 0);
+    assert.strictEqual(ctx.log.info.nestingDepth, ctx.log.info.isProgressActive ? 1 : 0);
 
     // Start nested progress
     ctx.log.info.text('Level 2').start();
-    assertEquals(ctx.log.info.nestingDepth, ctx.log.info.isProgressActive ? 2 : 0);
+    assert.strictEqual(ctx.log.info.nestingDepth, ctx.log.info.isProgressActive ? 2 : 0);
 
     // Start another nested level
     ctx.log.info.text('Level 3').start();
-    assertEquals(ctx.log.info.nestingDepth, ctx.log.info.isProgressActive ? 3 : 0);
+    assert.strictEqual(ctx.log.info.nestingDepth, ctx.log.info.isProgressActive ? 3 : 0);
 
     // Complete all levels
     ctx.log.info.complete();
-    assertEquals(ctx.log.info.nestingDepth, ctx.log.info.isProgressActive ? 2 : 0);
+    assert.strictEqual(ctx.log.info.nestingDepth, ctx.log.info.isProgressActive ? 2 : 0);
 
     ctx.log.info.complete();
-    assertEquals(ctx.log.info.nestingDepth, ctx.log.info.isProgressActive ? 1 : 0);
+    assert.strictEqual(ctx.log.info.nestingDepth, ctx.log.info.isProgressActive ? 1 : 0);
 
     ctx.log.info.complete();
-    assertEquals(ctx.log.info.nestingDepth, 0);
+    assert.strictEqual(ctx.log.info.nestingDepth, 0);
   });
 
-  it('should handle single-level progress (no nesting)', async () => {
+  await t.step('should handle single-level progress (no nesting)', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
     ctx.log.info.text('Single level').start();
-    assertEquals(ctx.log.info.nestingDepth, ctx.log.info.isProgressActive ? 1 : 0);
+    assert.strictEqual(ctx.log.info.nestingDepth, ctx.log.info.isProgressActive ? 1 : 0);
 
     ctx.log.info.complete();
-    assertEquals(ctx.log.info.nestingDepth, 0);
+    assert.strictEqual(ctx.log.info.nestingDepth, 0);
   });
 
-  it('should support stop() alias for complete()', async () => {
+  await t.step('should support stop() alias for complete()', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
@@ -66,10 +65,10 @@ describe('Nested Progress', () => {
     // Use stop() instead of complete()
     ctx.log.info.stop();
 
-    assertEquals(ctx.log.info.nestingDepth, 0);
+    assert.strictEqual(ctx.log.info.nestingDepth, 0);
   });
 
-  it('should cancel all nested progress with cancel()', async () => {
+  await t.step('should cancel all nested progress with cancel()', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
@@ -83,10 +82,10 @@ describe('Nested Progress', () => {
     // Cancel should clear entire stack
     ctx.log.info.cancel();
 
-    assertEquals(ctx.log.info.nestingDepth, 0);
+    assert.strictEqual(ctx.log.info.nestingDepth, 0);
   });
 
-  it('should handle update() during nested progress', async () => {
+  await t.step('should handle update() during nested progress', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
@@ -105,7 +104,7 @@ describe('Nested Progress', () => {
     ctx.log.info.complete();
   });
 
-  it('should track isProgressActive correctly', async () => {
+  await t.step('should track isProgressActive correctly', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
@@ -121,14 +120,9 @@ describe('Nested Progress', () => {
     // They should be the same when there's no TTY (both false in tests)
     // or different when there is a TTY
     if (isActiveAtInfo) {
-      assertEquals(isActiveAtWarn, false);
+      assert.strictEqual(isActiveAtWarn, false);
     }
 
     ctx.log.info.complete();
   });
 });
-
-// Run tests if executed directly
-if (import.meta.main) {
-  await import('@std/testing/bdd');
-}

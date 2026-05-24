@@ -1,10 +1,9 @@
-import { assertEquals } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 import { TextBuilder } from '../src/text-builder.ts';
 import { MsgBuilder } from '../src/context.ts';
 
-describe('TextBuilder', () => {
-  it('should format multiple lines with default MsgBuilder', () => {
+Deno.test('TextBuilder', async (t) => {
+  await t.step('should format multiple lines with default MsgBuilder', () => {
     const tb = new TextBuilder();
 
     tb.line.plain('Line 1');
@@ -13,11 +12,11 @@ describe('TextBuilder', () => {
     tb.line.plain('Line 3');
 
     const expected = 'Line 1\nLine 2\n\nLine 3';
-    assertEquals(tb.emit(), expected);
-    assertEquals(tb.toString(), expected);
+    assert.strictEqual(tb.emit(), expected);
+    assert.strictEqual(tb.toString(), expected);
   });
 
-  it('should format multiple lines with custom MsgBuilder class', () => {
+  await t.step('should format multiple lines with custom MsgBuilder class', () => {
     class CustomBuilder extends MsgBuilder {
       custom(text: string) {
         return this.plain(`[CUSTOM] ${text}`);
@@ -32,10 +31,10 @@ describe('TextBuilder', () => {
     tb.line.custom('Line 3');
 
     const expected = '[CUSTOM] Line 1\n[CUSTOM] Line 2\n\n[CUSTOM] Line 3';
-    assertEquals(tb.emit(), expected);
+    assert.strictEqual(tb.emit(), expected);
   });
 
-  it('should support indentation levels', () => {
+  await t.step('should support indentation levels', () => {
     const tb = new TextBuilder();
 
     tb.line.plain('No indent');
@@ -56,6 +55,6 @@ describe('TextBuilder', () => {
       'Back to root',
     ].join('\n');
 
-    assertEquals(tb.emit(), expected);
+    assert.strictEqual(tb.emit(), expected);
   });
 });

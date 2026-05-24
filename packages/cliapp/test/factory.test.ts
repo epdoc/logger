@@ -1,7 +1,6 @@
 import type * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
-import { assertEquals, assertExists } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 import * as CliApp from '../src/mod.ts';
 
 type M = Console.Builder;
@@ -12,8 +11,8 @@ class TestContext extends CliApp.Ctx.AbstractBase<M, L> {
 
 const pkg = { name: 'test-app', version: '1.2.3', description: 'test' };
 
-describe('createCommand factory', () => {
-  it('should create a command class from a node', async () => {
+Deno.test('createCommand factory', async (t) => {
+  await t.step('should create a command class from a node', async () => {
     const node: CliApp.CommandNode<TestContext> = {
       name: 'hello',
       description: 'Say hello',
@@ -31,12 +30,12 @@ describe('createCommand factory', () => {
     const cmd = new HelloCmd(ctx);
     await cmd.init();
 
-    assertEquals(cmd.commander.name(), 'hello');
-    assertEquals(cmd.commander.description(), 'Say hello');
-    assertEquals(cmd.commander.version(), '1.0.0');
+    assert.strictEqual(cmd.commander.name(), 'hello');
+    assert.strictEqual(cmd.commander.description(), 'Say hello');
+    assert.strictEqual(cmd.commander.version(), '1.0.0');
   });
 
-  it('should handle options and arguments in node', async () => {
+  await t.step('should handle options and arguments in node', async () => {
     const node: CliApp.CommandNode<TestContext> = {
       name: 'test',
       arguments: ['<input>'],
@@ -50,11 +49,11 @@ describe('createCommand factory', () => {
     const cmd = new TestCmd(ctx);
     await cmd.init();
 
-    assertExists(cmd.commander.options.find((o) => o.long === '--save'));
-    assertExists(cmd.commander.registeredArguments.find((a) => a.name() === 'input'));
+    assert.ok(cmd.commander.options.find((o) => o.long === '--save'));
+    assert.ok(cmd.commander.registeredArguments.find((a) => a.name() === 'input'));
   });
 
-  it('should support nested subcommands (Node within Node)', async () => {
+  await t.step('should support nested subcommands (Node within Node)', async () => {
     const node: CliApp.CommandNode<TestContext> = {
       name: 'root',
       createContext: (ctx) => ctx,
@@ -75,11 +74,11 @@ describe('createCommand factory', () => {
 
     // deno-lint-ignore no-explicit-any
     const child = root.commander.commands.find((c: any) => c.name() === 'child');
-    assertExists(child);
-    assertEquals(child.description(), 'Child command');
+    assert.ok(child);
+    assert.strictEqual(child.description(), 'Child command');
   });
 
-  it('should support mix of Nodes and Classes in subCommands', async () => {
+  await t.step('should support mix of Nodes and Classes in subCommands', async () => {
     class MySubCmd extends CliApp.Cmd.AbstractBase<TestContext, TestContext> {
       constructor(ctx?: TestContext) {
         super(ctx, { name: 'class-sub' });
@@ -108,11 +107,11 @@ describe('createCommand factory', () => {
     const root = new RootCmd(ctx);
     await root.init();
 
-    assertExists(root.commander.commands.find((c) => c.name() === 'node-sub'));
-    assertExists(root.commander.commands.find((c) => c.name() === 'class-sub'));
+    assert.ok(root.commander.commands.find((c) => c.name() === 'node-sub'));
+    assert.ok(root.commander.commands.find((c) => c.name() === 'class-sub'));
   });
 
-  it('should override node metadata with CmdParams', async () => {
+  await t.step('should override node metadata with CmdParams', async () => {
     const node: CliApp.CommandNode<TestContext> = {
       name: 'node-name',
       version: '1.0.0',
@@ -122,7 +121,7 @@ describe('createCommand factory', () => {
     await ctx.setupLogging();
     const cmd = new ParamsCmd(ctx);
     await cmd.init();
-    assertEquals(cmd.commander.name(), 'param-name');
-    assertEquals(cmd.commander.version(), '2.0.0');
+    assert.strictEqual(cmd.commander.name(), 'param-name');
+    assert.strictEqual(cmd.commander.version(), '2.0.0');
   });
 });

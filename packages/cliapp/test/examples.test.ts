@@ -1,7 +1,6 @@
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 
-describe('CliApp Examples System Tests', () => {
+Deno.test('CliApp Examples System Tests', async (t) => {
   const runExample = async (script: string, args: string[] = []) => {
     const scriptPath = new URL(`./${script}`, import.meta.url).pathname;
     const cmd = new Deno.Command(Deno.execPath(), {
@@ -15,64 +14,64 @@ describe('CliApp Examples System Tests', () => {
     return { code, outStr, errStr };
   };
 
-  it('example.01.test.ts: should show help', async () => {
+  await t.step('example.01.test.ts: should show help', async () => {
     const { code, outStr } = await runExample('example.01.test.ts', ['--help']);
-    expect(code).toBe(0);
-    expect(outStr).toContain('Usage:');
+    assert.strictEqual(code, 0);
+    assert.ok(outStr.includes('Usage:'));
   });
 
-  it('example.01.test.ts: should process files', async () => {
+  await t.step('example.01.test.ts: should process files', async () => {
     const { code, outStr } = await runExample('example.01.test.ts', [
       'process',
       'file1',
       'file2',
     ]);
-    expect(code).toBe(0);
-    expect(outStr).toContain('Processing:');
-    expect(outStr).toContain('Files: 2 file');
+    assert.strictEqual(code, 0);
+    assert.ok(outStr.includes('Processing:'));
+    assert.ok(outStr.includes('Files: 2 file'));
   });
 
-  it('example.02.test.ts: should process files with pattern', async () => {
+  await t.step('example.02.test.ts: should process files with pattern', async () => {
     const { code, outStr } = await runExample('example.02.test.ts', [
       'process',
       'file1',
       'file2',
     ]);
-    expect(code).toBe(0);
-    expect(outStr).toContain('File Processing');
-    expect(outStr).toContain('Processed 2 files successfully');
+    assert.strictEqual(code, 0);
+    assert.ok(outStr.includes('File Processing'));
+    assert.ok(outStr.includes('Processed 2 files successfully'));
   });
 
-  it('example.03.test.ts: should run declarative command', async () => {
+  await t.step('example.03.test.ts: should run declarative command', async () => {
     const { code, outStr } = await runExample('example.03.test.ts', [
       'process',
       'file1',
     ]);
-    expect(code).toBe(0);
-    expect(outStr).toContain('Processing:');
-    expect(outStr).toContain('Files: 1 file');
+    assert.strictEqual(code, 0);
+    assert.ok(outStr.includes('Processing:'));
+    assert.ok(outStr.includes('Files: 1 file'));
   });
 
-  it('example.04.test.ts: should use custom message builder', async () => {
+  await t.step('example.04.test.ts: should use custom message builder', async () => {
     const { code, outStr } = await runExample('example.04.test.ts', [
       'process',
       'file1',
     ]);
-    expect(code).toBe(0);
-    expect(outStr).toContain('PROCESS');
-    expect(outStr).toContain('Progress: 1/1');
+    assert.strictEqual(code, 0);
+    assert.ok(outStr.includes('PROCESS'));
+    assert.ok(outStr.includes('Progress: 1/1'));
   });
 
-  it('any example: should respect --no-color (no escape codes)', async () => {
+  await t.step('any example: should respect --no-color (no escape codes)', async () => {
     const { code, outStr } = await runExample('example.01.test.ts', [
       'process',
       'file1',
     ]);
-    expect(code).toBe(0);
+    assert.strictEqual(code, 0);
     console.log(outStr);
     // Check for ANSI escape sequences
     // deno-lint-ignore no-control-regex
     const hasColor = /\x1b\[\d+m/.test(outStr);
-    expect(hasColor).toBe(false);
+    assert.strictEqual(hasColor, false);
   });
 });

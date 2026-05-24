@@ -26,5 +26,5 @@ export interface ProgressState {
   isActive: boolean;
 }
 
-/** If level matches the current threshold then a progress is started, otherwise an emit is executed. */
-export type StartOptions = Progress.LineOptions & { level: Level.Name };
+/** Options for starting progress. Same as Progress.LineOptions. */
+export type StartOptions = Progress.LineOptions;

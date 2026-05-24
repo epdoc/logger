@@ -3,14 +3,13 @@
  * @description Verifies command tree introspection and tool definition generation
  */
 
-import { describe, it } from '@std/testing/bdd';
-import { expect } from '@std/expect';
+import * as assert from 'node:assert';
 import * as Commander from 'commander';
 import { extractToolDefinitions } from '../src/mcp/introspect.ts';
 
-describe('MCP introspection', () => {
-  describe('extractToolDefinitions', () => {
-    it('should extract a single leaf command as one tool', () => {
+Deno.test('MCP introspection', async (t) => {
+  await t.step('extractToolDefinitions', async (t) => {
+    await t.step('should extract a single leaf command as one tool', () => {
       const root = new Commander.Command('myapp');
       root.description('My app');
 
@@ -22,18 +21,18 @@ describe('MCP introspection', () => {
 
       const tools = extractToolDefinitions(root);
 
-      expect(tools.length).toBe(1);
-      expect(tools[0].name).toBe('myapp_greet');
-      expect(tools[0].description).toBe('Greet someone');
-      expect(tools[0].inputSchema.properties['name']).toBeDefined();
-      expect(tools[0].inputSchema.properties['name'].type).toBe('string');
-      expect(tools[0].inputSchema.properties['message']).toBeDefined();
-      expect(tools[0].inputSchema.properties['message'].type).toBe('string');
-      expect(tools[0].inputSchema.required).toContain('message');
-      expect(tools[0].argumentNames).toEqual(['message']);
+      assert.strictEqual(tools.length, 1);
+      assert.strictEqual(tools[0].name, 'myapp_greet');
+      assert.strictEqual(tools[0].description, 'Greet someone');
+      assert.ok(tools[0].inputSchema.properties['name']);
+      assert.strictEqual(tools[0].inputSchema.properties['name'].type, 'string');
+      assert.ok(tools[0].inputSchema.properties['message']);
+      assert.strictEqual(tools[0].inputSchema.properties['message'].type, 'string');
+      assert.ok(tools[0].inputSchema.required?.includes('message'));
+      assert.deepStrictEqual(tools[0].argumentNames, ['message']);
     });
 
-    it('should extract multiple subcommands', () => {
+    await t.step('should extract multiple subcommands', () => {
       const root = new Commander.Command('app');
 
       const list = new Commander.Command('list');
@@ -47,13 +46,13 @@ describe('MCP introspection', () => {
 
       const tools = extractToolDefinitions(root);
 
-      expect(tools.length).toBe(2);
+      assert.strictEqual(tools.length, 2);
       const names = tools.map((t) => t.name);
-      expect(names).toContain('app_list');
-      expect(names).toContain('app_add');
+      assert.ok(names.includes('app_list'));
+      assert.ok(names.includes('app_add'));
     });
 
-    it('should handle nested subcommands', () => {
+    await t.step('should handle nested subcommands', () => {
       const root = new Commander.Command('hassio');
 
       const light = new Commander.Command('light');
@@ -72,19 +71,19 @@ describe('MCP introspection', () => {
 
       const tools = extractToolDefinitions(root);
 
-      expect(tools.length).toBe(2);
+      assert.strictEqual(tools.length, 2);
       const names = tools.map((t) => t.name);
-      expect(names).toContain('hassio_light_turn-on');
-      expect(names).toContain('hassio_light_turn-off');
+      assert.ok(names.includes('hassio_light_turn-on'));
+      assert.ok(names.includes('hassio_light_turn-off'));
 
       const onTool = tools.find((t) => t.name === 'hassio_light_turn-on')!;
-      expect(onTool.inputSchema.properties['device']).toBeDefined();
-      expect(onTool.inputSchema.properties['brightness']).toBeDefined();
-      expect(onTool.inputSchema.required).toContain('device');
-      expect(onTool.argumentNames).toEqual(['device']);
+      assert.ok(onTool.inputSchema.properties['device']);
+      assert.ok(onTool.inputSchema.properties['brightness']);
+      assert.ok(onTool.inputSchema.required?.includes('device'));
+      assert.deepStrictEqual(onTool.argumentNames, ['device']);
     });
 
-    it('should skip logging options', () => {
+    await t.step('should skip logging options', () => {
       const root = new Commander.Command('myapp');
 
       const cmd = new Commander.Command('run');
@@ -97,17 +96,17 @@ describe('MCP introspection', () => {
 
       const tools = extractToolDefinitions(root);
 
-      expect(tools.length).toBe(1);
+      assert.strictEqual(tools.length, 1);
       const props = tools[0].inputSchema.properties;
       // Logging options should be excluded
-      expect(props['logLevel']).toBeUndefined();
-      expect(props['debug']).toBeUndefined();
-      expect(props['verbose']).toBeUndefined();
+      assert.strictEqual(props['logLevel'], undefined);
+      assert.strictEqual(props['debug'], undefined);
+      assert.strictEqual(props['verbose'], undefined);
       // Real option should be present
-      expect(props['user']).toBeDefined();
+      assert.ok(props['user']);
     });
 
-    it('should handle boolean options', () => {
+    await t.step('should handle boolean options', () => {
       const root = new Commander.Command('app');
 
       const cmd = new Commander.Command('process');
@@ -117,10 +116,10 @@ describe('MCP introspection', () => {
 
       const tools = extractToolDefinitions(root);
 
-      expect(tools[0].inputSchema.properties['force'].type).toBe('boolean');
+      assert.strictEqual(tools[0].inputSchema.properties['force'].type, 'boolean');
     });
 
-    it('should handle choices on options', () => {
+    await t.step('should handle choices on options', () => {
       const root = new Commander.Command('app');
 
       const cmd = new Commander.Command('format');
@@ -133,10 +132,10 @@ describe('MCP introspection', () => {
 
       const tools = extractToolDefinitions(root);
 
-      expect(tools[0].inputSchema.properties['type'].enum).toEqual(['json', 'yaml', 'table']);
+      assert.deepStrictEqual(tools[0].inputSchema.properties['type'].enum, ['json', 'yaml', 'table']);
     });
 
-    it('should handle variadic arguments', () => {
+    await t.step('should handle variadic arguments', () => {
       const root = new Commander.Command('app');
 
       const cmd = new Commander.Command('files');
@@ -147,13 +146,13 @@ describe('MCP introspection', () => {
       const tools = extractToolDefinitions(root);
 
       const prop = tools[0].inputSchema.properties['files'];
-      expect(prop.type).toBe('array');
-      expect(prop.items).toEqual({ type: 'string' });
-      expect(tools[0].inputSchema.required).toContain('files');
-      expect(tools[0].argumentNames).toEqual(['files']);
+      assert.strictEqual(prop.type, 'array');
+      assert.deepStrictEqual(prop.items, { type: 'string' });
+      assert.ok(tools[0].inputSchema.required?.includes('files'));
+      assert.deepStrictEqual(tools[0].argumentNames, ['files']);
     });
 
-    it('should handle argument choices', () => {
+    await t.step('should handle argument choices', () => {
       const root = new Commander.Command('app');
 
       const cmd = new Commander.Command('query');
@@ -165,10 +164,10 @@ describe('MCP introspection', () => {
 
       const tools = extractToolDefinitions(root);
 
-      expect(tools[0].inputSchema.properties['server'].enum).toEqual(['alpha', 'beta', 'gamma']);
+      assert.deepStrictEqual(tools[0].inputSchema.properties['server'].enum, ['alpha', 'beta', 'gamma']);
     });
 
-    it('should skip hidden options', () => {
+    await t.step('should skip hidden options', () => {
       const root = new Commander.Command('app');
 
       const cmd = new Commander.Command('run');
@@ -181,8 +180,8 @@ describe('MCP introspection', () => {
 
       const tools = extractToolDefinitions(root);
 
-      expect(tools[0].inputSchema.properties['internal']).toBeUndefined();
-      expect(tools[0].inputSchema.properties['visible']).toBeDefined();
+      assert.strictEqual(tools[0].inputSchema.properties['internal'], undefined);
+      assert.ok(tools[0].inputSchema.properties['visible']);
     });
   });
 });

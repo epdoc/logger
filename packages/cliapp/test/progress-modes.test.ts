@@ -4,8 +4,7 @@
  * Tests the three operating modes based on threshold comparison.
  * Run manually: deno run -A test/progress-modes.test.ts
  */
-import { assertEquals } from '@std/assert';
-import { describe, it } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 import * as CliApp from '../src/mod.ts';
 
 // Test context with ProgressMsgBuilder
@@ -15,8 +14,8 @@ class TestContext extends CliApp.Ctx.AbstractBase {
 
 const pkg = { name: 'test-app', version: '1.0.0', description: 'Test' };
 
-describe('Progress Modes', () => {
-  it('SUPPRESSED mode: should not show progress when level < threshold', async () => {
+Deno.test('Progress Modes', async (t) => {
+  await t.step('SUPPRESSED mode: should not show progress when level < threshold', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('warn'); // threshold = warn
 
@@ -25,10 +24,10 @@ describe('Progress Modes', () => {
     ctx.log.info.text('Starting').start({ type: 'spinner', index: 0 });
 
     // isProgressActive should be false (level doesn't match threshold)
-    assertEquals(ctx.log.info.isProgressActive, false);
+    assert.strictEqual(ctx.log.info.isProgressActive, false);
   });
 
-  it('PROGRESS mode: should show interactive progress when level == threshold', async () => {
+  await t.step('PROGRESS mode: should show interactive progress when level == threshold', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info'); // threshold = info
 
@@ -47,14 +46,14 @@ describe('Progress Modes', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
 
       ctx.log.info.text('Done!').complete();
-      assertEquals(ctx.log.info.isProgressActive, false);
+      assert.strictEqual(ctx.log.info.isProgressActive, false);
     } else {
       // EMIT mode in test environment - just verify API works
       ctx.log.info.text('Done!').complete();
     }
   });
 
-  it('EMIT mode: should emit log messages when level > threshold', async () => {
+  await t.step('EMIT mode: should emit log messages when level > threshold', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('debug'); // threshold = debug
 
@@ -62,14 +61,14 @@ describe('Progress Modes', () => {
     ctx.log.info.text('Starting task').start({ type: 'spinner', index: 0 });
 
     // In EMIT mode, isProgressActive should be false
-    assertEquals(ctx.log.info.isProgressActive, false);
+    assert.strictEqual(ctx.log.info.isProgressActive, false);
 
     // Subsequent calls also emit as logs
     ctx.log.info.text('Still working').update();
     ctx.log.info.text('Finished').complete();
   });
 
-  it('should handle progress bar with updates', async () => {
+  await t.step('should handle progress bar with updates', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
@@ -95,7 +94,7 @@ describe('Progress Modes', () => {
     }
   });
 
-  it('should handle spinner with text updates', async () => {
+  await t.step('should handle spinner with text updates', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
@@ -123,7 +122,7 @@ describe('Progress Modes', () => {
     }
   });
 
-  it('should handle cancel operation', async () => {
+  await t.step('should handle cancel operation', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
@@ -132,16 +131,16 @@ describe('Progress Modes', () => {
     const isActive = ctx.log.info.isProgressActive;
 
     if (isActive) {
-      assertEquals(isActive, true);
+      assert.strictEqual(isActive, true);
       ctx.log.info.cancel();
-      assertEquals(ctx.log.info.isProgressActive, false);
+      assert.strictEqual(ctx.log.info.isProgressActive, false);
     } else {
       // In EMIT mode, cancel still works (just clears any state)
       ctx.log.info.cancel();
     }
   });
 
-  it('should handle error during progress', async () => {
+  await t.step('should handle error during progress', async () => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('info');
 
@@ -165,7 +164,7 @@ describe('Progress Modes', () => {
         ctx.log.error.text('Operation failed').emit();
       }
 
-      assertEquals(ctx.log.info.isProgressActive, false);
+      assert.strictEqual(ctx.log.info.isProgressActive, false);
     } else {
       // EMIT mode - simulate error handling
       try {
@@ -177,8 +176,3 @@ describe('Progress Modes', () => {
     }
   });
 });
-
-// Run tests if executed directly
-if (import.meta.main) {
-  await import('@std/testing/bdd');
-}

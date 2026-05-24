@@ -157,14 +157,8 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
     const transportMgr = emitter.transportMgr;
     const levelName = emitter.level.name;
     const message = this.format();
-    let levelConstrain = false;
-    if (options && _.isNonEmptyString(options.level)) {
-      if (options.level !== transportMgr.logMgr.threshold.name) {
-        levelConstrain = true;
-      }
-    }
 
-    if (emitter.progressEnabled && !levelConstrain) {
+    if (emitter.progressEnabled) {
       if (transportMgr.hasActiveProgress) {
         // NESTED: Push new context to stack, update progress line with new message
         transportMgr.pushNestedProgress(message, levelName);
