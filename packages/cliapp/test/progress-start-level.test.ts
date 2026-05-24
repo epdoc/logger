@@ -28,6 +28,9 @@ Deno.test('StartOptions level constraint - basic behavior', async (t) => {
     // INFO(9) >= INFO(9) = true
     ctx.log.info.text('Task').start({ level: 'info' });
 
+    // Clean up the progress to prevent interval leak
+    ctx.log.info.complete();
+
     // In TTY: would be active progress, in test without TTY: falls back to emit
     // Either way, the call should succeed
     assert.ok(true);
@@ -93,6 +96,9 @@ Deno.test('StartOptions level constraint - severity comparison', async (t) => {
     // WARN(13) >= INFO(9) = true → progress mode
     ctx.log.warn.text('Warning task').start({ level: 'warn' });
 
+    // Clean up the progress to prevent interval leak
+    ctx.log.warn.complete();
+
     // In TTY this would be active, in non-TTY test env it falls back
     // We just verify it doesn't throw
     assert.ok(true);
@@ -105,6 +111,9 @@ Deno.test('StartOptions level constraint - severity comparison', async (t) => {
     // INFO(9) >= VERBOSE(6) = true → progress mode
     // At verbose threshold, we show verbose, info, warn, error, etc.
     ctx.log.info.text('Info task').start({ level: 'info' });
+
+    // Clean up the progress to prevent interval leak
+    ctx.log.info.complete();
 
     assert.ok(true);
   });
@@ -297,14 +306,16 @@ Deno.test('StartOptions level constraint - error handling', async (t) => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('debug'); // Use debug to allow all levels
 
-    // These should not throw
-    ctx.log.info.text('Task 1').start({ level: 'fatal' });
-    ctx.log.info.text('Task 2').start({ level: 'error' });
-    ctx.log.info.text('Task 3').start({ level: 'warn' });
-    ctx.log.info.text('Task 4').start({ level: 'info' });
-    ctx.log.info.text('Task 5').start({ level: 'debug' });
-    ctx.log.info.text('Task 6').start({ level: 'verbose' });
-    ctx.log.info.text('Task 7').start({ level: 'trace' });
+    // These should not throw - use 'using' pattern for automatic cleanup
+    {
+      using _p1 = ctx.log.info.text('Task 1').start({ level: 'fatal' });
+      using _p2 = ctx.log.info.text('Task 2').start({ level: 'error' });
+      using _p3 = ctx.log.info.text('Task 3').start({ level: 'warn' });
+      using _p4 = ctx.log.info.text('Task 4').start({ level: 'info' });
+      using _p5 = ctx.log.info.text('Task 5').start({ level: 'debug' });
+      using _p6 = ctx.log.info.text('Task 6').start({ level: 'verbose' });
+      using _p7 = ctx.log.info.text('Task 7').start({ level: 'trace' });
+    } // All progress indicators automatically complete here
 
     assert.ok(true);
   });
@@ -313,11 +324,13 @@ Deno.test('StartOptions level constraint - error handling', async (t) => {
     const ctx = new TestContext(pkg);
     await ctx.setupLogging('trace'); // Use trace to allow all levels
 
-    // These should not throw
-    ctx.log.info.text('Task 1').start({ level: 1 }); // fatal
-    ctx.log.info.text('Task 2').start({ level: 9 }); // info
-    ctx.log.info.text('Task 3').start({ level: 13 }); // warn
-    ctx.log.info.text('Task 4').start({ level: 21 }); // fatal
+    // These should not throw - use 'using' pattern for automatic cleanup
+    {
+      using _p1 = ctx.log.info.text('Task 1').start({ level: 1 }); // fatal
+      using _p2 = ctx.log.info.text('Task 2').start({ level: 9 }); // info
+      using _p3 = ctx.log.info.text('Task 3').start({ level: 13 }); // warn
+      using _p4 = ctx.log.info.text('Task 4').start({ level: 21 }); // fatal
+    } // All progress indicators automatically complete here
 
     assert.ok(true);
   });
@@ -361,6 +374,9 @@ Deno.test('StartOptions level constraint - edge cases', async (t) => {
     // level: 'info' at info threshold
     // INFO(9) >= INFO(9) = true → progress mode
     ctx.log.info.text('Task').start({ level: 'info' });
+
+    // Clean up the progress to prevent interval leak
+    ctx.log.info.complete();
 
     assert.ok(true);
   });

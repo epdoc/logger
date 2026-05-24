@@ -178,10 +178,11 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
         // Update the existing progress line to show nested message
         transportMgr.activeProgress?.update(message);
       } else {
-        // NEW: Create new progress line
-        const progressLine = options
-          ? new Progress.Line(options)
-          : new Progress.Line({ type: 'spinner', index: 'braille' });
+        // NEW: Create new progress line with defaults for any missing options
+        const defaultOptions: Progress.LineOptions = { type: 'spinner', index: 'braille' };
+        const progressLine = options?.type
+          ? new Progress.Line(options as Progress.LineOptions)
+          : new Progress.Line({ ...defaultOptions, ...(options || {}) } as Progress.LineOptions);
 
         // Store on TransportMgr for later retrieval by update/complete
         transportMgr.setActiveProgress(progressLine, levelName, message, options as Record<string, unknown>);

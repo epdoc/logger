@@ -28,5 +28,11 @@ export interface ProgressState {
 
 export type ProgressThreshold = { level?: Level.Name | Level.Severity | Level.Spec };
 
-/** Options for starting progress. Same as Progress.LineOptions. */
-export type StartOptions = ProgressThreshold & Progress.LineOptions;
+/**
+ * Options for starting progress.
+ *
+ * All LineOptions fields are optional - if not specified, defaults to a
+ * braille spinner. This allows users to call `.start()` without arguments
+ * or with just a level constraint (e.g., `.start({ level: 'verbose' })`).
+ */
+export type StartOptions = ProgressThreshold & Partial<Progress.LineOptions>;
