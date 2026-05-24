@@ -1,5 +1,4 @@
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import { describe, test } from '@std/testing/bdd';
 import * as Log from '../src/mod.ts';
 
 type M = MsgBuilder.Abstract;
@@ -8,8 +7,8 @@ type L = Log.Std.Logger<M>;
 const LOG_FILE = '../../../tmp/file_handler_test.log';
 const logFilePath = new URL(LOG_FILE, import.meta.url).pathname;
 
-describe('File Transport', () => {
-  test('should write to a file', async () => {
+Deno.test('File Transport', async (t) => {
+  await t.step('should write to a file', async () => {
     const logMgr = new Log.Mgr<M>();
     logMgr.show = { level: true, timestamp: 'elapsed' };
     logMgr.initLevels();

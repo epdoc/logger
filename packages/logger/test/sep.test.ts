@@ -1,13 +1,12 @@
 import * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 import { BufferTransport } from '../src/transports/buffer/transport.ts';
 
 type Logger = Log.Std.Logger<Console.Builder>;
 
-describe('msgSep - message part separator', () => {
-  it('should default to single space between message parts', async () => {
+Deno.test('msgSep - message part separator', async (t) => {
+  await t.step('should default to single space between message parts', async () => {
     const logMgr = new Log.Mgr<Console.Builder>();
     logMgr.initLevels();
     logMgr.threshold = 'info';
@@ -18,11 +17,11 @@ describe('msgSep - message part separator', () => {
     logger.info.text('Hello').text('World').emit();
 
     const entries = buffer.getEntries();
-    expect(entries.length).toBe(1);
-    expect(entries[0].msg).toBe('Hello World');
+    assert.strictEqual(entries.length, 1);
+    assert.strictEqual(entries[0].msg, 'Hello World');
   });
 
-  it('should use logger.sep(0) for zero-width separator', async () => {
+  await t.step('should use logger.sep(0) for zero-width separator', async () => {
     const logMgr = new Log.Mgr<Console.Builder>();
     logMgr.initLevels();
     logMgr.threshold = 'info';
@@ -34,11 +33,11 @@ describe('msgSep - message part separator', () => {
     logger.info.text('Hello').text('World').emit();
 
     const entries = buffer.getEntries();
-    expect(entries.length).toBe(1);
-    expect(entries[0].msg).toBe('HelloWorld');
+    assert.strictEqual(entries.length, 1);
+    assert.strictEqual(entries[0].msg, 'HelloWorld');
   });
 
-  it('should use logger.sep(5) for 5-space separator', async () => {
+  await t.step('should use logger.sep(5) for 5-space separator', async () => {
     const logMgr = new Log.Mgr<Console.Builder>();
     logMgr.initLevels();
     logMgr.threshold = 'info';
@@ -50,11 +49,11 @@ describe('msgSep - message part separator', () => {
     logger.info.text('Hello').text('World').emit();
 
     const entries = buffer.getEntries();
-    expect(entries.length).toBe(1);
-    expect(entries[0].msg).toBe('Hello     World');
+    assert.strictEqual(entries.length, 1);
+    assert.strictEqual(entries[0].msg, 'Hello     World');
   });
 
-  it('should use show.msgSep as default for all loggers', async () => {
+  await t.step('should use show.msgSep as default for all loggers', async () => {
     const logMgr = new Log.Mgr<Console.Builder>();
     logMgr.initLevels();
     logMgr.threshold = 'info';
@@ -66,11 +65,11 @@ describe('msgSep - message part separator', () => {
     logger.info.text('Hello').text('World').emit();
 
     const entries = buffer.getEntries();
-    expect(entries.length).toBe(1);
-    expect(entries[0].msg).toBe('Hello   World');
+    assert.strictEqual(entries.length, 1);
+    assert.strictEqual(entries[0].msg, 'Hello   World');
   });
 
-  it('should allow logger.sep() to override show.msgSep', async () => {
+  await t.step('should allow logger.sep() to override show.msgSep', async () => {
     const logMgr = new Log.Mgr<Console.Builder>();
     logMgr.initLevels();
     logMgr.threshold = 'info';
@@ -83,11 +82,11 @@ describe('msgSep - message part separator', () => {
     logger.info.text('Hello').text('World').emit();
 
     const entries = buffer.getEntries();
-    expect(entries.length).toBe(1);
-    expect(entries[0].msg).toBe('HelloWorld');
+    assert.strictEqual(entries.length, 1);
+    assert.strictEqual(entries[0].msg, 'HelloWorld');
   });
 
-  it('should reset to show default when sep() called with no argument', async () => {
+  await t.step('should reset to show default when sep() called with no argument', async () => {
     const logMgr = new Log.Mgr<Console.Builder>();
     logMgr.initLevels();
     logMgr.threshold = 'info';
@@ -100,15 +99,15 @@ describe('msgSep - message part separator', () => {
     // Set override
     logger.sep(0);
     logger.info.text('A').text('B').emit();
-    expect(buffer.getEntries()[0].msg).toBe('AB');
+    assert.strictEqual(buffer.getEntries()[0].msg, 'AB');
 
     // Reset to show default
     logger.sep();
     logger.info.text('C').text('D').emit();
-    expect(buffer.getEntries()[1].msg).toBe('C   D');
+    assert.strictEqual(buffer.getEntries()[1].msg, 'C   D');
   });
 
-  it('should apply msgSep to label/value chains', async () => {
+  await t.step('should apply msgSep to label/value chains', async () => {
     const logMgr = new Log.Mgr<Console.Builder>();
     logMgr.initLevels();
     logMgr.threshold = 'info';
@@ -120,13 +119,13 @@ describe('msgSep - message part separator', () => {
     logger.info.label('Count:').value(42).label('Status:').value('ok').emit();
 
     const entries = buffer.getEntries();
-    expect(entries.length).toBe(1);
-    expect(entries[0].msg).toBe('Count:   42   Status:   ok');
+    assert.strictEqual(entries.length, 1);
+    assert.strictEqual(entries[0].msg, 'Count:   42   Status:   ok');
   });
 });
 
-describe('columnSep - transport column separator', () => {
-  it('should default to single space between columns', async () => {
+Deno.test('columnSep - transport column separator', async (t) => {
+  await t.step('should default to single space between columns', async () => {
     const logMgr = new Log.Mgr<Console.Builder>();
     logMgr.initLevels();
     logMgr.threshold = 'info';
@@ -142,16 +141,16 @@ describe('columnSep - transport column separator', () => {
 
     try {
       logger.info.text('Hello').emit();
-      expect(logCalls.length).toBe(1);
+      assert.strictEqual(logCalls.length, 1);
       // Level and message separated by single space
-      expect(logCalls[0]).toContain('[INFO ] Hello');
+      assert.ok(logCalls[0].includes('[INFO ] Hello'));
     } finally {
       console.log = origLog;
       await logMgr.close();
     }
   });
 
-  it('should use show.columnSep for column separation', async () => {
+  await t.step('should use show.columnSep for column separation', async () => {
     const logMgr = new Log.Mgr<Console.Builder>();
     logMgr.initLevels();
     logMgr.threshold = 'info';
@@ -167,9 +166,9 @@ describe('columnSep - transport column separator', () => {
 
     try {
       logger.info.text('Hello').emit();
-      expect(logCalls.length).toBe(1);
+      assert.strictEqual(logCalls.length, 1);
       // Level and message separated by ' | '
-      expect(logCalls[0]).toContain('[INFO ] | Hello');
+      assert.ok(logCalls[0].includes('[INFO ] | Hello'));
     } finally {
       console.log = origLog;
       await logMgr.close();

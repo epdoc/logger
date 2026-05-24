@@ -1,8 +1,8 @@
 import type * as Log from '$log';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
 import { type Integer, isArray, isInteger, isPosInteger, isString } from '@epdoc/type';
-import * as Base from '../base/mod.ts';
 import { DateTime } from '@epdoc/datetime';
+import * as Base from '../base/mod.ts';
 
 /**
  * Extends the {@link AbstractLogger} logger to provide indentation capabilities for log output.
@@ -115,15 +115,36 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    *
    * @remarks
    * - If `n` is a `string`, it is added directly as an indentation string.
-   * - If `n` is a `number`, that many spaces are added or removede as indentation levels.
+   * - If `n` is a `number`, that many spaces are added or removed as indentation levels.
    * - If `n` is an `array` of strings, each string is added as an indentation level.
    * - If `n` is `undefined`, a single space is added as an indentation level.
    * - If `n` is `false`, indenting is turned off (same as nodent)
    *
-   * @param {number | string | string[]} [n] - The indentation value(s) to add.
+   * Automatically suppressed when progress is active (between start/stop) to prevent
+   * interfering with progress indicator display.
+   *
+   * @param {number | string | string[] | false} [n] - The indentation value(s) to add.
    * @returns {this} The current logger instance for chaining.
+   *
+   * @example
+   * ```typescript
+   * // Regular indent - always applies
+   * logger.indent();
+   * logger.indent(2);
+   * logger.indent('  ');
+   *
+   * // Indent automatically suppressed during progress
+   * logger.info.text('Building').start();
+   * logger.indent();  // No-op - progress is active
+   * logger.info.text('Done').stop();
+   * ```
    */
   indent(n?: number | string | string[] | false): this {
+    // Skip indent if progress is active to avoid disrupting progress display
+    if (this._logMgr.transportMgr.hasActiveProgress) {
+      return this;
+    }
+
     if (n === false) {
       this._indent = [];
     } else if (isString(n)) {
@@ -161,8 +182,28 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    *
    * @param {number} [n=1] - The number of indentation levels to remove.
    * @returns {this} The current logger instance for chaining.
+   *
+   * Automatically suppressed when progress is active (between start/stop) to prevent
+   * interfering with progress indicator display.
+   *
+   * @example
+   * ```typescript
+   * // Regular outdent - always applies
+   * logger.outdent();
+   * logger.outdent(2);
+   *
+   * // Outdent automatically suppressed during progress
+   * logger.info.text('Building').start();
+   * logger.outdent();  // No-op - progress is active
+   * logger.info.text('Done').stop();
+   * ```
    */
   outdent(n: number = 1): this {
+    // Skip outdent if progress is active to avoid disrupting progress display
+    if (this._logMgr.transportMgr.hasActiveProgress) {
+      return this;
+    }
+
     for (let x = 0; x < n; ++x) {
       if (this._indent.length > 0) {
         this._indent.pop();

@@ -1,16 +1,14 @@
-// deno-lint-ignore-file no-explicit-any
 import { DateTime } from '@epdoc/datetime';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import { expect } from '@std/expect';
-import { describe, test } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 import * as Log from '../src/mod.ts';
 
 type M = MsgBuilder.Console.Builder;
 
 const logMgr = new Log.Mgr<M>();
 
-describe('Log.Entity', () => {
-  test('test', async () => {
+Deno.test('Log.Entity', async (t) => {
+  await t.step('test', async () => {
     // Get logger first to initialize LogMgr
     const log = await logMgr.getLogger<Log.Std.Logger<M>>();
 
@@ -24,19 +22,19 @@ describe('Log.Entity', () => {
 
     // Format with proper options object
     const str = msgBuilder.format({ color: false });
-    expect(str).toEqual('message heading');
+    assert.strictEqual(str, 'message heading');
 
     // The emit method now returns EmitterData, not Entry
     const record = msgBuilder.emit();
-    expect(record).toBeDefined();
+    assert.ok(record !== undefined);
     if (record) {
       // EmitterData has timestamp, formatter, and data - not level, msg, pkgs, etc.
-      expect(record.timestamp).toBeInstanceOf(DateTime as any);
-      expect(record.formatter).toBeDefined();
+      assert.ok(record.timestamp instanceof DateTime);
+      assert.ok(record.formatter !== undefined);
 
       if (record.timestamp instanceof DateTime) {
         const diff = Math.abs(record.timestamp.epochMilliseconds - DateTime.now().epochMilliseconds);
-        expect(diff).toBeLessThan(100); // Increased tolerance
+        assert.ok(diff < 100); // Increased tolerance
       }
     }
   });

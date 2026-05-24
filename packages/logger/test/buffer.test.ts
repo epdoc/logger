@@ -1,6 +1,6 @@
 import * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
-import { assertEquals, assertStringIncludes, assertThrows } from '@std/assert';
+import * as assert from 'node:assert';
 import { BufferTransport } from '../src/transports/buffer/transport.ts';
 
 Deno.test('BufferTransport - basic functionality', async () => {
@@ -19,9 +19,9 @@ Deno.test('BufferTransport - basic functionality', async () => {
 
   // Check entries
   const entries = bufferTransport.getEntries();
-  assertEquals(entries.length, 2);
-  assertStringIncludes(entries[0].msg!, 'Info message');
-  assertStringIncludes(entries[1].msg!, 'Error message');
+  assert.strictEqual(entries.length, 2);
+  assert.ok(entries[0].msg!.includes('Info message'));
+  assert.ok(entries[1].msg!.includes('Error message'));
 });
 
 Deno.test('BufferTransport - maxEntries limit', async () => {
@@ -40,10 +40,10 @@ Deno.test('BufferTransport - maxEntries limit', async () => {
 
   // Should only keep the last 3 messages
   const entries = bufferTransport.getEntries();
-  assertEquals(entries.length, 3);
-  assertStringIncludes(entries[0].msg!, 'Message 3');
-  assertStringIncludes(entries[1].msg!, 'Message 4');
-  assertStringIncludes(entries[2].msg!, 'Message 5');
+  assert.strictEqual(entries.length, 3);
+  assert.ok(entries[0].msg!.includes('Message 3'));
+  assert.ok(entries[1].msg!.includes('Message 4'));
+  assert.ok(entries[2].msg!.includes('Message 5'));
 });
 
 Deno.test('BufferTransport - utility methods', async () => {
@@ -59,16 +59,16 @@ Deno.test('BufferTransport - utility methods', async () => {
   logger.error.text('Second message').emit();
 
   // Test utility methods
-  assertEquals(bufferTransport.getCount(), 2);
-  assertEquals(bufferTransport.contains('First'), true);
-  assertEquals(bufferTransport.contains('Third'), false);
-  assertEquals(bufferTransport.matches(/Second/), true);
-  assertEquals(bufferTransport.matches(/Third/), false);
+  assert.strictEqual(bufferTransport.getCount(), 2);
+  assert.strictEqual(bufferTransport.contains('First'), true);
+  assert.strictEqual(bufferTransport.contains('Third'), false);
+  assert.strictEqual(bufferTransport.matches(/Second/), true);
+  assert.strictEqual(bufferTransport.matches(/Third/), false);
 
   const messages = bufferTransport.getMessages();
-  assertEquals(messages.length, 2);
-  assertStringIncludes(messages[0], 'First message');
-  assertStringIncludes(messages[1], 'Second message');
+  assert.strictEqual(messages.length, 2);
+  assert.ok(messages[0].includes('First message'));
+  assert.ok(messages[1].includes('Second message'));
 });
 
 Deno.test('BufferTransport - assertion methods', async () => {
@@ -90,19 +90,19 @@ Deno.test('BufferTransport - assertion methods', async () => {
   bufferTransport.assertMatches(/Test/);
 
   // Test assertions that should fail
-  assertThrows(
+  assert.throws(
     () => bufferTransport.assertContains('Missing message'),
     Error,
     'Expected log to contain "Missing message"',
   );
 
-  assertThrows(
+  assert.throws(
     () => bufferTransport.assertCount(3),
     Error,
     'Expected 3 log entries but found 2',
   );
 
-  assertThrows(
+  assert.throws(
     () => bufferTransport.assertMatches(/Missing/),
     Error,
     'Expected log to match pattern',
@@ -119,9 +119,9 @@ Deno.test('BufferTransport - clear functionality', async () => {
   const logger = await logMgr.getLogger() as Log.Std.Logger<Console.Builder>;
 
   logger.info.text('Test message').emit();
-  assertEquals(bufferTransport.getCount(), 1);
+  assert.strictEqual(bufferTransport.getCount(), 1);
 
   bufferTransport.clear();
-  assertEquals(bufferTransport.getCount(), 0);
-  assertEquals(bufferTransport.getEntries().length, 0);
+  assert.strictEqual(bufferTransport.getCount(), 0);
+  assert.strictEqual(bufferTransport.getEntries().length, 0);
 });

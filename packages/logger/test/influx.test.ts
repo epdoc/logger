@@ -1,7 +1,7 @@
 import { DateTime } from '@epdoc/datetime';
 import * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
-import { assertEquals, assertStringIncludes } from '@std/assert';
+import * as assert from 'node:assert';
 import { InfluxTransport } from '../src/transports/influx/transport.ts';
 
 // Mock fetch responses
@@ -132,15 +132,15 @@ Deno.test('InfluxTransport - basic message emission', async () => {
   // Wait for async transmission
   await delay(100);
 
-  assertEquals(mockFetch.calls.length, 1);
+  assert.strictEqual(mockFetch.calls.length, 1);
   const call = mockFetch.getLastCall()!;
-  assertEquals(call.method, 'POST');
-  assertStringIncludes(call.url, '/api/v2/write');
-  assertStringIncludes(call.url, 'org=test-org');
-  assertStringIncludes(call.url, 'bucket=test-bucket');
-  assertEquals(call.headers['Authorization'], 'Token test-token');
-  assertStringIncludes(call.body, 'logs,level=INFO,service=test-service,environment=test');
-  assertStringIncludes(call.body, 'message="Test message"');
+  assert.strictEqual(call.method, 'POST');
+  assert.ok(call.url.includes('/api/v2/write'));
+  assert.ok(call.url.includes('org=test-org'));
+  assert.ok(call.url.includes('bucket=test-bucket'));
+  assert.strictEqual(call.headers['Authorization'], 'Token test-token');
+  assert.ok(call.body.includes('logs,level=INFO,service=test-service,environment=test'));
+  assert.ok(call.body.includes('message="Test message"'));
 
   await influxTransport.stop();
   mockFetch.restore();
@@ -172,7 +172,7 @@ Deno.test('InfluxTransport - batch size threshold', async () => {
   }
 
   // Should not have triggered transmission yet
-  assertEquals(mockFetch.calls.length, 0);
+  assert.strictEqual(mockFetch.calls.length, 0);
 
   // Emit 100th message (should trigger batch transmission)
   logger.info.text('Message 100').emit();
@@ -180,14 +180,14 @@ Deno.test('InfluxTransport - batch size threshold', async () => {
   // Wait for async transmission
   await delay(100);
 
-  assertEquals(mockFetch.calls.length, 1);
+  assert.strictEqual(mockFetch.calls.length, 1);
   const call = mockFetch.getLastCall()!;
 
   // Should contain all 100 messages
   const lines = call.body.split('\n');
-  assertEquals(lines.length, 100);
-  assertStringIncludes(lines[0], 'Message 1');
-  assertStringIncludes(lines[99], 'Message 100');
+  assert.strictEqual(lines.length, 100);
+  assert.ok(lines[0].includes('Message 1'));
+  assert.ok(lines[99].includes('Message 100'));
 
   await influxTransport.stop();
   mockFetch.restore();
@@ -220,19 +220,19 @@ Deno.test('InfluxTransport - time-based flushing', async () => {
   logger.info.text('Message 3').emit();
 
   // Should not have triggered transmission yet
-  assertEquals(mockFetch.calls.length, 0);
+  assert.strictEqual(mockFetch.calls.length, 0);
 
   // Wait for time-based flush (600ms)
   await delay(600);
 
-  assertEquals(mockFetch.calls.length, 1);
+  assert.strictEqual(mockFetch.calls.length, 1);
   const call = mockFetch.getLastCall()!;
 
   // Should contain the 3 messages
   const lines = call.body.split('\n');
-  assertEquals(lines.length, 3);
-  assertStringIncludes(lines[0], 'Message 1');
-  assertStringIncludes(lines[2], 'Message 3');
+  assert.strictEqual(lines.length, 3);
+  assert.ok(lines[0].includes('Message 1'));
+  assert.ok(lines[2].includes('Message 3'));
 
   await influxTransport.stop();
   mockFetch.restore();
@@ -271,12 +271,12 @@ Deno.test('InfluxTransport - retry logic on failure', async () => {
   await delay(1500);
 
   // Should have made 3 attempts
-  assertEquals(mockFetch.calls.length, 3);
+  assert.strictEqual(mockFetch.calls.length, 3);
 
   // All calls should have the same body
   const firstBody = mockFetch.calls[0].body;
-  assertEquals(mockFetch.calls[1].body, firstBody);
-  assertEquals(mockFetch.calls[2].body, firstBody);
+  assert.strictEqual(mockFetch.calls[1].body, firstBody);
+  assert.strictEqual(mockFetch.calls[2].body, firstBody);
 
   await influxTransport.stop();
   mockFetch.restore();
@@ -314,11 +314,11 @@ Deno.test('InfluxTransport - retry behavior verification', async () => {
   await delay(400);
 
   // Should have made 2 attempts (first failed, second succeeded)
-  assertEquals(mockFetch.calls.length, 2);
+  assert.strictEqual(mockFetch.calls.length, 2);
 
   // Both calls should have the same message
-  assertEquals(mockFetch.calls[0].body, mockFetch.calls[1].body);
-  assertStringIncludes(mockFetch.calls[0].body, 'Retry test message');
+  assert.strictEqual(mockFetch.calls[0].body, mockFetch.calls[1].body);
+  assert.ok(mockFetch.calls[0].body.includes('Retry test message'));
 
   await influxTransport.stop();
   mockFetch.restore();
@@ -423,7 +423,7 @@ Deno.test('InfluxTransport - dropped message tracking', async () => {
   await delay(500);
 
   // Should have made 3 failed attempts
-  assertEquals(mockFetch.calls.length, 3);
+  assert.strictEqual(mockFetch.calls.length, 3);
 
   // Now emit a new message - should trigger summary first
   logger.info.text('New message').emit();
@@ -432,7 +432,7 @@ Deno.test('InfluxTransport - dropped message tracking', async () => {
 
   // Should have made at least one more call for the summary
   const finalCallCount = mockFetch.calls.length;
-  assertEquals(finalCallCount >= 4, true, `Expected at least 4 calls, got ${finalCallCount}`);
+  assert.ok(finalCallCount >= 4, `Expected at least 4 calls, got ${finalCallCount}`);
 
   // Find the summary call (should contain dropped message info)
   const summaryCall = mockFetch.calls.find((call) => call.body.includes('log messages could not be transmitted'));
@@ -442,12 +442,12 @@ Deno.test('InfluxTransport - dropped message tracking', async () => {
   }
 
   // Verify summary message content
-  assertStringIncludes(summaryCall.body, '2 log messages could not be transmitted');
-  assertStringIncludes(summaryCall.body, 'data_dropped=');
-  assertStringIncludes(summaryCall.body, '\\"total\\":2');
-  assertStringIncludes(summaryCall.body, '\\"info\\":1');
-  assertStringIncludes(summaryCall.body, '\\"error\\":1');
-  assertStringIncludes(summaryCall.body, 'level=WARN');
+  assert.ok(summaryCall.body.includes('2 log messages could not be transmitted'));
+  assert.ok(summaryCall.body.includes('data_dropped='));
+  assert.ok(summaryCall.body.includes('\\"total\\":2'));
+  assert.ok(summaryCall.body.includes('\\"info\\":1'));
+  assert.ok(summaryCall.body.includes('\\"error\\":1'));
+  assert.ok(summaryCall.body.includes('level=WARN'));
 
   await influxTransport.stop();
   mockFetch.restore();
@@ -491,25 +491,25 @@ Deno.test('InfluxTransport - message formatting with metadata', async () => {
   await influxTransport.flush();
   await delay(100);
 
-  assertEquals(mockFetch.calls.length, 1);
+  assert.strictEqual(mockFetch.calls.length, 1);
   const call = mockFetch.getLastCall()!;
 
   // Check tags (low cardinality)
-  assertStringIncludes(call.body, 'level=ERROR');
-  assertStringIncludes(call.body, 'service=test-service');
-  assertStringIncludes(call.body, 'environment=production');
-  assertStringIncludes(call.body, 'package=test.module');
+  assert.ok(call.body.includes('level=ERROR'));
+  assert.ok(call.body.includes('service=test-service'));
+  assert.ok(call.body.includes('environment=production'));
+  assert.ok(call.body.includes('package=test.module'));
 
   // Check fields (high cardinality)
-  assertStringIncludes(call.body, 'message="Error occurred"');
-  assertStringIncludes(call.body, 'request_id="req-123"');
-  assertStringIncludes(call.body, 'session_id="session-456"');
-  assertStringIncludes(call.body, 'duration_ms=1500');
-  assertStringIncludes(call.body, 'data_userId=789');
-  assertStringIncludes(call.body, 'data_action="login"');
+  assert.ok(call.body.includes('message="Error occurred"'));
+  assert.ok(call.body.includes('request_id="req-123"'));
+  assert.ok(call.body.includes('session_id="session-456"'));
+  assert.ok(call.body.includes('duration_ms=1500'));
+  assert.ok(call.body.includes('data_userId=789'));
+  assert.ok(call.body.includes('data_action="login"'));
 
   // Check timestamp (nanoseconds)
-  assertStringIncludes(call.body, '1704110400000000000');
+  assert.ok(call.body.includes('1704110400000000000'));
 
   await influxTransport.stop();
   mockFetch.restore();

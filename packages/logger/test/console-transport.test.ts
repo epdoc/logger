@@ -1,13 +1,12 @@
 import * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
-import { expect } from '@std/expect';
-import { describe, it } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 
 type Logger = Log.Std.Logger<Console.Builder>;
 
-describe('ConsoleTransport', () => {
-  describe('useStderr option', () => {
-    it('should output to console.log by default', async () => {
+Deno.test('ConsoleTransport', async (t) => {
+  await t.step('useStderr option', async (t) => {
+    await t.step('should output to console.log by default', async () => {
       const logMgr = new Log.Mgr<Console.Builder>();
       logMgr.initLevels();
       logMgr.threshold = 'info';
@@ -26,9 +25,9 @@ describe('ConsoleTransport', () => {
       try {
         logger.info.text('stdout message').emit();
 
-        expect(logCalls.length).toBe(1);
-        expect(logCalls[0]).toContain('stdout message');
-        expect(errorCalls.length).toBe(0);
+        assert.strictEqual(logCalls.length, 1);
+        assert.ok(logCalls[0].includes('stdout message'));
+        assert.strictEqual(errorCalls.length, 0);
       } finally {
         console.log = origLog;
         console.error = origError;
@@ -36,7 +35,7 @@ describe('ConsoleTransport', () => {
       }
     });
 
-    it('should output to console.error when useStderr is true', async () => {
+    await t.step('should output to console.error when useStderr is true', async () => {
       const logMgr = new Log.Mgr<Console.Builder>();
       logMgr.initLevels();
       logMgr.threshold = 'info';
@@ -55,9 +54,9 @@ describe('ConsoleTransport', () => {
       try {
         logger.info.text('stderr message').emit();
 
-        expect(errorCalls.length).toBe(1);
-        expect(errorCalls[0]).toContain('stderr message');
-        expect(logCalls.length).toBe(0);
+        assert.strictEqual(errorCalls.length, 1);
+        assert.ok(errorCalls[0].includes('stderr message'));
+        assert.strictEqual(logCalls.length, 0);
       } finally {
         console.log = origLog;
         console.error = origError;
@@ -65,7 +64,7 @@ describe('ConsoleTransport', () => {
       }
     });
 
-    it('should not affect other transports on the same logMgr', async () => {
+    await t.step('should not affect other transports on the same logMgr', async () => {
       const logMgr = new Log.Mgr<Console.Builder>();
       logMgr.initLevels();
       logMgr.threshold = 'info';
@@ -89,10 +88,10 @@ describe('ConsoleTransport', () => {
         logger.info.text('dual output').emit();
 
         // Message should appear on both transports
-        expect(logCalls.length).toBe(1);
-        expect(logCalls[0]).toContain('dual output');
-        expect(errorCalls.length).toBe(1);
-        expect(errorCalls[0]).toContain('dual output');
+        assert.strictEqual(logCalls.length, 1);
+        assert.ok(logCalls[0].includes('dual output'));
+        assert.strictEqual(errorCalls.length, 1);
+        assert.ok(errorCalls[0].includes('dual output'));
       } finally {
         console.log = origLog;
         console.error = origError;

@@ -1,14 +1,12 @@
-// deno-lint-ignore-file no-explicit-any
 import { DateTime } from '@epdoc/datetime';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import { expect } from '@std/expect';
-import { describe, test } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 import * as Log from '../src/mod.ts';
 
 type M = MsgBuilder.Console.Builder;
 
-describe('Logger Recursion', () => {
-  test('should handle recursive logger creation and usage', async () => {
+Deno.test('Logger Recursion', async (t) => {
+  await t.step('should handle recursive logger creation and usage', async () => {
     const logMgr = new Log.Mgr<M>();
     const rootLogger = await logMgr.getLogger<Log.Std.Logger<M>>();
     logMgr.threshold = 'spam'; // Allow all levels
@@ -20,13 +18,13 @@ describe('Logger Recursion', () => {
     // Create message builder and test basic functionality
     const mb = rootLogger.info.h1('Test message');
     const str = mb.format({ color: false });
-    expect(str).toBe('Test message');
+    assert.strictEqual(str, 'Test message');
 
     const obj = mb.emit();
-    expect(obj).toBeDefined();
+    assert.ok(obj !== undefined);
     if (obj) {
-      expect(obj.timestamp).toBeInstanceOf(DateTime as any);
-      expect(obj.formatter).toBeDefined();
+      assert.ok(obj.timestamp instanceof DateTime);
+      assert.ok(obj.formatter !== undefined);
     }
 
     // Test recursive logger creation
@@ -35,17 +33,17 @@ describe('Logger Recursion', () => {
 
     const mb3 = child2.info.h1('Recursive message');
     const str3 = mb3.format({ color: false });
-    expect(str3).toBe('Recursive message');
+    assert.strictEqual(str3, 'Recursive message');
 
     const obj3 = mb3.emit();
-    expect(obj3).toBeDefined();
+    assert.ok(obj3 !== undefined);
     if (obj3) {
-      expect(obj3.timestamp).toBeInstanceOf(DateTime as any);
-      expect(obj3.formatter).toBeDefined();
+      assert.ok(obj3.timestamp instanceof DateTime);
+      assert.ok(obj3.formatter !== undefined);
     }
   });
 
-  test('should maintain logger hierarchy correctly', async () => {
+  await t.step('should maintain logger hierarchy correctly', async () => {
     const logMgr = new Log.Mgr<M>();
     const rootLogger = await logMgr.getLogger<Log.Std.Logger<M>>();
     logMgr.threshold = 'info';
@@ -55,14 +53,14 @@ describe('Logger Recursion', () => {
     const child2 = child1.getChild({ pkg: 'level2' });
     const child3 = child2.getChild({ pkg: 'level3' });
 
-    expect(child1).toBeDefined();
-    expect(child2).toBeDefined();
-    expect(child3).toBeDefined();
+    assert.ok(child1 !== undefined);
+    assert.ok(child2 !== undefined);
+    assert.ok(child3 !== undefined);
 
     // Test that deeply nested logger can emit
     const msgBuilder = child3.info.text('Deep nesting test');
     const result = msgBuilder.emit();
 
-    expect(result).toBeDefined();
+    assert.ok(result !== undefined);
   });
 });

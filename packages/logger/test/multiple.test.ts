@@ -1,6 +1,6 @@
 import * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
-import { assertEquals, assertStringIncludes } from '@std/assert';
+import * as assert from 'node:assert';
 import { BufferTransport } from '../src/transports/buffer/transport.ts';
 
 Deno.test('Multiple transports - message ordering with delayed ready', async () => {
@@ -26,27 +26,27 @@ Deno.test('Multiple transports - message ordering with delayed ready', async () 
   logger.info.text('Message 3').emit();
 
   // Initially, immediate transport should have no messages (queued)
-  assertEquals(immediateBuffer.getCount(), 3);
-  assertEquals(delayedBuffer.getCount(), 3);
+  assert.strictEqual(immediateBuffer.getCount(), 3);
+  assert.strictEqual(delayedBuffer.getCount(), 3);
 
   // Wait for delayed transport to become ready
   await new Promise((resolve) => setTimeout(resolve, 150));
 
   // Now both transports should have all messages in correct order
-  assertEquals(immediateBuffer.getCount(), 3);
-  assertEquals(delayedBuffer.getCount(), 3);
+  assert.strictEqual(immediateBuffer.getCount(), 3);
+  assert.strictEqual(delayedBuffer.getCount(), 3);
 
   const immediateMessages = immediateBuffer.getMessages();
   const delayedMessages = delayedBuffer.getMessages();
 
   // Verify message order
-  assertStringIncludes(immediateMessages[0], 'Message 1');
-  assertStringIncludes(immediateMessages[1], 'Message 2');
-  assertStringIncludes(immediateMessages[2], 'Message 3');
+  assert.ok(immediateMessages[0].includes('Message 1'));
+  assert.ok(immediateMessages[1].includes('Message 2'));
+  assert.ok(immediateMessages[2].includes('Message 3'));
 
-  assertStringIncludes(delayedMessages[0], 'Message 1');
-  assertStringIncludes(delayedMessages[1], 'Message 2');
-  assertStringIncludes(delayedMessages[2], 'Message 3');
+  assert.ok(delayedMessages[0].includes('Message 1'));
+  assert.ok(delayedMessages[1].includes('Message 2'));
+  assert.ok(delayedMessages[2].includes('Message 3'));
 });
 
 Deno.test('Multiple transports - different types', async () => {
@@ -66,13 +66,13 @@ Deno.test('Multiple transports - different types', async () => {
   logger.info.text('Test message').emit();
 
   // Buffer should be empty initially
-  assertEquals(bufferTransport.getCount(), 1);
+  assert.strictEqual(bufferTransport.getCount(), 1);
 
   // Wait for buffer to become ready
   await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Buffer should now have the message
-  assertEquals(bufferTransport.getCount(), 1);
+  assert.strictEqual(bufferTransport.getCount(), 1);
   bufferTransport.assertContains('Test message');
 });
 
@@ -95,8 +95,8 @@ Deno.test('Multiple transports - same type different configs', async () => {
   await new Promise((resolve) => setTimeout(resolve, 100));
 
   // Both should have the message
-  assertEquals(buffer1.getCount(), 1);
-  assertEquals(buffer2.getCount(), 1);
+  assert.strictEqual(buffer1.getCount(), 1);
+  assert.strictEqual(buffer2.getCount(), 1);
 
   buffer1.assertContains('Test message');
   buffer2.assertContains('Test message');

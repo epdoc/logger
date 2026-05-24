@@ -1,14 +1,12 @@
-// deno-lint-ignore-file no-explicit-any
 import { DateTime } from '@epdoc/datetime';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import { expect } from '@std/expect';
-import { describe, test } from '@std/testing/bdd';
+import * as assert from 'node:assert';
 import * as Log from '../src/mod.ts';
 
 type M = MsgBuilder.Console.Builder;
 
-describe('Logger Nesting', () => {
-  test('should create a child logger', async () => {
+Deno.test('Logger Nesting', async (t) => {
+  await t.step('should create a child logger', async () => {
     const logMgr = new Log.Mgr<M>();
     logMgr.initLevels();
     await logMgr.start();
@@ -17,19 +15,19 @@ describe('Logger Nesting', () => {
     rootLogger.pkgs.push('root');
 
     const childLogger = rootLogger.getChild({ pkg: 'child1' });
-    expect(childLogger).toBeDefined();
+    assert.ok(childLogger !== undefined);
 
     // Test that child logger can create message builders
     const msgBuilder = (childLogger.info as MsgBuilder.Console.Builder).h1('Child message');
     const entry = msgBuilder.emit();
 
-    expect(entry).toBeDefined();
+    assert.ok(entry !== undefined);
     if (entry) {
-      expect(entry.timestamp).toBeInstanceOf(DateTime as any);
+      assert.ok(entry.timestamp instanceof DateTime);
     }
   });
 
-  test('should correctly handle multiple levels of nesting', async () => {
+  await t.step('should correctly handle multiple levels of nesting', async () => {
     const logMgr = new Log.Mgr<M>();
     logMgr.initLevels();
     await logMgr.start();
@@ -40,19 +38,19 @@ describe('Logger Nesting', () => {
     const child1 = rootLogger.getChild({ pkg: 'child1' });
     const child2 = child1.getChild({ reqId: 'req2', pkg: 'child2' });
 
-    expect(child2).toBeDefined();
+    assert.ok(child2 !== undefined);
 
     // Test that deeply nested logger works
     const msgBuilder = (child2.info as MsgBuilder.Console.Builder).h1('Deep child message');
     const entry = msgBuilder.emit();
 
-    expect(entry).toBeDefined();
+    assert.ok(entry !== undefined);
     if (entry) {
-      expect(entry.timestamp).toBeInstanceOf(DateTime as any);
+      assert.ok(entry.timestamp instanceof DateTime);
     }
   });
 
-  test('should overwrite sid in child logger', async () => {
+  await t.step('should overwrite sid in child logger', async () => {
     const logMgr = new Log.Mgr<M>();
     logMgr.initLevels();
     await logMgr.start();
@@ -62,11 +60,11 @@ describe('Logger Nesting', () => {
     rootLogger.sid = 'session1';
     const childLogger = rootLogger.getChild({ sid: 'session2' });
 
-    expect(childLogger).toBeDefined();
-    expect(childLogger.sid).toBe('session2');
+    assert.ok(childLogger !== undefined);
+    assert.strictEqual(childLogger.sid, 'session2');
   });
 
-  test('should correctly format the output string', async () => {
+  await t.step('should correctly format the output string', async () => {
     const logMgr = new Log.Mgr<M>();
     logMgr.initLevels();
     await logMgr.start();
@@ -84,12 +82,12 @@ describe('Logger Nesting', () => {
     const formatted = msgBuilder.format({ color: false });
     const entry = msgBuilder.emit();
 
-    expect(formatted).toBe('Test message');
-    expect(entry).toBeDefined();
+    assert.strictEqual(formatted, 'Test message');
+    assert.ok(entry !== undefined);
   });
 
-  describe('pkg chain', () => {
-    test('should chain pkg names with default separators', async () => {
+  await t.step('pkg chain', async (t) => {
+    await t.step('should chain pkg names with default separators', async () => {
       // Test with default separator
       const logMgr = new Log.Mgr<M>();
       logMgr.initLevels();
@@ -104,22 +102,22 @@ describe('Logger Nesting', () => {
 
       grandChildLogger.info.text('test').emit();
       const capturedEntries = bufferTransport.getEntries();
-      expect(capturedEntries.length).toBe(2);
+      assert.strictEqual(capturedEntries.length, 2);
       // First message: warning from LogMgr (no pkg field)
-      expect(capturedEntries[0].pkg).toBeUndefined();
-      expect(capturedEntries[0].msg).toContain('Log Manager is already running.');
+      assert.strictEqual(capturedEntries[0].pkg, undefined);
+      assert.ok(capturedEntries[0].msg!.includes('Log Manager is already running.'));
       // Second message: from grandchild logger
-      expect(capturedEntries[1].pkg).toBe('root.child.grandchild');
-      expect(capturedEntries[1].msg).toBe('test');
+      assert.strictEqual(capturedEntries[1].pkg, 'root.child.grandchild');
+      assert.strictEqual(capturedEntries[1].msg, 'test');
 
       const capturedEntries2 = bufferTransport2.getEntries();
-      expect(capturedEntries2.length).toBe(1);
+      assert.strictEqual(capturedEntries2.length, 1);
       // Only the test message (added after warning was emitted)
-      expect(capturedEntries2[0].msg).toBe('test');
-      expect(capturedEntries2[0].pkg).toBe('root.child.grandchild');
+      assert.strictEqual(capturedEntries2[0].msg, 'test');
+      assert.strictEqual(capturedEntries2[0].pkg, 'root.child.grandchild');
     });
 
-    test('should chain pkg names with custom separators', async () => {
+    await t.step('should chain pkg names with custom separators', async () => {
       // Test with custom separator
       const logMgr = new Log.Mgr<M>({ show: { pkgSep: '->' } });
       logMgr.initLevels();
@@ -132,7 +130,7 @@ describe('Logger Nesting', () => {
 
       grandChildLogger.info.text('test').emit();
       const capturedEntry = bufferTransport.getLastEntry();
-      expect(capturedEntry?.pkg).toBe('root->child->grandchild');
+      assert.strictEqual(capturedEntry?.pkg, 'root->child->grandchild');
     });
   });
 });

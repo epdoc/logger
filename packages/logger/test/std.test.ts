@@ -1,5 +1,4 @@
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import { describe, it } from '@std/testing/bdd';
 import * as Log from '../src/mod.ts';
 
 type M = MsgBuilder.Console.Builder;
@@ -8,8 +7,8 @@ type L = Log.Std.Logger<M>;
 const logMgr = new Log.Mgr<M>().initLevels();
 logMgr.threshold = 'spam';
 
-describe('Std Logger', () => {
-  it('should log basic messages', async () => {
+Deno.test('Std Logger', async (t) => {
+  await t.step('should log basic messages', async () => {
     const log = await logMgr.getLogger<L>();
     log.info.h1('test:').value('std logger').emit();
     log.info.h1('Level').value('info').emit('test');
@@ -21,7 +20,7 @@ describe('Std Logger', () => {
     log.spam.h1('Level').value('spam').emit('emit');
   });
 
-  it('should log with level display', async () => {
+  await t.step('should log with level display', async () => {
     logMgr.show = { level: true };
     const log = await logMgr.getLogger<L>();
     log.info.h1('test:').value('std logger').emit();
@@ -33,7 +32,7 @@ describe('Std Logger', () => {
     log.spam.h1('Level').value('spam').emit('emit');
   });
 
-  it('should log with UTC timestamp', async () => {
+  await t.step('should log with UTC timestamp', async () => {
     logMgr.show = { timestamp: 'utc' };
     const log = await logMgr.getLogger<L>();
     log.info.h1('test:').value('std logger').emit();
@@ -45,7 +44,7 @@ describe('Std Logger', () => {
     log.spam.h1('Level').value('spam').emit('emit');
   });
 
-  it('should log with local timestamp', async () => {
+  await t.step('should log with local timestamp', async () => {
     logMgr.show = { timestamp: 'local' };
     const log = await logMgr.getLogger<L>();
     log.info.h1('test:').value('std logger with local').emit();
@@ -57,7 +56,7 @@ describe('Std Logger', () => {
     log.spam.h1('Level').value('spam').emit('emit');
   });
 
-  it('should log with elapsed timestamp', async () => {
+  await t.step('should log with elapsed timestamp', async () => {
     logMgr.show = { timestamp: 'elapsed' };
     const log = await logMgr.getLogger<L>();
     log.info.h1('test:').value('std logger with elapsed').emit();
@@ -69,7 +68,7 @@ describe('Std Logger', () => {
     log.spam.h1('Level').value('spam').emit('emit');
   });
 
-  it('should log with elapsed and level display', async () => {
+  await t.step('should log with elapsed and level display', async () => {
     logMgr.show = { timestamp: 'utc', level: true };
     const log = await logMgr.getLogger<L>();
     log.info.h1('std logger with elapsed and level').emit();
@@ -82,7 +81,7 @@ describe('Std Logger', () => {
     log.spam.h2('Level').value('spam').emit('emit');
   });
 
-  it('should respect threshold settings', async () => {
+  await t.step('should respect threshold settings', async () => {
     logMgr.show = { timestamp: 'utc', level: true };
     const log = await logMgr.getLogger<L>();
     log.info.h1('test:').value('std logger with elapsed and level and threshold').emit();
@@ -95,7 +94,7 @@ describe('Std Logger', () => {
     log.spam.h1('Level').value('spam').emit('emit');
   });
 
-  it('should display package information', async () => {
+  await t.step('should display package information', async () => {
     logMgr.show = { timestamp: 'utc', level: true, pkg: true };
     const log = await logMgr.getLogger<L>();
     log.info.h1('test:').value('std logger with elapsed and level and pkg').emit();
@@ -108,7 +107,7 @@ describe('Std Logger', () => {
     log.spam.h1('Level').value('spam').emit('emit');
   });
 
-  it('should support performance marking', async () => {
+  await t.step('should support performance marking', async () => {
     logMgr.show = { timestamp: 'utc', level: true, pkg: true };
     const log = await logMgr.getLogger<L>();
     log.pkgs.push('mypkg');

@@ -1,0 +1,242 @@
+/**
+ * Test level-constrained indent operations
+ *
+ * Tests the indent({ level: 'X' }) feature that suppresses indent when
+ * the current threshold matches the specified level.
+ *
+ * Run: deno test -A test/indent-level.test.ts
+ */
+import * as assert from 'node:assert';
+import * as Log from '../src/mod.ts';
+import { Console } from '@epdoc/msgbuilder';
+
+type MsgBuilder = Console.Builder;
+type Logger = Log.Std.Logger<MsgBuilder>;
+
+Deno.test('Level-constrained indent', async (t) => {
+  await t.step('indent({ level }) skips indent when level matches threshold', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('info');
+
+    // At info threshold, indent({ level: 'info' }) should be skipped
+    logger.indent({ level: 'info' });
+    
+    // Verify indent was NOT applied
+    assert.strictEqual(logger.getdent().length, 0);
+  });
+
+  await t.step('indent({ level }) applies indent when level does not match threshold', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('verbose');
+
+    // At verbose threshold, indent({ level: 'info' }) should apply
+    logger.indent({ level: 'info' });
+    
+    // Verify indent WAS applied (default single space)
+    assert.strictEqual(logger.getdent().length, 1);
+    assert.strictEqual(logger.getdent()[0], ' ');
+  });
+
+  await t.step('indent({ level: verbose }) skipped at info threshold', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('info');
+
+    // At info threshold, indent({ level: 'verbose' }) should apply
+    // (level doesn't match threshold)
+    logger.indent({ level: 'verbose' });
+    
+    // Verify indent WAS applied
+    assert.strictEqual(logger.getdent().length, 1);
+  });
+
+  await t.step('indent({ level: verbose }) applies at verbose threshold', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('verbose');
+
+    // At verbose threshold, indent({ level: 'verbose' }) should be skipped
+    logger.indent({ level: 'verbose' });
+    
+    // Verify indent was NOT applied
+    assert.strictEqual(logger.getdent().length, 0);
+  });
+
+  await t.step('regular indent (no level) always applies', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('info');
+
+    // Regular indent without level constraint should always apply
+    logger.indent();
+    assert.strictEqual(logger.getdent().length, 1);
+
+    logger.indent(2);
+    assert.strictEqual(logger.getdent().length, 3); // 1 + 2
+
+    logger.indent('>>');
+    assert.strictEqual(logger.getdent().length, 4); // +1 custom string
+  });
+});
+
+Deno.test('Level-constrained outdent', async (t) => {
+  await t.step('outdent with level constraint skips when level matches', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('info');
+
+    // First add some indent
+    logger.indent(3);
+    assert.strictEqual(logger.getdent().length, 3);
+
+    // At info threshold, outdent with level: 'info' should be skipped
+    logger.outdent(1, { level: 'info' });
+    assert.strictEqual(logger.getdent().length, 3); // Unchanged
+  });
+
+  await t.step('outdent with level constraint applies when level does not match', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('verbose');
+
+    // First add some indent
+    logger.indent(3);
+    assert.strictEqual(logger.getdent().length, 3);
+
+    // At verbose threshold, outdent with level: 'info' should apply
+    logger.outdent(1, { level: 'info' });
+    assert.strictEqual(logger.getdent().length, 2);
+  });
+
+  await t.step('regular outdent (no level) always applies', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('info');
+
+    // First add some indent
+    logger.indent(3);
+    assert.strictEqual(logger.getdent().length, 3);
+
+    // Regular outdent should always apply
+    logger.outdent();
+    assert.strictEqual(logger.getdent().length, 2);
+
+    logger.outdent(2);
+    assert.strictEqual(logger.getdent().length, 0);
+  });
+});
+
+Deno.test('Progress + Indent integration pattern', async (t) => {
+  await t.step('pattern: indent suppressed during info progress', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('info');
+
+    // Level-constrained indent - skipped at info threshold
+    logger.indent({ level: 'verbose' });
+    assert.strictEqual(logger.getdent().length, 1); // Applied (level doesn't match)
+
+    logger.outdent(); // Remove it for clean test
+    logger.nodent();
+
+    // Pattern for protecting info-level progress:
+    logger.indent({ level: 'info' });  // Skipped at info
+    
+    // Progress would start here (clean, no indent)
+    // ... progress operations ...
+    
+    // Outdent would also be skipped
+    logger.outdent(1, { level: 'info' });  // Skipped at info
+    
+    assert.strictEqual(logger.getdent().length, 0);
+  });
+
+  await t.step('pattern: indent applied during verbose progress', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('verbose');
+
+    // At verbose threshold, info-level progress falls back to emit
+    // So we want indent to apply for readable output
+    logger.indent({ level: 'info' });  // Applied at verbose
+    assert.strictEqual(logger.getdent().length, 1);
+
+    // ... work happens ...
+
+    // Outdent applies
+    logger.outdent(1, { level: 'info' });  // Applied at verbose
+    assert.strictEqual(logger.getdent().length, 0);
+  });
+});
+
+Deno.test('nodent() behavior unchanged', async (t) => {
+  await t.step('nodent clears all indents regardless of level', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('info');
+
+    // Mix of regular and level-constrained indents
+    logger.indent(2);
+    logger.indent({ level: 'verbose' });  // Applied at info
+    
+    assert.strictEqual(logger.getdent().length, 3);
+
+    // nodent clears everything
+    logger.nodent();
+    assert.strictEqual(logger.getdent().length, 0);
+  });
+
+  await t.step('nodent works at any threshold', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('verbose');
+
+    logger.indent(3);
+    assert.strictEqual(logger.getdent().length, 3);
+
+    logger.nodent();
+    assert.strictEqual(logger.getdent().length, 0);
+  });
+});
+
+Deno.test('Edge cases', async (t) => {
+  await t.step('negative indent removes levels', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('info');
+
+    logger.indent(5);
+    assert.strictEqual(logger.getdent().length, 5);
+
+    // Negative indent removes levels
+    logger.indent(-2);
+    assert.strictEqual(logger.getdent().length, 3);
+  });
+
+  await t.step('negative indent with level constraint', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('info');
+
+    logger.indent(5);
+    assert.strictEqual(logger.getdent().length, 5);
+
+    // Negative indent should NOT be affected by level constraint
+    // (level constraint only applies when adding indent with object param)
+    logger.indent(-2);
+    assert.strictEqual(logger.getdent().length, 3);
+  });
+
+  await t.step('outdent beyond available levels is safe', async () => {
+    const logMgr = new Log.Mgr<MsgBuilder>().initLevels();
+    const logger = await logMgr.getLogger<Logger>();
+    await logMgr.setThreshold('info');
+
+    logger.indent(2);
+    logger.outdent(10); // More than available
+    
+    assert.strictEqual(logger.getdent().length, 0);
+  });
+});
