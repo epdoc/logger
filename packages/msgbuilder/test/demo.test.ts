@@ -10,8 +10,6 @@
  */
 
 // deno-fmt-ignore
-import { describe, it } from '@std/testing/bdd';
-// deno-fmt-ignore
 import { Console } from '../src/mod.ts';
 // deno-fmt-ignore
 import { consoleStyleFormatters, consoleStyleFormattersV0, consoleStyleFormattersV1 } from '../src/console/const.ts';
@@ -137,8 +135,8 @@ function padDisplay(str: string, targetWidth: number): string {
   return str + ' '.repeat(padding);
 }
 
-describe('ConsoleMsgBuilder Style Demo', () => {
-  it('should display all styles in a 2D comparison table', () => {
+Deno.test('ConsoleMsgBuilder Style Demo', async (t) => {
+  await t.step('should display all styles in a 2D comparison table', () => {
     console.log('\n' + '='.repeat(100));
     console.log('ConsoleMsgBuilder Style Reference Demo');
     console.log('='.repeat(100));
@@ -198,7 +196,8 @@ describe('ConsoleMsgBuilder Style Demo', () => {
     console.log('='.repeat(100) + '\n');
   });
 
-  it.skip('should display no-color comparison table', () => {
+  await t.step('should display no-color comparison table (skipped)', () => {
+    // This test is skipped in the original - keeping as placeholder
     console.log('\n' + '='.repeat(100));
     console.log('Style Reference (no colors - raw output):');
     console.log('='.repeat(100));
