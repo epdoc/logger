@@ -49,15 +49,25 @@
           "*": "ask",
           "*>*": "ask",
           "*|*": "ask",
-          "rm -rf *": "deny",
+          "grep *": "allow",
+          "ls *": "allow",
           "git *": "allow",
+          "git status*": "allow",
+          "git diff*": "allow",
           "git commit*": "ask",
           "git push*": "ask",
           "git tag*": "ask",
+          "dtask audit*": "allow",
           "deno run *": "allow",
+          "deno run *-n*": "allow",
+          "deno run *--dry-run*": "allow",
+          "deno test *": "allow",
           "deno task fmt*": "deny",
           "deno task lint*": "allow",
-          "deno task *": "allow"
+          "deno task check*": "allow",
+          "deno task test*": "allow",
+          "deno task *": "allow",
+          "rm -rf *": "deny"
         }
       }
     }
