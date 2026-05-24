@@ -25,7 +25,7 @@ Deno.test('util', async (t) => {
       const ctx = new TestContext(pkg);
       await ctx.setupLogging();
       CliApp.configureLogging(ctx, { verbose: true });
-      assert.strictEqual(ctx.logMgr.threshold.name.toLowerCase(), 'info');
+      assert.strictEqual(ctx.logMgr.threshold.name.toLowerCase(), 'verbose');
     });
 
     await t.step('should set threshold from opts.debug', async () => {
