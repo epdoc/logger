@@ -1,5 +1,5 @@
-import * as Log from './src/mod.ts';
-import { Console } from '../msgbuilder/src/mod.ts';
+import { Console } from '../../msgbuilder/src/mod.ts';
+import * as Log from '../src/mod.ts';
 
 type MsgBuilder = Console.Builder;
 type Logger = Log.Std.Logger<MsgBuilder>;
@@ -14,7 +14,7 @@ logMgr.show = { ...logMgr.show, time: true };
 console.log("After setting time:true:", logMgr.show.time);
 
 // Test mark/ewt to see if time shows
-const m0 = logger.mark('test');
+const m0 = logger.mark();
 logger.info.text('Hello').ewt(m0);
 
 await logMgr.stop();
