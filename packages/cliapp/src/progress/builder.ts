@@ -61,6 +61,8 @@ import type { StartOptions } from './types.ts';
 export interface ProgressEmitter extends MsgBuilder.IEmitter {
   /** True when progress mode is enabled (level matches threshold and TTY available) */
   progressEnabled: boolean;
+  /** True when transport can show progress (TTY available), regardless of level */
+  progressCapable: boolean;
   /** Access to transport manager for active progress storage */
   transportMgr: Log.Transport.Mgr;
   /** The current log level spec */
@@ -165,7 +167,13 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
     const levelName = emitter.level.name;
     const message = this.format();
 
-    if (emitter.progressEnabled && meetsThreshold) {
+    // When level option is provided, use progressCapable (transport capability only)
+    // Otherwise use progressEnabled (which includes level threshold check)
+    const canShowProgress = options?.level
+      ? emitter.progressCapable
+      : emitter.progressEnabled;
+
+    if (canShowProgress && meetsThreshold) {
       if (transportMgr.hasActiveProgress) {
         // NESTED: Push new context to stack, update progress line with new message
         transportMgr.pushNestedProgress(message, levelName);
@@ -224,7 +232,7 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
     const transportMgr = emitter.transportMgr;
     const activeProgress = transportMgr.activeProgress;
 
-    if (emitter.progressEnabled && activeProgress?.isActive) {
+    if (activeProgress?.isActive) {
       // Update the current progress line (works with nested progress)
       activeProgress.update(this.format(), progressValue);
     } else {
@@ -276,15 +284,8 @@ export class ProgressMsgBuilder extends Console.Builder implements Disposable {
     const transportMgr = emitter.transportMgr;
     const activeProgress = transportMgr.activeProgress;
 
-    if (emitter.progressEnabled && activeProgress?.isActive) {
+    if (activeProgress?.isActive) {
       // PROGRESS mode: Handle nested progress
-
-      // Assert: Must have active progress to complete
-      // NOW we just emit
-      // assert(
-      //   activeProgress?.isActive,
-      //   `No active progress to complete. Call start() first`,
-      // );
 
       const nestingDepth = transportMgr.progressNestingDepth;
 
@@ -448,6 +449,7 @@ export function createStandaloneProgressEmitter(): ProgressEmitter {
     emitEnabled: false,
     stackEnabled: false,
     progressEnabled: false,
+    progressCapable: false,
     level: { name: 'INFO' as Level.Name, value: 9, severity: 9 } as Level.Spec,
     transportMgr: {
       activeProgress: undefined,

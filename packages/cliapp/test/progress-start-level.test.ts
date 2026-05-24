@@ -236,11 +236,11 @@ Deno.test('StartOptions level constraint - nested progress', async (t) => {
     await ctx.setupLogging('debug'); // threshold = debug (severity 5)
 
     // Parent: info level with level: 'info' at debug threshold
-    // INFO(9) >= DEBUG(5) = true → progress mode
+    // INFO(9) >= DEBUG(5) = true → progress mode (in TTY)
     ctx.log.info.text('Parent task').start({ level: 'info' });
 
     // Child: verbose level with level: 'verbose' at debug threshold
-    // VERBOSE(6) >= DEBUG(5) = true → nested progress
+    // VERBOSE(6) >= DEBUG(5) = true → nested progress (in TTY)
     ctx.log.verbose.text('  Child task').start({ level: 'verbose' });
 
     // Complete child
@@ -249,6 +249,8 @@ Deno.test('StartOptions level constraint - nested progress', async (t) => {
     // Complete parent
     ctx.log.info.text('Parent done').complete();
 
+    // In TTY: nesting depth should be 0 after completing all
+    // In non-TTY: progress falls back to emit, depth is always 0
     assert.strictEqual(ctx.log.info.nestingDepth, 0);
   });
 
