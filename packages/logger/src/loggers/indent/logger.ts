@@ -1,7 +1,8 @@
 import type * as Log from '$log';
+import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import { type Integer, isArray, isInteger, isPosInteger, isString } from '@epdoc/type';
 import { DateTime } from '@epdoc/datetime';
+import { type Integer, isArray, isInteger, isPosInteger, isString } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
 
 /**
@@ -128,6 +129,37 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
     }
 
     return msgBuilder;
+  }
+
+  /**
+   * Returns a message builder for the specified log level.
+   *
+   * @remarks
+   * This method provides dynamic level selection at runtime, allowing you to
+   * choose the log level programmatically rather than using the level-specific
+   * getters (e.g., `info`, `debug`, `verbose`).
+   *
+   * The level can be specified as:
+   * - A `Level.Spec` object (with `name` and `severity`)
+   * - A level name string (e.g., `'info'`, `'INFO'`, `'debug'`)
+   * - A severity number (e.g., `9` for INFO)
+   *
+   * @param level - The log level as a Spec, name, or severity number
+   * @returns A message builder configured for the specified level
+   * @throws Error if the level is invalid or not found
+   *
+   * @example
+   * ```typescript
+   * const level = opts.level ?? this.ctx.logMgr.logLevels.asSpec('info');
+   * this.at(level).text('Message').emit();
+   * ```
+   */
+  public at(level: Level.Spec | Level.Name | Level.Severity): M {
+    const spec = this._logMgr.logLevels.asSpec(level);
+    if (!spec) {
+      throw new Error(`Invalid log level: ${level}`);
+    }
+    return this.getIndentedMsgBuilder(spec.name);
   }
 
   /**

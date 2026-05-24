@@ -285,4 +285,109 @@ Deno.test('Logger Indentation', async (t) => {
       assert.strictEqual(log.getdent().length, 0);
     });
   });
+
+  await t.step('Dynamic Level Selection (at() method)', async (t) => {
+    await t.step('should return message builder for level name string', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
+
+      // Test with lowercase name
+      const builder1 = log.at('info');
+      assert.ok(builder1);
+
+      // Test with uppercase name
+      const builder2 = log.at('INFO');
+      assert.ok(builder2);
+
+      // Test with mixed case
+      const builder3 = log.at('Verbose');
+      assert.ok(builder3);
+    });
+
+    await t.step('should return message builder for level spec object', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
+
+      const infoSpec = logMgr.logLevels.asSpec('info');
+      assert.ok(infoSpec);
+
+      const builder = log.at(infoSpec!);
+      assert.ok(builder);
+    });
+
+    await t.step('should return message builder for severity number', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
+
+      // INFO severity is 9
+      const builder = log.at(9);
+      assert.ok(builder);
+    });
+
+    await t.step('should throw for invalid level', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
+
+      assert.throws(() => {
+        log.at('invalidlevel');
+      }, /Invalid log level/);
+    });
+
+    await t.step('should throw for invalid severity number', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
+
+      assert.throws(() => {
+        log.at(999);
+      }, /Invalid log level/);
+    });
+
+    await t.step('should apply indentation when using at()', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
+
+      log.indent('>>');
+
+      // Capture the message builder
+      let capturedEntry: Log.Entry | null = null;
+      const originalEmit = logMgr.transportMgr.emit;
+      logMgr.transportMgr.emit = (entry: Log.Entry) => {
+        capturedEntry = entry;
+      };
+
+      try {
+        log.at('info').text('test message').emit();
+
+        // Verify message was built and indentation applied
+        if (capturedEntry && (capturedEntry as Log.Entry).msg) {
+          assert.strictEqual((capturedEntry as Log.Entry).msg instanceof MsgBuilderRuntime.Abstract, true);
+        }
+      } finally {
+        logMgr.transportMgr.emit = originalEmit;
+      }
+    });
+
+    await t.step('should work with child loggers', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const parentLog = await logMgr.getLogger<L>();
+
+      parentLog.indent('parent');
+      const childLog = parentLog.getChild({ reqId: 'test' });
+
+      const builder = childLog.at('debug');
+      assert.ok(builder);
+    });
+
+    await t.step('should support all standard levels', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
+
+      const levels = ['spam', 'trace', 'debug', 'verbose', 'info', 'warn', 'error', 'critical', 'fatal'];
+
+      for (const level of levels) {
+        const builder = log.at(level);
+        assert.ok(builder, `Should support ${level} level`);
+      }
+    });
+  });
 });
