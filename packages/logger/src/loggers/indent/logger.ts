@@ -5,6 +5,45 @@ import { DateTime } from '@epdoc/datetime';
 import * as Base from '../base/mod.ts';
 
 /**
+ * A disposable indentation scope that automatically outdents when disposed.
+ *
+ * @remarks
+ * This class enables the `using` pattern for automatic indentation management.
+ * When used with `using`, the outdent happens automatically when the variable
+ * goes out of scope, even if an error is thrown or an early return occurs.
+ *
+ * @example
+ * ```typescript
+ * {
+ *   using _scope = logger.indentScope(2);
+ *   logger.info.text('Task 1').emit();
+ *   logger.info.text('Task 2').emit();
+ * } // Automatically outdents here
+ * ```
+ */
+export class DisposableIndent<M extends MsgBuilder.Abstract> implements Disposable {
+  #logger: IndentLogger<M>;
+  #levels: number;
+  #disposed = false;
+
+  constructor(logger: IndentLogger<M>, levels: number) {
+    this.#logger = logger;
+    this.#levels = levels;
+  }
+
+  /**
+   * Disposes the indentation scope by calling outdent.
+   * This method is called automatically when using the `using` declaration.
+   */
+  [Symbol.dispose](): void {
+    if (!this.#disposed) {
+      this.#logger.outdent(this.#levels);
+      this.#disposed = true;
+    }
+  }
+}
+
+/**
  * Extends the {@link AbstractLogger} logger to provide indentation capabilities for log output.
  *
  * @remarks
@@ -123,15 +162,26 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    * Automatically suppressed when progress is active (between start/stop) to prevent
    * interfering with progress indicator display.
    *
+   * The return value can be used with the `using` declaration for automatic outdent
+   * when the scope ends. This is the preferred way to manage indentation.
+   *
    * @param {number | string | string[] | false} [n] - The indentation value(s) to add.
-   * @returns {this} The current logger instance for chaining.
+   * @returns {DisposableIndent<M>} A disposable object that outdents when disposed.
+   *   Use with `using` for automatic cleanup, or ignore for manual outdent management.
    *
    * @example
    * ```typescript
-   * // Regular indent - always applies
-   * logger.indent();
+   * // Using pattern (preferred) - automatic outdent
+   * {
+   *   using _scope = logger.indent(2);
+   *   logger.info.text('Line 1').emit();
+   *   logger.info.text('Line 2').emit();
+   * } // Automatically outdents here
+   *
+   * // Manual management (legacy) - must call outdent()
    * logger.indent(2);
-   * logger.indent('  ');
+   * logger.info.text('Line 1').emit();
+   * logger.outdent(2);
    *
    * // Indent automatically suppressed during progress
    * logger.info.text('Building').start();
@@ -139,34 +189,43 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    * logger.info.text('Done').stop();
    * ```
    */
-  indent(n?: number | string | string[] | false): this {
+  indent(n?: number | string | string[] | false): DisposableIndent<M> {
     // Skip indent if progress is active to avoid disrupting progress display
     if (this._logMgr.transportMgr.hasActiveProgress) {
-      return this;
+      // Return a no-op disposable that won't outdent anything
+      return new DisposableIndent(this, 0);
     }
+
+    let levelsAdded = 0;
 
     if (n === false) {
       this._indent = [];
     } else if (isString(n)) {
       this._indent.push(n);
+      levelsAdded = 1;
     } else if (isPosInteger(n)) {
       for (let x = 0; x < n; ++x) {
         this._indent.push(' ');
       }
+      levelsAdded = n;
     } else if (isInteger(n)) {
       // n is negative, remove |n| indent levels
       const levelsToRemove = Math.abs(n);
       for (let x = 0; x < levelsToRemove && this._indent.length > 0; ++x) {
         this._indent.pop();
       }
+      levelsAdded = 0; // No levels to outdent for negative indents
     } else if (isArray(n)) {
       for (let x = 0; x < n.length; ++x) {
         this._indent.push(n[x]);
       }
+      levelsAdded = n.length;
     } else {
       this._indent.push(' ');
+      levelsAdded = 1;
     }
-    return this;
+
+    return new DisposableIndent(this, levelsAdded);
   }
 
   /**
