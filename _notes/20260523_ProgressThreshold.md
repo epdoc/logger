@@ -156,11 +156,46 @@ The existing protection in `packages/logger/src/loggers/indent/logger.ts` remain
 3. `packages/cliapp/AI.md` - Updated documentation
 4. `packages/cliapp/test/progress-start-level.test.ts` - New test file (created)
 
+## Bug Fix: 2026-05-24
+
+### Problem
+When using `{ level: 'info' }` in `start()`, the progress would start correctly but `complete()` and `update()` wouldn't work properly because they checked `emitter.progressEnabled` which is based on the logger's level, not the level option provided to `start()`.
+
+### Example of the Bug
+```typescript
+// At verbose threshold (severity 6)
+log.info.text('Task').start({ level: 'info' });  // Progress started (uses progressCapable)
+// ... do work ...
+log.info.text('Done').complete();  // Would emit instead of complete progress
+// Because: progressEnabled = (INFO(9) === VERBOSE(6)) = false
+```
+
+### Fix
+Removed the `emitter.progressEnabled` check from `complete()` and `update()`. These methods now only check `activeProgress?.isActive`:
+
+```typescript
+// Before:
+if (emitter.progressEnabled && activeProgress?.isActive) {
+  // Complete/update progress
+}
+
+// After:
+if (activeProgress?.isActive) {
+  // Complete/update progress
+}
+```
+
+This makes sense because if progress was started (activeProgress is active), it should be completed/updated regardless of the emitter's level settings.
+
+### Files Modified in Bug Fix
+1. `packages/cliapp/src/progress/builder.ts` - Removed `emitter.progressEnabled` checks from `complete()` and `update()`
+
 ## Future Considerations
 
 - Should `update()` also accept a `level` option for consistency?
 - Should there be validation when nesting progress with incompatible level constraints?
 - Should the default level be the current log level instead of 'verbose'?
+- Should `stop()` have different semantics than `complete()`? Currently they're aliases.
 
 ## Related Tests
 

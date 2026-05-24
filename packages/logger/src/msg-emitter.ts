@@ -46,6 +46,7 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
   #pkg?: string;
   #msgSep: Integer = 1;
   #progressEnabled: boolean;
+  #progressCapable: boolean;
   #demark?: (name: string, keep?: boolean) => number;
 
   /**
@@ -65,6 +66,7 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
     this.#msgSep = options.msgSep;
     this.#transportMgr = options.transportMgr;
     this.#progressEnabled = options.progressEnabled ?? false;
+    this.#progressCapable = options.progressCapable ?? false;
     this.#demark = options.demark;
   }
 
@@ -141,6 +143,34 @@ export class MsgEmitter implements MsgBuilder.IEmitter {
    */
   get progressEnabled(): boolean {
     return this.#progressEnabled;
+  }
+
+  /**
+   * Indicates whether the transport is capable of showing progress indicators.
+   *
+   * @remarks
+   * This is true when there's at least one ConsoleTransport registered that
+   * can show progress (TTY available). Unlike `progressEnabled`, this does
+   * NOT consider whether the current log level matches the threshold.
+   *
+   * Use this when you want to check transport capability independently of
+   * the level threshold, such as when the user provides a `level` option
+   * to override automatic progress behavior.
+   *
+   * @returns True if the transport can show progress
+   *
+   * @example
+   * ```ts
+   * // When level option is provided, use progressCapable instead of progressEnabled
+   * const canShowProgress = options?.level
+   *   ? this._emitter.progressCapable
+   *   : this._emitter.progressEnabled;
+   * ```
+   *
+   * @public
+   */
+  get progressCapable(): boolean {
+    return this.#progressCapable;
   }
 
   /**

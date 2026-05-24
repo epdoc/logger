@@ -133,6 +133,18 @@ export interface LogEmitterOpts {
    * When false but emitEnabled is true, normal log emission should occur.
    */
   progressEnabled: boolean;
+  /**
+   * Indicates if the transport is capable of showing progress indicators.
+   *
+   * This is true when there's at least one ConsoleTransport registered that
+   * can show progress (TTY available). Unlike `progressEnabled`, this does
+   * NOT consider whether the current log level matches the threshold.
+   *
+   * Use this when you want to check transport capability independently of
+   * the level threshold, such as when the user provides a `level` option
+   * to override automatic progress behavior.
+   */
+  progressCapable: boolean;
   demark?: (name: string, keep?: boolean) => number;
 }
 

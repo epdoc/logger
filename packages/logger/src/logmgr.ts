@@ -285,6 +285,7 @@ export class LogMgr<
       msgSep: emitter.msgSep ?? this.#show.msgSep ?? 1,
       transportMgr: this.transportMgr,
       progressEnabled,
+      progressCapable: hasProgressTransport,
       demark: emitter.demark ? (name: string, keep?: boolean) => emitter.demark!(name, keep ?? false) : undefined,
     };
 
