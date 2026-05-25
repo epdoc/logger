@@ -1,7 +1,7 @@
 import type * as Log from '$log';
+import { DateTime } from '@epdoc/datetime';
 import type * as Level from '@epdoc/loglevels';
 import type * as MsgBuilder from '@epdoc/msgbuilder';
-import { DateTime } from '@epdoc/datetime';
 import { type Integer, isArray, isInteger, isPosInteger, isString } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
 
@@ -154,8 +154,8 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    * this.at(level).text('Message').emit();
    * ```
    */
-  public at(level: Level.Spec | Level.Name | Level.Severity): M {
-    const spec = this._logMgr.logLevels.asSpec(level);
+  public at(level?: Level.Spec | Level.Name | Level.Severity): M {
+    const spec = this._logMgr.logLevels.asSpec(level ? level : 'info');
     if (!spec) {
       throw new Error(`Invalid log level: ${level}`);
     }
