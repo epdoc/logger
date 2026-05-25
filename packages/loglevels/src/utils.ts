@@ -5,7 +5,7 @@ export function compareLevels(levelA: Level.Spec, levelB: Level.Spec): CompareRe
   return (levelA.severity > levelB.severity) ? +1 : (levelA.severity === levelB.severity) ? 0 : -1;
 }
 
-export function applyColors(msg: string, spec: Level.Spec | null): string {
+export function applyColors(msg: string, spec: Level.Spec | undefined): string {
   if (spec && spec.fmtFn) {
     return spec.fmtFn(msg);
   }

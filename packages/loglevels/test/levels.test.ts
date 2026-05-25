@@ -105,7 +105,7 @@ Deno.test('levels cli', async (t) => {
 
   await t.step('color', () => {
     for (let severity = 1; severity <= 24; ++severity) {
-      const spec: Level.Spec | null = logLevels.specArray[severity];
+      const spec: Level.Spec | undefined = logLevels.specArray[severity] ?? undefined;
       const s: string = applyColors('hello', spec);
       assert.strictEqual(s, colorResult[severity]);
     }
