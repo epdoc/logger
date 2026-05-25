@@ -168,7 +168,7 @@ Deno.test('levels', async (t) => {
       assert.strictEqual(logLevels.asSpec(13)!.severity >= 13, true);
       assert.strictEqual(logLevels.asSpec(5)!.severity >= 9, false);
       assert.strictEqual(logLevels.asSpec(5)!.severity >= 13, false);
-      assert.strictEqual(logLevels.asSpec('wild'), null);
+      assert.strictEqual(logLevels.asSpec('wild'), undefined);
     });
 
     await t.step('std flush threshold', () => {

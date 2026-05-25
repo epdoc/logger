@@ -28,7 +28,7 @@
   "imports": {
     "@epdoc/datetime": "jsr:@epdoc/datetime@^4.0.1",
     "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.42",
-    "@epdoc/loglevels": "jsr:@epdoc/loglevels@^1.0.5",
+    "@epdoc/loglevels": "jsr:@epdoc/loglevels@^1.0.6",
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.42",
     "@epdoc/progress": "jsr:@epdoc/progress@^0.1.5",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.13",
