@@ -1,7 +1,7 @@
 {
   "name": "@epdoc/cliapp",
   "description": "A CLI application template for @epdoc/logger",
-  "version": "2.2.62",
+  "version": "2.2.63",
   "exports": "./src/mod.ts",
   "publish": {
     "include": [

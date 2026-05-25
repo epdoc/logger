@@ -1,5 +1,3 @@
-import type { Dict, EmptyDict } from '@epdoc/type';
-
 /**
  * Command runner utilities for executing external commands.
  *
@@ -27,7 +25,7 @@ import type { Dict, EmptyDict } from '@epdoc/type';
 export type Milliseconds = number;
 
 /** Result of a command execution */
-export interface CmdResult<T extends Dict = EmptyDict, E extends Error = Error> {
+export interface CmdResult<T = void, E extends Error = Error> {
   /** Whether the command exited with code 0 */
   success: boolean;
   /** The process exit code */
@@ -102,7 +100,7 @@ export interface CmdOptions {
  * });
  * ```
  */
-export async function runCommand<T extends Dict = EmptyDict>(
+export async function runCommand<T = void>(
   cmd: string,
   args: string[],
   opts: CmdOptions = {},
@@ -118,7 +116,7 @@ export async function runCommand<T extends Dict = EmptyDict>(
       code: 0,
       stdout: '',
       stderr: '',
-      data: {} as T,
+      data: undefined,
       dryRun: true,
       command: commandStr,
       duration: performance.now() - t0,
@@ -153,7 +151,7 @@ export async function runCommand<T extends Dict = EmptyDict>(
         code,
         stdout: '',
         stderr: '',
-        data: {} as T,
+        data: undefined,
         command: commandStr,
         duration: performance.now() - t0,
       };
@@ -208,7 +206,7 @@ export async function runCommand<T extends Dict = EmptyDict>(
  * }
  * ```
  */
-export async function runCommandOrThrow<T extends Dict = EmptyDict>(
+export async function runCommandOrThrow<T = void>(
   cmd: string,
   args: string[],
   opts: CmdOptions = {},
@@ -218,7 +216,7 @@ export async function runCommandOrThrow<T extends Dict = EmptyDict>(
   if (!result.success) {
     throw new CommandError(
       `Command failed: ${cmd} ${args.join(' ')} (exit code: ${result.code})`,
-      result as CmdResult<EmptyDict, CommandError>,
+      result as CmdResult<void, CommandError>,
     );
   }
 
