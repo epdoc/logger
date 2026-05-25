@@ -143,7 +143,9 @@ Deno.test('runner', async (t) => {
         code: 1,
         stdout: '',
         stderr: 'error message',
+        data: undefined,
         command: 'mock command',
+        duration: 0,
       };
       const err = new CommandError('test error', result);
 
@@ -158,6 +160,8 @@ Deno.test('runner', async (t) => {
         stdout: 'output',
         stderr: 'error',
         command: 'mock command',
+        data: undefined,
+        duration: 0,
       };
       const err = new CommandError('test', result);
 

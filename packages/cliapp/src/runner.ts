@@ -22,8 +22,10 @@
  * ```
  */
 
+export type Milliseconds = number;
+
 /** Result of a command execution */
-export interface CmdResult {
+export interface CmdResult<T = void> {
   /** Whether the command exited with code 0 */
   success: boolean;
   /** The process exit code */
@@ -32,10 +34,14 @@ export interface CmdResult {
   stdout: string;
   /** Standard error (empty string in interactive mode) */
   stderr: string;
+  /** Not used by CmdResult, but a caller can use this to insert structured data */
+  data: T;
   /** Set to true if this was a dry run and the command was not executed */
   dryRun?: boolean;
   /** The command that was run (for logging purposes) */
   command: string;
+  /** The duration of the call */
+  duration: Milliseconds;
 }
 
 /** Options for running a command */
@@ -97,6 +103,7 @@ export async function runCommand(
   args: string[],
   opts: CmdOptions = {},
 ): Promise<CmdResult> {
+  const t0 = performance.now();
   const cwd = opts.cwd ?? Deno.cwd();
   const interactive = opts.interactive ?? false;
   const commandStr = [cmd, ...args].join(' ');
@@ -107,8 +114,10 @@ export async function runCommand(
       code: 0,
       stdout: '',
       stderr: '',
+      data: undefined,
       dryRun: true,
       command: commandStr,
+      duration: performance.now() - t0,
     };
   }
 
@@ -140,7 +149,9 @@ export async function runCommand(
         code,
         stdout: '',
         stderr: '',
+        data: undefined,
         command: commandStr,
+        duration: performance.now() - t0,
       };
     } finally {
       Deno.removeSignalListener('SIGINT', sigintHandler);
@@ -163,7 +174,9 @@ export async function runCommand(
       code,
       stdout: new TextDecoder().decode(stdout),
       stderr: new TextDecoder().decode(stderr),
+      data: undefined,
       command: commandStr,
+      duration: performance.now() - t0,
     };
   }
 }
