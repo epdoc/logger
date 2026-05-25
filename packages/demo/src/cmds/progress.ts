@@ -19,7 +19,7 @@ export class ProgressCommand extends CliApp.Cmd.AbstractBase<RootContext, RootCo
     this.log.info.section().emit();
   }
 
-  override async execute(_opts: ProgressCmdOpts, args: CliApp.CmdArgs): Promise<void> {
+  override async execute(_opts: ProgressCmdOpts, _args: CliApp.CmdArgs): Promise<void> {
     this.ctx.log.info.section('ProgressCommand Execution').emit();
     this.log.info.demo(this.ctx).emit();
     // Demonstrate using the custom params() method from CustomMsgBuilder
