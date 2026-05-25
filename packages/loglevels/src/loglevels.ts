@@ -70,16 +70,16 @@ export class LogLevels {
    *   or an existing {@link Level.Spec}.
    * @returns The matching Spec, or `null` if not found.
    */
-  asSpec(level: Level.Spec | Level.Name | Level.Severity): Level.Spec | null {
+  asSpec(level: Level.Spec | Level.Name | Level.Severity): Level.Spec | undefined {
     if (isSpec(level)) return level;
     if (isSeverityNumber(level)) {
-      return this.#specArray[level];
+      return this.#specArray[level] ?? undefined;
     }
     if (typeof level === 'string') {
       const spec = this.#specMap.get(level.toUpperCase());
-      return spec ? spec : null;
+      return spec ? spec : undefined;
     }
-    return null;
+    return undefined;
   }
 
   /**

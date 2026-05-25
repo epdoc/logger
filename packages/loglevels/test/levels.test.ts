@@ -1,5 +1,5 @@
-import * as assert from 'node:assert';
 import * as colors from '@std/fmt/colors';
+import * as assert from 'node:assert';
 import * as Level from '../src/mod.ts';
 import { applyColors, compareLevels } from '../src/utils.ts';
 import { reset, set } from './color-map.ts';
@@ -66,7 +66,7 @@ Deno.test('levels cli', async (t) => {
     ]);
     assert.strictEqual(logLevels.$$id, 'test1');
     assert.strictEqual(logLevels.asSpec('info')!.severity, 9);
-    assert.strictEqual(logLevels.asSpec(4), null);
+    assert.strictEqual(logLevels.asSpec(4), undefined);
     assert.strictEqual(logLevels.asSpec(2)!.name, 'INPUT');
     assert.strictEqual(logLevels.asSpec(3)!.name, 'VERBOSE');
     assert.strictEqual(logLevels.asSpec(1)!.name, 'SILLY');
