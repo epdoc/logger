@@ -34,14 +34,16 @@ export interface CmdResult<T = void> {
   stdout: string;
   /** Standard error (empty string in interactive mode) */
   stderr: string;
-  /** Not used by CmdResult, but a caller can use this to insert structured data */
-  data: T;
   /** Set to true if this was a dry run and the command was not executed */
   dryRun?: boolean;
   /** The command that was run (for logging purposes) */
   command: string;
   /** The duration of the call */
   duration: Milliseconds;
+  /** Not used by CmdResult, but a caller may populate this after parsing the output */
+  data?: T;
+  /** An Error object, not used by runCommand, but a caller may populate it after parsing the output */
+  error?: Error;
 }
 
 /** Options for running a command */
