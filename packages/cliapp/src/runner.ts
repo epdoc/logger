@@ -1,3 +1,5 @@
+import type { Dict, EmptyDict } from '@epdoc/type';
+
 /**
  * Command runner utilities for executing external commands.
  *
@@ -25,7 +27,7 @@
 export type Milliseconds = number;
 
 /** Result of a command execution */
-export interface CmdResult<T = void, E extends Error = Error> {
+export interface CmdResult<T extends Dict = EmptyDict, E extends Error = Error> {
   /** Whether the command exited with code 0 */
   success: boolean;
   /** The process exit code */
@@ -100,11 +102,11 @@ export interface CmdOptions {
  * });
  * ```
  */
-export async function runCommand(
+export async function runCommand<T extends Dict = EmptyDict>(
   cmd: string,
   args: string[],
   opts: CmdOptions = {},
-): Promise<CmdResult> {
+): Promise<CmdResult<T>> {
   const t0 = performance.now();
   const cwd = opts.cwd ?? Deno.cwd();
   const interactive = opts.interactive ?? false;
@@ -116,7 +118,7 @@ export async function runCommand(
       code: 0,
       stdout: '',
       stderr: '',
-      data: undefined,
+      data: {} as T,
       dryRun: true,
       command: commandStr,
       duration: performance.now() - t0,
@@ -151,7 +153,7 @@ export async function runCommand(
         code,
         stdout: '',
         stderr: '',
-        data: undefined,
+        data: {} as T,
         command: commandStr,
         duration: performance.now() - t0,
       };
@@ -206,17 +208,17 @@ export async function runCommand(
  * }
  * ```
  */
-export async function runCommandOrThrow(
+export async function runCommandOrThrow<T extends Dict = EmptyDict>(
   cmd: string,
   args: string[],
   opts: CmdOptions = {},
-): Promise<CmdResult> {
-  const result = await runCommand(cmd, args, opts);
+): Promise<CmdResult<T>> {
+  const result = await runCommand<T>(cmd, args, opts);
 
   if (!result.success) {
     throw new CommandError(
       `Command failed: ${cmd} ${args.join(' ')} (exit code: ${result.code})`,
-      result,
+      result as CmdResult<EmptyDict, CommandError>,
     );
   }
 
