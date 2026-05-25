@@ -77,17 +77,17 @@ export async function run<TCtx extends Ctx.AbstractBase = Ctx.AbstractBase>(
   let isClosing = false;
   let interrupted = false;
 
-  const sigintHandler = async () => {
+  const sigintHandler = () => {
     if (isClosing) return;
     isClosing = true;
     interrupted = true;
 
-    try {
-      await ctx.close();
+    // Fire-and-forget cleanup - don't await it so we always exit
+    ctx.close().catch(() => {}).finally(() => {
       ctx.log.info.h1('Application').label('Interrupted').ewt(performance.now() - t0);
-    } catch (err) {
-      ctx.log.error.label('Error during interrupt cleanup').err(_.asError(err));
-    }
+    });
+
+    // Always exit immediately on SIGINT - this is the key fix for the hang issue
     Deno.exit(0);
   };
   Deno.addSignalListener('SIGINT', sigintHandler);
