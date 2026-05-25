@@ -25,7 +25,7 @@
 export type Milliseconds = number;
 
 /** Result of a command execution */
-export interface CmdResult<T = void> {
+export interface CmdResult<T = void, E extends Error = Error> {
   /** Whether the command exited with code 0 */
   success: boolean;
   /** The process exit code */
@@ -43,7 +43,7 @@ export interface CmdResult<T = void> {
   /** Not used by CmdResult, but a caller may populate this after parsing the output */
   data?: T;
   /** An Error object, not used by runCommand, but a caller may populate it after parsing the output */
-  error?: Error;
+  error?: E;
 }
 
 /** Options for running a command */
