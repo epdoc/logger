@@ -164,7 +164,9 @@ export abstract class AbstractCommand<
       this.commander.name(this.params.name);
     }
     if (this.params.root && this.params.version) {
-      this.commander.version(this.params.version, '-v, --version', dim('Output the current version'));
+      const buildDate = Deno.env.get('BUILD_DATE');
+      const versionString = this.params.version + (buildDate ? ` (${buildDate})` : '');
+      this.commander.version(versionString, '-v, --version', dim('Output the current version'));
     }
     if (this.params.description) {
       this.commander.description(this.params.description);
