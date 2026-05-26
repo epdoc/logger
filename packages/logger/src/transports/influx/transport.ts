@@ -15,7 +15,7 @@ export class InfluxTransport extends Base.Transport {
   #flushInterval: Milliseconds;
   #maxRetries: Integer;
   #retryBaseDelay: Milliseconds;
-  #flushTimer?: number;
+  #flushTimer?: NodeJS.Timeout;
   #isTransmitting = false;
   #hostname: string;
   #droppedStats: Influx.DroppedMessageStats | null = null;
