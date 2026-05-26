@@ -1,5 +1,5 @@
-import { toStyleFn } from '@epdoc/colors';
 import type { Spec } from '@epdoc/colors';
+import { toStyleFn } from '@epdoc/colors';
 import { DateTime } from '@epdoc/datetime';
 import type { HrMilliseconds } from '@epdoc/duration';
 import { _, type Dict, type Integer } from '@epdoc/type';
@@ -9,6 +9,7 @@ import type { EmitterData, FormatOpts, IEmitter, IFormatter, MsgPart, StyleArg, 
 import { StringUtil } from './util.ts';
 
 const DEFAULT_TAB_SIZE = 2;
+const SPACES_CACHE = Array.from({ length: 17 }, (_, i) => ' '.repeat(i));
 
 /**
  * The foundational message builder for creating structured, stylable log messages.
@@ -416,33 +417,47 @@ export abstract class AbstractMsgBuilder implements IFormatter {
   /**
    * Formats the log message into a final string representation, applying colors
    * and styles if the color parameter is true and NO_COLOR is false.
+   * This method has been optimized for speed.
    *
-   * @param {boolean} color - Whether to enable color and styling functions.
-   * @param {Transport.OutputFormatType} [_target=text] - The target output format (reserved for future use).
+   * @param {FormatOpts} [opts={}] - Formatting options.
+   * @param {boolean} [opts.color] - Whether to apply color styling to the output. This will override system color (Deno.color).
+   * @param {EmitterTarget} [opts.target] - The target output format ('console', 'json', or 'jsonArray').
+   * @param {Integer} [opts.msgSep] - The number of spaces used to separate message parts. Defaults to 1.
+   * @param {boolean} [opts.reset] - If set, resets the MsgBuilder state after formatting. Useful when multiple transports share the same formatted string.
    * @returns {string} The formatted log message string.
    */
-  format(opts?: FormatOpts): string {
-    let noColor = Deno.noColor;
-    let reset = false;
+  format(opts: FormatOpts = {}): string {
+    const noColor = opts.color !== undefined ? !opts.color : Deno.noColor;
+
     let sep = ' ';
-    if (opts) {
-      if (opts.color === true) noColor = false;
-      if (opts.color === false) noColor = true;
-      if (_.isInteger(opts.msgSep)) sep = ' '.repeat(opts.msgSep);
-      if (opts.reset === true) reset = true;
+    if (typeof opts.msgSep === 'number' && opts.msgSep % 1 === 0) {
+      const depth = opts.msgSep;
+      sep = depth >= 0 && depth <= 16 ? SPACES_CACHE[depth] : ' '.repeat(depth);
     }
-    const parts: string[] = [];
-    if (_.isNonEmptyString(this._msgIndent)) {
-      parts.push(this._msgIndent);
-    }
-    this._msgParts.forEach((part: MsgPart) => {
-      if (part.style && _.isFunction(part.style) && !noColor) {
-        parts.push(part.style(part.str));
-      } else {
-        parts.push(part.str);
+
+    // Note: an empty string '' is falsy
+    const indent = this._msgIndent;
+    const parts: string[] = indent ? [indent] : [];
+
+    // OPTIMIZATION: Branch early based on noColor
+    if (noColor) {
+      // Fast path: No colors, no function checks, no closure allocations
+      for (let i = 0; i < this._msgParts.length; i++) {
+        parts.push(this._msgParts[i].str);
       }
-    });
-    if (reset) this.clear();
+    } else {
+      // Slow path: Keep styling logic for local development
+      for (let i = 0; i < this._msgParts.length; i++) {
+        const part = this._msgParts[i];
+        if (part.style && _.isFunction(part.style)) {
+          parts.push(part.style(part.str));
+        } else {
+          parts.push(part.str);
+        }
+      }
+    }
+
+    if (opts.reset) this.clear();
     return parts.join(sep);
   }
 
