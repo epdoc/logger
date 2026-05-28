@@ -3,7 +3,6 @@
  * @description Abstract base class that handles command lifecycle, context flow, and Commander.js integration
  */
 
-import { FluentOptionBuilder } from '@epdoc/cliapp';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import { dim } from '@std/fmt/colors';
@@ -11,6 +10,7 @@ import * as Commander from 'commander';
 import { FluentArgumentBuilder } from '../argument.ts';
 import { config } from '../config.ts';
 import type * as Ctx from '../context.ts';
+import { FluentOptionBuilder } from '../option.ts';
 import type * as CliApp from '../types.ts';
 import { commaList, configureLogging } from '../utils.ts';
 
