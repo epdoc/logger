@@ -1,6 +1,6 @@
-import * as Log from '@epdoc/logger';
 import type { Console } from '@epdoc/msgbuilder';
 import * as assert from 'node:assert';
+import * as Log from '../src/mod.ts';
 import { BufferTransport } from '../src/transports/buffer/transport.ts';
 
 type Logger = Log.Std.Logger<Console.Builder>;

@@ -1,4 +1,4 @@
-import * as Log from '@epdoc/logger';
+import * as Log from '../src/mod.ts';
 import type { Console } from '@epdoc/msgbuilder';
 import * as assert from 'node:assert';
 
