@@ -1,6 +1,6 @@
-import * as MsgBuilder from '@epdoc/msgbuilder';
 import * as assert from 'node:assert';
 import { TestEmitter } from '../src/emitter.ts';
+import * as MsgBuilder from '../src/mod.ts';
 
 Deno.test('Console.extender', async (t) => {
   await t.step('basic functionality', async (t2) => {
