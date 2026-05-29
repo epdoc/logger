@@ -6,9 +6,14 @@
     "jsr:@epdoc/datetime@^4.0.1": "4.0.2",
     "jsr:@epdoc/datetime@^4.0.2": "4.0.2",
     "jsr:@epdoc/duration@~0.3.12": "0.3.13",
+    "jsr:@epdoc/duration@~0.3.13": "0.3.13",
     "jsr:@epdoc/fmt@^1.0.1": "1.0.2",
     "jsr:@epdoc/fs@^1.5.1": "1.5.1",
     "jsr:@epdoc/logger@^1003.3.45": "1003.3.45",
+    "jsr:@epdoc/loglevels@^1.0.7": "1.0.8",
+    "jsr:@epdoc/loglevels@^1.0.8": "1.0.8",
+    "jsr:@epdoc/msgbuilder@~0.1.42": "0.1.44",
+    "jsr:@epdoc/msgbuilder@~0.1.44": "0.1.44",
     "jsr:@epdoc/progress@~0.1.5": "0.1.6",
     "jsr:@epdoc/progress@~0.1.6": "0.1.6",
     "jsr:@epdoc/string@~0.1.29": "0.1.29",
@@ -82,7 +87,7 @@
       "integrity": "6357668d503d0aeae9b9b7c16ea7b1d096bf1a48c67a46fd84f0e1a2531245bb",
       "dependencies": [
         "jsr:@epdoc/colors",
-        "jsr:@epdoc/duration",
+        "jsr:@epdoc/duration@~0.3.12",
         "jsr:@epdoc/type@^1.2.13",
         "jsr:@std/fmt"
       ]
@@ -104,10 +109,28 @@
       "integrity": "3b36f21161cb1bd3e0057d3d52fe0b914726d15e8c0e767148d0cf5209de2fb1",
       "dependencies": [
         "jsr:@epdoc/datetime@^4.0.1",
-        "jsr:@epdoc/duration",
+        "jsr:@epdoc/duration@~0.3.12",
         "jsr:@epdoc/string",
         "jsr:@epdoc/type@^1.2.13",
         "jsr:@std/assert@^1.0.19",
+        "jsr:@std/fmt"
+      ]
+    },
+    "@epdoc/loglevels@1.0.8": {
+      "integrity": "2c0e33f6272da0376850a9ec30e94c2f281fc6927b8b0b78c57ab38f42a3ddb8",
+      "dependencies": [
+        "jsr:@epdoc/type@^1.2.15",
+        "jsr:@std/assert@^1.0.19"
+      ]
+    },
+    "@epdoc/msgbuilder@0.1.44": {
+      "integrity": "57332693d4e750ed2b4bd1a089226d34a5f5fead4e2f0646e3d461e189f3e6ba",
+      "dependencies": [
+        "jsr:@epdoc/colors",
+        "jsr:@epdoc/datetime@^4.0.1",
+        "jsr:@epdoc/fmt",
+        "jsr:@epdoc/string",
+        "jsr:@epdoc/type@^1.2.13",
         "jsr:@std/fmt"
       ]
     },
@@ -392,12 +415,12 @@
       },
       "packages/logger": {
         "dependencies": [
-          "jsr:@epdoc/datetime@^4.0.1",
-          "jsr:@epdoc/duration@~0.3.12",
-          "jsr:@epdoc/loglevels@^1.0.7",
-          "jsr:@epdoc/msgbuilder@~0.1.42",
+          "jsr:@epdoc/datetime@^4.0.2",
+          "jsr:@epdoc/duration@~0.3.13",
+          "jsr:@epdoc/loglevels@^1.0.8",
+          "jsr:@epdoc/msgbuilder@~0.1.44",
           "jsr:@epdoc/string@~0.1.29",
-          "jsr:@epdoc/type@^1.2.13",
+          "jsr:@epdoc/type@^1.2.15",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/fmt@^1.0.10",
