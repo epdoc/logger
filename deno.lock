@@ -18,8 +18,9 @@
     "jsr:@epdoc/progress@~0.1.7": "0.1.7",
     "jsr:@epdoc/string@~0.1.29": "0.1.29",
     "jsr:@epdoc/terminal@^0.0.13": "0.0.13",
-    "jsr:@epdoc/type@^1.2.13": "1.2.15",
-    "jsr:@epdoc/type@^1.2.15": "1.2.15",
+    "jsr:@epdoc/type@^1.2.13": "1.2.16",
+    "jsr:@epdoc/type@^1.2.15": "1.2.16",
+    "jsr:@epdoc/type@^1.2.16": "1.2.16",
     "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@^1.0.19": "1.0.19",
     "jsr:@std/assert@^1.0.6": "1.0.6",
@@ -155,6 +156,12 @@
     },
     "@epdoc/type@1.2.15": {
       "integrity": "6cfa169f344ba7f429d6e825e6d5b8932cb24c2d490ca65e39148d3b6b42fd47",
+      "dependencies": [
+        "jsr:@std/encoding"
+      ]
+    },
+    "@epdoc/type@1.2.16": {
+      "integrity": "4d9bc033a362aac76b24aa31db5cdf78c7e375af295284c99a94a9db3601c21b",
       "dependencies": [
         "jsr:@std/encoding"
       ]
@@ -387,7 +394,7 @@
           "jsr:@epdoc/loglevels@^1.0.9",
           "jsr:@epdoc/msgbuilder@~0.1.44",
           "jsr:@epdoc/progress@~0.1.7",
-          "jsr:@epdoc/type@^1.2.15",
+          "jsr:@epdoc/type@^1.2.16",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/expect@^1.0.19",
           "jsr:@std/fmt@^1.0.10",

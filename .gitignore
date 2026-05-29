@@ -13,6 +13,7 @@ tmp
 
 # Build directory
 dist
+build/
 
 # Runtime data
 pids

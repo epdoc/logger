@@ -149,7 +149,11 @@ export abstract class AbstractCommand<
     // params can still override these values.
     if (this.params.root && this.grandpaContext?.pkg) {
       const pkg = this.grandpaContext.pkg;
-      if (!this.params.version) this.params.version = pkg.version;
+      const pkgVersion = [pkg.version];
+      if (pkg.build && pkg.build.number) pkgVersion.push(`build:${pkg.build.number}`);
+      if (pkg.build && pkg.build.builtAt) pkgVersion.push(pkg.build.builtAt);
+
+      if (!this.params.version) this.params.version = pkgVersion.join(' ');
       if (!this.params.description) this.params.description = pkg.description;
       if (!this.params.name) {
         this.params.name = pkg.name.replace(/^@[^/]+\//, '');
@@ -164,8 +168,7 @@ export abstract class AbstractCommand<
       this.commander.name(this.params.name);
     }
     if (this.params.root && this.params.version) {
-      const buildDate = Deno.env.get('BUILD_DATE');
-      const versionString = this.params.version + (buildDate ? ` (${buildDate})` : '');
+      const versionString = this.params.version;
       this.commander.version(versionString, '-v, --version', dim('Output the current version'));
     }
     if (this.params.description) {

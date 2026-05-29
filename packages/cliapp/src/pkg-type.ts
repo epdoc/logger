@@ -8,6 +8,9 @@
  * ```
  */
 
+import type { ISODate } from '@epdoc/datetime';
+import type { Integer } from '@epdoc/type';
+
 export type CmdMetadata = {
   /** Package or command name */
   name: string;
@@ -17,7 +20,7 @@ export type CmdMetadata = {
   description: string;
 };
 
-export type DenoPkg = CmdMetadata & {
+export type DenoPkg = CmdMetadata & BuildInfoFile & {
   /** Optional author information */
   author?: { name?: string; email?: string };
   /** Workspace configuration for monorepos */
@@ -29,4 +32,15 @@ export type DenoPkg = CmdMetadata & {
     type: string;
     url: string;
   };
+};
+
+export type BuildInfoFile = {
+  build?: BuildInfo;
+};
+
+export type BuildInfo = {
+  number?: Integer;
+  builtAt?: ISODate;
+  committedAt?: ISODate;
+  dependencies?: Record<string, string>;
 };
