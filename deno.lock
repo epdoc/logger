@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@epdoc/cliapp@^2.2.66": "2.2.66",
     "jsr:@epdoc/colors@^1.0.1": "1.0.1",
     "jsr:@epdoc/datetime@^4.0.1": "4.0.3",
     "jsr:@epdoc/datetime@^4.0.2": "4.0.3",
@@ -13,6 +14,7 @@
     "jsr:@epdoc/logger@^1003.3.45": "1003.3.46",
     "jsr:@epdoc/logger@^1003.3.46": "1003.3.46",
     "jsr:@epdoc/msgbuilder@~0.1.44": "0.1.44",
+    "jsr:@epdoc/progress@~0.1.5": "0.1.7",
     "jsr:@epdoc/progress@~0.1.6": "0.1.7",
     "jsr:@epdoc/progress@~0.1.7": "0.1.7",
     "jsr:@epdoc/string@~0.1.29": "0.1.29",
@@ -53,6 +55,17 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
+    "@epdoc/cliapp@2.2.66": {
+      "integrity": "7b570ff4ca46392bfbba21345d841b01932248e40fc0d159a0336826b66499ed",
+      "dependencies": [
+        "jsr:@epdoc/datetime@^4.0.1",
+        "jsr:@epdoc/progress@~0.1.5",
+        "jsr:@epdoc/type@^1.2.13",
+        "jsr:@std/assert@^1.0.19",
+        "jsr:@std/fmt",
+        "npm:commander"
+      ]
+    },
     "@epdoc/colors@1.0.1": {
       "integrity": "15b07840a2cad74bf9f6892f387de1e9fb28b7b672b6edc491badc6980698e6b",
       "dependencies": [
