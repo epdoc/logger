@@ -103,15 +103,18 @@ export class TextBuilder<M extends MsgBuilder = MsgBuilder> {
    * Format all lines and join them with newlines.
    */
   emit(): string {
+    return this.toLines().join('\n');
+  }
+
+  toLines(): string[] {
     return this.lines
-      .map((line) => typeof line === 'string' ? line : line.format())
-      .join('\n');
+      .map((line) => typeof line === 'string' ? line : line.format());
   }
 
   /**
    * Convert the lines to a formatted string.
    */
   toString(): string {
-    return this.emit();
+    return this.toLines().join('\n');
   }
 }
