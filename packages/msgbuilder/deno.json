@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/msgbuilder",
-  "version": "0.1.48",
+  "version": "0.1.49",
   "description": "Message builder module with chainable formatting",
   "author": {
     "name": "James Pravetz",
@@ -51,7 +51,7 @@
     "@epdoc/colors": "jsr:@epdoc/colors@^1.1.1",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^4.1.4",
     "@epdoc/duration": "jsr:@epdoc/duration@^0.3.16",
-    "@epdoc/fmt": "jsr:@epdoc/fmt@^1.0.7",
+    "@epdoc/fmt": "jsr:@epdoc/fmt@^1.0.8",
     "@std/expect": "jsr:@std/expect@^1.0.19",
     "@std/fmt/colors": "jsr:@std/fmt@^1.0.10/colors",
     "@epdoc/type": "jsr:@epdoc/type@^1.2.17",
