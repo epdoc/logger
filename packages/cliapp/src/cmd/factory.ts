@@ -72,9 +72,7 @@ export function createCommand<
 
       if (_.isNonEmptyArray(node.options)) {
         for (const config of (node.options)) {
-          const option = this.option(config.flags, config.description);
-          if (config.default) option.default(config.default);
-          if (config.required) option.required();
+          const option = this.option(config);
           option.emit();
         }
       }

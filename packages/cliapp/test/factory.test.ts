@@ -39,7 +39,7 @@ Deno.test('createCommand factory', async (t) => {
     const node: CliApp.CommandNode<TestContext> = {
       name: 'test',
       arguments: ['<input>'],
-      options: [{ flags: '--save', description: 'Save result' }],
+      options: [{ name: 'save', description: 'Save result' }],
       createContext: (ctx) => ctx,
     };
 

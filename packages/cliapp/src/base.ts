@@ -1,5 +1,5 @@
 import type * as Ctx from './context.ts';
-import { type CmdOptions, type CmdResult, runCommand } from './runner.ts';
+import * as Runner from './runner/mod.ts';
 
 /**
  * Base class providing convenient access to logging methods with proper generic type handling.
@@ -129,9 +129,9 @@ export abstract class BaseClass<
   async runCommand(
     cmd: string,
     args: string[],
-    opts: CmdOptions = {},
-  ): Promise<CmdResult> {
-    return await runCommand(cmd, args, {
+    opts: Runner.Options = {},
+  ): Promise<Runner.Result> {
+    return await Runner.runCommand(cmd, args, {
       ...opts,
       dryRun: opts.dryRun ?? this.ctx.dryRun,
     });

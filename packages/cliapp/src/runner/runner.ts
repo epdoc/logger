@@ -22,46 +22,7 @@
  * ```
  */
 
-export type Milliseconds = number;
-
-/** Result of a command execution */
-export interface CmdResult<T = void, E extends Error = Error> {
-  /** Whether the command exited with code 0 */
-  success: boolean;
-  /** The process exit code */
-  code: number;
-  /** Standard output (empty string in interactive mode) */
-  stdout: string;
-  /** Standard error (empty string in interactive mode) */
-  stderr: string;
-  /** Set to true if this was a dry run and the command was not executed */
-  dryRun?: boolean;
-  /** The command that was run (for logging purposes) */
-  command: string;
-  /** The duration of the call */
-  duration: Milliseconds;
-  /** Not used by CmdResult, but a caller may populate this after parsing the output */
-  data?: T;
-  /** An Error object, not used by runCommand, but a caller may populate it after parsing the output */
-  error?: E;
-}
-
-/** Options for running a command */
-export interface CmdOptions {
-  /** Working directory for the command. Defaults to current directory. */
-  cwd?: string;
-  /**
-   * If true, inherits stdin/stdout/stderr for interactive commands.
-   * If false (default), captures output and returns it in the result.
-   */
-  interactive?: boolean;
-  /** Environment variables to set for the command */
-  env?: Record<string, string>;
-  /** Clear environment variables and only use those specified in `env`. Default: false */
-  clearEnv?: boolean;
-  /** If true then do not execute the command. We will mock the result. */
-  dryRun?: boolean;
-}
+import { type CmdOptions, CmdResult } from '../runner/runner-defs.ts';
 
 /**
  * Run an external command and return the result.
@@ -105,22 +66,13 @@ export async function runCommand<T = void>(
   args: string[],
   opts: CmdOptions = {},
 ): Promise<CmdResult<T>> {
-  const t0 = performance.now();
   const cwd = opts.cwd ?? Deno.cwd();
   const interactive = opts.interactive ?? false;
-  const commandStr = [cmd, ...args].join(' ');
+
+  const result = CmdResult.from<T>(cmd, args, opts);
 
   if (opts.dryRun === true) {
-    return {
-      success: true,
-      code: 0,
-      stdout: '',
-      stderr: '',
-      data: undefined,
-      dryRun: true,
-      command: commandStr,
-      duration: performance.now() - t0,
-    };
+    return result.asSuccess();
   }
 
   if (interactive) {
@@ -146,15 +98,7 @@ export async function runCommand<T = void>(
     try {
       const { code } = await child.output();
 
-      return {
-        success: code === 0,
-        code,
-        stdout: '',
-        stderr: '',
-        data: undefined,
-        command: commandStr,
-        duration: performance.now() - t0,
-      };
+      return result.setCode(code);
     } finally {
       Deno.removeSignalListener('SIGINT', sigintHandler);
     }
@@ -171,15 +115,7 @@ export async function runCommand<T = void>(
 
     const { code, stdout, stderr } = await command.output();
 
-    return {
-      success: code === 0,
-      code,
-      stdout: new TextDecoder().decode(stdout),
-      stderr: new TextDecoder().decode(stderr),
-      data: undefined,
-      command: commandStr,
-      duration: performance.now() - t0,
-    };
+    return result.setCode(code).setStdout(stdout).setStderr(stderr);
   }
 }
 
@@ -247,8 +183,16 @@ export class CommandError extends Error {
     return this.result.stderr;
   }
 
+  get stdoutLines(): string[] {
+    return this.result.stdoutLines;
+  }
+
+  get stderrLines(): string[] {
+    return this.result.stderrLines;
+  }
+
   /** The exit code from the failed command */
-  get exitCode(): number {
+  get exitCode(): number | undefined {
     return this.result.code;
   }
 }

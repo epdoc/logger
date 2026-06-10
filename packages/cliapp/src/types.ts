@@ -46,24 +46,6 @@ export type LogCmdOptions = CmdOptions & {
 };
 
 /**
- * Configuration for a single command-line option
- */
-export interface OptionConfig {
-  flags: string;
-  description: string;
-  default?: unknown;
-  required?: boolean;
-  hidden?: boolean;
-  collect?: boolean;
-  argParser?: (val: string) => unknown;
-}
-
-/**
- * A mapping of option flags to their descriptions or configurations
- */
-export type OptionsMap = Record<string, string | OptionConfig>;
-
-/**
  * Error interface for silent failures
  */
 export interface ISilentError extends Error {
@@ -122,7 +104,7 @@ export interface CommandNode<
   /** Command aliases */
   aliases?: string[];
   /** Command options */
-  options?: OptionConfig[];
+  options?: OptionDef[];
   /** Command arguments */
   arguments?: string[];
   /** Custom help text to display */
