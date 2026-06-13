@@ -50,6 +50,7 @@ export type LogCmdOptions = CmdOptions & {
  */
 export interface ISilentError extends Error {
   silent: boolean;
+  code: number | string;
 }
 
 /**
