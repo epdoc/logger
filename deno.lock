@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@epdoc/cliapp@^2.2.76": "2.2.76",
     "jsr:@epdoc/colors@^1.1.2": "1.1.2",
     "jsr:@epdoc/datetime@^4.1.10": "4.1.10",
     "jsr:@epdoc/datetime@^4.1.9": "4.1.10",
@@ -51,6 +52,17 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
+    "@epdoc/cliapp@2.2.76": {
+      "integrity": "e24edf2998d213f8e0ca6356e0a74c834ec265004d86dab151e7b3674988e5ed",
+      "dependencies": [
+        "jsr:@epdoc/datetime@^4.1.10",
+        "jsr:@epdoc/progress",
+        "jsr:@epdoc/type@2",
+        "jsr:@std/assert@^1.0.19",
+        "jsr:@std/fmt",
+        "npm:commander"
+      ]
+    },
     "@epdoc/colors@1.1.2": {
       "integrity": "5b565e92ff0edb01c61164625d6ddeda08ed0e503ccaec366e6336dcc4dbbe9c",
       "dependencies": [
