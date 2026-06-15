@@ -1,15 +1,12 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/cliapp@^2.2.76": "2.2.76",
     "jsr:@epdoc/colors@^1.1.2": "1.1.2",
     "jsr:@epdoc/datetime@^4.1.10": "4.1.10",
     "jsr:@epdoc/datetime@^4.1.9": "4.1.10",
-    "jsr:@epdoc/duration@~0.3.20": "0.3.21",
     "jsr:@epdoc/duration@~0.3.21": "0.3.21",
-    "jsr:@epdoc/fmt@^1.0.14": "1.0.14",
+    "jsr:@epdoc/fmt@^1.0.15": "1.0.15",
     "jsr:@epdoc/fs@^1.5.11": "1.5.11",
-    "jsr:@epdoc/logger@^1003.3.53": "1003.3.53",
     "jsr:@epdoc/progress@~0.1.13": "0.1.13",
     "jsr:@epdoc/string@~0.1.29": "0.1.29",
     "jsr:@epdoc/terminal@^0.0.14": "0.0.14",
@@ -50,17 +47,6 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
-    "@epdoc/cliapp@2.2.76": {
-      "integrity": "e24edf2998d213f8e0ca6356e0a74c834ec265004d86dab151e7b3674988e5ed",
-      "dependencies": [
-        "jsr:@epdoc/datetime@^4.1.10",
-        "jsr:@epdoc/progress",
-        "jsr:@epdoc/type@2",
-        "jsr:@std/assert@^1.0.19",
-        "jsr:@std/fmt",
-        "npm:commander"
-      ]
-    },
     "@epdoc/colors@1.1.2": {
       "integrity": "5b565e92ff0edb01c61164625d6ddeda08ed0e503ccaec366e6336dcc4dbbe9c",
       "dependencies": [
@@ -79,11 +65,11 @@
         "jsr:@epdoc/type@2"
       ]
     },
-    "@epdoc/fmt@1.0.14": {
-      "integrity": "bf3ac5b86116b039da788dc0e5b02b5e631adc9e2b571b2b85814f76b1e33819",
+    "@epdoc/fmt@1.0.15": {
+      "integrity": "90e587d957f142adb84570c34371c4360c93b058f3df65a99600d748288b4291",
       "dependencies": [
         "jsr:@epdoc/colors",
-        "jsr:@epdoc/duration@~0.3.20",
+        "jsr:@epdoc/duration",
         "jsr:@epdoc/type@2",
         "jsr:@std/fmt"
       ]
@@ -101,17 +87,6 @@
         "jsr:@std/path@^1.1.5",
         "jsr:@std/toml",
         "jsr:@std/yaml"
-      ]
-    },
-    "@epdoc/logger@1003.3.53": {
-      "integrity": "acbec7f97950f739668e0ff91199aa3b81c6d5f312ae44f57932cc0b40b0f557",
-      "dependencies": [
-        "jsr:@epdoc/datetime@^4.1.10",
-        "jsr:@epdoc/duration@~0.3.21",
-        "jsr:@epdoc/string",
-        "jsr:@epdoc/type@2",
-        "jsr:@std/assert@^1.0.19",
-        "jsr:@std/fmt"
       ]
     },
     "@epdoc/progress@0.1.13": {
@@ -431,7 +406,7 @@
           "jsr:@epdoc/colors@^1.1.2",
           "jsr:@epdoc/datetime@^4.1.10",
           "jsr:@epdoc/duration@~0.3.21",
-          "jsr:@epdoc/fmt@^1.0.14",
+          "jsr:@epdoc/fmt@^1.0.15",
           "jsr:@epdoc/string@~0.1.29",
           "jsr:@epdoc/type@2",
           "jsr:@std/assert@^1.0.19",
