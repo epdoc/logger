@@ -27,6 +27,7 @@ export class CmdResult<T = void, E extends Error = Error> {
   #t0 = performance.now();
   success: boolean = false;
   code?: number;
+  /** The command string (cmd ...args) */
   command: string = '';
   duration: Milliseconds = 0;
   _stdout?: Uint8Array;
