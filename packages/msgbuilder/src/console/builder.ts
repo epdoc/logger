@@ -1,6 +1,6 @@
 import { toStyleFn } from '@epdoc/colors';
 import { DateTime } from '@epdoc/datetime';
-import { BOOL_PRESETS, type BoolFormatterOptions, type BoolPresetName } from '@epdoc/fmt';
+import { BOOL_PRESETS, type BoolFormatterOptions, type BoolPresetName, SuperScript } from '@epdoc/fmt';
 import { _, type Integer } from '@epdoc/type';
 import os from 'node:os';
 import { relative } from 'node:path';
@@ -653,6 +653,10 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
       style = type;
     }
     return this.stylize(style ?? this.styles.text, char);
+  }
+
+  public superscript(int: Integer, color?: MsgBuilder.StyleFormatterFn): this {
+    return this.stylize(color ?? this.styles.text, SuperScript[int % 10]);
   }
 
   /**
