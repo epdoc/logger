@@ -19,8 +19,8 @@ export const TREE: CliApp.CommandNode<Ctx.RootContext, DeclarativeOpts> = {
   name: 'main_declarative',
   description: 'A Purely Declarative Demo',
   options: [
-    { flags: '--happy-mode', description: 'Enable happy mode' },
-    { flags: '--name <name>', description: 'Your name' },
+    { name: 'happy-mode', description: 'Enable happy mode' },
+    { name: 'name', params: '<name>', description: 'Your name' },
   ],
   helpText: [
     { text: '\nThis is help text for the root command.' },
@@ -54,10 +54,10 @@ export const TREE: CliApp.CommandNode<Ctx.RootContext, DeclarativeOpts> = {
     hello: {
       description: 'This command will say hello',
       options: [{
-        flags: '--time <time>',
+        name: 'time',
+        params: '<time>',
         description: 'How many hours I will be here',
-        default: '10',
-        required: true,
+        defVal: '10',
         argParser: _.asInt,
       }],
 

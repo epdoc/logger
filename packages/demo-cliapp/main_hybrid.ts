@@ -40,7 +40,7 @@ export class HybridRoot extends CliApp.Cmd.AbstractBase<App.Ctx.RootContext, App
     const DeclarativeCmd = CliApp.Cmd.create<App.Ctx.RootContext, App.Ctx.RootContext>({
       name: 'declarative',
       description: 'A declarative leaf in a class-based tree',
-      options: [{ flags: '--shout', description: 'Shout the message' }],
+      options: [{ name: 'shout', description: 'Shout the message' }],
       action: (ctx, opts) => {
         let msg = 'Hello from the declarative node!';
         if (opts.shout) msg = msg.toUpperCase();
