@@ -113,10 +113,13 @@ export async function run<TCtx extends Ctx.AbstractBase = Ctx.AbstractBase>(
     const err = _.asError(error);
     const isSilent = (err as ISilentError).silent === true;
 
-    if (isSilent) {
-      ctx.log.nodent().info.h1('Application').error(err.message).ewt(t1);
-    } else {
-      ctx.log.error.h1('Application').err(err).ewt(t1);
+    const line = ctx.log.nodent().info.h1('Application').error(err.message);
+    if ('path' in err && _.isString(err.path)) {
+      line.relative(err.path);
+    }
+    line.ewt(t1);
+    if (!isSilent) {
+      ctx.log.error.err(err).ewt(t1);
       const minThreshold = ctx.log.logMgr.transportMgr.getMinThreshold;
       if (minThreshold.severity >= ctx.log.logMgr.logLevels.specMap.get('DEBUG').severity) {
         console.log(err.stack);

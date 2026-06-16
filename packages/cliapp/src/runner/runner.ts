@@ -167,6 +167,7 @@ export async function runCommandOrThrow<T = void>(
 export class CommandError extends Error {
   /** The command result that caused this error */
   readonly result: CmdResult;
+  silent: boolean = false;
 
   constructor(message: string, result: CmdResult) {
     super(message);
