@@ -27,7 +27,7 @@
   "license": "MIT",
   "imports": {
     "@epdoc/datetime": "jsr:@epdoc/datetime@^4.1.10",
-    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.54",
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.55",
     "@epdoc/loglevels": "jsr:@epdoc/loglevels@^1.0.12",
     "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.53",
     "@epdoc/progress": "jsr:@epdoc/progress@^0.1.13",

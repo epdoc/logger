@@ -7,6 +7,7 @@ export const MsgBuilder = Console.Builder;
 export type MsgBuilder = Console.Builder;
 // deno-lint-ignore no-explicit-any
 export type Logger = Log.Std.Logger<any>;
+type LoggerConstraint = Log.ILoggerEmitter & Log.IInherit;
 
 /**
  * Interface for the MCP result collector. Commands use this to emit structured
@@ -15,6 +16,7 @@ export type Logger = Log.Std.Logger<any>;
  * In CLI mode this property is typically undefined. In MCP mode it is set by
  * the MCP server before command execution.
  */
+
 export interface IMcpResult {
   /** Emit a text result. */
   text(value: string): this;
@@ -25,7 +27,7 @@ export interface IMcpResult {
 /**
  * Clean context interface - much simpler than the old complex system
  */
-export interface ICtx<M extends MsgBuilder, L extends Logger = Logger> {
+export interface ICtx<M extends MsgBuilder, L extends LoggerConstraint = Logger> {
   /** The logger instance for the application. */
   log: L;
   /** The log manager coordinating loggers and transports. */
@@ -136,7 +138,7 @@ export abstract class AbstractBase<
   // deno-lint-ignore no-explicit-any
   M extends MsgBuilder = any,
   // deno-lint-ignore no-explicit-any
-  L extends Logger = any,
+  L extends LoggerConstraint = any,
 > implements ICtx<M, L> {
   log!: L;
   logMgr: Log.Mgr<M>;
