@@ -1,13 +1,11 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/cliapp@^2.2.79": "2.2.79",
     "jsr:@epdoc/colors@^1.1.2": "1.1.2",
     "jsr:@epdoc/datetime@^4.1.10": "4.1.10",
     "jsr:@epdoc/duration@~0.3.21": "0.3.21",
     "jsr:@epdoc/fmt@^1.0.15": "1.0.15",
-    "jsr:@epdoc/fs@^1.5.12": "1.5.12",
-    "jsr:@epdoc/logger@^1003.3.55": "1003.3.55",
+    "jsr:@epdoc/fs@^1.5.14": "1.5.14",
     "jsr:@epdoc/progress@~0.1.13": "0.1.13",
     "jsr:@epdoc/string@~0.1.29": "0.1.29",
     "jsr:@epdoc/terminal@^0.0.14": "0.0.14",
@@ -48,17 +46,6 @@
     "npm:pdf-lib@^1.17.1": "1.17.1"
   },
   "jsr": {
-    "@epdoc/cliapp@2.2.79": {
-      "integrity": "e33dc289aed77934109fea47804175c2eb5c73f5aec29f3303b8d7582109c138",
-      "dependencies": [
-        "jsr:@epdoc/datetime",
-        "jsr:@epdoc/progress",
-        "jsr:@epdoc/type@2",
-        "jsr:@std/assert@^1.0.19",
-        "jsr:@std/fmt",
-        "npm:commander"
-      ]
-    },
     "@epdoc/colors@1.1.2": {
       "integrity": "5b565e92ff0edb01c61164625d6ddeda08ed0e503ccaec366e6336dcc4dbbe9c",
       "dependencies": [
@@ -86,8 +73,8 @@
         "jsr:@std/fmt"
       ]
     },
-    "@epdoc/fs@1.5.12": {
-      "integrity": "ab5299d6b1269fce9438bf3fea0e5bb53fcb18cd49e79cfe15174cde6ba5666d",
+    "@epdoc/fs@1.5.14": {
+      "integrity": "7c4b5c6159ff3b87a6c11c2e120c9915a8611df2de44918243b59a1fd91c2724",
       "dependencies": [
         "jsr:@epdoc/datetime",
         "jsr:@epdoc/transform",
@@ -99,17 +86,6 @@
         "jsr:@std/path@^1.1.5",
         "jsr:@std/toml",
         "jsr:@std/yaml"
-      ]
-    },
-    "@epdoc/logger@1003.3.55": {
-      "integrity": "ce613bf39ce92f01c0704df08ea95b7bd649e2dabdf33c54fd68b268d25d0364",
-      "dependencies": [
-        "jsr:@epdoc/datetime",
-        "jsr:@epdoc/duration",
-        "jsr:@epdoc/string",
-        "jsr:@epdoc/type@2",
-        "jsr:@std/assert@^1.0.19",
-        "jsr:@std/fmt"
       ]
     },
     "@epdoc/progress@0.1.13": {
@@ -381,7 +357,7 @@
       },
       "packages/demo": {
         "dependencies": [
-          "jsr:@epdoc/fs@^1.5.12",
+          "jsr:@epdoc/fs@^1.5.14",
           "jsr:@epdoc/type@2",
           "jsr:@std/assert@^1.0.19"
         ]
