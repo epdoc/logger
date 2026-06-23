@@ -5,17 +5,25 @@
     "jsr:@epdoc/datetime@^4.1.10": "4.1.10",
     "jsr:@epdoc/duration@~0.3.21": "0.3.21",
     "jsr:@epdoc/fmt@^1.0.15": "1.0.15",
+    "jsr:@epdoc/loglevels@^1.0.12": "1.0.12",
+    "jsr:@epdoc/msgbuilder@~0.1.53": "0.1.53",
+    "jsr:@epdoc/string@~0.1.29": "0.1.29",
+    "jsr:@epdoc/text@^1.0.7": "1.0.7",
     "jsr:@epdoc/type@2": "2.0.0",
+    "jsr:@epdoc/type@^1.2.13": "1.2.18",
     "jsr:@std/assert@1": "1.0.6",
     "jsr:@std/assert@^1.0.19": "1.0.19",
     "jsr:@std/assert@^1.0.6": "1.0.6",
     "jsr:@std/bytes@*": "1.0.4",
     "jsr:@std/bytes@^1.0.4": "1.0.4",
     "jsr:@std/bytes@^1.0.5": "1.0.5",
+    "jsr:@std/data-structures@^1.1.0": "1.1.0",
+    "jsr:@std/encoding@^1.0.10": "1.0.10",
     "jsr:@std/expect@*": "1.0.4",
     "jsr:@std/expect@^1.0.19": "1.0.19",
     "jsr:@std/fmt@^1.0.10": "1.0.10",
     "jsr:@std/fs@*": "1.0.11",
+    "jsr:@std/fs@^1.0.24": "1.0.24",
     "jsr:@std/fs@^1.0.4": "1.0.11",
     "jsr:@std/internal@^1.0.12": "1.0.14",
     "jsr:@std/internal@^1.0.13": "1.0.14",
@@ -24,6 +32,7 @@
     "jsr:@std/io@0.225": "0.225.2",
     "jsr:@std/path@^1.0.8": "1.0.8",
     "jsr:@std/path@^1.1.4": "1.1.5",
+    "jsr:@std/path@^1.1.5": "1.1.5",
     "jsr:@std/testing@^1.0.19": "1.0.19",
     "npm:@types/node@*": "22.15.15",
     "npm:checksum@1": "1.0.0",
@@ -41,13 +50,13 @@
     "@epdoc/datetime@4.1.10": {
       "integrity": "093343e5d7944d681186fe6c1453601462a8daca9209fb6a8bf37ac0e63b6132",
       "dependencies": [
-        "jsr:@epdoc/type"
+        "jsr:@epdoc/type@2"
       ]
     },
     "@epdoc/duration@0.3.21": {
       "integrity": "d8cbdc473d4146b6c300ced2c5cb1deb8d162a67bda5ebf1e7cb8cc2e9f047bd",
       "dependencies": [
-        "jsr:@epdoc/type"
+        "jsr:@epdoc/type@2"
       ]
     },
     "@epdoc/fmt@1.0.15": {
@@ -55,8 +64,44 @@
       "dependencies": [
         "jsr:@epdoc/colors",
         "jsr:@epdoc/duration",
-        "jsr:@epdoc/type",
+        "jsr:@epdoc/type@2",
         "jsr:@std/fmt"
+      ]
+    },
+    "@epdoc/loglevels@1.0.12": {
+      "integrity": "a1e1c1a0ce676df05756cc3121c4ee598bdb8859200dbc5c9878ab5fb5bde575",
+      "dependencies": [
+        "jsr:@epdoc/type@2",
+        "jsr:@std/assert@^1.0.19"
+      ]
+    },
+    "@epdoc/msgbuilder@0.1.53": {
+      "integrity": "bf78f3c7b124fcbc8344259758260d2f7d353ace747ee32dcb95af79f0299e29",
+      "dependencies": [
+        "jsr:@epdoc/colors",
+        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/fmt",
+        "jsr:@epdoc/string",
+        "jsr:@epdoc/type@2",
+        "jsr:@std/fmt"
+      ]
+    },
+    "@epdoc/string@0.1.29": {
+      "integrity": "ed7a4bc036b8dcfae1ca635ea00a898fcaca0da9e94c7294e5a2d99d6129792b",
+      "dependencies": [
+        "jsr:@epdoc/type@^1.2.13"
+      ]
+    },
+    "@epdoc/text@1.0.7": {
+      "integrity": "ce7c7dbd6aa48681aee4e2b4820fbf2c535ac3ae4bc9ce4d0103522e262cd567",
+      "dependencies": [
+        "jsr:@epdoc/type@2"
+      ]
+    },
+    "@epdoc/type@1.2.18": {
+      "integrity": "0f95652669fc4e19ff7620270dffe90e998480ebcf0c286c59ccdbed3a7f0a67",
+      "dependencies": [
+        "jsr:@std/encoding"
       ]
     },
     "@epdoc/type@2.0.0-alpha.4": {
@@ -82,6 +127,12 @@
     },
     "@std/bytes@1.0.5": {
       "integrity": "4465dd739d7963d964c809202ebea6d5c6b8e3829ef25c6a224290fbb8a1021e"
+    },
+    "@std/data-structures@1.1.0": {
+      "integrity": "c35ae4ad5d8e41a38573c2fe3e19b18ea2505f63cfea201edcb8720aca1f7f58"
+    },
+    "@std/encoding@1.0.10": {
+      "integrity": "8783c6384a2d13abd5e9e87a7ae0520a30e9f56aeeaa3bdf910a3eaaf5c811a1"
     },
     "@std/expect@1.0.4": {
       "integrity": "97f68a445a9de0d9670200d2b7a19a7505a01b2cb390a983ba8d97d90ce30c4f",
@@ -111,6 +162,12 @@
       "integrity": "ba674672693340c5ebdd018b4fe1af46cb08741f42b4c538154e97d217b55bdd",
       "dependencies": [
         "jsr:@std/path@^1.0.8"
+      ]
+    },
+    "@std/fs@1.0.24": {
+      "integrity": "f3061b45b81673a2bece689da041df32d174be064c89eb6397fb5718d3fb7877",
+      "dependencies": [
+        "jsr:@std/path@^1.1.5"
       ]
     },
     "@std/internal@1.0.4": {
@@ -154,7 +211,10 @@
       "integrity": "f4236172365b216728dc3cc8b5e80a9f4c33083d1e4ede7613d5b25b4014898e",
       "dependencies": [
         "jsr:@std/assert@^1.0.19",
-        "jsr:@std/internal@^1.0.14"
+        "jsr:@std/data-structures",
+        "jsr:@std/fs@^1.0.24",
+        "jsr:@std/internal@^1.0.14",
+        "jsr:@std/path@^1.1.5"
       ]
     }
   },

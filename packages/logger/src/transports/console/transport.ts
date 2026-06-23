@@ -1,7 +1,7 @@
 import type { Entry } from '$log';
 import * as Level from '@epdoc/loglevels';
 import * as MsgBuilder from '@epdoc/msgbuilder';
-import { StringEx } from '@epdoc/string';
+import { padLeft, padRight } from '@epdoc/text/text';
 import { _, type Integer } from '@epdoc/type';
 import * as Base from '../base/mod.ts';
 import { OutputFormat } from '../consts.ts';
@@ -289,12 +289,12 @@ export class ConsoleTransport extends Base.Transport {
       show = true;
     }
     if (show && !s.length) {
-      s = StringEx(level.name).rightPad(this._levelWidth);
+      s = padRight(level.name, this._levelWidth, ' ');
       if (_.isInteger(show)) {
         if (show > 0) {
-          s = StringEx(level.name).rightPad(show, ' ', true);
+          s = padRight(level.name, show, ' ');
         } else if (show < 0) {
-          s = StringEx(level.name).leftPad(0 - show, ' ', true);
+          s = padLeft(level.name, 0 - show, ' ');
         }
       }
     }
@@ -326,9 +326,9 @@ export class ConsoleTransport extends Base.Transport {
     let s = val;
     if (_.isInteger(show)) {
       if (show > 0) {
-        s = StringEx(val).rightPad(show, ' ', true);
+        s = padRight(val, show, ' ');
       } else if (show < 0) {
-        s = StringEx(val).leftPad(0 - show, ' ', true);
+        s = padLeft(val, 0 - show, ' ');
       }
     }
     if (opts) {
