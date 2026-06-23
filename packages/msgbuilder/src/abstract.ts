@@ -6,7 +6,7 @@ import { _, type Dict, type Integer } from '@epdoc/type';
 import { bold, dim } from '@std/fmt/colors';
 import { ConsoleEmitter } from './emitter.ts';
 import type { EmitterData, FormatOpts, IEmitter, IFormatter, MsgPart, StyleArg, StyleFormatterFn } from './types.ts';
-import { StringUtil } from './util.ts';
+import { countTabsAtBeginningOfString } from './util.ts';
 
 const DEFAULT_TAB_SIZE = 2;
 const SPACES_CACHE = Array.from({ length: 17 }, (_, i) => ' '.repeat(i));
@@ -76,7 +76,7 @@ export abstract class AbstractMsgBuilder implements IFormatter {
    */
   setInitialString(...args: StyleArg[]): this {
     if (args.length) {
-      const count = new StringUtil(args[0]).countTabsAtBeginningOfString();
+      const count = countTabsAtBeginningOfString(String(args[0]));
       if (count) {
         this.tab(count);
         args[0] = String(args[0]).slice(count);
