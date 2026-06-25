@@ -1,3 +1,4 @@
+import { blue, lemon, magenta, sage } from '@epdoc/colors/colors';
 import * as colors from '@std/fmt/colors';
 import type * as Commander from 'commander';
 
@@ -8,14 +9,14 @@ import type * as Commander from 'commander';
  */
 export const config: { help: Commander.HelpConfiguration; output: Commander.OutputConfiguration } = {
   help: {
-    styleTitle: (str) => colors.brightBlue(str),
-    styleCommandText: (str) => colors.magenta(str),
+    styleTitle: (str) => blue(str),
+    styleCommandText: (str) => magenta(str),
     styleCommandDescription: (str) => colors.white(str),
     styleDescriptionText: (str) => {
       return colors.white(str);
     },
-    styleOptionText: (str) => colors.green(str),
-    styleArgumentText: (str) => colors.yellow(str),
+    styleOptionText: (str) => sage(str),
+    styleArgumentText: (str) => lemon(str),
     styleSubcommandText: (str) => colors.rgb24(str, 0xff981a),
     optionDescription: (option: Commander.Option) => {
       const extraInfo = [];
