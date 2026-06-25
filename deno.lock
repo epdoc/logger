@@ -4,7 +4,8 @@
     "jsr:@epdoc/cliapp@^2.2.80": "2.2.80",
     "jsr:@epdoc/colors@^1.1.2": "1.1.2",
     "jsr:@epdoc/datetime@^4.1.10": "4.2.3",
-    "jsr:@epdoc/datetime@^4.2.3": "4.2.3",
+    "jsr:@epdoc/datetime@^4.2.3": "4.2.4",
+    "jsr:@epdoc/datetime@^4.2.4": "4.2.4",
     "jsr:@epdoc/duration@~0.3.21": "0.3.21",
     "jsr:@epdoc/fmt@^1.0.16": "1.0.16",
     "jsr:@epdoc/fs@^1.5.16": "1.5.16",
@@ -54,6 +55,12 @@
     },
     "@epdoc/datetime@4.2.3": {
       "integrity": "6a3356a93bad56b3b8de7786faadb28b1ef5dd732499c100f3c1c2e0023b863e",
+      "dependencies": [
+        "jsr:@epdoc/type"
+      ]
+    },
+    "@epdoc/datetime@4.2.4": {
+      "integrity": "1b89b5939300766044f5f04f46d0b4bf089645c8b57714cb27f0a5bd6e0c2d9b",
       "dependencies": [
         "jsr:@epdoc/type"
       ]
@@ -274,7 +281,7 @@
       "packages/msgbuilder": {
         "dependencies": [
           "jsr:@epdoc/colors@^1.1.2",
-          "jsr:@epdoc/datetime@^4.2.3",
+          "jsr:@epdoc/datetime@^4.2.4",
           "jsr:@epdoc/duration@~0.3.21",
           "jsr:@epdoc/fmt@^1.0.16",
           "jsr:@epdoc/type@2",
