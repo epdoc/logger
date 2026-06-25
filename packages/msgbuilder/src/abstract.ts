@@ -27,7 +27,6 @@ const SPACES_CACHE = Array.from({ length: 17 }, (_, i) => ' '.repeat(i));
  * data, and implements the {@link IFormatter} interface for final string conversion.
  */
 export abstract class AbstractMsgBuilder implements IFormatter {
-  protected $$id: string = 'AbstractLogger';
   protected _timestamp: DateTime = DateTime.now().setTz();
   protected _elapsed: HrMilliseconds = 0;
   protected _tabSize: Integer = DEFAULT_TAB_SIZE;
