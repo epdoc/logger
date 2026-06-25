@@ -7,6 +7,8 @@
     "jsr:@epdoc/duration@~0.3.21": "0.3.21",
     "jsr:@epdoc/fmt@^1.0.16": "1.0.16",
     "jsr:@epdoc/fs@^1.5.17": "1.5.17",
+    "jsr:@epdoc/logger@^1003.3.62": "1003.3.62",
+    "jsr:@epdoc/msgbuilder@~0.1.58": "0.1.58",
     "jsr:@epdoc/progress@~0.1.13": "0.1.13",
     "jsr:@epdoc/terminal@^0.0.14": "0.0.14",
     "jsr:@epdoc/text@^1.0.8": "1.0.8",
@@ -72,6 +74,27 @@
         "jsr:@std/path@^1.1.5",
         "jsr:@std/toml",
         "jsr:@std/yaml"
+      ]
+    },
+    "@epdoc/logger@1003.3.62": {
+      "integrity": "a708bb8d4bbf2e1f2aba607316f740db2540aaf2d3188bc1615e38100db9aeb8",
+      "dependencies": [
+        "jsr:@epdoc/datetime@^4.2.4",
+        "jsr:@epdoc/duration",
+        "jsr:@epdoc/text",
+        "jsr:@epdoc/type",
+        "jsr:@std/assert",
+        "jsr:@std/fmt"
+      ]
+    },
+    "@epdoc/msgbuilder@0.1.58": {
+      "integrity": "d75aa6736e81228052b75dd41833648e492019d7d197861f0dabfd317f3c1949",
+      "dependencies": [
+        "jsr:@epdoc/colors",
+        "jsr:@epdoc/datetime@^4.2.4",
+        "jsr:@epdoc/fmt",
+        "jsr:@epdoc/type",
+        "jsr:@std/fmt"
       ]
     },
     "@epdoc/progress@0.1.13": {
@@ -200,7 +223,7 @@
       },
       "packages/demo-cliapp": {
         "dependencies": [
-          "jsr:@epdoc/logger@^1003.3.61",
+          "jsr:@epdoc/logger@^1003.3.62",
           "jsr:@epdoc/msgbuilder@~0.1.58",
           "jsr:@epdoc/type@2",
           "jsr:@std/fmt@^1.0.10"
