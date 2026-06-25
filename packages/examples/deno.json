@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logger-examples",
-  "version": "0.0.1-alpha.37",
+  "version": "0.0.1-alpha.38",
   "exports": "./README.md",
   "description": "Logging module with chainable formatting, middleware mixins and extendable transports",
   "author": {
@@ -40,7 +40,7 @@
   },
   "imports": {
     "@epdoc/cliapp": "../cliapp/src/mod.ts",
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^4.1.10",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.3",
     "@epdoc/logger": "../logger/src/mod.ts",
     "@epdoc/msgbuilder": "../msgbuilder/src/mod.ts",
     "@epdoc/progress": "jsr:@epdoc/progress@^0.1.13",
