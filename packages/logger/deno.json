@@ -1,6 +1,6 @@
 {
   "name": "@epdoc/logger",
-  "version": "1003.3.60",
+  "version": "1003.3.61",
   "description": "Logging module with chainable formatting, middleware mixins and extendable transports",
   "author": {
     "name": "James Pravetz",
@@ -54,13 +54,13 @@
     "$logger": "./src/loggers/mod.ts",
     "$transport": "./src/transports/mod.ts",
     "@epdoc/loglevels": "jsr:@epdoc/loglevels@^1.0.12",
-    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.56",
+    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.57",
     "@epdoc/text": "jsr:@epdoc/text@^1.0.8",
     "@std/expect": "jsr:@std/expect@^1.0.19",
     "@std/fmt/colors": "jsr:@std/fmt@^1.0.10/colors",
     "@epdoc/type": "jsr:@epdoc/type@^2.0.0",
     "@epdoc/duration": "jsr:@epdoc/duration@^0.3.21",
-    "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.3",
+    "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.4",
     "@std/assert": "jsr:@std/assert@^1.0.19",
     "@std/testing": "jsr:@std/testing@^1.0.19"
   }
