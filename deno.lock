@@ -224,7 +224,7 @@
       "packages/cliapp": {
         "dependencies": [
           "jsr:@epdoc/datetime@^4.2.4",
-          "jsr:@epdoc/logger@^1003.3.60",
+          "jsr:@epdoc/logger@^1003.3.61",
           "jsr:@epdoc/loglevels@^1.0.12",
           "jsr:@epdoc/msgbuilder@~0.1.58",
           "jsr:@epdoc/progress@~0.1.13",
