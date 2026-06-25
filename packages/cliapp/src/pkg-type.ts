@@ -9,7 +9,7 @@
  */
 
 import type { ISODate } from '@epdoc/datetime';
-import type { Integer } from '@epdoc/type';
+import type { Integer, SemVerString } from '@epdoc/type';
 
 export type CmdMetadata = {
   /** Package or command name */
@@ -41,6 +41,6 @@ export type BuildInfoFile = {
 export type BuildInfo = {
   number?: Integer;
   builtAt?: ISODate;
-  committedAt?: ISODate;
+  version?: SemVerString;
   dependencies?: Record<string, string>;
 };
