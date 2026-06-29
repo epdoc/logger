@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@epdoc/cliapp@^2.2.84": "2.2.84",
     "jsr:@epdoc/colors@^1.1.2": "1.1.2",
     "jsr:@epdoc/datetime@^4.2.4": "4.2.4",
     "jsr:@epdoc/duration@~0.3.21": "0.3.21",
@@ -8,7 +9,8 @@
     "jsr:@epdoc/fs@^1.5.17": "1.5.17",
     "jsr:@epdoc/logger@^1003.3.63": "1003.3.63",
     "jsr:@epdoc/msgbuilder@~0.1.59": "0.1.59",
-    "jsr:@epdoc/progress@~0.1.13": "0.1.13",
+    "jsr:@epdoc/progress@~0.1.13": "0.1.14",
+    "jsr:@epdoc/progress@~0.1.14": "0.1.14",
     "jsr:@epdoc/terminal@^0.0.14": "0.0.14",
     "jsr:@epdoc/text@^1.0.8": "1.0.8",
     "jsr:@epdoc/transform@^2.0.3": "2.0.4",
@@ -34,6 +36,18 @@
     "npm:commander@15": "15.0.0"
   },
   "jsr": {
+    "@epdoc/cliapp@2.2.84": {
+      "integrity": "f6660082388a73b647d08ebd2cd5162ae2298fbea6a9944702c3d3bb01148d64",
+      "dependencies": [
+        "jsr:@epdoc/colors",
+        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/progress@~0.1.13",
+        "jsr:@epdoc/type@2",
+        "jsr:@std/assert",
+        "jsr:@std/fmt",
+        "npm:commander"
+      ]
+    },
     "@epdoc/colors@1.1.2": {
       "integrity": "5b565e92ff0edb01c61164625d6ddeda08ed0e503ccaec366e6336dcc4dbbe9c",
       "dependencies": [
@@ -102,6 +116,14 @@
       "dependencies": [
         "jsr:@epdoc/terminal",
         "jsr:@epdoc/type@2",
+        "jsr:@std/fmt"
+      ]
+    },
+    "@epdoc/progress@0.1.14": {
+      "integrity": "bfa186a513954e7cf19d1f3ea1e5ca235ee20236685bd5cd4d73cab60332df2c",
+      "dependencies": [
+        "jsr:@epdoc/terminal",
+        "jsr:@epdoc/type@^2.0.2",
         "jsr:@std/fmt"
       ]
     },
@@ -278,10 +300,10 @@
       },
       "packages/template": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.2.83",
-          "jsr:@epdoc/logger@^1003.3.62",
-          "jsr:@epdoc/progress@~0.1.13",
-          "jsr:@epdoc/type@2",
+          "jsr:@epdoc/cliapp@^2.2.84",
+          "jsr:@epdoc/logger@^1003.3.63",
+          "jsr:@epdoc/progress@~0.1.14",
+          "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/fmt@^1.0.10"
         ]
