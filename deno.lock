@@ -7,6 +7,7 @@
     "jsr:@epdoc/fmt@^1.0.17": "1.0.18",
     "jsr:@epdoc/fmt@^1.0.18": "1.0.18",
     "jsr:@epdoc/fs@^1.5.19": "1.6.2",
+    "jsr:@epdoc/logger@^1003.3.68": "1003.3.68",
     "jsr:@epdoc/loglevels@^1.0.14": "1.0.14",
     "jsr:@epdoc/msgbuilder@~0.1.63": "0.1.63",
     "jsr:@epdoc/progress@~0.1.14": "0.1.14",
@@ -73,6 +74,17 @@
         "jsr:@std/path@^1.1.6",
         "jsr:@std/toml",
         "jsr:@std/yaml"
+      ]
+    },
+    "@epdoc/logger@1003.3.68": {
+      "integrity": "e5d3063a91723f654aa6307dece504e7cb13c4d4e505ee336a720b9e01de784e",
+      "dependencies": [
+        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/duration",
+        "jsr:@epdoc/text",
+        "jsr:@epdoc/type",
+        "jsr:@std/assert",
+        "jsr:@std/fmt"
       ]
     },
     "@epdoc/loglevels@1.0.14": {
@@ -199,7 +211,7 @@
         "dependencies": [
           "jsr:@epdoc/colors@^1.1.2",
           "jsr:@epdoc/datetime@^4.2.6",
-          "jsr:@epdoc/logger@^1003.3.67",
+          "jsr:@epdoc/logger@^1003.3.68",
           "jsr:@epdoc/loglevels@^1.0.14",
           "jsr:@epdoc/msgbuilder@~0.1.63",
           "jsr:@epdoc/progress@~0.1.14",
