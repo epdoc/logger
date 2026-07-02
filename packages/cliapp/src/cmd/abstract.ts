@@ -8,9 +8,9 @@ import { assert } from '@std/assert/assert';
 import { dim } from '@std/fmt/colors';
 import * as Commander from 'commander';
 import { FluentArgumentBuilder } from '../argument.ts';
-import { config } from '../config.ts';
 import type * as Ctx from '../context.ts';
 import { FluentOptionBuilder } from '../option.ts';
+import { config } from '../styles.ts';
 import type * as CliApp from '../types.ts';
 import { commaList, configureLogging } from '../utils.ts';
 

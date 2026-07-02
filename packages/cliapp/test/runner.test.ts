@@ -1,4 +1,4 @@
-import * as assert from 'node:assert';
+import { assert, assertEquals, assertRejects, assertStrictEquals } from '@std/assert';
 import * as Runner from '../src/runner/mod.ts';
 
 Deno.test('runner', async (t) => {
@@ -6,33 +6,33 @@ Deno.test('runner', async (t) => {
     await t.step('should run a command and return success for exit code 0', async () => {
       const result = await Runner.runCommand('deno', ['--version']);
 
-      assert.strictEqual(result.success, true);
-      assert.strictEqual(result.code, 0);
-      assert.ok(result.stdout.includes('deno'));
-      assert.strictEqual(result.stderr, '');
+      assertStrictEquals(result.success, true);
+      assertStrictEquals(result.code, 0);
+      assert(result.stdout.includes('deno'));
+      assertStrictEquals(result.stderr, '');
     });
 
     await t.step('should return failure for non-zero exit code', async () => {
       const result = await Runner.runCommand('deno', ['eval', 'Deno.exit(1)']);
 
-      assert.strictEqual(result.success, false);
-      assert.strictEqual(result.code, 1);
+      assertStrictEquals(result.success, false);
+      assertStrictEquals(result.code, 1);
     });
 
     await t.step('should capture stderr on failure', async () => {
       // deno eval with syntax error produces stderr
       const result = await Runner.runCommand('deno', ['eval', 'invalid syntax here!!!']);
 
-      assert.strictEqual(result.success, false);
-      assert.ok(result.stderr.length > 0);
+      assertStrictEquals(result.success, false);
+      assert(result.stderr.length > 0);
     });
 
     await t.step('should run command in specified working directory', async () => {
       const result = await Runner.runCommand('pwd', [], { cwd: '/tmp' });
 
-      assert.strictEqual(result.success, true);
+      assertStrictEquals(result.success, true);
       // On macOS /tmp is a symlink to /private/tmp, so we check the path ends with /tmp
-      assert.ok(result.stdout.trim().endsWith('/tmp'));
+      assert(result.stdout.trim().endsWith('/tmp'));
     });
 
     await t.step('should pass environment variables', async () => {
@@ -43,8 +43,8 @@ Deno.test('runner', async (t) => {
         env: { TEST_VAR: 'hello_world' },
       });
 
-      assert.strictEqual(result.success, true);
-      assert.strictEqual(result.stdout.trim(), 'hello_world');
+      assertStrictEquals(result.success, true);
+      assertStrictEquals(result.stdout.trim(), 'hello_world');
     });
 
     await t.step('should work in interactive mode', async () => {
@@ -53,19 +53,19 @@ Deno.test('runner', async (t) => {
         interactive: true,
       });
 
-      assert.strictEqual(result.success, true);
-      assert.strictEqual(result.code, 0);
+      assertStrictEquals(result.success, true);
+      assertStrictEquals(result.code, 0);
       // In interactive mode, stdout/stderr are empty strings
-      assert.strictEqual(result.stdout, '');
-      assert.strictEqual(result.stderr, '');
+      assertStrictEquals(result.stdout, '');
+      assertStrictEquals(result.stderr, '');
     });
 
     await t.step('should default to current directory when cwd not specified', async () => {
       const currentDir = Deno.cwd();
       const result = await Runner.runCommand('pwd', []);
 
-      assert.strictEqual(result.success, true);
-      assert.strictEqual(result.stdout.trim(), currentDir);
+      assertStrictEquals(result.success, true);
+      assertStrictEquals(result.stdout.trim(), currentDir);
     });
 
     await t.step('should handle commands with multiple arguments', async () => {
@@ -77,8 +77,8 @@ Deno.test('runner', async (t) => {
         'arg3',
       ]);
 
-      assert.strictEqual(result.success, true);
-      assert.strictEqual(result.stdout.trim(), 'arg1,arg2,arg3');
+      assertStrictEquals(result.success, true);
+      assertStrictEquals(result.stdout.trim(), 'arg1,arg2,arg3');
     });
 
     await t.step('should return success without executing when dryRun is true', async () => {
@@ -86,11 +86,11 @@ Deno.test('runner', async (t) => {
         dryRun: true,
       });
 
-      assert.strictEqual(result.success, true);
-      assert.strictEqual(result.dryRun, true);
-      assert.strictEqual(result.code, undefined);
-      assert.strictEqual(result.stdout, '');
-      assert.strictEqual(result.stderr, '');
+      assertStrictEquals(result.success, true);
+      assertStrictEquals(result.dryRun, true);
+      assertStrictEquals(result.code, undefined);
+      assertStrictEquals(result.stdout, '');
+      assertStrictEquals(result.stderr, '');
     });
 
     await t.step('should clear inherited environment when clearEnv is true', async () => {
@@ -102,10 +102,11 @@ Deno.test('runner', async (t) => {
         env: { TEST_VAR: 'hello' },
       });
 
-      assert.strictEqual(result.success, true);
+      assertStrictEquals(result.success, true);
       const lines = result.stdoutLines;
-      assert.strictEqual(lines[0], 'hello');
-      assert.strictEqual(lines[1], 'undefined');
+      assertStrictEquals(lines[0], 'hello');
+      assert(lines[1], 'PATH should be set (Deno injects its own)');
+      assert(lines[1] !== Deno.env.get('PATH'), 'Inherited PATH should be cleared');
     });
 
     await t.step('should capture stderr even when exit code is 0', async () => {
@@ -114,8 +115,8 @@ Deno.test('runner', async (t) => {
         'console.error("warning message"); console.log("normal output");',
       ]);
 
-      assert.strictEqual(result.success, true);
-      assert.strictEqual(result.stderr.trim(), 'warning message');
+      assertStrictEquals(result.success, true);
+      assertStrictEquals(result.stderr.trim(), 'warning message');
     });
   });
 
@@ -123,15 +124,13 @@ Deno.test('runner', async (t) => {
     await t.step('should return result on success', async () => {
       const result = await Runner.runCommandOrThrow('deno', ['--version']);
 
-      assert.strictEqual(result.success, true);
-      assert.strictEqual(result.code, 0);
+      assertStrictEquals(result.success, true);
+      assertStrictEquals(result.code, 0);
     });
 
     await t.step('should throw CommandError on failure', async () => {
-      await assert.rejects(
-        async () => {
-          await Runner.runCommandOrThrow('deno', ['eval', 'Deno.exit(42)']);
-        },
+      await assertRejects(
+        () => Runner.runCommandOrThrow('deno', ['eval', 'Deno.exit(42)']),
         Runner.Error,
       );
     });
@@ -145,9 +144,9 @@ Deno.test('runner', async (t) => {
         throw new Error('Should have thrown');
       } catch (err) {
         if (err instanceof Runner.Error) {
-          assert.strictEqual(err.exitCode, 1);
-          assert.ok(err.stderr.includes('error output'));
-          assert.strictEqual(err.result.success, false);
+          assertStrictEquals(err.exitCode, 1);
+          assert(err.stderr.includes('error output'));
+          assertStrictEquals(err.result.success, false);
         } else {
           throw err;
         }
@@ -163,9 +162,9 @@ Deno.test('runner', async (t) => {
         throw new Error('Should have thrown');
       } catch (err) {
         if (err instanceof Runner.Error) {
-          assert.strictEqual(err.stdout.trim(), 'stdout content');
-          assert.strictEqual(err.stderr.trim(), 'stderr content');
-          assert.ok(err.message.includes('exit code: 2'));
+          assertStrictEquals(err.stdout.trim(), 'stdout content');
+          assertStrictEquals(err.stderr.trim(), 'stderr content');
+          assert(err.message.includes('exit code: 2'));
         } else {
           throw err;
         }
@@ -175,8 +174,8 @@ Deno.test('runner', async (t) => {
     await t.step('should not throw when dryRun is true', async () => {
       const result = await Runner.runCommandOrThrow('nonexistent', [], { dryRun: true });
 
-      assert.strictEqual(result.success, true);
-      assert.strictEqual(result.dryRun, true);
+      assertStrictEquals(result.success, true);
+      assertStrictEquals(result.dryRun, true);
     });
   });
 
@@ -185,19 +184,19 @@ Deno.test('runner', async (t) => {
       const result = Runner.Result.from('mock', ['command']).setCode(1).setStderr('error message').setStdout('');
       const err = new Runner.Error('test error', result);
 
-      assert.strictEqual(err instanceof Runner.Error, true);
-      assert.strictEqual(err instanceof Error, true);
-      assert.strictEqual(err.message, 'test error');
+      assertStrictEquals(err instanceof Runner.Error, true);
+      assertStrictEquals(err instanceof Error, true);
+      assertStrictEquals(err.message, 'test error');
     });
 
     await t.step('should store result and provide accessors', () => {
       const result = Runner.Result.from('mock', ['command']).setCode(42).setStderr('error').setStdout('output');
       const err = new Runner.Error('test', result);
 
-      assert.strictEqual(err.result, result);
-      assert.strictEqual(err.exitCode, 42);
-      assert.strictEqual(err.stdout, 'output');
-      assert.strictEqual(err.stderr, 'error');
+      assertStrictEquals(err.result, result);
+      assertStrictEquals(err.exitCode, 42);
+      assertStrictEquals(err.stdout, 'output');
+      assertStrictEquals(err.stderr, 'error');
     });
   });
 
@@ -205,7 +204,7 @@ Deno.test('runner', async (t) => {
     await t.step('should provide duration after execution', async () => {
       const result = await Runner.runCommand('deno', ['--version']);
 
-      assert.ok(result.duration > 0, `expected positive duration, got ${result.duration}`);
+      assert(result.duration > 0, `expected positive duration, got ${result.duration}`);
     });
 
     await t.step('should split stdout into lines', async () => {
@@ -214,7 +213,7 @@ Deno.test('runner', async (t) => {
         'console.log("line1"); console.log("line2"); console.log("line3");',
       ]);
 
-      assert.deepStrictEqual(result.stdoutLines, ['line1', 'line2', 'line3']);
+      assertEquals(result.stdoutLines, ['line1', 'line2', 'line3']);
     });
 
     await t.step('should split stderr into lines', async () => {
@@ -223,39 +222,39 @@ Deno.test('runner', async (t) => {
         'console.error("err1"); console.error("err2"); Deno.exit(1);',
       ]);
 
-      assert.strictEqual(result.success, false);
-      assert.deepStrictEqual(result.stderrLines, ['err1', 'err2']);
+      assertStrictEquals(result.success, false);
+      assertEquals(result.stderrLines, ['err1', 'err2']);
     });
 
     await t.step('should create a CmdResult via static from() factory', () => {
       const result = Runner.Result.from('mock', ['cmd', '--flag']);
 
-      assert.strictEqual(result.command, 'mock cmd --flag');
-      assert.strictEqual(result.success, false);
-      assert.strictEqual(result.dryRun, false);
-      assert.strictEqual(result.duration, 0);
+      assertStrictEquals(result.command, 'mock cmd --flag');
+      assertStrictEquals(result.success, false);
+      assertStrictEquals(result.dryRun, false);
+      assertStrictEquals(result.duration, 0);
     });
 
     await t.step('should have empty stdout and stderr for uninitialized result', () => {
       const result = Runner.Result.from('test', []);
 
-      assert.strictEqual(result.stdout, '');
-      assert.strictEqual(result.stderr, '');
-      assert.deepStrictEqual(result.stdoutLines, []);
-      assert.deepStrictEqual(result.stderrLines, []);
+      assertStrictEquals(result.stdout, '');
+      assertStrictEquals(result.stderr, '');
+      assertEquals(result.stdoutLines, []);
+      assertEquals(result.stderrLines, []);
     });
 
     await t.step('should mark dryRun on result from options', () => {
       const result = Runner.Result.from('test', ['arg'], { dryRun: true });
 
-      assert.strictEqual(result.dryRun, true);
+      assertStrictEquals(result.dryRun, true);
     });
 
     await t.step('should support typed data payload', () => {
       const result = new Runner.Result<{ value: number }>();
       result.data = { value: 42 };
 
-      assert.strictEqual(result.data?.value, 42);
+      assertStrictEquals(result.data?.value, 42);
     });
   });
 });

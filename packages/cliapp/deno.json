@@ -1,7 +1,7 @@
 {
   "name": "@epdoc/cliapp",
   "description": "A CLI application template for @epdoc/logger",
-  "version": "2.2.90",
+  "version": "2.3.0",
   "exports": "./src/mod.ts",
   "publish": {
     "include": [
@@ -28,9 +28,9 @@
   "imports": {
     "@epdoc/colors": "jsr:@epdoc/colors@^1.1.2",
     "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.6",
-    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.69",
+    "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.71",
     "@epdoc/loglevels": "jsr:@epdoc/loglevels@^1.0.14",
-    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.1.64",
+    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^0.2.0",
     "@epdoc/progress": "jsr:@epdoc/progress@^0.1.15",
     "@epdoc/type": "jsr:@epdoc/type@^2.0.2",
     "@std/assert": "jsr:@std/assert@^1.0.19",

@@ -15,7 +15,6 @@ export * from './pkg-type.ts';
 export * as Progress from './progress/mod.ts';
 export { run } from './run.ts';
 export * as Runner from './runner/mod.ts';
-export { TextBuilder } from './text-builder.ts';
 export * from './types.ts';
 export * from './utils.ts';
 
