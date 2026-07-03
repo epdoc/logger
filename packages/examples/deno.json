@@ -43,9 +43,9 @@
     "@epdoc/datetime": "jsr:@epdoc/datetime@^4.2.6",
     "@epdoc/logger": "../logger/src/mod.ts",
     "@epdoc/msgbuilder": "../msgbuilder/src/mod.ts",
-    "@epdoc/progress": "jsr:@epdoc/progress@^0.1.14",
+    "@epdoc/progress": "jsr:@epdoc/progress@^0.1.15",
     "@epdoc/type": "jsr:@epdoc/type@^2.0.2",
-    "@std/expect": "jsr:@std/expect@^1.0.19",
+    "@std/expect": "jsr:@std/expect@^1.0.20",
     "@std/testing": "jsr:@std/testing@^1.0.19"
   }
 }
