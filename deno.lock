@@ -238,7 +238,7 @@
           "jsr:@epdoc/datetime@^4.2.6",
           "jsr:@epdoc/logger@^1003.3.71",
           "jsr:@epdoc/loglevels@^1.0.14",
-          "jsr:@epdoc/msgbuilder@0.2",
+          "jsr:@epdoc/msgbuilder@1",
           "jsr:@epdoc/progress@~0.1.15",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19",
