@@ -60,6 +60,7 @@ import { type CmdOptions, CmdResult } from '../runner/runner-defs.ts';
  *   env: { NODE_ENV: 'production' }
  * });
  * ```
+ * @deprecated Use @epdoc/cmd instead
  */
 export async function runCommand<T = void>(
   cmd: string,
