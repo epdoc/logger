@@ -1,6 +1,7 @@
 {
   "version": "5",
   "specifiers": {
+    "jsr:@epdoc/cliapp@^2.3.1": "2.3.1",
     "jsr:@epdoc/colors@^1.1.2": "1.1.2",
     "jsr:@epdoc/datetime@^4.2.6": "4.2.6",
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
@@ -8,7 +9,6 @@
     "jsr:@epdoc/fs@^1.6.3": "1.6.3",
     "jsr:@epdoc/logger@^1003.3.71": "1003.3.71",
     "jsr:@epdoc/msgbuilder@0.2": "0.2.0",
-    "jsr:@epdoc/msgbuilder@1": "1.0.0",
     "jsr:@epdoc/progress@~0.1.15": "0.1.15",
     "jsr:@epdoc/terminal@^0.0.15": "0.0.15",
     "jsr:@epdoc/text@^1.0.9": "1.0.9",
@@ -32,6 +32,19 @@
     "npm:commander@15": "15.0.0"
   },
   "jsr": {
+    "@epdoc/cliapp@2.3.1": {
+      "integrity": "290c5e602a17ff34ab4ca6e39b7d490bad7559ae5ff261156ed7ba99d7f57fcc",
+      "dependencies": [
+        "jsr:@epdoc/colors",
+        "jsr:@epdoc/datetime",
+        "jsr:@epdoc/msgbuilder",
+        "jsr:@epdoc/progress",
+        "jsr:@epdoc/type",
+        "jsr:@std/assert",
+        "jsr:@std/fmt",
+        "npm:commander"
+      ]
+    },
     "@epdoc/colors@1.1.2": {
       "integrity": "5b565e92ff0edb01c61164625d6ddeda08ed0e503ccaec366e6336dcc4dbbe9c",
       "dependencies": [
@@ -78,7 +91,7 @@
       "dependencies": [
         "jsr:@epdoc/datetime",
         "jsr:@epdoc/duration",
-        "jsr:@epdoc/msgbuilder@0.2",
+        "jsr:@epdoc/msgbuilder",
         "jsr:@epdoc/text",
         "jsr:@epdoc/type",
         "jsr:@std/assert",
@@ -87,16 +100,6 @@
     },
     "@epdoc/msgbuilder@0.2.0": {
       "integrity": "597745312c5fb9da06981c16267776a5d18bb91c89825718e8761d28486c96ff",
-      "dependencies": [
-        "jsr:@epdoc/colors",
-        "jsr:@epdoc/datetime",
-        "jsr:@epdoc/fmt",
-        "jsr:@epdoc/type",
-        "jsr:@std/fmt"
-      ]
-    },
-    "@epdoc/msgbuilder@1.0.0": {
-      "integrity": "fa886c35f9f23c6e6d581ae9234101fbb6a8241bd5b0f713a3ebb938da532873",
       "dependencies": [
         "jsr:@epdoc/colors",
         "jsr:@epdoc/datetime",
@@ -280,7 +283,7 @@
       },
       "packages/template": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.0",
+          "jsr:@epdoc/cliapp@^2.3.1",
           "jsr:@epdoc/logger@^1003.3.71",
           "jsr:@epdoc/progress@~0.1.15",
           "jsr:@epdoc/type@^2.0.2",
