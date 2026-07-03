@@ -135,6 +135,7 @@
       "dependencies": [
         "jsr:@epdoc/colors",
         "jsr:@epdoc/datetime",
+        "jsr:@epdoc/duration",
         "jsr:@epdoc/fmt",
         "jsr:@epdoc/type",
         "jsr:@std/fmt"

@@ -1,4 +1,4 @@
-import * as assert from 'node:assert';
+import { assert, assertStrictEquals } from '@std/assert';
 import { TestEmitter } from '../src/emitter.ts';
 import * as MsgBuilder from '../src/mod.ts';
 
@@ -18,15 +18,15 @@ Deno.test('Console.extender', async (t) => {
       const builder = new ExtendedBuilder(emitter);
 
       // Should have original Console.Builder methods
-      assert.strictEqual(typeof builder.text, 'function');
-      assert.strictEqual(typeof builder.label, 'function');
-      assert.strictEqual(typeof builder.value, 'function');
+      assertStrictEquals(typeof builder.text, 'function');
+      assertStrictEquals(typeof builder.label, 'function');
+      assertStrictEquals(typeof builder.value, 'function');
 
       // Should have custom methods
       // deno-lint-ignore no-explicit-any
-      assert.strictEqual(typeof (builder as any).apiCall, 'function');
+      assertStrictEquals(typeof (builder as any).apiCall, 'function');
       // deno-lint-ignore no-explicit-any
-      assert.strictEqual(typeof (builder as any).metric, 'function');
+      assertStrictEquals(typeof (builder as any).metric, 'function');
     });
 
     await t2.step('should allow method chaining with custom methods', () => {
@@ -47,7 +47,7 @@ Deno.test('Console.extender', async (t) => {
         .status('error')
         .format({ color: false });
 
-      assert.ok(/\[SUCCESS\]\s+Operation completed\s+\[ERROR\]/.test(result));
+      assert(/\[SUCCESS\]\s+Operation completed\s+\[ERROR\]/.test(result));
     });
 
     await t2.step('should preserve this context in custom methods', () => {
@@ -62,7 +62,7 @@ Deno.test('Console.extender', async (t) => {
 
       // deno-lint-ignore no-explicit-any
       const result = (builder as any).customLabel('test message').format({ color: false });
-      assert.ok(/CUSTOM\s*:\s*test message/.test(result));
+      assert(/CUSTOM\s*:\s*test message/.test(result));
     });
   });
 
@@ -73,7 +73,7 @@ Deno.test('Console.extender', async (t) => {
       const builder = new EmptyBuilder(emitter);
 
       const result = builder.text('hello').format({ color: false });
-      assert.deepStrictEqual(result, 'hello');
+      assertStrictEquals(result, 'hello');
     });
   });
 
@@ -90,7 +90,7 @@ Deno.test('Console.extender', async (t) => {
 
       // deno-lint-ignore no-explicit-any
       const result = (builder as any).apiCall('GET', '/api/users').format({ color: false });
-      assert.deepStrictEqual(result, 'GET /api/users');
+      assertStrictEquals(result, 'GET /api/users');
     });
   });
 });
