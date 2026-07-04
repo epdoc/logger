@@ -1,5 +1,4 @@
 import type * as Ctx from './context.ts';
-import * as Runner from './runner/mod.ts';
 
 /**
  * Base class providing convenient access to logging methods with proper generic type handling.
@@ -115,25 +114,5 @@ export abstract class BaseClass<
    */
   section(s: string): M {
     return this.ctx.log.info.section(s);
-  }
-
-  /**
-   * Run an external command, respecting the context's dryRun setting. For read-only commands, the
-   * dryRun parameter can be explicitly set to false to enable the command to be run.
-   *
-   * @param cmd - The command to execute
-   * @param args - Array of command arguments
-   * @param opts - Options for command execution
-   * @returns Promise resolving to the command result
-   */
-  async runCommand(
-    cmd: string,
-    args: string[],
-    opts: Runner.Options = {},
-  ): Promise<Runner.Result> {
-    return await Runner.runCommand(cmd, args, {
-      ...opts,
-      dryRun: opts.dryRun ?? this.ctx.dryRun,
-    });
   }
 }

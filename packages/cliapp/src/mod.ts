@@ -14,7 +14,6 @@ export { FluentOptionBuilder } from './option.ts';
 export * from './pkg-type.ts';
 export * as Progress from './progress/mod.ts';
 export { run } from './run.ts';
-export * as Runner from './runner/mod.ts';
 export * from './types.ts';
 export * from './utils.ts';
 
