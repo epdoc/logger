@@ -1,7 +1,7 @@
 {
   "version": "5",
   "specifiers": {
-    "jsr:@epdoc/cliapp@^2.3.2": "2.3.2",
+    "jsr:@epdoc/cliapp@^2.3.3": "2.3.3",
     "jsr:@epdoc/colors@^1.1.2": "1.1.2",
     "jsr:@epdoc/datetime@^4.2.6": "4.2.6",
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
@@ -33,8 +33,8 @@
     "npm:commander@15": "15.0.0"
   },
   "jsr": {
-    "@epdoc/cliapp@2.3.2": {
-      "integrity": "023feee1780c3eb9dc53f7d7027ee6fcf4e5bfa514232ed132eb05715470ca50",
+    "@epdoc/cliapp@2.3.3": {
+      "integrity": "82bb0961dab0a44a529d1180f0708e336eeb99dac47298022f69e50e4dc53472",
       "dependencies": [
         "jsr:@epdoc/colors",
         "jsr:@epdoc/datetime",
@@ -290,7 +290,7 @@
       },
       "packages/template": {
         "dependencies": [
-          "jsr:@epdoc/cliapp@^2.3.2",
+          "jsr:@epdoc/cliapp@^2.3.3",
           "jsr:@epdoc/logger@^1003.3.72",
           "jsr:@epdoc/progress@~0.1.15",
           "jsr:@epdoc/type@^2.0.2",
