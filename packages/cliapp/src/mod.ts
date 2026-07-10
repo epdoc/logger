@@ -16,6 +16,7 @@ export * as Progress from './progress/mod.ts';
 export { run } from './run.ts';
 export * from './types.ts';
 export * from './utils.ts';
+export { style } from './styles.ts';
 
 // Re-export Commander.js for convenience
 export * as Commander from 'commander';

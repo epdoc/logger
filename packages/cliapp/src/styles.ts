@@ -1,6 +1,15 @@
-import { blue, lemon, magenta, sage } from '@epdoc/colors/colors';
+import { amber, blue, lemon, magenta, sage } from '@epdoc/colors/colors';
 import * as colors from '@std/fmt/colors';
 import type * as Commander from 'commander';
+
+type StyleFn = (s: string) => string;
+export const style = {
+  flag: sage,
+  title: blue,
+  arg: lemon,
+  cmd: magenta,
+  choice: (s: string): string => colors.dim(amber(s)),
+} as const satisfies Record<string, StyleFn>;
 
 /**
  * Configuration for the command's help and output formatting.
@@ -9,14 +18,14 @@ import type * as Commander from 'commander';
  */
 export const config: { help: Commander.HelpConfiguration; output: Commander.OutputConfiguration } = {
   help: {
-    styleTitle: (str) => blue(str),
-    styleCommandText: (str) => magenta(str),
+    styleTitle: (str) => style.title(str),
+    styleCommandText: (str) => style.cmd(str),
     styleCommandDescription: (str) => colors.white(str),
     styleDescriptionText: (str) => {
       return colors.white(str);
     },
-    styleOptionText: (str) => sage(str),
-    styleArgumentText: (str) => lemon(str),
+    styleOptionText: (str) => style.flag(str),
+    styleArgumentText: (str) => style.arg(str),
     styleSubcommandText: (str) => colors.rgb24(str, 0xff981a),
     optionDescription: (option: Commander.Option) => {
       const extraInfo = [];
@@ -25,7 +34,7 @@ export const config: { help: Commander.HelpConfiguration; output: Commander.Outp
           // use stringify to match the display of the default value
           colors.dim('choices: ') +
             option.argChoices.map((choice) =>
-              colors.dim(colors.rgb24(typeof choice === 'string' ? choice : JSON.stringify(choice), 0xffb020))
+              style.choice(typeof choice === 'string' ? choice : JSON.stringify(choice))
             ).join(', '),
         );
       }
@@ -38,7 +47,7 @@ export const config: { help: Commander.HelpConfiguration; output: Commander.Outp
         if (showDefault) {
           extraInfo.push(
             colors.dim('default: ') +
-              colors.rgb24(option.defaultValueDescription || JSON.stringify(option.defaultValue), 0xffb020),
+              amber(option.defaultValueDescription || JSON.stringify(option.defaultValue)),
           );
         }
       }
