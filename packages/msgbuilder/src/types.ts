@@ -1,6 +1,6 @@
 import type { DateTime } from '@epdoc/datetime';
 import type { HrMilliseconds } from '@epdoc/duration';
-import type { Dict, Integer } from '@epdoc/type';
+import type { Dict, Integer, SemVerString } from '@epdoc/type';
 import type { AbstractMsgBuilder } from './abstract.ts';
 
 /**
@@ -162,3 +162,7 @@ export type FactoryMethod = (
 export type StyleMap = Record<string, StyleFormatterFn>;
 
 export { type BoolFormatterOptions, type BoolPresetName } from '@epdoc/fmt';
+
+export interface IVersion {
+  version?: SemVerString;
+}

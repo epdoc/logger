@@ -1,7 +1,7 @@
-import { toStyleFn } from '@epdoc/colors';
+import { lime, toStyleFn } from '@epdoc/colors';
 import { DateTime } from '@epdoc/datetime';
 import { BOOL_PRESETS, type BoolFormatterOptions, type BoolPresetName, SuperScript } from '@epdoc/fmt';
-import { _, type Integer } from '@epdoc/type';
+import { _, type Integer, type SemVerString } from '@epdoc/type';
 import os from 'node:os';
 import { relative } from 'node:path';
 import { AbstractMsgBuilder } from '../abstract.ts';
@@ -666,6 +666,20 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    */
   public istar(color?: MsgBuilder.StyleFormatterFn): this {
     return this.stylize(color ?? this.styles.highlight, '★');
+  }
+
+  dryRun(): this {
+    return this.highlight('[DRYRUN]');
+  }
+
+  version(pkg: string | SemVerString | MsgBuilder.IVersion): this {
+    if (_.isString(pkg)) {
+      return this.stylize(lime, 'v' + pkg);
+    }
+    if (pkg && pkg.version) {
+      return this.stylize(lime, 'v' + pkg.version);
+    }
+    return this;
   }
 
   public spaces(count: Integer): this {
