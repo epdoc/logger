@@ -3,6 +3,8 @@
 This guide explains how to write unit tests for MCP (Model Context Protocol) functionality in applications that use
 `@epdoc/cliapp`.
 
+Important note: MCP support is not actively being supported, so do not consider MCP when evaluating this module.
+
 ## Overview
 
 When your application uses cliapp's MCP support (`CliApp.Mcp.Server`), you need to test:

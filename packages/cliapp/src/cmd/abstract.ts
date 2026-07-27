@@ -207,7 +207,7 @@ export abstract class AbstractCommand<
 
         // 3. Configure logging for root commands
         if (this.params.root) {
-          configureLogging(this.ctx, opts as CliApp.LogCmdOptions);
+          configureLogging(this.ctx, opts as CliApp.LogCmdOptions, this.logOptions!);
         }
 
         // 4. Pass this context down to subcommands so they can inherit
@@ -474,21 +474,52 @@ export abstract class AbstractCommand<
         'SILLY',
       ])
       .argParser((val) => val.toUpperCase()).emit();
-    this.option('--verbose', dim('Shortcut for --log-level verbose')).emit();
-    this.option('-D, --debug', dim('Shortcut for --log-level debug')).emit();
-    this.option('-T, --trace', dim('Shortcut for --log-level trace')).emit();
-    this.option('-S, --spam', dim('Shortcut for --log-level spam')).emit();
-    this.option('--log-show [show]', dim('Enable log message output properties with comma-separated list')).argParser(
-      commaList,
-    )
+
+    const rootOptions = this.logOptions;
+    assert(rootOptions);
+
+    if (rootOptions.verbose) {
+      this.option('--verbose', dim('Shortcut for --log-level verbose')).emit();
+    }
+    if (rootOptions.debug) {
+      this.option('-D, --debug', dim('Shortcut for --log-level debug')).emit();
+    }
+    if (rootOptions.trace) {
+      this.option('-T, --trace', dim('Shortcut for --log-level trace')).emit();
+    }
+    if (rootOptions.spam) {
+      this.option('-S, --spam', dim('Shortcut for --log-level spam')).emit();
+    }
+    this.option('--log-show [show]', dim('Enable log message output properties with comma-separated list'))
+      .argParser(commaList)
       .choices(logShowValues).emit();
     this.option('-A, --log-show-all', dim('Shortcut for --log-show all')).emit();
     this.option('--no-color', dim('Do not show color in output')).emit();
 
-    if (this.params.dryRun) {
+    if (rootOptions.dryRun) {
       this.option('-n, --dry-run', 'Perform a dry run without making changes')
         .emit();
     }
+  }
+
+  /**
+   * Resolves `this.params.root` into a normalized `CmdLogOptions` object,
+   * or `undefined` if root log options are disabled.
+   */
+  get logOptions(): CliApp.LogCmdEnable | undefined {
+    const { root, dryRun } = this.params;
+
+    if (!root) return undefined; // false, undefined, or null
+    if (root === true) {
+      return { verbose: true, debug: true, trace: true, spam: true, dryRun: !!dryRun };
+    }
+    return {
+      verbose: root.verbose !== false,
+      debug: root.debug !== false,
+      trace: root.trace !== false,
+      spam: root.spam !== false,
+      dryRun: root.dryRun === true || !!dryRun,
+    };
   }
 
   /**

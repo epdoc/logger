@@ -2,7 +2,7 @@ import * as Log from '@epdoc/logger';
 import type { Integer } from '@epdoc/type';
 import * as _ from '@epdoc/type';
 import type * as Ctx from './context.ts';
-import type { LogCmdOptions } from './types.ts';
+import type { LogCmdEnable, LogCmdOptions } from './types.ts';
 
 const REG = {
   levelType: new RegExp(/^level(:(icon|\d{1,2}|\-\d{1,2}))?$/),
@@ -49,8 +49,8 @@ const REG = {
  * configureLogging(ctx, { logShow: ['level', 'notime'] });
  * ```
  */
-export function configureLogging(ctx: Ctx.AbstractBase, opts: LogCmdOptions): void {
-  if (opts.dryRun) {
+export function configureLogging(ctx: Ctx.AbstractBase, opts: LogCmdOptions, enableOpts: LogCmdEnable): void {
+  if (enableOpts.dryRun && opts.dryRun) {
     ctx.dryRun = true;
   }
 
@@ -63,19 +63,19 @@ export function configureLogging(ctx: Ctx.AbstractBase, opts: LogCmdOptions): vo
     threshold = opts.logLevel;
     logOptions.push(`--log-level ${opts.logLevel}`);
   }
-  if (opts.verbose) {
+  if (enableOpts.verbose && opts.verbose) {
     threshold = 'verbose';
     logOptions.push('--verbose');
   }
-  if (opts.debug) {
+  if (enableOpts.debug && opts.debug) {
     threshold = 'debug';
     logOptions.push('--debug');
   }
-  if (opts.trace) {
+  if (enableOpts.trace && opts.trace) {
     threshold = 'trace';
     logOptions.push('--trace');
   }
-  if (opts.spam) {
+  if (enableOpts.spam && opts.spam) {
     threshold = 'spam';
     logOptions.push('--spam');
   }

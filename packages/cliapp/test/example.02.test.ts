@@ -53,7 +53,7 @@ type CleanOptions = {
 // Root command
 class RootCommand extends CliApp.Cmd.AbstractBase<AppContext, AppContext, RootOptions> {
   constructor(initialContext?: AppContext) {
-    super(initialContext, { ...pkg, root: true, dryRun: true }); // Mark as root, add dry-run
+    super(initialContext, { ...pkg, root: { dryRun: true } }); // Mark as root, add dry-run
   }
 
   override async defineOptions(): Promise<void> {

@@ -54,12 +54,29 @@ export interface ISilentError extends Error {
 }
 
 /**
+ * Use to suppress or enable global log options. You would typically use this if the options
+ * conflict with your own set of options.
+ */
+export type LogCmdEnable = {
+  /** Set to false to disable --verbose option. Defaults to true */
+  verbose?: boolean;
+  /** Set to false to disable -D --debug. Defaults to true */
+  debug?: boolean;
+  /** Set to false to disable -T, --trace. Defaults to true */
+  trace?: boolean;
+  /** Set to false to disable -S, --spam. Defaults to true */
+  spam?: boolean;
+  /** Set to true to enable -n --dry-run option. Defaults to false */
+  dryRun?: boolean;
+};
+
+/**
  * Constructor parameters for {@link Cmd.AbstractBase}.
  *
  * @example
  * ```typescript
  * // Root command with dry-run support
- * super(ctx, { ...pkg, root: true, dryRun: true });
+ * super(ctx, { ...pkg, root: { dryRun: true });
  *
  * // Subcommand
  * super(undefined, { name: 'process', description: 'Process files' });
@@ -67,8 +84,10 @@ export interface ISilentError extends Error {
  */
 export type CmdParams = Partial<CmdMetadata> & {
   /** Set `true` on the root command to enable logging options and the version flag. */
-  root?: boolean;
-  /** Set `true` to include a `--dry-run` / `-n` option on the root command. */
+  root?: boolean | LogCmdEnable;
+  /** Set `true` to include a `--dry-run` / `-n` option on the root command.
+   * @deprecated Use root: { dryRun: true } instead
+   */
   dryRun?: boolean;
   /** Aliases for this command (subcommands only). */
   aliases?: string[];

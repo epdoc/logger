@@ -3,6 +3,8 @@
 Type-safe CLI framework supporting commander.js-based command hierarchies, with integrated logging, context flow, and
 MCP server support.
 
+Use this module in your command line applications to create a consistent implementation pattern for these applications.
+
 ## Features
 
 - **Builds on Commander.js** — Supports everything that [Commander.js](https://github.com/tj/commander.js) supports
@@ -16,15 +18,11 @@ MCP server support.
 - **Progress Spinners** - Supports progress bars and spinners, fully integrated with log messaging.
 - **Nested Progress** - Start multiple progress levels; parent messages are restored when children complete.
 - **"Using" Pattern** - Automatic progress cleanup with TypeScript's `using` declaration.
-- **Command Runner** - Typed wrapper around `Deno.Command` for running external processes with captured or inherited
-  output.
-- **TextBuilder** — Utility to accumulate multiple lines of formatted text in memory using MsgBuilder before
-  logging/printing.
 
 ## Installation
 
 ```bash
-deno add @epdoc/cliapp @epdoc/logger @epdoc/msgbuilder
+deno add jsr:@epdoc/cliapp
 ```
 
 ## Quick Start
@@ -248,17 +246,20 @@ See [example.03.test.ts](./test/example.03.test.ts) for a complete working examp
 
 Root commands (with `root: true`) automatically include:
 
-| Flag                  | Effect                                                                                 |
-| --------------------- | -------------------------------------------------------------------------------------- |
-| `--log-level <level>` | Set threshold (FATAL, CRITICAL, ERROR, WARN, INFO, VERBOSE, DEBUG, TRACE, SPAM, SILLY) |
-| `--verbose`           | Shortcut for verbose level                                                             |
-| `-D, --debug`         | Shortcut for debug level                                                               |
-| `-T, --trace`         | Shortcut for trace level                                                               |
-| `-S, --spam`          | Shortcut for spam level                                                                |
-| `--log-show [props]`  | Show log metadata fields (pkg, level, time, reqId, sid)                                |
-| `-A, --log-show-all`  | Show all metadata fields                                                               |
-| `--no-color`          | Disable ANSI colors                                                                    |
-| `-n, --dry-run`       | Enable dry-run mode (only if `dryRun: true` in constructor params)                     |
+| Flag                  | Effect                                                                                 | Can Suppress |
+| --------------------- | -------------------------------------------------------------------------------------- | ------------ |
+| `--log-level <level>` | Set threshold (FATAL, CRITICAL, ERROR, WARN, INFO, VERBOSE, DEBUG, TRACE, SPAM, SILLY) | no           |
+| `--verbose`           | Shortcut for verbose level                                                             | yes          |
+| `-D, --debug`         | Shortcut for debug level                                                               | yes          |
+| `-T, --trace`         | Shortcut for trace level                                                               | yes          |
+| `-S, --spam`          | Shortcut for spam level                                                                | yes          |
+| `--log-show [props]`  | Show log metadata fields (pkg, level, time, reqId, sid)                                | no           |
+| `-A, --log-show-all`  | Show all metadata fields                                                               | no           |
+| `--no-color`          | Disable ANSI colors                                                                    | no           |
+| `-n, --dry-run`       | Enable dry-run mode (only if `dryRun: true` in constructor params)                     | no           |
+
+You can suppress some of these command lineoptions by instead using `root: { trace: false }`. A reason for doing this
+would be if these option names conflicted with options used elsewhere in your application.
 
 ### Progress Indicators
 
