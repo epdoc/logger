@@ -6,7 +6,7 @@ type RootOpts = CliApp.CmdOptions & { happyMode?: boolean; name?: string };
 
 export class RootCommand extends CliApp.Cmd.AbstractBase<Ctx.RootContext, Ctx.RootContext, RootOpts> {
   constructor(ctx: Ctx.RootContext) {
-    super(ctx, { root: true, dryRun: true });
+    super(ctx, { root: { dryRun: true } });
   }
 
   get info(): Ctx.CustomMsgBuilder {

@@ -17,8 +17,7 @@ export class HybridRoot extends CliApp.Cmd.AbstractBase<App.Ctx.RootContext, App
       name: pkg.name,
       version: pkg.version,
       description: 'Hybrid CLI mixing classes and objects',
-      root: true,
-      dryRun: true,
+      root: { dryRun: true },
     });
   }
 

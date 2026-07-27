@@ -8,7 +8,7 @@ if (import.meta.main) {
 
   const RootCommand = CliApp.Cmd.create<App.Ctx.RootContext, App.Ctx.RootContext>(
     App.Decl.TREE,
-    { root: true, dryRun: true, version: pkg.version },
+    { root: { dryRun: true }, version: pkg.version },
   );
   const rootCmd = new RootCommand(ctx);
   await rootCmd.init();

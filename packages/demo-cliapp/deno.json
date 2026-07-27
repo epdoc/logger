@@ -1,12 +1,12 @@
 {
   "name": "@epdoc/demo-cliapp",
-  "version": "0.1.43",
+  "version": "0.1.44",
   "description": "Demo of enhanced CliApp v2.0 with automatic context flow",
   "exports": "./main_class.ts",
   "imports": {
     "@epdoc/cliapp": "../cliapp/src/mod.ts",
     "@epdoc/logger": "jsr:@epdoc/logger@^1003.3.72",
-    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^1.0.0",
+    "@epdoc/msgbuilder": "jsr:@epdoc/msgbuilder@^1.0.1",
     "@epdoc/type": "jsr:@epdoc/type@^2.0.2",
     "@std/fmt": "jsr:@std/fmt@^1.0.10"
   },
