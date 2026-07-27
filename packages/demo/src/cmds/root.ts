@@ -9,7 +9,7 @@ type RootCmdOpts = CliApp.CmdOptions & { happyMode?: boolean; name?: string; qui
 
 export class RootCommand extends Ctx.BaseRootCmdClass<RootCmdOpts> {
   constructor(ctx: Ctx.RootContext) {
-    super(ctx, { root: true, dryRun: true });
+    super(ctx, { root: { dryRun: true } });
   }
 
   override defineOptions(): void {
