@@ -141,7 +141,7 @@ async function setupTraditionalCLI() {
   command.addLogging(ctx);  // Adds --verbose, --quiet, etc.
   
   const opts = await command.parseOpts();
-  CliApp.configureLogging(ctx, opts);  // Apply CLI options to logger
+  CliApp.configureLogging(ctx, opts, { verbose: true, debug: true, trace: true, spam: true, dryRun: true });  // Apply CLI options to logger
   
   return ctx;
 }

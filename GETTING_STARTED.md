@@ -108,7 +108,7 @@ async function runTraditionalCLI() {
   command.addLogging(ctx);
   
   const opts = await command.parseOpts();
-  CliApp.configureLogging(ctx, opts);
+  CliApp.configureLogging(ctx, opts, { verbose: true, debug: true, trace: true, spam: true, dryRun: true });
   
   // Use custom logging methods
   ctx.log.info.fileOp('PROCESS', opts.input || 'stdin').emit();
