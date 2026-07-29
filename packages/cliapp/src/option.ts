@@ -266,7 +266,7 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
       if (this.#helpText && (this.#option.flags.includes('<') || this.#option.flags.includes('['))) {
         const flagMatch = this.#option.flags.match(/--[\w-]+/);
         const flagStr = flagMatch ? flagMatch[0] : this.#option.flags.split(' ')[0];
-        const helpHint = '(enter ' + style.flag(`${flagStr} help`) + 'for help)';
+        const helpHint = '(enter ' + style.flag(`${flagStr} help`) + ' for help)';
         // const helpHint = `(enter "${flagStr} help" for help)`;
         if (!this.#option.description.includes(helpHint)) {
           this.#option.description = this.#option.description ? `${this.#option.description} ${helpHint}` : helpHint;
