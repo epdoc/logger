@@ -2,6 +2,7 @@ import { _ } from '@epdoc/type';
 import * as colors from '@std/fmt/colors';
 import * as Commander from 'commander';
 import type { Logger } from './context.ts';
+import { style } from './styles.ts';
 import type { OptionDef, OptionHelpText } from './types.ts';
 
 const REG = {
@@ -265,7 +266,8 @@ export class FluentOptionBuilder<T extends ICommandWithLogger_Internal> {
       if (this.#helpText && (this.#option.flags.includes('<') || this.#option.flags.includes('['))) {
         const flagMatch = this.#option.flags.match(/--[\w-]+/);
         const flagStr = flagMatch ? flagMatch[0] : this.#option.flags.split(' ')[0];
-        const helpHint = `(enter ${flagStr} ? for help)`;
+        const helpHint = '(enter ' + style.flag(`${flagStr} help`) + 'for help)';
+        // const helpHint = `(enter "${flagStr} help" for help)`;
         if (!this.#option.description.includes(helpHint)) {
           this.#option.description = this.#option.description ? `${this.#option.description} ${helpHint}` : helpHint;
         }
