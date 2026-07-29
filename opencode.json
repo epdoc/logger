@@ -8,7 +8,13 @@
       "*.env.*": "deny"
     },
     "external_directory": {
-      "~/dev/@epdoc/logger/**": "allow"
+      "~/dev/@epdoc/std/**": "allow",
+      "~/dev/@epdoc/logger/**": "allow",
+      "~/dev/@epdoc/dtools/**": "allow",
+      "~/dev/@epdoc/tools/**": "allow",
+      "~/dev/@jpravetz/fstools/**": "allow",
+      "~/dev/@jpravetz/turl/**": "allow",
+      "~/dev/@jpravetz/ask/**": "allow"
     },
     "webfetch": "allow",
     "bash": {
@@ -24,10 +30,10 @@
       "git push*": "deny",
       "git tag*": "deny",
       "dtask audit*": "allow",
-      "deno run *": "allow",
+      "deno run *": "ask",
       "deno check *": "allow",
       "deno lint *": "allow",
-      "deno fmt *": "allow",
+      "deno fmt *": "deny",
       "deno test *": "allow",
       "deno run *-n*": "allow",
       "deno run *--dry-run*": "allow",
@@ -35,8 +41,8 @@
       "deno task lint*": "allow",
       "deno task check*": "allow",
       "deno task test*": "allow",
-      "deno task ok*": "allow",
-      "deno task *": "ask",
+      "deno task ok*": "deny",
+      "deno task *": "deny",
       "rm -rf *": "deny"
     }
   },
@@ -47,7 +53,16 @@
     "build": {
       "mode": "primary",
       "permission": {
-        "edit": "allow",
+        "edit": {
+          "*": "allow",
+          "~/dev/@epdoc/std/**": "ask",
+          "~/dev/@epdoc/logger/**": "ask",
+          "~/dev/@epdoc/dtools/**": "ask",
+          "~/dev/@epdoc/tools/**": "ask",
+          "~/dev/@jpravetz/fstools/**": "ask",
+          "~/dev/@jpravetz/turl/**": "ask",
+          "~/dev/@jpravetz/ask/**": "ask"
+        },
         "bash": {
           "*": "ask",
           "*>*": "ask",
@@ -57,13 +72,14 @@
           "git commit*": "ask",
           "git push*": "ask",
           "git tag*": "ask",
+          "deno fmt *": "allow",
           "deno run *": "allow",
-          "deno task fmt*": "deny",
+          "deno task fmt*": "allow",
           "deno check *": "allow",
           "deno lint *": "allow",
           "deno task lint*": "allow",
           "deno task ok": "allow",
-          "deno task *": "ask"
+          "deno task *": "allow"
         }
       }
     }
