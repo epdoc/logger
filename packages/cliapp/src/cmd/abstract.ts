@@ -3,7 +3,7 @@
  * @description Abstract base class that handles command lifecycle, context flow, and Commander.js integration
  */
 
-import { amber, cyan, magenta } from '@epdoc/colors/colors';
+import { cyan, magenta } from '@epdoc/colors/colors';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import { dim } from '@std/fmt/colors';
@@ -150,7 +150,7 @@ export abstract class AbstractCommand<
     // params can still override these values.
     if (this.params.root && this.grandpaContext?.pkg) {
       const pkg = this.grandpaContext.pkg;
-      const pkgVersion = [amber(pkg.version)];
+      const pkgVersion = [pkg.version];
       if (pkg.build && pkg.build.number) pkgVersion.push(magenta(`build:${pkg.build.number}`));
       if (pkg.build && pkg.build.builtAt) pkgVersion.push(cyan(pkg.build.builtAt));
 
