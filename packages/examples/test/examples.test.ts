@@ -16,7 +16,7 @@ async function runExample(filename: string, args: string[] = []): Promise<{
   code: number;
 }> {
   const cmd = new Deno.Command('deno', {
-    args: ['run', '-A', '--no-lock', filename, ...args],
+    args: ['run', '-A', '--no-lock', '--min-dep-age=0', filename, ...args],
     cwd: EXAMPLES_DIR,
     stdout: 'piped',
     stderr: 'piped',
