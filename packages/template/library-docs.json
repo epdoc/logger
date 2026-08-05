@@ -1,0 +1,560 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/mod.ts": {
+      "symbols": [
+        {
+          "name": "Cmd",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/mod.ts",
+                "line": 4,
+                "col": 7,
+                "byteIndex": 66
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Main module exports for @epdoc/cliapp-template"
+              },
+              "kind": "namespace",
+              "def": {
+                "elements": []
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ctx",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/mod.ts",
+                "line": 5,
+                "col": 7,
+                "byteIndex": 103
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "CustomMsgBuilder",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/context.ts",
+                          "line": 9,
+                          "col": 0,
+                          "byteIndex": 276
+                        },
+                        "declarationKind": "export",
+                        "kind": "class",
+                        "def": {
+                          "constructors": [
+                            {
+                              "jsDoc": {
+                                "doc": "Creates a CustomMsgBuilder instance.\n",
+                                "tags": [
+                                  {
+                                    "kind": "unsupported",
+                                    "value": "@remarks\nThis constructor is normally called by the @epdoc/cliapp library with a\nfully-configured ProgressEmitter. However, for standalone usage (e.g., building\nhelp text without a logger), the emitter parameter can be omitted. In that case,\nprogress indicator methods (start, update, complete) will not function, but all\nformatting methods from Console.Builder (h1, h2, label, value, etc.) work normally.\n"
+                                  },
+                                  {
+                                    "kind": "param",
+                                    "name": "emitter",
+                                    "doc": "The progress emitter from the logger (optional for standalone use)"
+                                  }
+                                ]
+                              },
+                              "hasBody": true,
+                              "name": "constructor",
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "emitter",
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "CliApp.Progress.ProgressEmitter",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "CliApp.Progress.ProgressEmitter",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "@epdoc/cliapp"
+                                      }
+                                    }
+                                  }
+                                }
+                              ],
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/context.ts",
+                                "line": 22,
+                                "col": 2,
+                                "byteIndex": 934
+                              }
+                            }
+                          ],
+                          "extends": "CliApp.Progress.MsgBuilder"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Context",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/context.ts",
+                          "line": 32,
+                          "col": 0,
+                          "byteIndex": 1228
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Template context class with progress support."
+                        },
+                        "kind": "class",
+                        "def": {
+                          "constructors": [
+                            {
+                              "hasBody": true,
+                              "name": "constructor",
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "pkg",
+                                  "optional": false,
+                                  "tsType": {
+                                    "kind": "union",
+                                    "value": [
+                                      {
+                                        "repr": "CliApp.DenoPkg",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "CliApp.DenoPkg",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "@epdoc/cliapp"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "repr": "Context",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "Context",
+                                          "resolution": {
+                                            "kind": "local"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "kind": "assign",
+                                  "left": {
+                                    "kind": "identifier",
+                                    "name": "params",
+                                    "optional": false,
+                                    "tsType": {
+                                      "repr": "Log.IGetChildParams",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "Log.IGetChildParams",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/logger"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "right": "[UNSUPPORTED]"
+                                }
+                              ],
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/context.ts",
+                                "line": 42,
+                                "col": 2,
+                                "byteIndex": 1542
+                              }
+                            }
+                          ],
+                          "properties": [
+                            {
+                              "tsType": {
+                                "repr": "unknown",
+                                "kind": "keyword",
+                                "value": "unknown"
+                              },
+                              "name": "app",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/context.ts",
+                                "line": 33,
+                                "col": 2,
+                                "byteIndex": 1285
+                              }
+                            },
+                            {
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              "name": "format",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/context.ts",
+                                "line": 34,
+                                "col": 2,
+                                "byteIndex": 1309
+                              }
+                            },
+                            {
+                              "jsDoc": {
+                                "doc": "Use the ProgressMsgBuilder for message building.\nThis enables progress.start(), progress.update(), progress.complete() methods."
+                              },
+                              "accessibility": "protected",
+                              "isOverride": true,
+                              "name": "builderClass",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/context.ts",
+                                "line": 40,
+                                "col": 2,
+                                "byteIndex": 1487
+                              }
+                            }
+                          ],
+                          "extends": "CliApp.Ctx.AbstractBase"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "BaseClass",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/context.ts",
+                          "line": 56,
+                          "col": 0,
+                          "byteIndex": 1786
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Base class for template applications."
+                        },
+                        "kind": "class",
+                        "def": {
+                          "isAbstract": true,
+                          "extends": "CliApp.BaseClass",
+                          "superTypeParams": [
+                            {
+                              "repr": "Context",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Context",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "CustomMsgBuilder",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "CustomMsgBuilder",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "CliApp.Ctx.Logger",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "CliApp.Ctx.Logger",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "@epdoc/cliapp"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "BaseRootCmdClass",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/context.ts",
+                          "line": 61,
+                          "col": 0,
+                          "byteIndex": 1959
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Base class for root commands in template applications."
+                        },
+                        "kind": "class",
+                        "def": {
+                          "isAbstract": true,
+                          "extends": "CliApp.Cmd.AbstractBase",
+                          "typeParams": [
+                            {
+                              "name": "TOpts",
+                              "constraint": {
+                                "repr": "CliApp.CmdOptions",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "CliApp.CmdOptions",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "@epdoc/cliapp"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "superTypeParams": [
+                            {
+                              "repr": "Context",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Context",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "Context",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Context",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "TOpts",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "TOpts",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "BaseRootCmdClass",
+                                  "declaringKind": "class"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Domain",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/mod.ts",
+                "line": 6,
+                "col": 7,
+                "byteIndex": 140
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "TemplateTool",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/domain/service.ts",
+                          "line": 12,
+                          "col": 0,
+                          "byteIndex": 474
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Synchronizes MCP server definitions from the OpenCode servers directory\nto one or more AI tool configuration files.\n\nReads individual server JSON files from `~/.config/opencode/servers/`,\ntransforms them to each target's expected format, and merges the MCP\nsection into the target's settings file (preserving all other settings)."
+                        },
+                        "kind": "class",
+                        "def": {
+                          "constructors": [
+                            {
+                              "hasBody": true,
+                              "name": "constructor",
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "ctx",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "Ctx.Context",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "Ctx.Context",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "../deps.ts",
+                                        "name": "Ctx"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "kind": "identifier",
+                                  "name": "opts",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "TemplateOptions",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "TemplateOptions",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "./types.ts",
+                                        "name": "TemplateOptions"
+                                      }
+                                    }
+                                  }
+                                }
+                              ],
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/domain/service.ts",
+                                "line": 15,
+                                "col": 2,
+                                "byteIndex": 552
+                              }
+                            }
+                          ],
+                          "properties": [
+                            {
+                              "tsType": {
+                                "repr": "TemplateOptions",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "TemplateOptions",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts",
+                                    "name": "TemplateOptions"
+                                  }
+                                }
+                              },
+                              "name": "opts",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/domain/service.ts",
+                                "line": 13,
+                                "col": 2,
+                                "byteIndex": 526
+                              }
+                            }
+                          ],
+                          "methods": [
+                            {
+                              "name": "run",
+                              "kind": "method",
+                              "functionDef": {
+                                "params": [],
+                                "returnType": {
+                                  "repr": "void",
+                                  "kind": "keyword",
+                                  "value": "void"
+                                },
+                                "hasBody": true
+                              },
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/domain/service.ts",
+                                "line": 20,
+                                "col": 2,
+                                "byteIndex": 652
+                              }
+                            }
+                          ],
+                          "extends": "Ctx.BaseClass"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "TemplateOptions",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/domain/types.ts",
+                          "line": 1,
+                          "col": 0,
+                          "byteIndex": 55
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Options for the {@link ServiceTool.run} method."
+                        },
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "typeLiteral",
+                            "value": {
+                              "properties": [
+                                {
+                                  "name": "details",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/domain/types.ts",
+                                    "line": 2,
+                                    "col": 2,
+                                    "byteIndex": 89
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "repr": "boolean",
+                                    "kind": "keyword",
+                                    "value": "boolean"
+                                  }
+                                },
+                                {
+                                  "name": "files",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/template/src/domain/types.ts",
+                                    "line": 3,
+                                    "col": 2,
+                                    "byteIndex": 110
+                                  },
+                                  "optional": true,
+                                  "tsType": {
+                                    "kind": "array",
+                                    "value": {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

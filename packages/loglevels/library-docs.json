@@ -1,0 +1,1298 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/mod.ts": {
+      "module_doc": {
+        "tags": [
+          {
+            "kind": "module",
+            "name": "The main entry point for the `@epdoc/loglevels` module.\n"
+          },
+          {
+            "kind": "unsupported",
+            "value": "@remarks\nThis module exports all the public-facing APIs for creating and managing\ncustom log level systems. It re-exports the core classes, interfaces, and\ntypes from the other modules in this package.\n"
+          },
+          {
+            "kind": "example",
+            "doc": "```ts\nimport { LogLevels, type LogLevelsSet } from '@epdoc/loglevels';\n\nconst myLevels: LogLevelsSet = {\n  id: 'my-app',\n  levels: {\n    ERROR: { severity: 17 },\n    INFO:  { severity: 9 },\n    DEBUG: { severity: 5 },\n  },\n};\n\nconst levels = new LogLevels(myLevels);\nconsole.log(levels.defaultLevel.name); // 'INFO'\nconsole.log(levels.asSpec('ERROR')!.severity); // 17\n```"
+          }
+        ]
+      },
+      "symbols": [
+        {
+          "name": "isLogLevelSpec",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/guards.ts",
+                "line": 6,
+                "col": 0,
+                "byteIndex": 164
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Type guard to verify if an object conforms to the LogLevelSpec interface."
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "obj",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "obj is LogLevel.LogLevelsSpec",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "obj"
+                    },
+                    "type": {
+                      "repr": "LogLevel.LogLevelsSpec",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "LogLevel.LogLevelsSpec",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isLogLevelMap",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/guards.ts",
+                "line": 22,
+                "col": 0,
+                "byteIndex": 595
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Type guard for a LogLevelMap object.",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "obj"
+                  },
+                  {
+                    "kind": "return"
+                  }
+                ]
+              },
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "obj",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "obj is LogLevel.LogLevelMap",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "obj"
+                    },
+                    "type": {
+                      "repr": "LogLevel.LogLevelMap",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "LogLevel.LogLevelMap",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isLogLevelsSet",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/guards.ts",
+                "line": 30,
+                "col": 0,
+                "byteIndex": 815
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "obj",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "obj is LogLevel.LogLevelsSet",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "obj"
+                    },
+                    "type": {
+                      "repr": "LogLevel.LogLevelsSet",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "LogLevel.LogLevelsSet",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isSeverityNumber",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/guards.ts",
+                "line": 34,
+                "col": 0,
+                "byteIndex": 970
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "val is LogLevel.Severity",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "val"
+                    },
+                    "type": {
+                      "repr": "LogLevel.Severity",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "LogLevel.Severity",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "isSpec",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/guards.ts",
+                "line": 38,
+                "col": 0,
+                "byteIndex": 1089
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "val",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "val is LogLevel.Spec",
+                  "kind": "typePredicate",
+                  "value": {
+                    "param": {
+                      "type": "identifier",
+                      "name": "val"
+                    },
+                    "type": {
+                      "repr": "LogLevel.Spec",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "LogLevel.Spec",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "LogLevels",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/loglevels.ts",
+                "line": 17,
+                "col": 0,
+                "byteIndex": 648
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Manages a custom set of log levels, providing utilities for conversion,\ncomparison, and formatting.\n",
+                "tags": [
+                  {
+                    "kind": "unsupported",
+                    "value": "@remarks\nThis class is the engine that powers the logger's understanding of what\ndifferent log levels mean. It takes a definition of levels and provides the\nnecessary methods to work with them, such as checking if a `debug` message\nshould be logged when the threshold is `info`.\n"
+                  },
+                  {
+                    "kind": "unsupported",
+                    "value": "@implements {Level.IBasic}"
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "jsDoc": {
+                      "doc": "Creates an instance of `LogLevels`.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "levelDef",
+                          "tsType": {
+                            "repr": "Level.LogLevelsSet",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Level.LogLevelsSet",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "An object defining the custom log levels."
+                        }
+                      ]
+                    },
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "levelDef",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "Level.LogLevelsSet",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Level.LogLevelsSet",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./types.ts"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/loglevels.ts",
+                      "line": 26,
+                      "col": 2,
+                      "byteIndex": 932
+                    }
+                  }
+                ],
+                "properties": [
+                  {
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "name": "$$id",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/loglevels.ts",
+                      "line": 18,
+                      "col": 2,
+                      "byteIndex": 675
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "name": "defaultLevel",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "Level.Spec",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Level.Spec",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/loglevels.ts",
+                      "line": 43,
+                      "col": 2,
+                      "byteIndex": 1508
+                    }
+                  },
+                  {
+                    "name": "warnLevel",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "Level.Spec",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Level.Spec",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/loglevels.ts",
+                      "line": 47,
+                      "col": 2,
+                      "byteIndex": 1610
+                    }
+                  },
+                  {
+                    "name": "flushLevel",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "Level.Spec",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Level.Spec",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/loglevels.ts",
+                      "line": 51,
+                      "col": 2,
+                      "byteIndex": 1711
+                    }
+                  },
+                  {
+                    "name": "specMap",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "Level.SpecMap",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Level.SpecMap",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/loglevels.ts",
+                      "line": 56,
+                      "col": 2,
+                      "byteIndex": 1814
+                    }
+                  },
+                  {
+                    "name": "specArray",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "Level.SpecArray",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Level.SpecArray",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/loglevels.ts",
+                      "line": 60,
+                      "col": 2,
+                      "byteIndex": 1878
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Converts a level name, severity number, or Spec to a full {@link Level.Spec}\nobject. Returns `null` if the level is not found.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "level",
+                          "doc": "A level name (e.g. `'INFO'`), severity number (e.g. `9`),\nor an existing {@link Level.Spec}."
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "The matching Spec, or `null` if not found."
+                        }
+                      ]
+                    },
+                    "name": "asSpec",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "level",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "Level.Spec",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Level.Spec",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "Level.Name",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Level.Name",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "Level.Severity",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Level.Severity",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "Level.Spec",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Level.Spec",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts"
+                              }
+                            }
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/loglevels.ts",
+                      "line": 72,
+                      "col": 2,
+                      "byteIndex": 2279
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Calculates the maximum character width of all log level names at or above\nthe given threshold severity, for column-alignment in formatted output.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "thresholdSpec",
+                          "doc": "Only levels with severity >= this spec's severity\nare considered."
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "The maximum name width among qualifying levels."
+                        }
+                      ]
+                    },
+                    "name": "maxWidth",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "thresholdSpec",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "Level.Spec",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Level.Spec",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "Integer",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Integer",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "@epdoc/type",
+                            "name": "Integer"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/loglevels.ts",
+                      "line": 92,
+                      "col": 2,
+                      "byteIndex": 2994
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Name",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                "line": 28,
+                "col": 0,
+                "byteIndex": 765
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents the unique case-insensitive name of a log level, such as, 'info', 'INFO' or 'DEBUG'."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Severity",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                "line": 35,
+                "col": 0,
+                "byteIndex": 932
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents the OTLP numeric value associated with a log level.\nThis is an integer between 1 and 24.",
+                "tags": [
+                  {
+                    "kind": "see",
+                    "doc": "isSeverityNumber"
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "Integer",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "Integer",
+                    "resolution": {
+                      "kind": "import",
+                      "specifier": "@epdoc/type",
+                      "name": "Integer"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "LogLevelsSpec",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                "line": 40,
+                "col": 0,
+                "byteIndex": 1035
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Defines the complete configuration for a single log level."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "severity",
+                        "jsDoc": {
+                          "doc": "OTLP severityNumber mapping."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                          "line": 42,
+                          "col": 2,
+                          "byteIndex": 1105
+                        },
+                        "tsType": {
+                          "repr": "Severity",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Severity",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "fmtFn",
+                        "jsDoc": {
+                          "doc": "An optional function to apply custom styling or formatting to messages\nlogged at this level. Typically used for adding colors.\n",
+                          "tags": [
+                            {
+                              "kind": "param",
+                              "name": "msg",
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              "doc": "The message to format."
+                            },
+                            {
+                              "kind": "return",
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              "doc": "The formatted message."
+                            }
+                          ]
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                          "line": 50,
+                          "col": 2,
+                          "byteIndex": 1377
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "kind": "fnOrConstructor",
+                          "value": {
+                            "constructor": false,
+                            "tsType": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            },
+                            "params": [
+                              {
+                                "kind": "identifier",
+                                "name": "str",
+                                "optional": false,
+                                "tsType": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "name": "icon",
+                        "jsDoc": {
+                          "doc": "An icon that can be displayed in place of the log level string."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                          "line": 52,
+                          "col": 2,
+                          "byteIndex": 1485
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Spec",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                "line": 55,
+                "col": 0,
+                "byteIndex": 1504
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "intersection",
+                  "value": [
+                    {
+                      "repr": "LogLevelsSpec",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "LogLevelsSpec",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    },
+                    {
+                      "kind": "typeLiteral",
+                      "value": {
+                        "properties": [
+                          {
+                            "name": "name",
+                            "location": {
+                              "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                              "line": 56,
+                              "col": 2,
+                              "byteIndex": 1543
+                            },
+                            "tsType": {
+                              "repr": "Name",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Name",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "LogLevelsSet",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                "line": 66,
+                "col": 0,
+                "byteIndex": 1798
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Defines a complete set of log levels for a logger instance.\n",
+                "tags": [
+                  {
+                    "kind": "unsupported",
+                    "value": "@remarks\nThe keys in levels are the log level {@link Name|names} (e.g., 'ERROR'), and the values are their\ncorresponding {@link LogLevelsSpec|definitions}."
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "id",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                          "line": 67,
+                          "col": 2,
+                          "byteIndex": 1829
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "levels",
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                          "line": 68,
+                          "col": 2,
+                          "byteIndex": 1843
+                        },
+                        "tsType": {
+                          "repr": "LogLevelMap",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "LogLevelMap",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "LogLevelMap",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                "line": 70,
+                "col": 0,
+                "byteIndex": 1867
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "Record",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "Name",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Name",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      {
+                        "repr": "LogLevelsSpec",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "LogLevelsSpec",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "Record"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "SpecMap",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                "line": 72,
+                "col": 0,
+                "byteIndex": 1923
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "Map",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "Name",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Name",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      },
+                      {
+                        "repr": "Spec",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "Spec",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "Map"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "SpecArray",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                "line": 73,
+                "col": 0,
+                "byteIndex": 1962
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "array",
+                  "value": {
+                    "kind": "parenthesized",
+                    "value": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "Spec",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Spec",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        },
+                        {
+                          "repr": "null",
+                          "kind": "keyword",
+                          "value": "null"
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "FactoryMethod",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/types.ts",
+                "line": 86,
+                "col": 0,
+                "byteIndex": 2393
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Defines the signature for a factory function that creates a log level\nmanagement instance.\n",
+                "tags": [
+                  {
+                    "kind": "unsupported",
+                    "value": "@remarks\nThis factory pattern allows for different log level implementations (e.g.,\nstandard, CLI-specific) to be used interchangeably by the logger.\n"
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "IBasic",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "IBasic",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "An instance of a class that implements the {@link IBasic}\ninterface for managing log levels."
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "fnOrConstructor",
+                  "value": {
+                    "constructor": false,
+                    "tsType": {
+                      "repr": "LogLevels",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "LogLevels",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./loglevels.ts",
+                          "name": "LogLevels"
+                        }
+                      }
+                    },
+                    "params": []
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "compareLevels",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/utils.ts",
+                "line": 3,
+                "col": 0,
+                "byteIndex": 93
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "levelA",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "Level.Spec",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Level.Spec",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "levelB",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "Level.Spec",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Level.Spec",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "CompareResult",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeName": "CompareResult",
+                    "resolution": {
+                      "kind": "import",
+                      "specifier": "@epdoc/type",
+                      "name": "CompareResult"
+                    }
+                  }
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        },
+        {
+          "name": "applyColors",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/loglevels/src/utils.ts",
+                "line": 7,
+                "col": 0,
+                "byteIndex": 283
+              },
+              "declarationKind": "export",
+              "kind": "function",
+              "def": {
+                "params": [
+                  {
+                    "kind": "identifier",
+                    "name": "msg",
+                    "optional": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "kind": "identifier",
+                    "name": "spec",
+                    "optional": false,
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "Level.Spec",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Level.Spec",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./types.ts"
+                            }
+                          }
+                        },
+                        {
+                          "repr": "undefined",
+                          "kind": "keyword",
+                          "value": "undefined"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "returnType": {
+                  "repr": "string",
+                  "kind": "keyword",
+                  "value": "string"
+                },
+                "hasBody": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

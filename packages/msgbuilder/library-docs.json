@@ -1,0 +1,4130 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/mod.ts": {
+      "imports": [
+        {
+          "importedName": "Console",
+          "src": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/console/mod.ts"
+        }
+      ],
+      "symbols": [
+        {
+          "name": "Abstract",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                "line": 28,
+                "col": 0,
+                "byteIndex": 1310
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "The foundational message builder for creating structured, stylable log messages.\n",
+                "tags": [
+                  {
+                    "kind": "unsupported",
+                    "value": "@remarks\nThis abstract class provides a fluent, chainable interface for constructing\nlog messages piece by piece. It serves two primary purposes:\n\n1.  **Logging:** When associated with a logger `IEmitter`, it builds a log\nentry that can be emitted to a transport.\n2.  **Standalone Formatting:** When used without an `IEmitter`, it functions\nas a general-purpose string builder with styling capabilities.\n\nIt manages message parts, indentation, conditional logic, and structured\ndata, and implements the {@link IFormatter} interface for final string conversion."
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "isAbstract": true,
+                "constructors": [
+                  {
+                    "jsDoc": {
+                      "doc": "Initializes a new message builder instance.\n\nWhen `emitter` is not provided, the builder operates in a \"standalone\"\nmode. In this mode, the `emit()` method is disabled, but the builder can\nstill be used for formatting and styling strings."
+                    },
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "emitter",
+                        "optional": true,
+                        "tsType": {
+                          "repr": "IEmitter",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "IEmitter",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./types.ts",
+                              "name": "IEmitter"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 51,
+                      "col": 2,
+                      "byteIndex": 2197
+                    }
+                  }
+                ],
+                "properties": [
+                  {
+                    "tsType": {
+                      "repr": "DateTime",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "DateTime",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/datetime",
+                          "name": "DateTime"
+                        }
+                      }
+                    },
+                    "accessibility": "protected",
+                    "name": "_timestamp",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 29,
+                      "col": 2,
+                      "byteIndex": 1377
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "HrMilliseconds",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "HrMilliseconds",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/duration",
+                          "name": "HrMilliseconds"
+                        }
+                      }
+                    },
+                    "accessibility": "protected",
+                    "name": "_elapsed",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 30,
+                      "col": 2,
+                      "byteIndex": 1436
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "Integer",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Integer",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/type",
+                          "name": "Integer"
+                        }
+                      }
+                    },
+                    "accessibility": "protected",
+                    "name": "_tabSize",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 31,
+                      "col": 2,
+                      "byteIndex": 1478
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "IEmitter",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "IEmitter",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts",
+                          "name": "IEmitter"
+                        }
+                      }
+                    },
+                    "accessibility": "protected",
+                    "name": "_emitter",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 32,
+                      "col": 2,
+                      "byteIndex": 1528
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "accessibility": "protected",
+                    "name": "_msgIndent",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 34,
+                      "col": 2,
+                      "byteIndex": 1561
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "kind": "array",
+                      "value": {
+                        "repr": "MsgPart",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "MsgPart",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts",
+                            "name": "MsgPart"
+                          }
+                        }
+                      }
+                    },
+                    "accessibility": "protected",
+                    "name": "_msgParts",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 35,
+                      "col": 2,
+                      "byteIndex": 1598
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "Dict",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Dict",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/type",
+                              "name": "Dict"
+                            }
+                          }
+                        },
+                        {
+                          "repr": "undefined",
+                          "kind": "keyword",
+                          "value": "undefined"
+                        }
+                      ]
+                    },
+                    "accessibility": "protected",
+                    "name": "_data",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 36,
+                      "col": 2,
+                      "byteIndex": 1637
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "kind": "array",
+                      "value": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    },
+                    "accessibility": "protected",
+                    "name": "_suffix",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 37,
+                      "col": 2,
+                      "byteIndex": 1674
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "accessibility": "protected",
+                    "name": "_showElapsed",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 38,
+                      "col": 2,
+                      "byteIndex": 1710
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "kind": "array",
+                      "value": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      }
+                    },
+                    "accessibility": "protected",
+                    "name": "_allowStack",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 39,
+                      "col": 2,
+                      "byteIndex": 1753
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "kind": "array",
+                      "value": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      }
+                    },
+                    "accessibility": "protected",
+                    "name": "_conditionMetStack",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 40,
+                      "col": 2,
+                      "byteIndex": 1794
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "accessibility": "protected",
+                    "name": "_dimMode",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 41,
+                      "col": 2,
+                      "byteIndex": 1842
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "accessibility": "protected",
+                    "name": "_boldMode",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 42,
+                      "col": 2,
+                      "byteIndex": 1881
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "jsDoc": {
+                      "doc": "Resets the message builder to its initial state, clearing all message parts and data.\n",
+                      "tags": [
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The current instance for chaining."
+                        }
+                      ]
+                    },
+                    "accessibility": "public",
+                    "name": "clear",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 60,
+                      "col": 2,
+                      "byteIndex": 2455
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Initializes the message with a string, automatically handling leading tabs for indentation.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "args",
+                          "tsType": {
+                            "repr": "...StyleArg[]",
+                            "kind": "unsupported"
+                          },
+                          "doc": "The arguments to set as the initial string."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The current instance for method chaining."
+                        },
+                        {
+                          "kind": "deprecated"
+                        }
+                      ]
+                    },
+                    "name": "setInitialString",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "rest",
+                          "arg": {
+                            "kind": "identifier",
+                            "name": "args",
+                            "optional": false
+                          },
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "StyleArg",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "StyleArg",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./types.ts",
+                                  "name": "StyleArg"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 75,
+                      "col": 2,
+                      "byteIndex": 2883
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Appends a specified number of spaces or a custom string for indentation.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "n",
+                          "tsType": {
+                            "repr": "Integer | string",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "Integer",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Integer",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            ]
+                          },
+                          "default": "2",
+                          "doc": "The number of spaces or the string to use for indentation."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The current instance for chaining."
+                        }
+                      ]
+                    },
+                    "name": "indent",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "n",
+                            "optional": false,
+                            "tsType": {
+                              "kind": "union",
+                              "value": [
+                                {
+                                  "repr": "Integer",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "Integer",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "@epdoc/type",
+                                      "name": "Integer"
+                                    }
+                                  }
+                                },
+                                {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              ]
+                            }
+                          },
+                          "right": "DEFAULT_TAB_SIZE"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 92,
+                      "col": 2,
+                      "byteIndex": 3421
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Sets the indentation level based on tab counts.",
+                      "tags": [
+                        {
+                          "kind": "deprecated",
+                          "doc": "Use {@link indent} and {@link outdent} instead"
+                        }
+                      ]
+                    },
+                    "name": "tab",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "n",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "Integer",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Integer",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "@epdoc/type",
+                                  "name": "Integer"
+                                }
+                              }
+                            }
+                          },
+                          "right": "1"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 105,
+                      "col": 2,
+                      "byteIndex": 3775
+                    }
+                  },
+                  {
+                    "accessibility": "public",
+                    "name": "if",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "val",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 110,
+                      "col": 2,
+                      "byteIndex": 3884
+                    }
+                  },
+                  {
+                    "accessibility": "public",
+                    "name": "elif",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "val",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 120,
+                      "col": 2,
+                      "byteIndex": 4245
+                    }
+                  },
+                  {
+                    "accessibility": "public",
+                    "name": "else",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 142,
+                      "col": 2,
+                      "byteIndex": 5066
+                    }
+                  },
+                  {
+                    "accessibility": "public",
+                    "name": "endif",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 161,
+                      "col": 2,
+                      "byteIndex": 5801
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Returns true if the current state allows adding content to the message.\nThis is true when there are no conditions or when all nested conditions are met.",
+                      "tags": [
+                        {
+                          "kind": "protected"
+                        }
+                      ]
+                    },
+                    "accessibility": "protected",
+                    "name": "_allow",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "boolean",
+                        "kind": "keyword",
+                        "value": "boolean"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 175,
+                      "col": 2,
+                      "byteIndex": 6214
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Appends a styled or unstyled part to the message.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "str",
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          "doc": "The text content of the message part."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "style",
+                          "tsType": {
+                            "repr": "StyleFormatterFn | null",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "StyleFormatterFn",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "StyleFormatterFn",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "null",
+                                "kind": "keyword",
+                                "value": "null"
+                              }
+                            ]
+                          },
+                          "optional": true,
+                          "doc": "An optional styling function."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The current instance for chaining."
+                        }
+                      ]
+                    },
+                    "name": "appendMsgPart",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "str",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "style",
+                          "optional": true,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "StyleFormatterFn",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "StyleFormatterFn",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts",
+                                    "name": "StyleFormatterFn"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "null",
+                                "kind": "keyword",
+                                "value": "null"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 189,
+                      "col": 2,
+                      "byteIndex": 6650
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Prepends a styled or unstyled part to the message.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "str",
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          "doc": "The text content of the message part."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "style",
+                          "tsType": {
+                            "repr": "StyleFormatterFn | null",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "StyleFormatterFn",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "StyleFormatterFn",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "null",
+                                "kind": "keyword",
+                                "value": "null"
+                              }
+                            ]
+                          },
+                          "optional": true,
+                          "doc": "An optional styling function."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The current instance for chaining."
+                        }
+                      ]
+                    },
+                    "name": "prependMsgPart",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "str",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "style",
+                          "optional": true,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "StyleFormatterFn",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "StyleFormatterFn",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts",
+                                    "name": "StyleFormatterFn"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "null",
+                                "kind": "keyword",
+                                "value": "null"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 214,
+                      "col": 2,
+                      "byteIndex": 7438
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Appends multiple arguments as a single, space-separated string.",
+                      "tags": [
+                        {
+                          "kind": "protected"
+                        }
+                      ]
+                    },
+                    "accessibility": "protected",
+                    "name": "appendMsg",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "rest",
+                          "arg": {
+                            "kind": "identifier",
+                            "name": "args",
+                            "optional": false
+                          },
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "unknown",
+                              "kind": "keyword",
+                              "value": "unknown"
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 236,
+                      "col": 2,
+                      "byteIndex": 8055
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Appends a suffix to the log message, typically used for comments.",
+                      "tags": [
+                        {
+                          "kind": "protected"
+                        }
+                      ]
+                    },
+                    "accessibility": "protected",
+                    "name": "appendSuffix",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "rest",
+                          "arg": {
+                            "kind": "identifier",
+                            "name": "args",
+                            "optional": false
+                          },
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 247,
+                      "col": 2,
+                      "byteIndex": 8309
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Appends arguments to the message with an optional style.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "style",
+                          "tsType": {
+                            "repr": "StyleFormatterFn | null",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "StyleFormatterFn",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "StyleFormatterFn",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "null",
+                                "kind": "keyword",
+                                "value": "null"
+                              }
+                            ]
+                          },
+                          "doc": "The styling function to apply."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "args",
+                          "tsType": {
+                            "repr": "StyleArg[]",
+                            "kind": "array",
+                            "value": {
+                              "repr": "StyleArg",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "StyleArg",
+                                "resolution": {
+                                  "kind": "typeParam"
+                                }
+                              }
+                            }
+                          },
+                          "doc": "The content to stylize and append."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The current instance for chaining."
+                        }
+                      ]
+                    },
+                    "accessibility": "public",
+                    "name": "stylize",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "style",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "Spec",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Spec",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "@epdoc/colors",
+                                    "name": "Spec"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "null",
+                                "kind": "keyword",
+                                "value": "null"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "kind": "rest",
+                          "arg": {
+                            "kind": "identifier",
+                            "name": "args",
+                            "optional": false
+                          },
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "StyleArg",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "StyleArg",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./types.ts",
+                                  "name": "StyleArg"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 259,
+                      "col": 2,
+                      "byteIndex": 8701
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Appends unstyled (plain) text to the message.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "args",
+                          "tsType": {
+                            "repr": "unknown[]",
+                            "kind": "array",
+                            "value": {
+                              "repr": "unknown",
+                              "kind": "keyword",
+                              "value": "unknown"
+                            }
+                          },
+                          "doc": "The content to append."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The current instance for chaining."
+                        }
+                      ]
+                    },
+                    "accessibility": "public",
+                    "name": "plain",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "rest",
+                          "arg": {
+                            "kind": "identifier",
+                            "name": "args",
+                            "optional": false
+                          },
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "unknown",
+                              "kind": "keyword",
+                              "value": "unknown"
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 284,
+                      "col": 2,
+                      "byteIndex": 9458
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Appends a comment to the end of the log line.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "args",
+                          "tsType": {
+                            "repr": "string[]",
+                            "kind": "array",
+                            "value": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          },
+                          "doc": "The comment text to append."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The current instance for chaining."
+                        }
+                      ]
+                    },
+                    "accessibility": "public",
+                    "name": "comment",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "rest",
+                          "arg": {
+                            "kind": "identifier",
+                            "name": "args",
+                            "optional": false
+                          },
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 295,
+                      "col": 2,
+                      "byteIndex": 9759
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Attaches structured data to the log entry.\n",
+                      "tags": [
+                        {
+                          "kind": "unsupported",
+                          "value": "@remarks\nIf the message meets the log level threshold, the provided data will be\nmerged with any existing data on the log entry.\n"
+                        },
+                        {
+                          "kind": "param",
+                          "name": "data",
+                          "tsType": {
+                            "repr": "unknown",
+                            "kind": "keyword",
+                            "value": "unknown"
+                          },
+                          "doc": "The structured data (typically an object) to attach."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The current instance for chaining."
+                        }
+                      ]
+                    },
+                    "accessibility": "public",
+                    "name": "data",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "data",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "unknown",
+                            "kind": "keyword",
+                            "value": "unknown"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 311,
+                      "col": 2,
+                      "byteIndex": 10244
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Finalizes the log message and forwards it to the emitter for processing.\n",
+                      "tags": [
+                        {
+                          "kind": "unsupported",
+                          "value": "@remarks\nThis method should be called only once when the message is complete. It\nassembles the final {@link Log.Entry} object, including all contextual\ninformation from the emitter (e.g., `sid`, `reqId`), and passes it to the\nemitter's `emit` method. The builder is then cleared for potential reuse.\n\nIf the builder was created without an `emitter`, this method does nothing\nand returns `undefined`.\n"
+                        },
+                        {
+                          "kind": "param",
+                          "name": "args",
+                          "tsType": {
+                            "repr": "unknown[]",
+                            "kind": "array",
+                            "value": {
+                              "repr": "unknown",
+                              "kind": "keyword",
+                              "value": "unknown"
+                            }
+                          },
+                          "doc": "Any final, unstyled text to append before emitting."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "Log.Entry | undefined",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "Log.Entry",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Log.Entry",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "undefined",
+                                "kind": "keyword",
+                                "value": "undefined"
+                              }
+                            ]
+                          },
+                          "doc": "The generated log entry if the threshold was met and an emitter is configured, otherwise `undefined`."
+                        }
+                      ]
+                    },
+                    "accessibility": "public",
+                    "name": "emit",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "rest",
+                          "arg": {
+                            "kind": "identifier",
+                            "name": "args",
+                            "optional": false
+                          },
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "unknown",
+                              "kind": "keyword",
+                              "value": "unknown"
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "EmitterData",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "EmitterData",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "EmitterData"
+                              }
+                            }
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 338,
+                      "col": 2,
+                      "byteIndex": 11270
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Emits the log message with elapsed wall time (EWT) since a mark was created.\n",
+                      "tags": [
+                        {
+                          "kind": "unsupported",
+                          "value": "@remarks\nThis method calculates the elapsed time since a mark was created using the\nlogger's `mark()` method, appends the elapsed time to the message, and emits it.\nThe elapsed time is formatted with appropriate precision based on the duration.\n"
+                        },
+                        {
+                          "kind": "param",
+                          "name": "mark",
+                          "tsType": {
+                            "repr": "string | number",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              {
+                                "repr": "number",
+                                "kind": "keyword",
+                                "value": "number"
+                              }
+                            ]
+                          },
+                          "doc": "The mark identifier or timestamp to calculate elapsed time from."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "keep",
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          },
+                          "default": "false",
+                          "doc": "Whether to keep the mark for future use."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "EmitterData | undefined",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "EmitterData",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "EmitterData",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "undefined",
+                                "kind": "keyword",
+                                "value": "undefined"
+                              }
+                            ]
+                          },
+                          "doc": "The generated log entry if emitted, otherwise `undefined`."
+                        }
+                      ]
+                    },
+                    "accessibility": "public",
+                    "name": "ewt",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "mark",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              {
+                                "repr": "number",
+                                "kind": "keyword",
+                                "value": "number"
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "keep",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "boolean",
+                              "kind": "keyword",
+                              "value": "boolean"
+                            }
+                          },
+                          "right": "false"
+                        }
+                      ],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "EmitterData",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "EmitterData",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "EmitterData"
+                              }
+                            }
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 367,
+                      "col": 2,
+                      "byteIndex": 12402
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Override this method in subclasses to provide elapsed time styling.",
+                      "tags": [
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "StyleFormatterFn | undefined",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "StyleFormatterFn",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "StyleFormatterFn",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "undefined",
+                                "kind": "keyword",
+                                "value": "undefined"
+                              }
+                            ]
+                          },
+                          "doc": "The style formatter for elapsed time."
+                        }
+                      ]
+                    },
+                    "accessibility": "protected",
+                    "name": "getElapsedTimeStyle",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "StyleFormatterFn",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "StyleFormatterFn",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "StyleFormatterFn"
+                              }
+                            }
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 403,
+                      "col": 2,
+                      "byteIndex": 13663
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Converts the message parts into a single, unformatted string.",
+                      "tags": [
+                        {
+                          "kind": "internal"
+                        }
+                      ]
+                    },
+                    "name": "partsAsString",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 411,
+                      "col": 2,
+                      "byteIndex": 13850
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Formats the log message into a final string representation, applying colors\nand styles if the color parameter is true and NO_COLOR is false.\nThis method has been optimized for speed.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "opts",
+                          "tsType": {
+                            "repr": "FormatOpts",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "FormatOpts",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "default": "{}",
+                          "doc": "Formatting options."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "opts.color",
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          },
+                          "optional": true,
+                          "doc": "Whether to apply color styling to the output. This will override system color (Deno.color)."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "opts.target",
+                          "tsType": {
+                            "repr": "EmitterTarget",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "EmitterTarget",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "optional": true,
+                          "doc": "The target output format ('console', 'json', or 'jsonArray')."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "opts.msgSep",
+                          "tsType": {
+                            "repr": "Integer",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Integer",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "optional": true,
+                          "doc": "The number of spaces used to separate message parts. Defaults to 1."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "opts.reset",
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          },
+                          "optional": true,
+                          "doc": "If set, resets the MsgBuilder state after formatting. Useful when multiple transports share the same formatted string."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          "doc": "The formatted log message string."
+                        }
+                      ]
+                    },
+                    "name": "format",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "opts",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "FormatOpts",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "FormatOpts",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./types.ts",
+                                  "name": "FormatOpts"
+                                }
+                              }
+                            }
+                          },
+                          "right": "[UNSUPPORTED]"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 427,
+                      "col": 2,
+                      "byteIndex": 14771
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "If you just want to output the message, and aren't using any of the logging support capabilities"
+                    },
+                    "name": "log",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "void",
+                        "kind": "keyword",
+                        "value": "void"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 465,
+                      "col": 2,
+                      "byteIndex": 16001
+                    }
+                  }
+                ],
+                "implements": [
+                  {
+                    "repr": "IFormatter",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "IFormatter",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./types.ts",
+                        "name": "IFormatter"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ConsoleEmitter",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/emitter.ts",
+                "line": 5,
+                "col": 0,
+                "byteIndex": 150
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "An `IEmitter` implementation that outputs formatted log messages to the console."
+              },
+              "kind": "class",
+              "def": {
+                "properties": [
+                  {
+                    "jsDoc": {
+                      "tags": [
+                        {
+                          "kind": "unsupported",
+                          "value": "@inheritdoc"
+                        }
+                      ]
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "accessibility": "public",
+                    "name": "dataEnabled",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/emitter.ts",
+                      "line": 7,
+                      "col": 2,
+                      "byteIndex": 223
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "tags": [
+                        {
+                          "kind": "unsupported",
+                          "value": "@inheritdoc"
+                        }
+                      ]
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "accessibility": "public",
+                    "name": "emitEnabled",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/emitter.ts",
+                      "line": 9,
+                      "col": 2,
+                      "byteIndex": 282
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "tags": [
+                        {
+                          "kind": "unsupported",
+                          "value": "@inheritdoc"
+                        }
+                      ]
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "accessibility": "public",
+                    "name": "stackEnabled",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/emitter.ts",
+                      "line": 11,
+                      "col": 2,
+                      "byteIndex": 341
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "jsDoc": {
+                      "doc": "Outputs the formatted message to the console.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "msg",
+                          "tsType": {
+                            "repr": "EmitterData",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "EmitterData",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "The log data to emit."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "EmitterData",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "EmitterData",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "The original log data."
+                        }
+                      ]
+                    },
+                    "accessibility": "public",
+                    "name": "emit",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "msg",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "EmitterData",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "EmitterData",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "EmitterData"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "EmitterData",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "EmitterData",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts",
+                            "name": "EmitterData"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/emitter.ts",
+                      "line": 19,
+                      "col": 2,
+                      "byteIndex": 555
+                    }
+                  }
+                ],
+                "implements": [
+                  {
+                    "repr": "IEmitter",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "IEmitter",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./types.ts",
+                        "name": "IEmitter"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TestEmitter",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/emitter.ts",
+                "line": 32,
+                "col": 0,
+                "byteIndex": 905
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "An `IEmitter` implementation designed for testing purposes.\n",
+                "tags": [
+                  {
+                    "kind": "unsupported",
+                    "value": "@remarks\nThis emitter captures the formatted output in a public `output` property\ninstead of writing to a destination, allowing for easy inspection in tests."
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "properties": [
+                  {
+                    "jsDoc": {
+                      "tags": [
+                        {
+                          "kind": "unsupported",
+                          "value": "@inheritdoc"
+                        }
+                      ]
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "accessibility": "public",
+                    "name": "dataEnabled",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/emitter.ts",
+                      "line": 34,
+                      "col": 2,
+                      "byteIndex": 975
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "tags": [
+                        {
+                          "kind": "unsupported",
+                          "value": "@inheritdoc"
+                        }
+                      ]
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "accessibility": "public",
+                    "name": "emitEnabled",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/emitter.ts",
+                      "line": 36,
+                      "col": 2,
+                      "byteIndex": 1034
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "tags": [
+                        {
+                          "kind": "unsupported",
+                          "value": "@inheritdoc"
+                        }
+                      ]
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "accessibility": "public",
+                    "name": "stackEnabled",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/emitter.ts",
+                      "line": 38,
+                      "col": 2,
+                      "byteIndex": 1093
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "An optional flag to control whether the output should be colored."
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "accessibility": "public",
+                    "optional": true,
+                    "name": "color",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/emitter.ts",
+                      "line": 42,
+                      "col": 2,
+                      "byteIndex": 1216
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Stores the formatted output of the last emitted message."
+                    },
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "accessibility": "public",
+                    "optional": true,
+                    "name": "output",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/emitter.ts",
+                      "line": 46,
+                      "col": 2,
+                      "byteIndex": 1316
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "jsDoc": {
+                      "doc": "Captures the formatted message in the `output` property.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "msg",
+                          "tsType": {
+                            "repr": "EmitterData",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "EmitterData",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "The log data to process."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "EmitterData",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "EmitterData",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "The original log data."
+                        }
+                      ]
+                    },
+                    "accessibility": "public",
+                    "name": "emit",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "msg",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "EmitterData",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "EmitterData",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "./types.ts",
+                                "name": "EmitterData"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "EmitterData",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "EmitterData",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts",
+                            "name": "EmitterData"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/emitter.ts",
+                      "line": 54,
+                      "col": 2,
+                      "byteIndex": 1530
+                    }
+                  }
+                ],
+                "implements": [
+                  {
+                    "repr": "IEmitter",
+                    "kind": "typeRef",
+                    "value": {
+                      "typeName": "IEmitter",
+                      "resolution": {
+                        "kind": "import",
+                        "specifier": "./types.ts",
+                        "name": "IEmitter"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "TextBuilder",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                "line": 18,
+                "col": 0,
+                "byteIndex": 511
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Utility for building multi-line formatted text blocks using MsgBuilder.\n\nUseful for accumulating multiple lines of formatted CLI messages before\nrendering or logging them as a single block.\n",
+                "tags": [
+                  {
+                    "kind": "template",
+                    "name": "M",
+                    "doc": "The specific MsgBuilder subclass type\n"
+                  },
+                  {
+                    "kind": "example",
+                    "doc": "```typescript\nconst tb = new TextBuilder(CustomMsgBuilder);\ntb.line.text('Hello').value('world');\ntb.newline();\ntb.line.plain('Done');\nconsole.log(tb.emit());\n```"
+                  }
+                ]
+              },
+              "kind": "class",
+              "def": {
+                "constructors": [
+                  {
+                    "hasBody": true,
+                    "name": "constructor",
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "builderClass",
+                        "optional": true,
+                        "tsType": {
+                          "kind": "fnOrConstructor",
+                          "value": {
+                            "constructor": true,
+                            "tsType": {
+                              "repr": "M",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "M",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "TextBuilder",
+                                  "declaringKind": "class"
+                                }
+                              }
+                            },
+                            "params": []
+                          }
+                        }
+                      }
+                    ],
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 23,
+                      "col": 2,
+                      "byteIndex": 687
+                    }
+                  }
+                ],
+                "properties": [
+                  {
+                    "tsType": {
+                      "kind": "array",
+                      "value": {
+                        "kind": "parenthesized",
+                        "value": {
+                          "kind": "union",
+                          "value": [
+                            {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            },
+                            {
+                              "repr": "M",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "M",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "TextBuilder",
+                                  "declaringKind": "class"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    },
+                    "name": "lines",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 19,
+                      "col": 2,
+                      "byteIndex": 585
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "kind": "fnOrConstructor",
+                      "value": {
+                        "constructor": true,
+                        "tsType": {
+                          "repr": "M",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "M",
+                            "resolution": {
+                              "kind": "typeParam",
+                              "declaringName": "TextBuilder",
+                              "declaringKind": "class"
+                            }
+                          }
+                        },
+                        "params": []
+                      }
+                    },
+                    "accessibility": "private",
+                    "name": "builderClass",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 20,
+                      "col": 2,
+                      "byteIndex": 615
+                    }
+                  },
+                  {
+                    "tsType": {
+                      "kind": "array",
+                      "value": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    },
+                    "accessibility": "private",
+                    "name": "_indent",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 21,
+                      "col": 2,
+                      "byteIndex": 652
+                    }
+                  }
+                ],
+                "methods": [
+                  {
+                    "jsDoc": {
+                      "doc": "Add one or more levels of indentation.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "n",
+                          "tsType": {
+                            "repr": "number | string",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "number",
+                                "kind": "keyword",
+                                "value": "number"
+                              },
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            ]
+                          },
+                          "optional": true,
+                          "doc": "If a string, it is added directly as an indentation.\nIf a number, that many 2-space indents are added.\nIf omitted, a single 2-space indent is added."
+                        }
+                      ]
+                    },
+                    "name": "indent",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "n",
+                          "optional": true,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "number",
+                                "kind": "keyword",
+                                "value": "number"
+                              },
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 34,
+                      "col": 2,
+                      "byteIndex": 1139
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Remove one or more levels of indentation.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "n",
+                          "tsType": {
+                            "repr": "number",
+                            "kind": "keyword",
+                            "value": "number"
+                          },
+                          "default": "1",
+                          "doc": "The number of indentation levels to remove."
+                        }
+                      ]
+                    },
+                    "name": "outdent",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "n",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "number",
+                              "kind": "keyword",
+                              "value": "number"
+                            }
+                          },
+                          "right": "1"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 51,
+                      "col": 2,
+                      "byteIndex": 1548
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Reset all indentation levels."
+                    },
+                    "name": "nodent",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 63,
+                      "col": 2,
+                      "byteIndex": 1763
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Create and append a new MsgBuilder line, pre-indented to the current indentation level."
+                    },
+                    "name": "line",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "M",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "M",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "TextBuilder",
+                            "declaringKind": "class"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 71,
+                      "col": 2,
+                      "byteIndex": 1932
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Append an empty line."
+                    },
+                    "name": "nl",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 87,
+                      "col": 2,
+                      "byteIndex": 2529
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Append an empty line."
+                    },
+                    "name": "newline",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 95,
+                      "col": 2,
+                      "byteIndex": 2630
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Format all lines and join them with newlines."
+                    },
+                    "name": "emit",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 103,
+                      "col": 2,
+                      "byteIndex": 2760
+                    }
+                  },
+                  {
+                    "name": "toLines",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "array",
+                        "value": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 107,
+                      "col": 2,
+                      "byteIndex": 2822
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Convert the lines to a formatted string."
+                    },
+                    "name": "toString",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 115,
+                      "col": 2,
+                      "byteIndex": 3002
+                    }
+                  }
+                ],
+                "typeParams": [
+                  {
+                    "name": "M",
+                    "constraint": {
+                      "repr": "Console.Builder",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Console.Builder",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./console/mod.ts"
+                        }
+                      }
+                    },
+                    "default": {
+                      "repr": "Console.Builder",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "Console.Builder",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./console/mod.ts"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "IEmitter",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 8,
+                "col": 0,
+                "byteIndex": 325
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Defines the interface for an emitter, which is responsible for outputting log messages."
+              },
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "dataEnabled",
+                    "jsDoc": {
+                      "doc": "Indicates if data payloads are enabled for emission as part of the message string. An\napplication using a MsgBuilder may want to handle data at a higher level when emit is called."
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                      "line": 13,
+                      "col": 2,
+                      "byteIndex": 557
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "emitEnabled",
+                    "jsDoc": {
+                      "doc": "Indicates if the emitter is globally enabled. This may depend on log level settings. For\nexample, if this message is associated with a message at a VERBOSE log level, but the log\nreporting level is set to INFO, then none of this message will be output and the code can take\nexecution shortcuts."
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                      "line": 20,
+                      "col": 2,
+                      "byteIndex": 908
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "stackEnabled",
+                    "jsDoc": {
+                      "doc": "Indicates if stack traces are to be emitted when there is an error being logged. This may\ndepend on log level settings, for example an application might elect to emit a stack trace only\nwhen the log level is at DEBUG or lower."
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                      "line": 26,
+                      "col": 2,
+                      "byteIndex": 1186
+                    },
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "emit",
+                    "jsDoc": {
+                      "doc": "Emits a log message.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "msg",
+                          "tsType": {
+                            "repr": "EmitterData",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "EmitterData",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "The data to be emitted."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "EmitterData",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "EmitterData",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "The emitted data."
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                      "line": 32,
+                      "col": 2,
+                      "byteIndex": 1351
+                    },
+                    "tsType": {
+                      "kind": "fnOrConstructor",
+                      "value": {
+                        "constructor": false,
+                        "tsType": {
+                          "repr": "EmitterData",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "EmitterData",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        },
+                        "params": [
+                          {
+                            "kind": "identifier",
+                            "name": "msg",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "EmitterData",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "EmitterData",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  {
+                    "name": "demark",
+                    "jsDoc": {
+                      "doc": "Measures the time elapsed since a performance mark was created.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "name",
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          "doc": "The name of the mark to measure."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "keep",
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          },
+                          "default": "false",
+                          "doc": "If true, the mark is not removed after measurement."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "number",
+                            "kind": "keyword",
+                            "value": "number"
+                          },
+                          "doc": "The elapsed time in milliseconds."
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                      "line": 39,
+                      "col": 2,
+                      "byteIndex": 1682
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "kind": "fnOrConstructor",
+                      "value": {
+                        "constructor": false,
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        },
+                        "params": [
+                          {
+                            "kind": "identifier",
+                            "name": "name",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          },
+                          {
+                            "kind": "identifier",
+                            "name": "keep",
+                            "optional": true,
+                            "tsType": {
+                              "repr": "boolean",
+                              "kind": "keyword",
+                              "value": "boolean"
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "EmitterData",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 45,
+                "col": 0,
+                "byteIndex": 1810
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents the data structure for a log message to be emitted."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "timestamp",
+                        "jsDoc": {
+                          "doc": "The timestamp of the log message."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 49,
+                          "col": 2,
+                          "byteIndex": 1891
+                        },
+                        "tsType": {
+                          "repr": "DateTime",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "DateTime",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/datetime",
+                              "name": "DateTime"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "formatter",
+                        "jsDoc": {
+                          "doc": "The formatter to be used for the log message."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 53,
+                          "col": 2,
+                          "byteIndex": 1977
+                        },
+                        "tsType": {
+                          "repr": "IFormatter",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "IFormatter",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "data",
+                        "jsDoc": {
+                          "doc": "An optional data payload for the log message."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 57,
+                          "col": 2,
+                          "byteIndex": 2065
+                        },
+                        "tsType": {
+                          "kind": "union",
+                          "value": [
+                            {
+                              "repr": "Dict",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Dict",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "@epdoc/type",
+                                  "name": "Dict"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "undefined",
+                              "kind": "keyword",
+                              "value": "undefined"
+                            }
+                          ]
+                        }
+                      },
+                      {
+                        "name": "elapsed",
+                        "jsDoc": {
+                          "doc": "An optional elapsed time to be displayed by transport as separate column."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 61,
+                          "col": 2,
+                          "byteIndex": 2182
+                        },
+                        "tsType": {
+                          "repr": "HrMilliseconds",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "HrMilliseconds",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/duration",
+                              "name": "HrMilliseconds"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "EmitterTarget",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 70,
+                "col": 0,
+                "byteIndex": 2401
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Defines the possible targets for log message emission.\n- `console`: Human-readable console output.\n- `json`: Single JSON object.\n- `jsonArray`: An array of JSON objects."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "repr": "console",
+                      "kind": "literal",
+                      "value": {
+                        "kind": "string",
+                        "string": "console"
+                      }
+                    },
+                    {
+                      "repr": "json",
+                      "kind": "literal",
+                      "value": {
+                        "kind": "string",
+                        "string": "json"
+                      }
+                    },
+                    {
+                      "repr": "jsonArray",
+                      "kind": "literal",
+                      "value": {
+                        "kind": "string",
+                        "string": "jsonArray"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "FormatOpts",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 75,
+                "col": 0,
+                "byteIndex": 2513
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Options for formatting a log message."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "color",
+                        "jsDoc": {
+                          "doc": "Whether to apply color styling to the output."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 79,
+                          "col": 2,
+                          "byteIndex": 2605
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "boolean",
+                          "kind": "keyword",
+                          "value": "boolean"
+                        }
+                      },
+                      {
+                        "name": "target",
+                        "jsDoc": {
+                          "doc": "The target format for the output."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 83,
+                          "col": 2,
+                          "byteIndex": 2675
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "EmitterTarget",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "EmitterTarget",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "msgSep",
+                        "jsDoc": {
+                          "doc": "The number of spaces used to separate message parts. Defaults to 1."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 87,
+                          "col": 2,
+                          "byteIndex": 2786
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "Integer",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Integer",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/type",
+                              "name": "Integer"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "reset",
+                        "jsDoc": {
+                          "doc": "If set then reset the MsgBuilder state, essentially setting it to a blank string once format\nis called. Reasons to not do this are when there are multiple transports that all share the\nsame formatted string."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 91,
+                          "col": 2,
+                          "byteIndex": 3033
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "boolean",
+                          "kind": "keyword",
+                          "value": "boolean"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "StyleFormatterFn",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 99,
+                "col": 0,
+                "byteIndex": 3200
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A function that applies styling to a string.",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "str",
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "doc": "The string to be styled."
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "doc": "The styled string."
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "fnOrConstructor",
+                  "value": {
+                    "constructor": false,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "str",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "StyleArg",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 104,
+                "col": 0,
+                "byteIndex": 3341
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents the types of arguments that can be passed to styling methods."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    },
+                    {
+                      "repr": "Record",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeParams": [
+                          {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          {
+                            "repr": "unknown",
+                            "kind": "keyword",
+                            "value": "unknown"
+                          }
+                        ],
+                        "typeName": "Record"
+                      }
+                    },
+                    {
+                      "kind": "array",
+                      "value": {
+                        "repr": "unknown",
+                        "kind": "keyword",
+                        "value": "unknown"
+                      }
+                    },
+                    {
+                      "repr": "unknown",
+                      "kind": "keyword",
+                      "value": "unknown"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "MsgPart",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 109,
+                "col": 0,
+                "byteIndex": 3504
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Represents a part of a log message with its content and style."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "str",
+                        "jsDoc": {
+                          "doc": "The string content of the message part."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 113,
+                          "col": 2,
+                          "byteIndex": 3587
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "style",
+                        "jsDoc": {
+                          "doc": "The style formatter function to be applied to the string."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 117,
+                          "col": 2,
+                          "byteIndex": 3677
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "StyleFormatterFn",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "StyleFormatterFn",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "IFormatter",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 123,
+                "col": 0,
+                "byteIndex": 3758
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Interface for formatting a log message."
+              },
+              "kind": "interface",
+              "def": {
+                "methods": [
+                  {
+                    "name": "format",
+                    "jsDoc": {
+                      "doc": "Formats the message based on the specified color and target format.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "color",
+                          "tsType": {
+                            "repr": "boolean",
+                            "kind": "keyword",
+                            "value": "boolean"
+                          },
+                          "doc": "Whether to apply color styling."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "target",
+                          "tsType": {
+                            "repr": "Transport.OutputFormatType",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Transport.OutputFormatType",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "The output format."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          "doc": "The formatted message string."
+                        }
+                      ]
+                    },
+                    "kind": "method",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                      "line": 130,
+                      "col": 2,
+                      "byteIndex": 4059
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "opts",
+                        "optional": true,
+                        "tsType": {
+                          "repr": "FormatOpts",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "FormatOpts",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "appendMsgPart",
+                    "jsDoc": {
+                      "doc": "Appends a message part to the end of the message.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "str",
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          "doc": "The string content to append."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "style",
+                          "tsType": {
+                            "repr": "StyleFormatterFn | null",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "StyleFormatterFn",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "StyleFormatterFn",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "null",
+                                "kind": "keyword",
+                                "value": "null"
+                              }
+                            ]
+                          },
+                          "optional": true,
+                          "doc": "The style to apply."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "IFormatter",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "IFormatter",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "The current instance for method chaining."
+                        }
+                      ]
+                    },
+                    "kind": "method",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                      "line": 137,
+                      "col": 2,
+                      "byteIndex": 4357
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "str",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "kind": "identifier",
+                        "name": "style",
+                        "optional": true,
+                        "tsType": {
+                          "kind": "union",
+                          "value": [
+                            {
+                              "repr": "StyleFormatterFn",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "StyleFormatterFn",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "null",
+                              "kind": "keyword",
+                              "value": "null"
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "repr": "IFormatter",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "IFormatter",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "name": "prependMsgPart",
+                    "jsDoc": {
+                      "doc": "Prepends a message part to the beginning of the message.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "str",
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          },
+                          "doc": "The string content to prepend."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "style",
+                          "tsType": {
+                            "repr": "StyleFormatterFn | null",
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "StyleFormatterFn",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "StyleFormatterFn",
+                                  "resolution": {
+                                    "kind": "typeParam"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "null",
+                                "kind": "keyword",
+                                "value": "null"
+                              }
+                            ]
+                          },
+                          "optional": true,
+                          "doc": "The style to apply."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "IFormatter",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "IFormatter",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "The current instance for method chaining."
+                        }
+                      ]
+                    },
+                    "kind": "method",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                      "line": 144,
+                      "col": 2,
+                      "byteIndex": 4701
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "str",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "kind": "identifier",
+                        "name": "style",
+                        "optional": true,
+                        "tsType": {
+                          "kind": "union",
+                          "value": [
+                            {
+                              "repr": "StyleFormatterFn",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "StyleFormatterFn",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "null",
+                              "kind": "keyword",
+                              "value": "null"
+                            }
+                          ]
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "repr": "IFormatter",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "IFormatter",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "FactoryMethod",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 157,
+                "col": 0,
+                "byteIndex": 5231
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A factory method for creating a message builder instance.",
+                "tags": [
+                  {
+                    "kind": "param",
+                    "name": "level",
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    },
+                    "doc": "The log level."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "emitter",
+                    "tsType": {
+                      "repr": "IEmitter",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "IEmitter",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "The log emitter."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "meetsThreshold",
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "doc": "Whether the log level meets the threshold."
+                  },
+                  {
+                    "kind": "param",
+                    "name": "meetsFlushThreshold",
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    },
+                    "doc": "Whether the log level meets the flush threshold."
+                  },
+                  {
+                    "kind": "return",
+                    "tsType": {
+                      "repr": "AbstractMsgBuilder",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "AbstractMsgBuilder",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    },
+                    "doc": "A new message builder instance."
+                  }
+                ]
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "fnOrConstructor",
+                  "value": {
+                    "constructor": false,
+                    "tsType": {
+                      "repr": "AbstractMsgBuilder",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "AbstractMsgBuilder",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./abstract.ts",
+                          "name": "AbstractMsgBuilder"
+                        }
+                      }
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "emitter",
+                        "optional": false,
+                        "tsType": {
+                          "repr": "IEmitter",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "IEmitter",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "StyleMap",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 161,
+                "col": 0,
+                "byteIndex": 5308
+              },
+              "declarationKind": "export",
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "repr": "Record",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      {
+                        "repr": "StyleFormatterFn",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "StyleFormatterFn",
+                          "resolution": {
+                            "kind": "local"
+                          }
+                        }
+                      }
+                    ],
+                    "typeName": "Record"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "BoolFormatterOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                "line": 6,
+                "col": 0,
+                "byteIndex": 149
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Options for boolean formatter."
+              },
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "trueChar",
+                    "jsDoc": {
+                      "doc": "Character or string to display for truthy values. Default: '✓'"
+                    },
+                    "location": {
+                      "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                      "line": 8,
+                      "col": 2,
+                      "byteIndex": 265
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "falseChar",
+                    "jsDoc": {
+                      "doc": "Character or string to display for falsy values. Default: '✗'"
+                    },
+                    "location": {
+                      "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                      "line": 10,
+                      "col": 2,
+                      "byteIndex": 359
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "string",
+                      "kind": "keyword",
+                      "value": "string"
+                    }
+                  },
+                  {
+                    "name": "trueColor",
+                    "jsDoc": {
+                      "doc": "Hex color for truthy values. Default: 0x51d67c (green)"
+                    },
+                    "location": {
+                      "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                      "line": 12,
+                      "col": 2,
+                      "byteIndex": 445
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "name": "falseColor",
+                    "jsDoc": {
+                      "doc": "Hex color for falsy values. Default: 0xef5867 (red)"
+                    },
+                    "location": {
+                      "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                      "line": 14,
+                      "col": 2,
+                      "byteIndex": 528
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "name": "bold",
+                    "location": {
+                      "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                      "line": 15,
+                      "col": 2,
+                      "byteIndex": 551
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  },
+                  {
+                    "name": "dim",
+                    "location": {
+                      "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                      "line": 16,
+                      "col": 2,
+                      "byteIndex": 569
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "boolean",
+                      "kind": "keyword",
+                      "value": "boolean"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "BoolPresetName",
+          "declarations": [
+            {
+              "location": {
+                "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                "line": 76,
+                "col": 0,
+                "byteIndex": 2430
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Inferred preset name type from {@link BOOL_PRESETS}."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeOperator",
+                  "value": {
+                    "operator": "keyof",
+                    "tsType": {
+                      "repr": "BOOL_PRESETS",
+                      "kind": "typeQuery",
+                      "value": "BOOL_PRESETS"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "location": {
+                "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                "line": 78,
+                "col": 13,
+                "byteIndex": 2496
+              },
+              "declarationKind": "export",
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "kind": "mapped",
+                  "value": {
+                    "typeParam": {
+                      "name": "K",
+                      "constraint": {
+                        "kind": "typeOperator",
+                        "value": {
+                          "operator": "keyof",
+                          "tsType": {
+                            "repr": "BOOL_PRESETS",
+                            "kind": "typeQuery",
+                            "value": "BOOL_PRESETS"
+                          }
+                        }
+                      }
+                    },
+                    "tsType": {
+                      "repr": "K",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "K",
+                        "resolution": {
+                          "kind": "typeParam"
+                        }
+                      }
+                    }
+                  }
+                },
+                "kind": "const"
+              }
+            }
+          ]
+        },
+        {
+          "name": "IVersion",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 165,
+                "col": 0,
+                "byteIndex": 5444
+              },
+              "declarationKind": "export",
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "version",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                      "line": 166,
+                      "col": 2,
+                      "byteIndex": 5474
+                    },
+                    "optional": true,
+                    "tsType": {
+                      "repr": "SemVerString",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "SemVerString",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "@epdoc/type",
+                          "name": "SemVerString"
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Console",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/mod.ts",
+                "line": 0,
+                "col": 7,
+                "byteIndex": 7
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": []
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

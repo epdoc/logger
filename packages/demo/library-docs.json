@@ -1,0 +1,884 @@
+{
+  "version": 2,
+  "nodes": {
+    "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/mod.ts": {
+      "symbols": [
+        {
+          "name": "App",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/mod.ts",
+                "line": 0,
+                "col": 7,
+                "byteIndex": 7
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "ListOpts",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/app/types.ts",
+                          "line": 0,
+                          "col": 0,
+                          "byteIndex": 0
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "typeLiteral",
+                            "value": {
+                              "properties": [
+                                {
+                                  "name": "humanize",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/app/types.ts",
+                                    "line": 1,
+                                    "col": 2,
+                                    "byteIndex": 27
+                                  },
+                                  "tsType": {
+                                    "repr": "boolean",
+                                    "kind": "keyword",
+                                    "value": "boolean"
+                                  }
+                                },
+                                {
+                                  "name": "files",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/app/types.ts",
+                                    "line": 2,
+                                    "col": 2,
+                                    "byteIndex": 48
+                                  },
+                                  "tsType": {
+                                    "kind": "array",
+                                    "value": {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "ProcessOpts",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/app/types.ts",
+                          "line": 5,
+                          "col": 0,
+                          "byteIndex": 69
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "typeLiteral",
+                            "value": {
+                              "properties": [
+                                {
+                                  "name": "more",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/app/types.ts",
+                                    "line": 6,
+                                    "col": 2,
+                                    "byteIndex": 99
+                                  },
+                                  "tsType": {
+                                    "repr": "boolean",
+                                    "kind": "keyword",
+                                    "value": "boolean"
+                                  }
+                                },
+                                {
+                                  "name": "name",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/app/types.ts",
+                                    "line": 7,
+                                    "col": 2,
+                                    "byteIndex": 116
+                                  },
+                                  "tsType": {
+                                    "repr": "string",
+                                    "kind": "keyword",
+                                    "value": "string"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cmd",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/mod.ts",
+                "line": 1,
+                "col": 7,
+                "byteIndex": 44
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": []
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ctx",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/mod.ts",
+                "line": 2,
+                "col": 7,
+                "byteIndex": 82
+              },
+              "declarationKind": "export",
+              "kind": "namespace",
+              "def": {
+                "elements": [
+                  {
+                    "name": "CustomMsgBuilder",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                          "line": 11,
+                          "col": 0,
+                          "byteIndex": 356
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Custom message builder demonstrating extension of the base builder.\n\nAdds application-specific formatting methods for consistent logging."
+                        },
+                        "kind": "class",
+                        "def": {
+                          "methods": [
+                            {
+                              "name": "fileOp",
+                              "kind": "method",
+                              "functionDef": {
+                                "params": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "item",
+                                    "optional": false,
+                                    "tsType": {
+                                      "repr": "FS.Typed",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "FS.Typed",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/fs/fs"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "kind": "assign",
+                                    "left": {
+                                      "kind": "identifier",
+                                      "name": "size",
+                                      "optional": false,
+                                      "tsType": {
+                                        "repr": "number",
+                                        "kind": "keyword",
+                                        "value": "number"
+                                      }
+                                    },
+                                    "right": "0"
+                                  },
+                                  {
+                                    "kind": "assign",
+                                    "left": {
+                                      "kind": "identifier",
+                                      "name": "units",
+                                      "optional": false,
+                                      "tsType": {
+                                        "repr": "string",
+                                        "kind": "keyword",
+                                        "value": "string"
+                                      }
+                                    },
+                                    "right": "byte"
+                                  }
+                                ],
+                                "hasBody": true
+                              },
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 12,
+                                "col": 2,
+                                "byteIndex": 425
+                              }
+                            },
+                            {
+                              "name": "logShow",
+                              "kind": "method",
+                              "functionDef": {
+                                "params": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "ctx",
+                                    "optional": false,
+                                    "tsType": {
+                                      "repr": "RootContext",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "RootContext",
+                                        "resolution": {
+                                          "kind": "local"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ],
+                                "returnType": {
+                                  "repr": "this",
+                                  "kind": "this"
+                                },
+                                "hasBody": true
+                              },
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 22,
+                                "col": 2,
+                                "byteIndex": 790
+                              }
+                            },
+                            {
+                              "name": "opts",
+                              "kind": "method",
+                              "functionDef": {
+                                "params": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "opts",
+                                    "optional": false,
+                                    "tsType": {
+                                      "repr": "Dict",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "Dict",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/type",
+                                          "name": "Dict"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "kind": "identifier",
+                                    "name": "name",
+                                    "optional": true,
+                                    "tsType": {
+                                      "repr": "string",
+                                      "kind": "keyword",
+                                      "value": "string"
+                                    }
+                                  }
+                                ],
+                                "returnType": {
+                                  "repr": "this",
+                                  "kind": "this"
+                                },
+                                "hasBody": true
+                              },
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 26,
+                                "col": 2,
+                                "byteIndex": 936
+                              }
+                            },
+                            {
+                              "name": "demo",
+                              "kind": "method",
+                              "functionDef": {
+                                "params": [
+                                  {
+                                    "kind": "identifier",
+                                    "name": "ctx",
+                                    "optional": false,
+                                    "tsType": {
+                                      "repr": "RootContext",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "RootContext",
+                                        "resolution": {
+                                          "kind": "local"
+                                        }
+                                      }
+                                    }
+                                  }
+                                ],
+                                "returnType": {
+                                  "repr": "this",
+                                  "kind": "this"
+                                },
+                                "hasBody": true
+                              },
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 29,
+                                "col": 2,
+                                "byteIndex": 1065
+                              }
+                            }
+                          ],
+                          "extends": "CliApp.Progress.MsgBuilder"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "RootContext",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                          "line": 46,
+                          "col": 0,
+                          "byteIndex": 1700
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Application context with custom message builder support.\n\nExtends AbstractBase from cliapp to inherit all standard context functionality\nincluding logging setup, dry-run support, and package information."
+                        },
+                        "kind": "class",
+                        "def": {
+                          "constructors": [
+                            {
+                              "hasBody": true,
+                              "name": "constructor",
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "pkg",
+                                  "optional": false,
+                                  "tsType": {
+                                    "kind": "union",
+                                    "value": [
+                                      {
+                                        "repr": "CliApp.DenoPkg",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "CliApp.DenoPkg",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "@epdoc/cliapp"
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "repr": "RootContext",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "RootContext",
+                                          "resolution": {
+                                            "kind": "local"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                },
+                                {
+                                  "kind": "assign",
+                                  "left": {
+                                    "kind": "identifier",
+                                    "name": "params",
+                                    "optional": false,
+                                    "tsType": {
+                                      "repr": "Log.IGetChildParams",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "Log.IGetChildParams",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/logger"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "right": "[UNSUPPORTED]"
+                                }
+                              ],
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 54,
+                                "col": 2,
+                                "byteIndex": 1922
+                              }
+                            }
+                          ],
+                          "properties": [
+                            {
+                              "tsType": {
+                                "repr": "App.Main",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "App.Main",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./app/mod.ts"
+                                  }
+                                }
+                              },
+                              "name": "app",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 47,
+                                "col": 2,
+                                "byteIndex": 1793
+                              }
+                            },
+                            {
+                              "tsType": {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              "optional": true,
+                              "name": "name",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 48,
+                                "col": 2,
+                                "byteIndex": 1811
+                              }
+                            },
+                            {
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              },
+                              "name": "happyMode",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 49,
+                                "col": 2,
+                                "byteIndex": 1828
+                              }
+                            },
+                            {
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              },
+                              "name": "quiet",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 50,
+                                "col": 2,
+                                "byteIndex": 1849
+                              }
+                            },
+                            {
+                              "accessibility": "protected",
+                              "isOverride": true,
+                              "name": "builderClass",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 52,
+                                "col": 2,
+                                "byteIndex": 1867
+                              }
+                            }
+                          ],
+                          "extends": "CliApp.Ctx.AbstractBase",
+                          "superTypeParams": [
+                            {
+                              "repr": "CustomMsgBuilder",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "CustomMsgBuilder",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "CustomLogger",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "CustomLogger",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "QueryContext",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                          "line": 72,
+                          "col": 0,
+                          "byteIndex": 2318
+                        },
+                        "declarationKind": "export",
+                        "jsDoc": {
+                          "doc": "Child context demonstrating context inheritance.\nIf you are happy using just one context class, you can skip this."
+                        },
+                        "kind": "class",
+                        "def": {
+                          "constructors": [
+                            {
+                              "hasBody": true,
+                              "name": "constructor",
+                              "params": [
+                                {
+                                  "kind": "identifier",
+                                  "name": "parent",
+                                  "optional": false,
+                                  "tsType": {
+                                    "repr": "RootContext",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "RootContext",
+                                      "resolution": {
+                                        "kind": "local"
+                                      }
+                                    }
+                                  }
+                                },
+                                {
+                                  "kind": "assign",
+                                  "left": {
+                                    "kind": "identifier",
+                                    "name": "params",
+                                    "optional": false,
+                                    "tsType": {
+                                      "repr": "Log.IGetChildParams",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "Log.IGetChildParams",
+                                        "resolution": {
+                                          "kind": "import",
+                                          "specifier": "@epdoc/logger"
+                                        }
+                                      }
+                                    }
+                                  },
+                                  "right": "[UNSUPPORTED]"
+                                }
+                              ],
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 77,
+                                "col": 2,
+                                "byteIndex": 2429
+                              }
+                            }
+                          ],
+                          "properties": [
+                            {
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              },
+                              "name": "isProcess",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 73,
+                                "col": 2,
+                                "byteIndex": 2368
+                              }
+                            },
+                            {
+                              "tsType": {
+                                "repr": "boolean",
+                                "kind": "keyword",
+                                "value": "boolean"
+                              },
+                              "name": "more",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 74,
+                                "col": 2,
+                                "byteIndex": 2388
+                              }
+                            },
+                            {
+                              "tsType": {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "App.Api",
+                                  "kind": "typeRef",
+                                  "value": {
+                                    "typeName": "App.Api",
+                                    "resolution": {
+                                      "kind": "import",
+                                      "specifier": "./app/mod.ts"
+                                    }
+                                  }
+                                }
+                              },
+                              "name": "apis",
+                              "location": {
+                                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                "line": 75,
+                                "col": 2,
+                                "byteIndex": 2404
+                              }
+                            }
+                          ],
+                          "extends": "RootContext"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "BaseClass",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                          "line": 85,
+                          "col": 0,
+                          "byteIndex": 2559
+                        },
+                        "declarationKind": "export",
+                        "kind": "class",
+                        "def": {
+                          "isAbstract": true,
+                          "extends": "CliApp.BaseClass",
+                          "superTypeParams": [
+                            {
+                              "repr": "RootContext",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "RootContext",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "CustomMsgBuilder",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "CustomMsgBuilder",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "CustomLogger",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "CustomLogger",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "BaseRootCmdClass",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                          "line": 87,
+                          "col": 0,
+                          "byteIndex": 2665
+                        },
+                        "declarationKind": "export",
+                        "kind": "class",
+                        "def": {
+                          "isAbstract": true,
+                          "extends": "CliApp.Cmd.AbstractBase",
+                          "typeParams": [
+                            {
+                              "name": "TOpts",
+                              "constraint": {
+                                "repr": "CliApp.CmdOptions",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "CliApp.CmdOptions",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "@epdoc/cliapp"
+                                  }
+                                }
+                              }
+                            }
+                          ],
+                          "superTypeParams": [
+                            {
+                              "repr": "RootContext",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "RootContext",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "RootContext",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "RootContext",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "TOpts",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "TOpts",
+                                "resolution": {
+                                  "kind": "typeParam",
+                                  "declaringName": "BaseRootCmdClass",
+                                  "declaringKind": "class"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "QueryCmdOpts",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                          "line": 90,
+                          "col": 0,
+                          "byteIndex": 2808
+                        },
+                        "declarationKind": "export",
+                        "kind": "typeAlias",
+                        "def": {
+                          "tsType": {
+                            "kind": "typeLiteral",
+                            "value": {
+                              "properties": [
+                                {
+                                  "name": "more",
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                                    "line": 91,
+                                    "col": 2,
+                                    "byteIndex": 2839
+                                  },
+                                  "tsType": {
+                                    "repr": "boolean",
+                                    "kind": "keyword",
+                                    "value": "boolean"
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "BaseQueryCmdClass",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/demo/src/context.ts",
+                          "line": 94,
+                          "col": 0,
+                          "byteIndex": 2858
+                        },
+                        "declarationKind": "export",
+                        "kind": "class",
+                        "def": {
+                          "isAbstract": true,
+                          "extends": "CliApp.Cmd.AbstractBase",
+                          "superTypeParams": [
+                            {
+                              "repr": "QueryContext",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "QueryContext",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "RootContext",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "RootContext",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            },
+                            {
+                              "repr": "QueryCmdOpts",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "QueryCmdOpts",
+                                "resolution": {
+                                  "kind": "local"
+                                }
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
