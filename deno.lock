@@ -2,7 +2,8 @@
   "version": "5",
   "specifiers": {
     "jsr:@epdoc/cliapp@^2.3.14": "2.3.14",
-    "jsr:@epdoc/colors@^1.1.3": "1.1.3",
+    "jsr:@epdoc/colors@^1.1.3": "1.1.4",
+    "jsr:@epdoc/colors@^1.1.4": "1.1.4",
     "jsr:@epdoc/datetime@^4.2.9": "4.2.9",
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
     "jsr:@epdoc/fmt@^1.0.19": "1.0.19",
@@ -37,7 +38,7 @@
     "@epdoc/cliapp@2.3.14": {
       "integrity": "a8bc8150924a7bd6e5d451d11e4244d92adfdfd82773251f0a61dd4a8d92837a",
       "dependencies": [
-        "jsr:@epdoc/colors",
+        "jsr:@epdoc/colors@^1.1.3",
         "jsr:@epdoc/datetime",
         "jsr:@epdoc/progress",
         "jsr:@epdoc/type",
@@ -48,6 +49,12 @@
     },
     "@epdoc/colors@1.1.3": {
       "integrity": "8ca629eba888a4b567e09b5f7f3cc49273d06d054af5f2d398a60c23b9b86492",
+      "dependencies": [
+        "jsr:@std/fmt"
+      ]
+    },
+    "@epdoc/colors@1.1.4": {
+      "integrity": "b217220778c0801cc881fd20fcd5e495cb9f9773fa217242c814cfc701608ccf",
       "dependencies": [
         "jsr:@std/fmt"
       ]
@@ -67,7 +74,7 @@
     "@epdoc/fmt@1.0.19": {
       "integrity": "6fce6b8799c5bc0d4036062ff3cbd6a60c74e13d7b41d6218d81c8575168593c",
       "dependencies": [
-        "jsr:@epdoc/colors",
+        "jsr:@epdoc/colors@^1.1.3",
         "jsr:@epdoc/duration",
         "jsr:@epdoc/type",
         "jsr:@std/fmt"
@@ -109,7 +116,7 @@
     "@epdoc/msgbuilder@1.0.3": {
       "integrity": "2619cd6ee5bb65f7f4565f8e8370274cd22fcdbd7730d5142151d4bcaefa8736",
       "dependencies": [
-        "jsr:@epdoc/colors",
+        "jsr:@epdoc/colors@^1.1.3",
         "jsr:@epdoc/datetime",
         "jsr:@epdoc/duration",
         "jsr:@epdoc/fmt",
@@ -285,7 +292,7 @@
       },
       "packages/msgbuilder": {
         "dependencies": [
-          "jsr:@epdoc/colors@^1.1.3",
+          "jsr:@epdoc/colors@^1.1.4",
           "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/duration@~0.3.22",
           "jsr:@epdoc/fmt@^1.0.19",
