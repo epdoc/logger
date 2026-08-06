@@ -260,7 +260,7 @@
       },
       "packages/demo-cliapp": {
         "dependencies": [
-          "jsr:@epdoc/logger@^1003.3.75",
+          "jsr:@epdoc/logger@^1003.3.76",
           "jsr:@epdoc/msgbuilder@^1.0.3",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/fmt@^1.0.10"
