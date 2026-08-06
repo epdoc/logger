@@ -23,6 +23,7 @@ build.info.json
 .build-cache.json
 build/
 .opencode/
+tmp/
 
 # Runtime data
 pids
