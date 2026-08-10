@@ -4,6 +4,7 @@
  */
 
 import { cyan, magenta } from '@epdoc/colors/colors';
+import { DateTime } from '@epdoc/datetime';
 import { _ } from '@epdoc/type';
 import { assert } from '@std/assert/assert';
 import { dim } from '@std/fmt/colors';
@@ -152,7 +153,10 @@ export abstract class AbstractCommand<
       const pkg = this.grandpaContext.pkg;
       const pkgVersion = [pkg.version];
       if (pkg.build && pkg.build.number) pkgVersion.push(magenta(`build:${pkg.build.number}`));
-      if (pkg.build && pkg.build.builtAt) pkgVersion.push(cyan(pkg.build.builtAt));
+      if (pkg.build && pkg.build.builtAt) {
+        const dt = DateTime.fromString(pkg.build.builtAt);
+        pkgVersion.push(cyan(dt.withTz().format('yyyy-MM-dd HH:mm:ss')));
+      }
 
       if (!this.params.version) this.params.version = pkgVersion.join(' ');
       if (!this.params.description) this.params.description = pkg.description;

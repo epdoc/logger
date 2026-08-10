@@ -72,3 +72,4 @@ typings/
 .env.test
 
 *scratch.ts
+.opencode/perm-log.jsonl
