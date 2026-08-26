@@ -1,6 +1,14 @@
 import { lime, toStyleFn } from '@epdoc/colors';
 import { DateTime } from '@epdoc/datetime';
-import { BOOL_PRESETS, type BoolFormatterOptions, type BoolPresetName, SuperScript } from '@epdoc/fmt';
+import {
+  BOOL_PRESETS,
+  type BoolFormatterOptions,
+  type BoolPresetName,
+  type DirectionType,
+  Icon,
+  isDirection,
+  SuperScript,
+} from '@epdoc/fmt';
 import { _, type Integer, type SemVerString } from '@epdoc/type';
 import os from 'node:os';
 import { relative } from 'node:path';
@@ -10,26 +18,6 @@ import { consoleStyleFormatters } from './const.ts';
 import type { ConsoleStyleMap, IConsoleErrOpts, IConsoleMsgBuilder } from './types.ts';
 
 const home = os.userInfo().homedir;
-
-const ARROWS = {
-  // Line arrows (Standard)
-  right: '→',
-  left: '←',
-  up: '↑',
-  down: '↓',
-  // Double-line arrows (Heavy/Emphasis)
-  doubleRight: '⇒',
-  doubleLeft: '⇐',
-  doubleUp: '⇑',
-  doubleDown: '⇓',
-  // Solid triangles (Pointers)
-  pRight: '▸',
-  pLeft: '◂',
-  pUp: '▴',
-  pDown: '▾',
-} as const;
-
-type ArrowType = keyof typeof ARROWS;
 
 /**
  * A message builder for creating styled console messages.
@@ -640,18 +628,36 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
 
   /**
    * Appends an arrow icon.
-   * @param type Or color if using default right arrow.
+   * @param arg Direction, or color if using default right arrow.
    * @param color Optional style override.
    */
-  public iarrow(type?: ArrowType | MsgBuilder.StyleFormatterFn, color?: MsgBuilder.StyleFormatterFn): this {
-    let char: string = ARROWS.right;
+  public iarrow(arg?: DirectionType | MsgBuilder.StyleFormatterFn, color?: MsgBuilder.StyleFormatterFn): this {
+    let char: string = Icon.Arrow.Line.right;
     let style = color;
 
-    if (_.isString(type) && type in ARROWS) {
-      char = ARROWS[type as ArrowType];
-    } else if (_.isFunction(type)) {
-      style = type;
+    if (isDirection(arg)) {
+      char = Icon.Arrow.Line[arg];
+    } else if (_.isFunction(arg)) {
+      style = arg;
     }
+    return this.stylize(style ?? this.styles.text, char);
+  }
+
+  /**
+   * Appends a pointer icon.
+   * @param arg Direction, or color if using default right pointer.
+   * @param color Optional style override.
+   */
+  public iptr(arg?: DirectionType | MsgBuilder.StyleFormatterFn, color?: MsgBuilder.StyleFormatterFn): this {
+    let char: string = Icon.Arrow.Ptr.right;
+    let style = color;
+
+    if (isDirection(arg)) {
+      char = Icon.Arrow.Ptr[arg];
+    } else if (_.isFunction(arg)) {
+      style = arg;
+    }
+
     return this.stylize(style ?? this.styles.text, char);
   }
 

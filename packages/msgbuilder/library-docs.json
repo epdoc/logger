@@ -3873,7 +3873,7 @@
           "declarations": [
             {
               "location": {
-                "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                "filename": "https://jsr.io/@epdoc/fmt/1.0.22/src/bool.ts",
                 "line": 6,
                 "col": 0,
                 "byteIndex": 149
@@ -3891,7 +3891,7 @@
                       "doc": "Character or string to display for truthy values. Default: '✓'"
                     },
                     "location": {
-                      "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                      "filename": "https://jsr.io/@epdoc/fmt/1.0.22/src/bool.ts",
                       "line": 8,
                       "col": 2,
                       "byteIndex": 265
@@ -3909,7 +3909,7 @@
                       "doc": "Character or string to display for falsy values. Default: '✗'"
                     },
                     "location": {
-                      "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                      "filename": "https://jsr.io/@epdoc/fmt/1.0.22/src/bool.ts",
                       "line": 10,
                       "col": 2,
                       "byteIndex": 359
@@ -3927,7 +3927,7 @@
                       "doc": "Hex color for truthy values. Default: 0x51d67c (green)"
                     },
                     "location": {
-                      "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                      "filename": "https://jsr.io/@epdoc/fmt/1.0.22/src/bool.ts",
                       "line": 12,
                       "col": 2,
                       "byteIndex": 445
@@ -3945,7 +3945,7 @@
                       "doc": "Hex color for falsy values. Default: 0xef5867 (red)"
                     },
                     "location": {
-                      "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
+                      "filename": "https://jsr.io/@epdoc/fmt/1.0.22/src/bool.ts",
                       "line": 14,
                       "col": 2,
                       "byteIndex": 528
@@ -3959,11 +3959,14 @@
                   },
                   {
                     "name": "bold",
+                    "jsDoc": {
+                      "doc": "Apply bold intensity to the rendered character. Default: false"
+                    },
                     "location": {
-                      "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
-                      "line": 15,
+                      "filename": "https://jsr.io/@epdoc/fmt/1.0.22/src/bool.ts",
+                      "line": 16,
                       "col": 2,
-                      "byteIndex": 551
+                      "byteIndex": 623
                     },
                     "optional": true,
                     "tsType": {
@@ -3974,11 +3977,14 @@
                   },
                   {
                     "name": "dim",
+                    "jsDoc": {
+                      "doc": "Apply dim intensity to the rendered character. Default: false"
+                    },
                     "location": {
-                      "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
-                      "line": 16,
+                      "filename": "https://jsr.io/@epdoc/fmt/1.0.22/src/bool.ts",
+                      "line": 18,
                       "col": 2,
-                      "byteIndex": 569
+                      "byteIndex": 712
                     },
                     "optional": true,
                     "tsType": {
@@ -3997,10 +4003,10 @@
           "declarations": [
             {
               "location": {
-                "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
-                "line": 76,
+                "filename": "https://jsr.io/@epdoc/fmt/1.0.22/src/bool.ts",
+                "line": 80,
                 "col": 0,
-                "byteIndex": 2430
+                "byteIndex": 2681
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -4023,12 +4029,15 @@
             },
             {
               "location": {
-                "filename": "https://jsr.io/@epdoc/fmt/1.0.19/src/bool.ts",
-                "line": 78,
+                "filename": "https://jsr.io/@epdoc/fmt/1.0.22/src/bool.ts",
+                "line": 87,
                 "col": 13,
-                "byteIndex": 2496
+                "byteIndex": 2931
               },
               "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Runtime mapping of every preset name to itself, useful for iterating over or\ndynamically looking up preset names. Prefer the {@link BoolPreset} type for\nstatic usage."
+              },
               "kind": "variable",
               "def": {
                 "tsType": {
