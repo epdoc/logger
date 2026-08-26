@@ -19,9 +19,8 @@ npm-debug.log*
 
 # build data
 build.date.json
-build.info.json
-.build-cache.json
-build/
+**/build/*
+!**/build/build-info.json
 .opencode/
 tmp/
 
