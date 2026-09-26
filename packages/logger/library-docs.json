@@ -1801,10 +1801,10 @@
                 ],
                 "implements": [
                   {
-                    "repr": "[Transport.IBaseOptions]",
+                    "repr": "Transport.IBaseOptions",
                     "kind": "typeRef",
                     "value": {
-                      "typeName": "[Transport.IBaseOptions]",
+                      "typeName": "Transport.IBaseOptions",
                       "resolution": {
                         "kind": "import",
                         "specifier": "$transport"
@@ -2342,10 +2342,10 @@
                 ],
                 "implements": [
                   {
-                    "repr": "[MsgBuilder.IEmitter]",
+                    "repr": "MsgBuilder.IEmitter",
                     "kind": "typeRef",
                     "value": {
-                      "typeName": "[MsgBuilder.IEmitter]",
+                      "typeName": "MsgBuilder.IEmitter",
                       "resolution": {
                         "kind": "import",
                         "specifier": "@epdoc/msgbuilder"
@@ -6202,6 +6202,450 @@
                               "typeName": "Partial"
                             }
                           }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Base",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/mod.ts",
+                          "line": 0,
+                          "col": 7,
+                          "byteIndex": 7
+                        },
+                        "declarationKind": "export",
+                        "kind": "namespace",
+                        "def": {
+                          "elements": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Buffer",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/mod.ts",
+                          "line": 1,
+                          "col": 7,
+                          "byteIndex": 46
+                        },
+                        "declarationKind": "export",
+                        "kind": "namespace",
+                        "def": {
+                          "elements": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Console",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/mod.ts",
+                          "line": 2,
+                          "col": 7,
+                          "byteIndex": 89
+                        },
+                        "declarationKind": "export",
+                        "kind": "namespace",
+                        "def": {
+                          "elements": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "File",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/mod.ts",
+                          "line": 4,
+                          "col": 7,
+                          "byteIndex": 163
+                        },
+                        "declarationKind": "export",
+                        "kind": "namespace",
+                        "def": {
+                          "elements": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "Influx",
+                    "declarations": [
+                      {
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/mod.ts",
+                          "line": 5,
+                          "col": 7,
+                          "byteIndex": 202
+                        },
+                        "declarationKind": "export",
+                        "kind": "namespace",
+                        "def": {
+                          "elements": [
+                            {
+                              "name": "isInfluxOpts",
+                              "declarations": [
+                                {
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/guards.ts",
+                                    "line": 3,
+                                    "col": 0,
+                                    "byteIndex": 77
+                                  },
+                                  "declarationKind": "export",
+                                  "kind": "function",
+                                  "def": {
+                                    "params": [
+                                      {
+                                        "kind": "identifier",
+                                        "name": "val",
+                                        "optional": false,
+                                        "tsType": {
+                                          "repr": "unknown",
+                                          "kind": "keyword",
+                                          "value": "unknown"
+                                        }
+                                      }
+                                    ],
+                                    "returnType": {
+                                      "repr": "val is Influx.Options",
+                                      "kind": "typePredicate",
+                                      "value": {
+                                        "param": {
+                                          "type": "identifier",
+                                          "name": "val"
+                                        },
+                                        "type": {
+                                          "repr": "Influx.Options",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "Influx.Options",
+                                            "resolution": {
+                                              "kind": "import",
+                                              "specifier": "./types.ts"
+                                            }
+                                          }
+                                        }
+                                      }
+                                    },
+                                    "hasBody": true
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "name": "Options",
+                              "declarations": [
+                                {
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                    "line": 6,
+                                    "col": 0,
+                                    "byteIndex": 156
+                                  },
+                                  "declarationKind": "export",
+                                  "jsDoc": {
+                                    "doc": "Options for configuring the InfluxDB transport."
+                                  },
+                                  "kind": "interface",
+                                  "def": {
+                                    "extends": [
+                                      {
+                                        "repr": "Transport.IExtendedOptions",
+                                        "kind": "typeRef",
+                                        "value": {
+                                          "typeName": "Transport.IExtendedOptions",
+                                          "resolution": {
+                                            "kind": "import",
+                                            "specifier": "../types.ts"
+                                          }
+                                        }
+                                      }
+                                    ],
+                                    "properties": [
+                                      {
+                                        "name": "host",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 7,
+                                          "col": 2,
+                                          "byteIndex": 220
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "org",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 8,
+                                          "col": 2,
+                                          "byteIndex": 236
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "bucket",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 9,
+                                          "col": 2,
+                                          "byteIndex": 251
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "token",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 10,
+                                          "col": 2,
+                                          "byteIndex": 269
+                                        },
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "service",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 11,
+                                          "col": 2,
+                                          "byteIndex": 286
+                                        },
+                                        "optional": true,
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "environment",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 12,
+                                          "col": 2,
+                                          "byteIndex": 334
+                                        },
+                                        "optional": true,
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "hostname",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 13,
+                                          "col": 2,
+                                          "byteIndex": 380
+                                        },
+                                        "optional": true,
+                                        "tsType": {
+                                          "repr": "string",
+                                          "kind": "keyword",
+                                          "value": "string"
+                                        }
+                                      },
+                                      {
+                                        "name": "batchSize",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 14,
+                                          "col": 2,
+                                          "byteIndex": 436
+                                        },
+                                        "optional": true,
+                                        "tsType": {
+                                          "repr": "number",
+                                          "kind": "keyword",
+                                          "value": "number"
+                                        }
+                                      },
+                                      {
+                                        "name": "flushInterval",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 15,
+                                          "col": 2,
+                                          "byteIndex": 474
+                                        },
+                                        "optional": true,
+                                        "tsType": {
+                                          "repr": "number",
+                                          "kind": "keyword",
+                                          "value": "number"
+                                        }
+                                      },
+                                      {
+                                        "name": "maxRetries",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 16,
+                                          "col": 2,
+                                          "byteIndex": 519
+                                        },
+                                        "optional": true,
+                                        "tsType": {
+                                          "repr": "number",
+                                          "kind": "keyword",
+                                          "value": "number"
+                                        }
+                                      },
+                                      {
+                                        "name": "retryBaseDelay",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 17,
+                                          "col": 2,
+                                          "byteIndex": 556
+                                        },
+                                        "optional": true,
+                                        "tsType": {
+                                          "repr": "number",
+                                          "kind": "keyword",
+                                          "value": "number"
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            },
+                            {
+                              "name": "DroppedMessageStats",
+                              "declarations": [
+                                {
+                                  "location": {
+                                    "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                    "line": 23,
+                                    "col": 0,
+                                    "byteIndex": 661
+                                  },
+                                  "declarationKind": "export",
+                                  "jsDoc": {
+                                    "doc": "Tracks dropped messages for summary reporting."
+                                  },
+                                  "kind": "interface",
+                                  "def": {
+                                    "properties": [
+                                      {
+                                        "name": "total",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 24,
+                                          "col": 2,
+                                          "byteIndex": 702
+                                        },
+                                        "tsType": {
+                                          "repr": "number",
+                                          "kind": "keyword",
+                                          "value": "number"
+                                        }
+                                      },
+                                      {
+                                        "name": "first",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 25,
+                                          "col": 2,
+                                          "byteIndex": 719
+                                        },
+                                        "tsType": {
+                                          "repr": "DateTime",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "DateTime",
+                                            "resolution": {
+                                              "kind": "import",
+                                              "specifier": "@epdoc/datetime",
+                                              "name": "DateTime"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "name": "last",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 26,
+                                          "col": 2,
+                                          "byteIndex": 738
+                                        },
+                                        "tsType": {
+                                          "repr": "DateTime",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "DateTime",
+                                            "resolution": {
+                                              "kind": "import",
+                                              "specifier": "@epdoc/datetime",
+                                              "name": "DateTime"
+                                            }
+                                          }
+                                        }
+                                      },
+                                      {
+                                        "name": "byLevel",
+                                        "location": {
+                                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/logger/src/transports/influx/types.ts",
+                                          "line": 27,
+                                          "col": 2,
+                                          "byteIndex": 756
+                                        },
+                                        "tsType": {
+                                          "repr": "Record",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeParams": [
+                                              {
+                                                "repr": "string",
+                                                "kind": "keyword",
+                                                "value": "string"
+                                              },
+                                              {
+                                                "repr": "number",
+                                                "kind": "keyword",
+                                                "value": "number"
+                                              }
+                                            ],
+                                            "typeName": "Record"
+                                          }
+                                        }
+                                      }
+                                    ]
+                                  }
+                                }
+                              ]
+                            }
+                          ]
                         }
                       }
                     ]

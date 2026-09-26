@@ -21,7 +21,7 @@ Deno.test('Logger Indentation', async (t) => {
 
       log.indent();
       assert.strictEqual(log.getdent().length, 1);
-      assert.strictEqual(log.getdent()[0], ' ');
+      assert.strictEqual(log.getdent()[0].str, ' ');
     });
 
     await t.step('should support numeric indent (multiple spaces)', async () => {
@@ -30,9 +30,9 @@ Deno.test('Logger Indentation', async (t) => {
 
       log.indent(3);
       assert.strictEqual(log.getdent().length, 3);
-      assert.strictEqual(log.getdent()[0], ' ');
-      assert.strictEqual(log.getdent()[1], ' ');
-      assert.strictEqual(log.getdent()[2], ' ');
+      assert.strictEqual(log.getdent()[0].str, ' ');
+      assert.strictEqual(log.getdent()[1].str, ' ');
+      assert.strictEqual(log.getdent()[2].str, ' ');
     });
 
     await t.step('should support string indent', async () => {
@@ -41,7 +41,7 @@ Deno.test('Logger Indentation', async (t) => {
 
       log.indent('>>');
       assert.strictEqual(log.getdent().length, 1);
-      assert.strictEqual(log.getdent()[0], '>>');
+      assert.strictEqual(log.getdent()[0].str, '>>');
     });
 
     await t.step('should support array indent', async () => {
@@ -50,9 +50,9 @@ Deno.test('Logger Indentation', async (t) => {
 
       log.indent(['[', 'nested', ']']);
       assert.strictEqual(log.getdent().length, 3);
-      assert.strictEqual(log.getdent()[0], '[');
-      assert.strictEqual(log.getdent()[1], 'nested');
-      assert.strictEqual(log.getdent()[2], ']');
+      assert.strictEqual(log.getdent()[0].str, '[');
+      assert.strictEqual(log.getdent()[1].str, 'nested');
+      assert.strictEqual(log.getdent()[2].str, ']');
     });
 
     await t.step('should accumulate multiple indents', async () => {
@@ -64,10 +64,10 @@ Deno.test('Logger Indentation', async (t) => {
       log.indent('level2');
 
       assert.strictEqual(log.getdent().length, 4);
-      assert.strictEqual(log.getdent()[0], 'level1');
-      assert.strictEqual(log.getdent()[1], ' ');
-      assert.strictEqual(log.getdent()[2], ' ');
-      assert.strictEqual(log.getdent()[3], 'level2');
+      assert.strictEqual(log.getdent()[0].str, 'level1');
+      assert.strictEqual(log.getdent()[1].str, ' ');
+      assert.strictEqual(log.getdent()[2].str, ' ');
+      assert.strictEqual(log.getdent()[3].str, 'level2');
     });
   });
 
@@ -83,8 +83,8 @@ Deno.test('Logger Indentation', async (t) => {
 
       log.outdent();
       assert.strictEqual(log.getdent().length, 2);
-      assert.strictEqual(log.getdent()[0], 'a');
-      assert.strictEqual(log.getdent()[1], 'b');
+      assert.strictEqual(log.getdent()[0].str, 'a');
+      assert.strictEqual(log.getdent()[1].str, 'b');
     });
 
     await t.step('should support multiple outdent', async () => {
@@ -98,7 +98,7 @@ Deno.test('Logger Indentation', async (t) => {
 
       log.outdent(3);
       assert.strictEqual(log.getdent().length, 1);
-      assert.strictEqual(log.getdent()[0], 'a');
+      assert.strictEqual(log.getdent()[0].str, 'a');
     });
 
     await t.step('should handle outdent beyond available levels', async () => {
@@ -155,8 +155,8 @@ Deno.test('Logger Indentation', async (t) => {
       const childLog = parentLog.getChild({ reqId: 'test-123' });
 
       assert.strictEqual(childLog.getdent().length, 2);
-      assert.strictEqual(childLog.getdent()[0], 'parent1');
-      assert.strictEqual(childLog.getdent()[1], 'parent2');
+      assert.strictEqual(childLog.getdent()[0].str, 'parent1');
+      assert.strictEqual(childLog.getdent()[1].str, 'parent2');
     });
 
     await t.step('should maintain independent indentation from parent', async () => {
@@ -170,13 +170,13 @@ Deno.test('Logger Indentation', async (t) => {
       childLog.indent('child-only');
       assert.strictEqual(childLog.getdent().length, 2);
       assert.strictEqual(parentLog.getdent().length, 1);
-      assert.strictEqual(childLog.getdent()[1], 'child-only');
+      assert.strictEqual(childLog.getdent()[1].str, 'child-only');
 
       // Parent modifications should not affect existing child
       parentLog.indent('parent2');
       assert.strictEqual(parentLog.getdent().length, 2);
       assert.strictEqual(childLog.getdent().length, 2);
-      assert.strictEqual(childLog.getdent()[1], 'child-only');
+      assert.strictEqual(childLog.getdent()[1].str, 'child-only');
     });
   });
 
@@ -279,7 +279,7 @@ Deno.test('Logger Indentation', async (t) => {
       log.outdent(); // Remove branch
       log.indent('└─'); // Final branch
       assert.strictEqual(log.getdent().length, 2);
-      assert.strictEqual(log.getdent()[1], '└─');
+      assert.strictEqual(log.getdent()[1].str, '└─');
 
       log.outdent(2); // Remove all
       assert.strictEqual(log.getdent().length, 0);
