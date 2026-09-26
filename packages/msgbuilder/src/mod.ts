@@ -1,6 +1,7 @@
 import * as Console from './console/mod.ts';
 
 export { AbstractMsgBuilder as Abstract } from './abstract.ts';
+export { LINE_TYPES } from './consts.ts';
 export { ConsoleEmitter, TestEmitter } from './emitter.ts';
 export { TextBuilder } from './text-builder.ts';
 export * from './types.ts';

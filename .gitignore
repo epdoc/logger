@@ -23,6 +23,7 @@ build.date.json
 !**/build/build-info.json
 .opencode/
 tmp/
+PERMS.md
 
 # Runtime data
 pids

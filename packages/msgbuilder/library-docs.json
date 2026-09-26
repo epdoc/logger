@@ -15,9 +15,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                "line": 28,
+                "line": 38,
                 "col": 0,
-                "byteIndex": 1310
+                "byteIndex": 1354
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -60,9 +60,9 @@
                     ],
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 51,
+                      "line": 61,
                       "col": 2,
-                      "byteIndex": 2197
+                      "byteIndex": 2241
                     }
                   }
                 ],
@@ -84,9 +84,9 @@
                     "name": "_timestamp",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 29,
+                      "line": 39,
                       "col": 2,
-                      "byteIndex": 1377
+                      "byteIndex": 1421
                     }
                   },
                   {
@@ -106,9 +106,9 @@
                     "name": "_elapsed",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 30,
+                      "line": 40,
                       "col": 2,
-                      "byteIndex": 1436
+                      "byteIndex": 1480
                     }
                   },
                   {
@@ -128,9 +128,9 @@
                     "name": "_tabSize",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 31,
+                      "line": 41,
                       "col": 2,
-                      "byteIndex": 1478
+                      "byteIndex": 1522
                     }
                   },
                   {
@@ -150,9 +150,9 @@
                     "name": "_emitter",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 32,
+                      "line": 42,
                       "col": 2,
-                      "byteIndex": 1528
+                      "byteIndex": 1572
                     }
                   },
                   {
@@ -165,9 +165,9 @@
                     "name": "_msgIndent",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 34,
+                      "line": 44,
                       "col": 2,
-                      "byteIndex": 1561
+                      "byteIndex": 1605
                     }
                   },
                   {
@@ -190,9 +190,9 @@
                     "name": "_msgParts",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 35,
+                      "line": 45,
                       "col": 2,
-                      "byteIndex": 1598
+                      "byteIndex": 1642
                     }
                   },
                   {
@@ -222,9 +222,9 @@
                     "name": "_data",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 36,
+                      "line": 46,
                       "col": 2,
-                      "byteIndex": 1637
+                      "byteIndex": 1681
                     }
                   },
                   {
@@ -240,9 +240,9 @@
                     "name": "_suffix",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 37,
+                      "line": 47,
                       "col": 2,
-                      "byteIndex": 1674
+                      "byteIndex": 1718
                     }
                   },
                   {
@@ -255,9 +255,9 @@
                     "name": "_showElapsed",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 38,
+                      "line": 48,
                       "col": 2,
-                      "byteIndex": 1710
+                      "byteIndex": 1754
                     }
                   },
                   {
@@ -273,9 +273,9 @@
                     "name": "_allowStack",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 39,
+                      "line": 49,
                       "col": 2,
-                      "byteIndex": 1753
+                      "byteIndex": 1797
                     }
                   },
                   {
@@ -291,9 +291,9 @@
                     "name": "_conditionMetStack",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 40,
+                      "line": 50,
                       "col": 2,
-                      "byteIndex": 1794
+                      "byteIndex": 1838
                     }
                   },
                   {
@@ -306,9 +306,9 @@
                     "name": "_dimMode",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 41,
+                      "line": 51,
                       "col": 2,
-                      "byteIndex": 1842
+                      "byteIndex": 1886
                     }
                   },
                   {
@@ -321,13 +321,68 @@
                     "name": "_boldMode",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 42,
+                      "line": 52,
                       "col": 2,
-                      "byteIndex": 1881
+                      "byteIndex": 1925
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "The active quote theme for this builder class.\n\nSubclasses override this static to theme quoted indentation (e.g. the\nrainbow palette). The instance getter {@link AbstractMsgBuilder.quoteTheme}\nresolves to the theme declared on the concrete class, so a subclass\noverride is respected automatically."
+                    },
+                    "tsType": {
+                      "repr": "QuoteTheme",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "QuoteTheme",
+                        "resolution": {
+                          "kind": "import",
+                          "specifier": "./types.ts",
+                          "name": "QuoteTheme"
+                        }
+                      }
+                    },
+                    "isStatic": true,
+                    "name": "quoteTheme",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 73,
+                      "col": 2,
+                      "byteIndex": 2675
                     }
                   }
                 ],
                 "methods": [
+                  {
+                    "jsDoc": {
+                      "doc": "Returns the quote theme for the current class."
+                    },
+                    "accessibility": "public",
+                    "name": "quoteTheme",
+                    "kind": "getter",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "QuoteTheme",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "QuoteTheme",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts",
+                            "name": "QuoteTheme"
+                          }
+                        }
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 78,
+                      "col": 2,
+                      "byteIndex": 2814
+                    }
+                  },
                   {
                     "jsDoc": {
                       "doc": "Resets the message builder to its initial state, clearing all message parts and data.\n",
@@ -355,9 +410,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 60,
+                      "line": 87,
                       "col": 2,
-                      "byteIndex": 2455
+                      "byteIndex": 3094
                     }
                   },
                   {
@@ -422,9 +477,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 75,
+                      "line": 102,
                       "col": 2,
-                      "byteIndex": 2883
+                      "byteIndex": 3522
                     }
                   },
                   {
@@ -512,9 +567,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 92,
+                      "line": 119,
                       "col": 2,
-                      "byteIndex": 3421
+                      "byteIndex": 4060
                     }
                   },
                   {
@@ -561,9 +616,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 105,
+                      "line": 132,
                       "col": 2,
-                      "byteIndex": 3775
+                      "byteIndex": 4414
                     }
                   },
                   {
@@ -591,9 +646,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 110,
+                      "line": 137,
                       "col": 2,
-                      "byteIndex": 3884
+                      "byteIndex": 4523
                     }
                   },
                   {
@@ -621,9 +676,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 120,
+                      "line": 147,
                       "col": 2,
-                      "byteIndex": 4245
+                      "byteIndex": 4884
                     }
                   },
                   {
@@ -640,9 +695,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 142,
+                      "line": 169,
                       "col": 2,
-                      "byteIndex": 5066
+                      "byteIndex": 5705
                     }
                   },
                   {
@@ -659,9 +714,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 161,
+                      "line": 188,
                       "col": 2,
-                      "byteIndex": 5801
+                      "byteIndex": 6440
                     }
                   },
                   {
@@ -687,9 +742,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 175,
+                      "line": 202,
                       "col": 2,
-                      "byteIndex": 6214
+                      "byteIndex": 6853
                     }
                   },
                   {
@@ -793,9 +848,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 189,
+                      "line": 216,
                       "col": 2,
-                      "byteIndex": 6650
+                      "byteIndex": 7289
                     }
                   },
                   {
@@ -899,9 +954,81 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 214,
+                      "line": 241,
                       "col": 2,
-                      "byteIndex": 7438
+                      "byteIndex": 8077
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Prepends a set of indentation levels to the beginning of the message.\n\nEach level becomes its own message part, preserving the level's style so\nthat it strips correctly under `color: false` formatting.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "levels",
+                          "tsType": {
+                            "repr": "IndentLevel[]",
+                            "kind": "array",
+                            "value": {
+                              "repr": "IndentLevel",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "IndentLevel",
+                                "resolution": {
+                                  "kind": "typeParam"
+                                }
+                              }
+                            }
+                          },
+                          "doc": "The indentation levels to prepend, in order."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The current instance for method chaining."
+                        }
+                      ]
+                    },
+                    "accessibility": "public",
+                    "name": "prependIndent",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "levels",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "IndentLevel",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "IndentLevel",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "./types.ts",
+                                  "name": "IndentLevel"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 268,
+                      "col": 2,
+                      "byteIndex": 8980
                     }
                   },
                   {
@@ -943,9 +1070,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 236,
+                      "line": 286,
                       "col": 2,
-                      "byteIndex": 8055
+                      "byteIndex": 9450
                     }
                   },
                   {
@@ -987,9 +1114,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 247,
+                      "line": 297,
                       "col": 2,
-                      "byteIndex": 8309
+                      "byteIndex": 9704
                     }
                   },
                   {
@@ -1115,9 +1242,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 259,
+                      "line": 309,
                       "col": 2,
-                      "byteIndex": 8701
+                      "byteIndex": 10096
                     }
                   },
                   {
@@ -1178,9 +1305,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 284,
+                      "line": 334,
                       "col": 2,
-                      "byteIndex": 9458
+                      "byteIndex": 10853
                     }
                   },
                   {
@@ -1241,9 +1368,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 295,
+                      "line": 345,
                       "col": 2,
-                      "byteIndex": 9759
+                      "byteIndex": 11154
                     }
                   },
                   {
@@ -1298,9 +1425,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 311,
+                      "line": 361,
                       "col": 2,
-                      "byteIndex": 10244
+                      "byteIndex": 11639
                     }
                   },
                   {
@@ -1400,9 +1527,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 338,
+                      "line": 388,
                       "col": 2,
-                      "byteIndex": 11270
+                      "byteIndex": 12665
                     }
                   },
                   {
@@ -1538,9 +1665,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 367,
+                      "line": 417,
                       "col": 2,
-                      "byteIndex": 12402
+                      "byteIndex": 13797
                     }
                   },
                   {
@@ -1605,9 +1732,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 403,
+                      "line": 453,
                       "col": 2,
-                      "byteIndex": 13663
+                      "byteIndex": 15058
                     }
                   },
                   {
@@ -1632,9 +1759,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 411,
+                      "line": 461,
                       "col": 2,
-                      "byteIndex": 13850
+                      "byteIndex": 15245
                     }
                   },
                   {
@@ -1757,9 +1884,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 427,
+                      "line": 477,
                       "col": 2,
-                      "byteIndex": 14771
+                      "byteIndex": 16166
                     }
                   },
                   {
@@ -1779,9 +1906,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 465,
+                      "line": 515,
                       "col": 2,
-                      "byteIndex": 16001
+                      "byteIndex": 17396
                     }
                   }
                 ],
@@ -1799,6 +1926,53 @@
                     }
                   }
                 ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "LINE_TYPES",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/consts.ts",
+                "line": 8,
+                "col": 13,
+                "byteIndex": 267
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Maps a named {@link LineType} to its bar glyph.\n\nUsed by quote indentation to resolve `line: 'thin' | 'medium' | 'thick'` to a\nconcrete character. Override per call with an explicit `char`."
+              },
+              "kind": "variable",
+              "def": {
+                "tsType": {
+                  "repr": "Record",
+                  "kind": "typeRef",
+                  "value": {
+                    "typeParams": [
+                      {
+                        "repr": "LineType",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "LineType",
+                          "resolution": {
+                            "kind": "import",
+                            "specifier": "./types.ts",
+                            "name": "LineType"
+                          }
+                        }
+                      },
+                      {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      }
+                    ],
+                    "typeName": "Record"
+                  }
+                },
+                "kind": "const"
               }
             }
           ]
@@ -3393,14 +3567,350 @@
           ]
         },
         {
+          "name": "IndentLevel",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 127,
+                "col": 0,
+                "byteIndex": 3988
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A single indentation level applied to a message by a logger.\n\nUnlike a plain string, an indentation level can carry a style formatter so\nthat it renders correctly in both color and no-color output. This is the\nbuilding block for quoted (striped) indentation."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "str",
+                        "jsDoc": {
+                          "doc": "The indentation text (e.g. a quote bar glyph like `▌` or a run of spaces)."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 131,
+                          "col": 2,
+                          "byteIndex": 4112
+                        },
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "style",
+                        "jsDoc": {
+                          "doc": "Optional style formatter applied to the indentation text. When absent (or\nwhen formatting with `color: false`), the text is rendered unstyled."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 136,
+                          "col": 2,
+                          "byteIndex": 4292
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "StyleFormatterFn",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "StyleFormatterFn",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "LineType",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 144,
+                "col": 0,
+                "byteIndex": 4460
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Named vertical bar styles used for quoted (striped) indentation.\n\nThe name is resolved to a glyph via {@link LINE_TYPES}."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "union",
+                  "value": [
+                    {
+                      "repr": "thin",
+                      "kind": "literal",
+                      "value": {
+                        "kind": "string",
+                        "string": "thin"
+                      }
+                    },
+                    {
+                      "repr": "medium",
+                      "kind": "literal",
+                      "value": {
+                        "kind": "string",
+                        "string": "medium"
+                      }
+                    },
+                    {
+                      "repr": "thick",
+                      "kind": "literal",
+                      "value": {
+                        "kind": "string",
+                        "string": "thick"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "QuoteOpts",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 152,
+                "col": 0,
+                "byteIndex": 4688
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "Per-quote overrides for a single `quote()` call.\n\nAll properties are optional and fall back to the active {@link QuoteTheme}\nand then to built-in defaults."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "width",
+                        "jsDoc": {
+                          "doc": "Number of columns the bar occupies. The glyph is repeated `width` times."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 156,
+                          "col": 2,
+                          "byteIndex": 4806
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "line",
+                        "jsDoc": {
+                          "doc": "Named bar style, resolved to a glyph via {@link LINE_TYPES}. Ignored when\n`char` is also provided."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 161,
+                          "col": 2,
+                          "byteIndex": 4945
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "LineType",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "LineType",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "char",
+                        "jsDoc": {
+                          "doc": "An explicit bar glyph, taking precedence over `line` and the theme."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 165,
+                          "col": 2,
+                          "byteIndex": 5049
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "style",
+                        "jsDoc": {
+                          "doc": "A style formatter for the bar, overriding the theme palette for this call."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 169,
+                          "col": 2,
+                          "byteIndex": 5158
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "StyleFormatterFn",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "StyleFormatterFn",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "QuoteTheme",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 179,
+                "col": 0,
+                "byteIndex": 5441
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "A themed quote configuration for quoted (striped) indentation.\n\nA quote level renders a bar glyph in the left gutter of each log line. The\n`palette` is cycled by indentation depth so that nested levels render in\nsuccessive colors."
+              },
+              "kind": "typeAlias",
+              "def": {
+                "tsType": {
+                  "kind": "typeLiteral",
+                  "value": {
+                    "properties": [
+                      {
+                        "name": "char",
+                        "jsDoc": {
+                          "doc": "The default bar glyph (e.g. `▌`, `│`, `┃`). Used when neither `line` nor a\nper-call `char` is provided."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 184,
+                          "col": 2,
+                          "byteIndex": 5602
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "string",
+                          "kind": "keyword",
+                          "value": "string"
+                        }
+                      },
+                      {
+                        "name": "line",
+                        "jsDoc": {
+                          "doc": "The default named bar style. Used when no per-call `line` or `char` is given."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 188,
+                          "col": 2,
+                          "byteIndex": 5714
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "LineType",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "LineType",
+                            "resolution": {
+                              "kind": "local"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "name": "width",
+                        "jsDoc": {
+                          "doc": "The default bar width in columns. Defaults to 1."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 192,
+                          "col": 2,
+                          "byteIndex": 5799
+                        },
+                        "optional": true,
+                        "tsType": {
+                          "repr": "number",
+                          "kind": "keyword",
+                          "value": "number"
+                        }
+                      },
+                      {
+                        "name": "palette",
+                        "jsDoc": {
+                          "doc": "Colors cycled by indentation depth. Each entry is applied to the bar glyph\nat the matching depth."
+                        },
+                        "location": {
+                          "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                          "line": 197,
+                          "col": 2,
+                          "byteIndex": 5937
+                        },
+                        "tsType": {
+                          "kind": "array",
+                          "value": {
+                            "repr": "StyleFormatterFn",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "StyleFormatterFn",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
           "name": "IFormatter",
           "declarations": [
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                "line": 123,
+                "line": 203,
                 "col": 0,
-                "byteIndex": 3758
+                "byteIndex": 6021
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3453,9 +3963,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                      "line": 130,
+                      "line": 210,
                       "col": 2,
-                      "byteIndex": 4059
+                      "byteIndex": 6322
                     },
                     "params": [
                       {
@@ -3541,9 +4051,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                      "line": 137,
+                      "line": 217,
                       "col": 2,
-                      "byteIndex": 4357
+                      "byteIndex": 6620
                     },
                     "params": [
                       {
@@ -3654,9 +4164,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                      "line": 144,
+                      "line": 224,
                       "col": 2,
-                      "byteIndex": 4701
+                      "byteIndex": 6964
                     },
                     "params": [
                       {
@@ -3705,6 +4215,84 @@
                         }
                       }
                     }
+                  },
+                  {
+                    "name": "prependIndent",
+                    "jsDoc": {
+                      "doc": "Prepends a set of indentation levels to the beginning of the message.",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "levels",
+                          "tsType": {
+                            "repr": "IndentLevel[]",
+                            "kind": "array",
+                            "value": {
+                              "repr": "IndentLevel",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "IndentLevel",
+                                "resolution": {
+                                  "kind": "typeParam"
+                                }
+                              }
+                            }
+                          },
+                          "doc": "The indentation levels to prepend, in order."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "IFormatter",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "IFormatter",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "doc": "The current instance for method chaining."
+                        }
+                      ]
+                    },
+                    "kind": "method",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                      "line": 230,
+                      "col": 2,
+                      "byteIndex": 7278
+                    },
+                    "params": [
+                      {
+                        "kind": "identifier",
+                        "name": "levels",
+                        "optional": false,
+                        "tsType": {
+                          "kind": "array",
+                          "value": {
+                            "repr": "IndentLevel",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "IndentLevel",
+                              "resolution": {
+                                "kind": "local"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ],
+                    "returnType": {
+                      "repr": "IFormatter",
+                      "kind": "typeRef",
+                      "value": {
+                        "typeName": "IFormatter",
+                        "resolution": {
+                          "kind": "local"
+                        }
+                      }
+                    }
                   }
                 ]
               }
@@ -3717,9 +4305,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                "line": 157,
+                "line": 243,
                 "col": 0,
-                "byteIndex": 5231
+                "byteIndex": 7784
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3833,9 +4421,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                "line": 161,
+                "line": 247,
                 "col": 0,
-                "byteIndex": 5308
+                "byteIndex": 7861
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -4080,9 +4668,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                "line": 165,
+                "line": 251,
                 "col": 0,
-                "byteIndex": 5444
+                "byteIndex": 7997
               },
               "declarationKind": "export",
               "kind": "interface",
@@ -4092,9 +4680,9 @@
                     "name": "version",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                      "line": 166,
+                      "line": 252,
                       "col": 2,
-                      "byteIndex": 5474
+                      "byteIndex": 8027
                     },
                     "optional": true,
                     "tsType": {

@@ -14,7 +14,7 @@ import os from 'node:os';
 import { relative } from 'node:path';
 import { AbstractMsgBuilder } from '../abstract.ts';
 import type * as MsgBuilder from '../types.ts';
-import { consoleStyleFormatters } from './const.ts';
+import { consoleStyleFormatters, rainbowQuoteTheme } from './const.ts';
 import type { ConsoleStyleMap, IConsoleErrOpts, IConsoleMsgBuilder } from './types.ts';
 
 const home = os.userInfo().homedir;
@@ -80,6 +80,15 @@ export class ConsoleMsgBuilder extends AbstractMsgBuilder implements IConsoleMsg
    * ```
    */
   static styleFormatters: ConsoleStyleMap = consoleStyleFormatters;
+
+  /**
+   * The active quote theme for this class.
+   *
+   * Assign a different {@link MsgBuilder.QuoteTheme} here to change the quoted
+   * indentation theme for all instances of this class (or its subclasses, unless
+   * they declare their own `static quoteTheme`).
+   */
+  static override quoteTheme: MsgBuilder.QuoteTheme = rainbowQuoteTheme;
 
   protected _nextPartPluralize: boolean | undefined;
 

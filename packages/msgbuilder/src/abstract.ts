@@ -5,7 +5,17 @@ import type { HrMilliseconds } from '@epdoc/duration';
 import { _, type Dict, type Integer } from '@epdoc/type';
 import { bold, dim } from '@std/fmt/colors';
 import { ConsoleEmitter } from './emitter.ts';
-import type { EmitterData, FormatOpts, IEmitter, IFormatter, MsgPart, StyleArg, StyleFormatterFn } from './types.ts';
+import type {
+  EmitterData,
+  FormatOpts,
+  IEmitter,
+  IFormatter,
+  IndentLevel,
+  MsgPart,
+  QuoteTheme,
+  StyleArg,
+  StyleFormatterFn,
+} from './types.ts';
 import { countTabsAtBeginningOfString } from './util.ts';
 
 const DEFAULT_TAB_SIZE = 2;
@@ -51,6 +61,23 @@ export abstract class AbstractMsgBuilder implements IFormatter {
    */
   constructor(emitter?: IEmitter) {
     this._emitter = emitter ?? new ConsoleEmitter();
+  }
+
+  /**
+   * The active quote theme for this builder class.
+   *
+   * Subclasses override this static to theme quoted indentation (e.g. the
+   * rainbow palette). The instance getter {@link AbstractMsgBuilder.quoteTheme}
+   * resolves to the theme declared on the concrete class, so a subclass
+   * override is respected automatically.
+   */
+  static quoteTheme: QuoteTheme = { char: '▌', width: 1, palette: [] };
+
+  /**
+   * Returns the quote theme for the current class.
+   */
+  public get quoteTheme(): QuoteTheme {
+    return (this.constructor as typeof AbstractMsgBuilder).quoteTheme;
   }
 
   /**
@@ -227,6 +254,29 @@ export abstract class AbstractMsgBuilder implements IFormatter {
       part.style = finalStyle;
     }
     this._msgParts.unshift(part);
+    return this;
+  }
+
+  /**
+   * Prepends a set of indentation levels to the beginning of the message.
+   *
+   * Each level becomes its own message part, preserving the level's style so
+   * that it strips correctly under `color: false` formatting.
+   *
+   * @param {IndentLevel[]} levels - The indentation levels to prepend, in order.
+   * @returns {this} The current instance for method chaining.
+   */
+  public prependIndent(levels: IndentLevel[]): this {
+    if (levels.length > 0) {
+      const parts: MsgPart[] = levels.map((level) => {
+        const part: MsgPart = { str: level.str };
+        if (level.style) {
+          part.style = level.style;
+        }
+        return part;
+      });
+      this._msgParts = parts.concat(this._msgParts);
+    }
     return this;
   }
 

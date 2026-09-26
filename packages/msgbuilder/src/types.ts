@@ -119,6 +119,86 @@ export type MsgPart = {
 };
 
 /**
+ * A single indentation level applied to a message by a logger.
+ *
+ * Unlike a plain string, an indentation level can carry a style formatter so
+ * that it renders correctly in both color and no-color output. This is the
+ * building block for quoted (striped) indentation.
+ */
+export type IndentLevel = {
+  /**
+   * The indentation text (e.g. a quote bar glyph like `▌` or a run of spaces).
+   */
+  str: string;
+  /**
+   * Optional style formatter applied to the indentation text. When absent (or
+   * when formatting with `color: false`), the text is rendered unstyled.
+   */
+  style?: StyleFormatterFn;
+};
+
+/**
+ * Named vertical bar styles used for quoted (striped) indentation.
+ *
+ * The name is resolved to a glyph via {@link LINE_TYPES}.
+ */
+export type LineType = 'thin' | 'medium' | 'thick';
+
+/**
+ * Per-quote overrides for a single `quote()` call.
+ *
+ * All properties are optional and fall back to the active {@link QuoteTheme}
+ * and then to built-in defaults.
+ */
+export type QuoteOpts = {
+  /**
+   * Number of columns the bar occupies. The glyph is repeated `width` times.
+   */
+  width?: number;
+  /**
+   * Named bar style, resolved to a glyph via {@link LINE_TYPES}. Ignored when
+   * `char` is also provided.
+   */
+  line?: LineType;
+  /**
+   * An explicit bar glyph, taking precedence over `line` and the theme.
+   */
+  char?: string;
+  /**
+   * A style formatter for the bar, overriding the theme palette for this call.
+   */
+  style?: StyleFormatterFn;
+};
+
+/**
+ * A themed quote configuration for quoted (striped) indentation.
+ *
+ * A quote level renders a bar glyph in the left gutter of each log line. The
+ * `palette` is cycled by indentation depth so that nested levels render in
+ * successive colors.
+ */
+export type QuoteTheme = {
+  /**
+   * The default bar glyph (e.g. `▌`, `│`, `┃`). Used when neither `line` nor a
+   * per-call `char` is provided.
+   */
+  char?: string;
+  /**
+   * The default named bar style. Used when no per-call `line` or `char` is given.
+   */
+  line?: LineType;
+  /**
+   * The default bar width in columns. Defaults to 1.
+   */
+  width?: number;
+  /**
+   * Colors cycled by indentation depth. Each entry is applied to the bar glyph
+   * at the matching depth.
+   */
+  palette: StyleFormatterFn[];
+};
+
+/**
  * Interface for formatting a log message.
  */
 export interface IFormatter {
@@ -143,6 +223,12 @@ export interface IFormatter {
    * @returns {IFormatter} The current instance for method chaining.
    */
   prependMsgPart(str: string, style?: StyleFormatterFn | null): IFormatter;
+  /**
+   * Prepends a set of indentation levels to the beginning of the message.
+   * @param {IndentLevel[]} levels - The indentation levels to prepend, in order.
+   * @returns {IFormatter} The current instance for method chaining.
+   */
+  prependIndent(levels: IndentLevel[]): IFormatter;
 
   // demark(name:string,keep?: boolean) : HrMilliseconds
 }

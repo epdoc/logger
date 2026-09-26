@@ -1,7 +1,18 @@
-import { palette } from '@epdoc/colors';
+import {
+  coral,
+  gold as goldFn,
+  green as greenFn,
+  indigo,
+  orange as orangeFn,
+  palette,
+  pink as pinkFn,
+  sky,
+  teal as tealFn,
+  violet,
+} from '@epdoc/colors';
 import * as colors from '@std/fmt/colors';
 import { bold, rgb24 } from '@std/fmt/colors';
-import type { IEmitter } from '../types.ts';
+import type { IEmitter, QuoteTheme } from '../types.ts';
 import { ConsoleMsgBuilder } from './builder.ts';
 import type { ConsoleStyleMap } from './types.ts';
 
@@ -114,3 +125,24 @@ export function createConsoleMsgBuilder(emitter: IEmitter): ConsoleMsgBuilder {
 export function createMsgBuilder(emitter: IEmitter): ConsoleMsgBuilder {
   return new ConsoleMsgBuilder(emitter);
 }
+
+/**
+ * A rainbow quote theme using a 24-bit RGB palette.
+ *
+ * The bar glyph is `▌` and nested indentation levels cycle through a warm to
+ * cool color gradient.
+ */
+export const rainbowQuoteTheme: QuoteTheme = {
+  line: 'medium',
+  width: 1,
+  palette: [coral, orangeFn, goldFn, greenFn, tealFn, sky, indigo, violet, pinkFn],
+};
+
+/**
+ * A monochrome quote theme that renders every level dimmed.
+ */
+export const monoQuoteTheme: QuoteTheme = {
+  line: 'medium',
+  width: 1,
+  palette: [colors.dim],
+};

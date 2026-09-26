@@ -12,6 +12,8 @@ export {
   consoleStyleFormattersV1 as styleFormattersV1,
   createConsoleMsgBuilder,
   createMsgBuilder,
+  monoQuoteTheme,
+  rainbowQuoteTheme,
 } from './const.ts';
 
 /**
