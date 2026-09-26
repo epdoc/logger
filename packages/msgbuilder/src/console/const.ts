@@ -1,18 +1,7 @@
-import {
-  coral,
-  gold as goldFn,
-  green as greenFn,
-  indigo,
-  orange as orangeFn,
-  palette,
-  pink as pinkFn,
-  sky,
-  teal as tealFn,
-  violet,
-} from '@epdoc/colors';
+import { palette } from '@epdoc/colors';
 import * as colors from '@std/fmt/colors';
 import { bold, rgb24 } from '@std/fmt/colors';
-import type { IEmitter, QuoteTheme } from '../types.ts';
+import type { IEmitter, QuoteTheme, StyleFormatterFn } from '../types.ts';
 import { ConsoleMsgBuilder } from './builder.ts';
 import type { ConsoleStyleMap } from './types.ts';
 
@@ -127,15 +116,42 @@ export function createMsgBuilder(emitter: IEmitter): ConsoleMsgBuilder {
 }
 
 /**
- * A rainbow quote theme using a 24-bit RGB palette.
+ * Blends a 24-bit RGB color toward white to produce a subdued pastel tone.
  *
- * The bar glyph is `▌` and nested indentation levels cycle through a warm to
- * cool color gradient.
+ * @param {number} rgb - The base color as a 24-bit RGB integer (e.g. `0xef4444`).
+ * @param {number} [mix=0.45] - How far to blend toward white (0 = base, 1 = white).
+ * @returns {StyleFormatterFn} A style formatter that renders text in the pastel tone.
+ */
+function pastel(rgb: number, mix = 0.45): StyleFormatterFn {
+  const r = (rgb >> 16) & 0xff;
+  const g = (rgb >> 8) & 0xff;
+  const b = rgb & 0xff;
+  const lighten = (c: number) => Math.round(c + (255 - c) * mix);
+  const mixed = (lighten(r) << 16) | (lighten(g) << 8) | lighten(b);
+  return (str: string) => rgb24(str, mixed);
+}
+
+/**
+ * The default quote theme: a cycle of subdued, pastel colors.
+ *
+ * Adjacent entries are deliberately contrasting hues rather than a smooth
+ * rainbow gradient, so nested bars remain easy to tell apart. Colors are
+ * indexed by quote depth and wrap around.
  */
 export const rainbowQuoteTheme: QuoteTheme = {
   line: 'medium',
   width: 1,
-  palette: [coral, orangeFn, goldFn, greenFn, tealFn, sky, indigo, violet, pinkFn],
+  palette: [
+    pastel(0xef4444), // red
+    pastel(0x60a5fa), // blue
+    pastel(0x51d67c), // green
+    pastel(0xf0883e), // orange
+    pastel(0xa78bfa), // violet
+    pastel(0xfbbf24), // yellow
+    pastel(0x2dd4a8), // teal
+    pastel(0xfb7185), // rose
+    pastel(0x58d1eb), // cyan
+  ],
 };
 
 /**
