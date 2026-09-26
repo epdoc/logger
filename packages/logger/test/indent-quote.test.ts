@@ -1,4 +1,4 @@
-import type { Console } from '@epdoc/msgbuilder';
+import { Console } from '@epdoc/msgbuilder';
 import * as assert from 'node:assert';
 import * as Log from '../src/mod.ts';
 import { BufferTransport } from '../src/transports/buffer/transport.ts';
@@ -41,6 +41,20 @@ Deno.test('Logger Quote Indentation', async (t) => {
       assert.strictEqual(log.getdent()[1].str, '▌');
       assert.strictEqual(typeof log.getdent()[0].style, 'function');
       assert.notStrictEqual(log.getdent()[0].style, log.getdent()[1].style);
+    });
+
+    await t.step('a plain indent does not consume a palette slot', async () => {
+      const logMgr = new Log.Mgr<M>().initLevels();
+      const log = await logMgr.getLogger<L>();
+
+      log.indent(1);
+      log.quote();
+      log.quote();
+
+      // The leading plain indent (invisible) must not shift the bar colors.
+      assert.strictEqual(log.getdent()[0].str, ' ');
+      assert.strictEqual(log.getdent()[1].style, Console.rainbowQuoteTheme.palette[0]);
+      assert.strictEqual(log.getdent()[2].style, Console.rainbowQuoteTheme.palette[1]);
     });
 
     await t.step('named line types resolve to glyphs', async () => {

@@ -69,6 +69,15 @@ export class DisposableIndent<M extends MsgBuilder.Abstract> implements Disposab
 export type QuoteMod = MsgBuilder.LineType | string | MsgBuilder.StyleFormatterFn | MsgBuilder.QuoteOpts;
 
 /**
+ * An internal indentation stack entry.
+ *
+ * The `quote` flag marks bar levels so that palette colors advance per bar
+ * rather than per plain indent level. This keeps a leading {@link IndentLogger.indent}
+ * (invisible spacing) from consuming a rainbow color.
+ */
+type IndentEntry = MsgBuilder.IndentLevel & { quote?: boolean };
+
+/**
  * Options for emitting blank lines via {@link IndentLogger.blank}.
  */
 export interface BlankOpts {
@@ -103,7 +112,7 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    * Each level in the array is prepended to the log message.
    * @protected
    */
-  protected _indent: MsgBuilder.IndentLevel[] = [];
+  protected _indent: IndentEntry[] = [];
   /**
    * The quote theme (bar glyph, width, and palette) resolved lazily from the
    * message builder on first use.
@@ -452,16 +461,18 @@ export class IndentLogger<M extends MsgBuilder.Abstract> extends Base.Logger<M> 
    * @returns {MsgBuilder.IndentLevel} The quote level.
    * @protected
    */
-  protected _quoteLevel(opts?: MsgBuilder.QuoteOpts): MsgBuilder.IndentLevel {
+  protected _quoteLevel(opts?: MsgBuilder.QuoteOpts): IndentEntry {
     const theme = this._resolveQuoteTheme();
     const line = opts?.line ?? theme.line;
     const char = opts?.char ?? (line ? LINE_TYPES[line] : undefined) ?? theme.char ?? DEFAULT_QUOTE_CHAR;
     const width = opts?.width ?? theme.width ?? 1;
-    const depth = this._indent.length;
+    // Advance the palette per quote (bar) level, not per plain indent level, so
+    // invisible indents do not consume rainbow colors.
+    const depth = this._indent.reduce((count, level) => count + (level.quote ? 1 : 0), 0);
     const palette = theme.palette ?? [];
     const style = opts?.style ?? (palette.length > 0 ? palette[depth % palette.length] : undefined);
     const str = width > 1 ? char.repeat(width) : char;
-    return style ? { str, style } : { str };
+    return style ? { str, style, quote: true } : { str, quote: true };
   }
 
   /**
