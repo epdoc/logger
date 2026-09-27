@@ -1378,9 +1378,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                "line": 41,
+                "line": 42,
                 "col": 0,
-                "byteIndex": 1565
+                "byteIndex": 1608
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -1445,9 +1445,9 @@
                     ],
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 54,
+                      "line": 55,
                       "col": 2,
-                      "byteIndex": 1918
+                      "byteIndex": 1961
                     }
                   }
                 ],
@@ -1471,9 +1471,9 @@
                     "name": "ctx",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 47,
+                      "line": 48,
                       "col": 2,
-                      "byteIndex": 1754
+                      "byteIndex": 1797
                     }
                   }
                 ],
@@ -1502,9 +1502,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 59,
+                      "line": 60,
                       "col": 2,
-                      "byteIndex": 2009
+                      "byteIndex": 2052
                     }
                   },
                   {
@@ -1531,9 +1531,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 64,
+                      "line": 65,
                       "col": 2,
-                      "byteIndex": 2097
+                      "byteIndex": 2140
                     }
                   },
                   {
@@ -1560,9 +1560,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 69,
+                      "line": 70,
                       "col": 2,
-                      "byteIndex": 2192
+                      "byteIndex": 2235
                     }
                   },
                   {
@@ -1589,9 +1589,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 74,
+                      "line": 75,
                       "col": 2,
-                      "byteIndex": 2289
+                      "byteIndex": 2332
                     }
                   },
                   {
@@ -1618,9 +1618,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 79,
+                      "line": 80,
                       "col": 2,
-                      "byteIndex": 2388
+                      "byteIndex": 2431
                     }
                   },
                   {
@@ -1647,9 +1647,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 84,
+                      "line": 85,
                       "col": 2,
-                      "byteIndex": 2489
+                      "byteIndex": 2532
                     }
                   },
                   {
@@ -1676,9 +1676,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 89,
+                      "line": 90,
                       "col": 2,
-                      "byteIndex": 2586
+                      "byteIndex": 2629
                     }
                   },
                   {
@@ -1705,9 +1705,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 94,
+                      "line": 95,
                       "col": 2,
-                      "byteIndex": 2682
+                      "byteIndex": 2725
                     }
                   },
                   {
@@ -1734,9 +1734,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 99,
+                      "line": 100,
                       "col": 2,
-                      "byteIndex": 2782
+                      "byteIndex": 2825
                     }
                   },
                   {
@@ -1763,9 +1763,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 104,
+                      "line": 105,
                       "col": 2,
-                      "byteIndex": 2885
+                      "byteIndex": 2928
                     }
                   },
                   {
@@ -1814,9 +1814,586 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
-                      "line": 114,
+                      "line": 115,
                       "col": 2,
-                      "byteIndex": 3076
+                      "byteIndex": 3119
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Run `fn` inside an indented logging scope. The matching outdent is\nguaranteed on return, early return, throw, or promise rejection.\n\nWorks for both sync and async callbacks with a single signature. `T` is\nthe callback's return type and is passed through unchanged: a sync\ncallback returns `T` directly, an async callback returns a `Promise<T>`\nthat resolves to `T`.\n\n`n` is forwarded to {@link @epdoc/logger.Indent.IndentLogger.indent} and\naccepts the same values: a `number` of space levels (negative to remove),\na literal `string`, a `string[]` of levels, `false` to reset (nodent), or\n`undefined` for a single default level.\n",
+                      "tags": [
+                        {
+                          "kind": "template",
+                          "name": "T",
+                          "doc": "The callback's return type, preserved through the scope."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "fn",
+                          "doc": "Callback executed within the indented scope."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "n",
+                          "doc": "Indentation value(s), forwarded to the underlying logger."
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "Whatever `fn` returns (or resolves to).\n"
+                        },
+                        {
+                          "kind": "example",
+                          "doc": "```ts\n// T is inferred from the callback's return type — here `string`\nconst status = this.indent(() => {\n  this.info.text('Checking auth').emit();\n  return 'authenticated'; // T = string\n});\n// status: string\n\n// T can be any type — here an object, or set explicitly\ninterface User { id: number; name: string }\nconst user = this.indent<User>(() => {\n  this.debug.text('Loading user').emit();\n  return { id: 1, name: 'Ada' };\n});\n// user: User\n\n// T is preserved through async — here T = Promise<number>\nconst count = await this.indent(async () => {\n  this.info.text('Counting rows').emit();\n  return await db.count('users');\n});\n// count: number\n\n// Indentation arguments are forwarded to the logger\nthis.indent(3, () => { this.info.text('Indented 3').emit(); });\nthis.indent('>>', () => { this.info.text('Indented with \">>\"').emit(); });\n```"
+                        },
+                        {
+                          "kind": "experimental"
+                        }
+                      ]
+                    },
+                    "name": "indent",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "fn",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "fnOrConstructor",
+                            "value": {
+                              "constructor": false,
+                              "tsType": {
+                                "repr": "T",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "indent",
+                                    "declaringKind": "method"
+                                  }
+                                }
+                              },
+                              "params": []
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "T",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "T",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "indent",
+                            "declaringKind": "method"
+                          }
+                        }
+                      },
+                      "typeParams": [
+                        {
+                          "name": "T"
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
+                      "line": 168,
+                      "col": 2,
+                      "byteIndex": 5180
+                    }
+                  },
+                  {
+                    "name": "indent",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "n",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "number",
+                                "kind": "keyword",
+                                "value": "number"
+                              },
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "repr": "false",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "boolean",
+                                  "boolean": false
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "fn",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "fnOrConstructor",
+                            "value": {
+                              "constructor": false,
+                              "tsType": {
+                                "repr": "T",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "indent",
+                                    "declaringKind": "method"
+                                  }
+                                }
+                              },
+                              "params": []
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "T",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "T",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "indent",
+                            "declaringKind": "method"
+                          }
+                        }
+                      },
+                      "typeParams": [
+                        {
+                          "name": "T"
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
+                      "line": 169,
+                      "col": 2,
+                      "byteIndex": 5209
+                    }
+                  },
+                  {
+                    "name": "indent",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "nOrFn",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "number",
+                                "kind": "keyword",
+                                "value": "number"
+                              },
+                              {
+                                "repr": "string",
+                                "kind": "keyword",
+                                "value": "string"
+                              },
+                              {
+                                "kind": "array",
+                                "value": {
+                                  "repr": "string",
+                                  "kind": "keyword",
+                                  "value": "string"
+                                }
+                              },
+                              {
+                                "repr": "false",
+                                "kind": "literal",
+                                "value": {
+                                  "kind": "boolean",
+                                  "boolean": false
+                                }
+                              },
+                              {
+                                "kind": "parenthesized",
+                                "value": {
+                                  "kind": "fnOrConstructor",
+                                  "value": {
+                                    "constructor": false,
+                                    "tsType": {
+                                      "repr": "T",
+                                      "kind": "typeRef",
+                                      "value": {
+                                        "typeName": "T",
+                                        "resolution": {
+                                          "kind": "typeParam",
+                                          "declaringName": "indent",
+                                          "declaringKind": "method"
+                                        }
+                                      }
+                                    },
+                                    "params": []
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "maybeFn",
+                          "optional": true,
+                          "tsType": {
+                            "kind": "fnOrConstructor",
+                            "value": {
+                              "constructor": false,
+                              "tsType": {
+                                "repr": "T",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "indent",
+                                    "declaringKind": "method"
+                                  }
+                                }
+                              },
+                              "params": []
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "T",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "T",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "indent",
+                            "declaringKind": "method"
+                          }
+                        }
+                      },
+                      "hasBody": true,
+                      "typeParams": [
+                        {
+                          "name": "T"
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
+                      "line": 170,
+                      "col": 2,
+                      "byteIndex": 5277
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Run `fn` inside a quote logging scope. The matching outdent is\nguaranteed on return, early return, throw, or promise rejection.\n\nWorks for both sync and async callbacks with a single signature. `T` is\nthe callback's return type and is passed through unchanged: a sync\ncallback returns `T` directly, an async callback returns a `Promise<T>`\nthat resolves to `T`.\n\n`countOrMod` and any trailing `mods` are forwarded to\n{@link @epdoc/logger.Indent.IndentLogger.quote} and accept the same values:\na `number` of levels, a named {@link @epdoc/msgbuilder.LineType}, a literal\nbar glyph `string`, a `StyleFormatterFn` override, or a\n{@link @epdoc/msgbuilder.QuoteOpts} object.\n",
+                      "tags": [
+                        {
+                          "kind": "template",
+                          "name": "T",
+                          "doc": "The callback's return type, preserved through the scope."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "fn",
+                          "doc": "Callback executed within the quote scope."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "countOrMod",
+                          "doc": "Number of levels, or a modifier."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "mods",
+                          "doc": "Additional modifiers."
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "Whatever `fn` returns (or resolves to).\n"
+                        },
+                        {
+                          "kind": "example",
+                          "doc": "```ts\n// Sync — result is the callback's return value\nconst name = this.quote(() => {\n  this.info.text('Quoting a value').emit();\n  return 'hello';\n});\n\n// Async — result is a Promise that resolves to the callback's return value\nconst reply = await this.quote(async () => {\n  this.info.text('Awaiting').emit();\n  return await ask();\n});\n\n// Quote arguments are forwarded to the logger\nthis.quote(2, () => { this.info.text('Two bars').emit(); });\nthis.quote('thick', () => { this.info.text('Thick bar').emit(); });\n```"
+                        },
+                        {
+                          "kind": "experimental"
+                        }
+                      ]
+                    },
+                    "name": "quote",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "fn",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "fnOrConstructor",
+                            "value": {
+                              "constructor": false,
+                              "tsType": {
+                                "repr": "T",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "T",
+                                  "resolution": {
+                                    "kind": "typeParam",
+                                    "declaringName": "quote",
+                                    "declaringKind": "method"
+                                  }
+                                }
+                              },
+                              "params": []
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "T",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "T",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "quote",
+                            "declaringKind": "method"
+                          }
+                        }
+                      },
+                      "typeParams": [
+                        {
+                          "name": "T"
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
+                      "line": 217,
+                      "col": 2,
+                      "byteIndex": 7239
+                    }
+                  },
+                  {
+                    "name": "quote",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "countOrMod",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "number",
+                                "kind": "keyword",
+                                "value": "number"
+                              },
+                              {
+                                "repr": "Log.Indent.QuoteMod",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "Log.Indent.QuoteMod",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "@epdoc/logger"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "kind": "rest",
+                          "arg": {
+                            "kind": "identifier",
+                            "name": "args",
+                            "optional": false
+                          },
+                          "tsType": {
+                            "kind": "tuple",
+                            "value": [
+                              {
+                                "kind": "rest",
+                                "value": {
+                                  "kind": "array",
+                                  "value": {
+                                    "repr": "Log.Indent.QuoteMod",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "Log.Indent.QuoteMod",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "@epdoc/logger"
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              {
+                                "kind": "fnOrConstructor",
+                                "value": {
+                                  "constructor": false,
+                                  "tsType": {
+                                    "repr": "T",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "T",
+                                      "resolution": {
+                                        "kind": "typeParam",
+                                        "declaringName": "quote",
+                                        "declaringKind": "method"
+                                      }
+                                    }
+                                  },
+                                  "params": []
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "T",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "T",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "quote",
+                            "declaringKind": "method"
+                          }
+                        }
+                      },
+                      "typeParams": [
+                        {
+                          "name": "T"
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
+                      "line": 218,
+                      "col": 2,
+                      "byteIndex": 7267
+                    }
+                  },
+                  {
+                    "name": "quote",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "rest",
+                          "arg": {
+                            "kind": "identifier",
+                            "name": "args",
+                            "optional": false
+                          },
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "kind": "parenthesized",
+                              "value": {
+                                "kind": "union",
+                                "value": [
+                                  {
+                                    "repr": "number",
+                                    "kind": "keyword",
+                                    "value": "number"
+                                  },
+                                  {
+                                    "repr": "Log.Indent.QuoteMod",
+                                    "kind": "typeRef",
+                                    "value": {
+                                      "typeName": "Log.Indent.QuoteMod",
+                                      "resolution": {
+                                        "kind": "import",
+                                        "specifier": "@epdoc/logger"
+                                      }
+                                    }
+                                  },
+                                  {
+                                    "kind": "parenthesized",
+                                    "value": {
+                                      "kind": "fnOrConstructor",
+                                      "value": {
+                                        "constructor": false,
+                                        "tsType": {
+                                          "repr": "T",
+                                          "kind": "typeRef",
+                                          "value": {
+                                            "typeName": "T",
+                                            "resolution": {
+                                              "kind": "typeParam",
+                                              "declaringName": "quote",
+                                              "declaringKind": "method"
+                                            }
+                                          }
+                                        },
+                                        "params": []
+                                      }
+                                    }
+                                  }
+                                ]
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "T",
+                        "kind": "typeRef",
+                        "value": {
+                          "typeName": "T",
+                          "resolution": {
+                            "kind": "typeParam",
+                            "declaringName": "quote",
+                            "declaringKind": "method"
+                          }
+                        }
+                      },
+                      "hasBody": true,
+                      "typeParams": [
+                        {
+                          "name": "T"
+                        }
+                      ]
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/cliapp/src/base.ts",
+                      "line": 219,
+                      "col": 2,
+                      "byteIndex": 7374
                     }
                   }
                 ],
@@ -5102,6 +5679,9 @@
                           ],
                           "properties": [
                             {
+                              "jsDoc": {
+                                "doc": "The logger instance for the application."
+                              },
                               "tsType": {
                                 "repr": "L",
                                 "kind": "typeRef",
@@ -5123,6 +5703,9 @@
                               }
                             },
                             {
+                              "jsDoc": {
+                                "doc": "The log manager coordinating loggers and transports."
+                              },
                               "tsType": {
                                 "repr": "Log.Mgr",
                                 "kind": "typeRef",
@@ -5157,6 +5740,9 @@
                               }
                             },
                             {
+                              "jsDoc": {
+                                "doc": "Whether the application is running in dry-run mode."
+                              },
                               "tsType": {
                                 "repr": "boolean",
                                 "kind": "keyword",
@@ -5171,6 +5757,9 @@
                               }
                             },
                             {
+                              "jsDoc": {
+                                "doc": "Package information for the application."
+                              },
                               "tsType": {
                                 "repr": "DenoPkg",
                                 "kind": "typeRef",
@@ -5192,6 +5781,9 @@
                               }
                             },
                             {
+                              "jsDoc": {
+                                "doc": "Optional MCP result collector. When present (MCP mode), commands should use\nthis to emit output intended as the tool response. When absent (CLI mode),\ncommands output normally via logging or console."
+                              },
                               "tsType": {
                                 "repr": "IMcpResult",
                                 "kind": "typeRef",
@@ -5426,6 +6018,9 @@
                               }
                             },
                             {
+                              "jsDoc": {
+                                "doc": "Gracefully shut down the application and its logger."
+                              },
                               "name": "close",
                               "kind": "method",
                               "functionDef": {
