@@ -72,6 +72,7 @@ function walkCommands(
       description,
       inputSchema: schema,
       argumentNames: argumentNames.length > 0 ? argumentNames : undefined,
+      commandPath: currentPath,
     });
   } else {
     // Branch command - recurse into subcommands

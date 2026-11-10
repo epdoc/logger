@@ -6,6 +6,8 @@
 import * as assert from 'node:assert';
 import * as Commander from 'commander';
 import { extractToolDefinitions } from '../src/mcp/introspect.ts';
+import { frameMessage } from '../src/mcp/protocol.ts';
+import { buildSyntheticArgv } from '../src/mcp/server.ts';
 
 Deno.test('MCP introspection', async (t) => {
   await t.step('extractToolDefinitions', async (t) => {
@@ -183,5 +185,54 @@ Deno.test('MCP introspection', async (t) => {
       assert.strictEqual(tools[0].inputSchema.properties['internal'], undefined);
       assert.ok(tools[0].inputSchema.properties['visible']);
     });
+  });
+});
+
+Deno.test('MCP framing', async (t) => {
+  await t.step('frames a large payload with the correct Content-Length', () => {
+    const body = 'x'.repeat(100_000);
+    const frame = frameMessage({
+      jsonrpc: '2.0',
+      id: 1,
+      result: { text: body },
+    });
+    const text = new TextDecoder().decode(frame);
+    const separator = text.indexOf('\r\n\r\n');
+    assert.ok(separator > 0);
+    const length = Number(text.slice(0, separator).split(':')[1].trim());
+    assert.strictEqual(length, frame.length - separator - 4);
+    assert.ok(text.slice(separator + 4).startsWith('{"jsonrpc"'));
+  });
+});
+
+Deno.test('MCP argv reconstruction', async (t) => {
+  await t.step('keeps nested command paths that do not start with the root name', () => {
+    const argv = buildSyntheticArgv(
+      { name: 'state_get', arguments: { entity: 'sun.sun' } },
+      {
+        name: 'state_get',
+        description: '',
+        inputSchema: { type: 'object', properties: { entity: { type: 'string' } }, required: ['entity'] },
+        argumentNames: ['entity'],
+        commandPath: ['state', 'get'],
+      },
+      'hac',
+    );
+    assert.deepStrictEqual(argv, ['state', 'get', 'sun.sun']);
+  });
+
+  await t.step('strips a root name that is the first segment', () => {
+    const argv = buildSyntheticArgv(
+      { name: 'hassio_light_turn-on', arguments: { device: 'lamp', brightness: 5 } },
+      {
+        name: 'hassio_light_turn-on',
+        description: '',
+        inputSchema: { type: 'object', properties: {} },
+        argumentNames: ['device'],
+        commandPath: ['hassio', 'light', 'turn-on'],
+      },
+      'hassio',
+    );
+    assert.deepStrictEqual(argv, ['light', 'turn-on', '--brightness', '5', 'lamp']);
   });
 });

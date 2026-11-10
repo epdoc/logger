@@ -79,16 +79,33 @@ export async function readMessage(
  * @param msg - The JSON-RPC response to send
  */
 export function writeMessage(msg: Mcp.JsonRpcResponse): void {
+  const output = frameMessage(msg);
+  // writeSync may write fewer bytes than it is given (a non-blocking stdout, a
+  // large payload). Loop until the whole frame is out, otherwise the client
+  // sees a truncated Content-Length body and the stream desynchronises.
+  let offset = 0;
+  while (offset < output.length) {
+    const written = Deno.stdout.writeSync(output.subarray(offset));
+    if (written <= 0) {
+      break;
+    }
+    offset += written;
+  }
+}
+
+/**
+ * Encode a JSON-RPC response as a `Content-Length` framed byte array.
+ *
+ * Exported for tests: a large payload is exactly where the old single
+ * `writeSync` leaked, so the framing has to be verifiable without stdout.
+ */
+export function frameMessage(msg: Mcp.JsonRpcResponse): Uint8Array {
   const encoder = new TextEncoder();
   const json = JSON.stringify(msg);
   const bodyBytes = encoder.encode(json);
   const header = `Content-Length: ${bodyBytes.length}\r\n\r\n`;
   const headerBytes = encoder.encode(header);
-
-  const output = concatUint8Arrays(headerBytes, bodyBytes);
-  // Use writeSync to ensure data is flushed immediately to stdout.
-  // This matches the pattern in @epdoc/fs where sync() is called after write.
-  Deno.stdout.writeSync(output);
+  return concatUint8Arrays(headerBytes, bodyBytes);
 }
 
 /**

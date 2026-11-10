@@ -223,7 +223,7 @@ export class McpServer<TCtx extends Ctx.AbstractBase> {
       rootCmd.commander.exitOverride();
 
       // 4. Construct synthetic argv and execute
-      const argv = buildSyntheticArgv(params, tool, this.#ctx.pkg.name);
+      const argv = buildSyntheticArgv(params, tool, rootCmd.commander.name());
 
       try {
         await rootCmd.commander.parseAsync(argv, { from: 'user' });
@@ -263,26 +263,33 @@ export class McpServer<TCtx extends Ctx.AbstractBase> {
  * Converts MCP tool call arguments into a synthetic CLI argv array
  * suitable for Commander.js parseAsync.
  *
+ * The command path comes from `tool.commandPath`, recorded during
+ * introspection. Deriving it from the tool name is not reliable: the name joins
+ * segments with `_` (so `state_get` loses its boundary when a segment contains
+ * an underscore) and the old code stripped the first segment whenever the
+ * package name was not part of the path — which dropped `state` from
+ * `state_get` and produced `error: too many arguments`.
+ *
  * The tool name (e.g., "app_query") is split on underscores to reconstruct
  * the command path (e.g., ["query"]). Named options are prefixed with `--`
  * and positional arguments are appended at the end in their declared order.
  *
  * @param params - MCP tool call parameters
  * @param tool - Tool definition with argumentNames metadata
- * @param rootName - Name of the root command (stripped from tool name path)
+ * @param rootName - Name of the root command (stripped when it is the first segment)
  * @returns Array of strings suitable for Commander.js parseAsync with `{ from: 'user' }`
  */
-function buildSyntheticArgv(
+export function buildSyntheticArgv(
   params: Mcp.ToolCallParams,
   tool: Mcp.ToolDefinition,
   rootName: string,
 ): string[] {
   const argv: string[] = [];
 
-  // Split tool name into command path, removing the root command name
-  const parts = params.name.split('_');
-  const rootIdx = parts.indexOf(rootName);
-  const commandPath = rootIdx >= 0 ? parts.slice(rootIdx + 1) : parts.slice(1);
+  // Prefer the recorded command path; fall back to the tool name for callers
+  // that construct tool definitions by hand.
+  const parts = tool.commandPath ?? params.name.split('_');
+  const commandPath = parts[0] === rootName ? parts.slice(1) : parts;
   argv.push(...commandPath);
 
   const mcpArgs = params.arguments || {};

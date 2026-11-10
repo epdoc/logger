@@ -41,6 +41,12 @@ export interface ToolDefinition {
    * @internal
    */
   argumentNames?: string[];
+  /**
+   * The command path below the root (`['state', 'get']`). Unlike the tool name
+   * this keeps hyphens intact and does not have to be re-derived by splitting
+   * on underscores.
+   */
+  commandPath?: string[];
 }
 
 /**
