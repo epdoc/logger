@@ -6,7 +6,7 @@
     "jsr:@epdoc/datetime@^4.2.9": "4.2.9",
     "jsr:@epdoc/duration@~0.3.22": "0.3.22",
     "jsr:@epdoc/fmt@^1.0.22": "1.0.22",
-    "jsr:@epdoc/fs@^1.7.1": "1.7.1",
+    "jsr:@epdoc/fs@^1.7.2": "1.7.2",
     "jsr:@epdoc/logger@^1003.3.82": "1003.3.82",
     "jsr:@epdoc/loglevels@^1.0.14": "1.0.14",
     "jsr:@epdoc/msgbuilder@^1.0.8": "1.0.8",
@@ -30,8 +30,9 @@
     "jsr:@std/path@^1.1.6": "1.1.6",
     "jsr:@std/testing@^1.0.21": "1.0.21",
     "jsr:@std/toml@^1.0.11": "1.0.11",
-    "jsr:@std/yaml@^1.2.0": "1.3.0",
-    "npm:commander@15": "15.0.0"
+    "jsr:@std/yaml@^1.3.0": "1.3.0",
+    "npm:commander@15": "15.1.0",
+    "npm:commander@^15.1.0": "15.1.0"
   },
   "jsr": {
     "@epdoc/cliapp@2.3.21": {
@@ -43,7 +44,7 @@
         "jsr:@epdoc/type",
         "jsr:@std/assert",
         "jsr:@std/fmt",
-        "npm:commander"
+        "npm:commander@15"
       ]
     },
     "@epdoc/colors@1.1.4": {
@@ -73,8 +74,8 @@
         "jsr:@std/fmt"
       ]
     },
-    "@epdoc/fs@1.7.1": {
-      "integrity": "2a4a2c50b2bc53b345d1d2f683b1320554cd5f45ecd8495d7c1882e51866a449",
+    "@epdoc/fs@1.7.2": {
+      "integrity": "ed7e11a6de61d491195dcecbd31fe1b5605be1c0ed61312b6b9e25fc9d471b08",
       "dependencies": [
         "jsr:@epdoc/datetime",
         "jsr:@epdoc/transform",
@@ -218,8 +219,8 @@
     }
   },
   "npm": {
-    "commander@15.0.0": {
-      "integrity": "sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg=="
+    "commander@15.1.0": {
+      "integrity": "sha512-cgnQ88TRrWcC7pVq46RzJVRMktu3W2RcbnoidnfBsl1bmDCBwJS/udcIZpKoCrbAYYaCqsz1yZCVIgbIaU3ddQ=="
     }
   },
   "workspace": {
@@ -235,12 +236,12 @@
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/fmt@^1.0.10",
-          "npm:commander@15"
+          "npm:commander@^15.1.0"
         ]
       },
       "packages/demo": {
         "dependencies": [
-          "jsr:@epdoc/fs@^1.7.1",
+          "jsr:@epdoc/fs@^1.7.2",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19"
         ]

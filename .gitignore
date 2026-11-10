@@ -1,3 +1,4 @@
+##### Common Deno-Project Settings #####
 # Deno
 .deno/
 dist/
@@ -7,6 +8,7 @@ bin/
 .claude/
 .vscode/
 .kiro/
+graphify-out/
 
 # Dependencies
 node_modules/
@@ -73,3 +75,5 @@ typings/
 
 *scratch.ts
 .opencode/perm-log.jsonl
+
+##### Project-specific Settings #####

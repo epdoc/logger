@@ -1,125 +1,215 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "permission": {
-    "edit": "deny",
-    "read": {
-      "*": "allow",
-      "*.env": "deny",
-      "*.env.*": "deny"
+  "instructions": ["AGENTS.md"],
+  "permissions": [
+    { "action": "read", "resource": "*", "effect": "allow" },
+    { "action": "read", "resource": "*.env", "effect": "deny" },
+    { "action": "read", "resource": "*.env.*", "effect": "deny" },
+    { "action": "edit", "resource": "*", "effect": "allow" },
+
+    {
+      "action": "external_directory",
+      "resource": "~/dev/@epdoc/**",
+      "effect": "allow"
     },
-    "external_directory": {
-      "~/dev/@epdoc/std/**": "allow",
-      "~/dev/@epdoc/logger/**": "allow",
-      "~/dev/@epdoc/dtools/**": "allow",
-      "~/dev/@epdoc/tools/**": "allow",
-      "~/dev/@jpravetz/fstools/**": "allow",
-      "~/dev/@jpravetz/turl/**": "allow",
-      "~/dev/@jpravetz/ask/**": "allow",
-      "/tmp/**": "allow",
-      "/var/folders/**/T/opencode/**": "allow"
+    {
+      "action": "external_directory",
+      "resource": "~/dev/@jpravetz/**",
+      "effect": "allow"
     },
-    "webfetch": "allow",
-    "bash": {
-      "*": "ask",
-      "*>*": "ask",
-      "*|*": "ask",
-      "grep *": "allow",
-      "rg *": "allow",
-      "ls *": "allow",
-      "head *": "allow",
-      "tail *": "allow",
-      "cat *": "allow",
-      "wc *": "allow",
-      "git *": "ask",
-      "git status*": "allow",
-      "git diff*": "allow",
-      "git log*": "allow",
-      "git show*": "allow",
-      "git blame*": "allow",
-      "git grep*": "allow",
-      "git ls-files*": "allow",
-      "git rev-parse*": "allow",
-      "git describe*": "allow",
-      "git shortlog*": "allow",
-      "git clean*": "deny",
-      "git checkout*": "ask",
-      "git restore*": "ask",
-      "git reset*": "ask",
-      "git revert*": "ask",
-      "git stash*": "ask",
-      "git rm*": "ask",
-      "git commit*": "deny",
-      "git push*": "deny",
-      "git tag*": "deny",
-      "dtask audit*": "allow",
-      "deno check *": "allow",
-      "deno lint *": "allow",
-      "deno test *": "allow",
-      "deno run *-n*": "allow",
-      "deno run *--dry-run*": "allow",
-      "deno task lint*": "allow",
-      "deno task check*": "allow",
-      "deno task test*": "allow",
-      "deno run *": "ask",
-      "deno task *": "ask",
-      "deno fmt *": "deny",
-      "deno task fmt*": "deny",
-      "deno task ok*": "deny",
-      "rm -rf *": "deny"
-    }
-  },
-  "agent": {
+    {
+      "action": "external_directory",
+      "resource": "~/dev/rust/**",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "~/.config/opencode/**",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "~/.cargo/**",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "~/.rustup/**",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "~/bin/**",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "/tmp/**",
+      "effect": "allow"
+    },
+    {
+      "action": "external_directory",
+      "resource": "/var/folders/**/T/opencode/**",
+      "effect": "allow"
+    },
+
+    { "action": "webfetch", "resource": "*", "effect": "allow" },
+
+    { "action": "shell", "resource": "*", "effect": "allow" },
+    { "action": "shell", "resource": "*>*", "effect": "allow" },
+
+    { "action": "shell", "resource": "rm -rf *", "effect": "deny" },
+    { "action": "shell", "resource": "sudo *", "effect": "deny" },
+    { "action": "shell", "resource": "git clean*", "effect": "deny" },
+    { "action": "shell", "resource": "git commit*", "effect": "deny" },
+    { "action": "shell", "resource": "git push*", "effect": "deny" },
+    { "action": "shell", "resource": "git tag*", "effect": "deny" },
+    { "action": "shell", "resource": "cargo publish*", "effect": "deny" },
+
+    { "action": "shell", "resource": "grep *", "effect": "allow" },
+    { "action": "shell", "resource": "pgrep *", "effect": "allow" },
+    { "action": "shell", "resource": "rg *", "effect": "allow" },
+    { "action": "shell", "resource": "ls *", "effect": "allow" },
+    { "action": "shell", "resource": "head *", "effect": "allow" },
+    { "action": "shell", "resource": "tail *", "effect": "allow" },
+    { "action": "shell", "resource": "cat *", "effect": "allow" },
+    { "action": "shell", "resource": "read *", "effect": "allow" },
+    { "action": "shell", "resource": "curl *", "effect": "allow" },
+    { "action": "shell", "resource": "wc *", "effect": "allow" },
+    { "action": "shell", "resource": "stat *", "effect": "allow" },
+    { "action": "shell", "resource": "file *", "effect": "allow" },
+    { "action": "shell", "resource": "diff *", "effect": "allow" },
+    { "action": "shell", "resource": "find *", "effect": "allow" },
+    { "action": "shell", "resource": "sort *", "effect": "allow" },
+    { "action": "shell", "resource": "uniq *", "effect": "allow" },
+    { "action": "shell", "resource": "jq *", "effect": "allow" },
+    { "action": "shell", "resource": "which *", "effect": "allow" },
+    { "action": "shell", "resource": "echo *", "effect": "allow" },
+    { "action": "shell", "resource": "nohup *", "effect": "allow" },
+    { "action": "shell", "resource": "pwd", "effect": "allow" },
+    { "action": "shell", "resource": "printenv *", "effect": "allow" },
+    { "action": "shell", "resource": "mkdir *", "effect": "allow" },
+    { "action": "shell", "resource": "touch *", "effect": "allow" },
+
+    { "action": "shell", "resource": "cd *", "effect": "allow" },
+    { "action": "shell", "resource": "date", "effect": "allow" },
+    { "action": "shell", "resource": "env", "effect": "allow" },
+    { "action": "shell", "resource": "sleep *", "effect": "allow" },
+    { "action": "shell", "resource": "true", "effect": "allow" },
+    { "action": "shell", "resource": "false", "effect": "allow" },
+    { "action": "shell", "resource": "test *", "effect": "allow" },
+
+    { "action": "shell", "resource": "git status*", "effect": "allow" },
+    { "action": "shell", "resource": "git diff*", "effect": "allow" },
+    { "action": "shell", "resource": "git log*", "effect": "allow" },
+    { "action": "shell", "resource": "git show*", "effect": "allow" },
+    { "action": "shell", "resource": "git blame*", "effect": "allow" },
+    { "action": "shell", "resource": "git grep*", "effect": "allow" },
+    { "action": "shell", "resource": "git ls-files*", "effect": "allow" },
+    { "action": "shell", "resource": "git rev-parse*", "effect": "allow" },
+    { "action": "shell", "resource": "git describe*", "effect": "allow" },
+    { "action": "shell", "resource": "git shortlog*", "effect": "allow" },
+    { "action": "shell", "resource": "git checkout*", "effect": "ask" },
+    { "action": "shell", "resource": "git restore*", "effect": "ask" },
+    { "action": "shell", "resource": "git reset*", "effect": "ask" },
+    { "action": "shell", "resource": "git revert*", "effect": "ask" },
+    { "action": "shell", "resource": "git stash*", "effect": "ask" },
+    { "action": "shell", "resource": "git rm*", "effect": "ask" },
+
+    { "action": "shell", "resource": "cargo --version", "effect": "allow" },
+    { "action": "shell", "resource": "cargo metadata*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo tree*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo check*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo build*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo test*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo bench*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo clippy*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo fmt*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo doc*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo run*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo nextest*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo llvm-cov*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo audit*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo deny*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo outdated*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo search*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo info*", "effect": "allow" },
+    { "action": "shell", "resource": "cargo clippy *--fix*", "effect": "ask" },
+    { "action": "shell", "resource": "cargo fix*", "effect": "ask" },
+    { "action": "shell", "resource": "cargo add*", "effect": "ask" },
+    { "action": "shell", "resource": "cargo remove*", "effect": "ask" },
+    { "action": "shell", "resource": "cargo update*", "effect": "ask" },
+    { "action": "shell", "resource": "cargo install*", "effect": "ask" },
+    { "action": "shell", "resource": "cargo new*", "effect": "ask" },
+    { "action": "shell", "resource": "cargo init*", "effect": "ask" },
+
+    { "action": "shell", "resource": "rustc --version", "effect": "allow" },
+    { "action": "shell", "resource": "rustup show*", "effect": "allow" },
+    {
+      "action": "shell",
+      "resource": "rustup toolchain list*",
+      "effect": "allow"
+    },
+    { "action": "shell", "resource": "rustup target list*", "effect": "allow" },
+    { "action": "shell", "resource": "rustup component add*", "effect": "ask" },
+    { "action": "shell", "resource": "rustlings *", "effect": "allow" },
+
+    { "action": "shell", "resource": "just fmt*", "effect": "allow" },
+    { "action": "shell", "resource": "just test*", "effect": "allow" },
+    { "action": "shell", "resource": "just clippy*", "effect": "allow" },
+    { "action": "shell", "resource": "just doc*", "effect": "allow" },
+    { "action": "shell", "resource": "just ok*", "effect": "allow" },
+    { "action": "shell", "resource": "just *", "effect": "ask" },
+
+    { "action": "shell", "resource": "gh pr view*", "effect": "allow" },
+    { "action": "shell", "resource": "gh issue view*", "effect": "allow" },
+    { "action": "shell", "resource": "gh run view*", "effect": "allow" },
+    { "action": "shell", "resource": "gh repo view*", "effect": "allow" },
+
+    { "action": "shell", "resource": "docker ps*", "effect": "allow" },
+    { "action": "shell", "resource": "docker logs *", "effect": "allow" },
+
+    { "action": "shell", "resource": "cp *", "effect": "ask" },
+    { "action": "shell", "resource": "mv *", "effect": "ask" },
+    { "action": "shell", "resource": "ln *", "effect": "ask" },
+    { "action": "shell", "resource": "sed *", "effect": "ask" },
+    { "action": "shell", "resource": "awk *", "effect": "ask" },
+    { "action": "shell", "resource": "xargs *", "effect": "ask" },
+    { "action": "shell", "resource": "nexus skills*", "effect": "allow" },
+    { "action": "shell", "resource": "nexus mcp*", "effect": "ask" },
+    { "action": "shell", "resource": "open *", "effect": "ask" }
+  ],
+  "agents": {
     "plan": {
       "mode": "primary"
     },
     "build": {
       "mode": "primary",
-      "permission": {
-        "edit": {
-          "*": "allow",
-          "~/dev/@epdoc/std/**": "ask",
-          "~/dev/@epdoc/logger/**": "ask",
-          "~/dev/@epdoc/dtools/**": "ask",
-          "~/dev/@epdoc/tools/**": "ask",
-          "~/dev/@jpravetz/fstools/**": "ask",
-          "~/dev/@jpravetz/turl/**": "ask",
-          "~/dev/@jpravetz/ask/**": "ask"
+      "permissions": [
+        { "action": "edit", "resource": "~/dev/rust/**", "effect": "allow" },
+        {
+          "action": "edit",
+          "resource": "~/.config/opencode/**",
+          "effect": "allow"
         },
-        "bash": {
-          "*": "ask",
-          "*>*": "ask",
-          "*|*": "ask",
-          "rm -rf *": "deny",
-          "git *": "allow",
-          "git checkout*": "ask",
-          "git restore*": "ask",
-          "git reset*": "ask",
-          "git revert*": "ask",
-          "git stash*": "ask",
-          "git rm*": "ask",
-          "git commit*": "ask",
-          "git push*": "ask",
-          "git tag*": "ask",
-          "git clean*": "deny",
-          "dtask ok*": "allow",
-          "grep *": "allow",
-          "rg *": "allow",
-          "ls *": "allow",
-          "head *": "allow",
-          "tail *": "allow",
-          "cat *": "allow",
-          "wc *": "allow",
-          "deno fmt *": "allow",
-          "deno run *": "allow",
-          "deno task fmt*": "allow",
-          "deno check *": "allow",
-          "deno lint *": "allow",
-          "deno task lint*": "allow",
-          "deno task ok": "allow",
-          "deno task *": "allow",
-          "deno compile *": "allow"
-        }
-      }
+        { "action": "edit", "resource": "~/dev/@epdoc/**", "effect": "deny" },
+        {
+          "action": "edit",
+          "resource": "~/dev/@jpravetz/**",
+          "effect": "deny"
+        },
+        { "action": "shell", "resource": "git *", "effect": "allow" },
+        { "action": "shell", "resource": "git clean*", "effect": "deny" },
+        { "action": "shell", "resource": "git checkout*", "effect": "ask" },
+        { "action": "shell", "resource": "git restore*", "effect": "ask" },
+        { "action": "shell", "resource": "git reset*", "effect": "ask" },
+        { "action": "shell", "resource": "git revert*", "effect": "ask" },
+        { "action": "shell", "resource": "git stash*", "effect": "ask" },
+        { "action": "shell", "resource": "git rm*", "effect": "ask" },
+        { "action": "shell", "resource": "git commit*", "effect": "ask" },
+        { "action": "shell", "resource": "git push*", "effect": "ask" },
+        { "action": "shell", "resource": "git tag*", "effect": "ask" }
+      ]
     }
   }
 }
