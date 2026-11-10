@@ -6,7 +6,7 @@
 import * as assert from 'node:assert';
 import * as Commander from 'commander';
 import { extractToolDefinitions } from '../src/mcp/introspect.ts';
-import { frameMessage } from '../src/mcp/protocol.ts';
+import { frameMessage, readMessage } from '../src/mcp/protocol.ts';
 import { buildSyntheticArgv } from '../src/mcp/server.ts';
 
 Deno.test('MCP introspection', async (t) => {
@@ -189,7 +189,7 @@ Deno.test('MCP introspection', async (t) => {
 });
 
 Deno.test('MCP framing', async (t) => {
-  await t.step('frames a large payload with the correct Content-Length', () => {
+  await t.step('encodes a large payload as one newline-terminated JSON line', () => {
     const body = 'x'.repeat(100_000);
     const frame = frameMessage({
       jsonrpc: '2.0',
@@ -197,11 +197,41 @@ Deno.test('MCP framing', async (t) => {
       result: { text: body },
     });
     const text = new TextDecoder().decode(frame);
-    const separator = text.indexOf('\r\n\r\n');
-    assert.ok(separator > 0);
-    const length = Number(text.slice(0, separator).split(':')[1].trim());
-    assert.strictEqual(length, frame.length - separator - 4);
-    assert.ok(text.slice(separator + 4).startsWith('{"jsonrpc"'));
+    assert.strictEqual(text.indexOf('\n'), text.length - 1);
+    assert.deepStrictEqual(JSON.parse(text), { jsonrpc: '2.0', id: 1, result: { text: body } });
+  });
+});
+
+Deno.test('MCP readMessage', async (t) => {
+  await t.step('reads newline-delimited messages split across chunks', async () => {
+    const encoder = new TextEncoder();
+    const payload =
+      '{"jsonrpc":"2.0","id":1,"method":"initialize"}\r\n{"jsonrpc":"2.0","id":2,"method":"tools/list"}\n';
+    const bytes = encoder.encode(payload);
+    const chunkSize = 7;
+    const stream = new ReadableStream<Uint8Array>({
+      start(controller) {
+        for (let i = 0; i < bytes.length; i += chunkSize) {
+          controller.enqueue(bytes.slice(i, i + chunkSize));
+        }
+        controller.close();
+      },
+    });
+
+    const reader = stream.getReader();
+    const buffer = { data: new Uint8Array(0) };
+
+    assert.deepStrictEqual(await readMessage(reader, buffer), {
+      jsonrpc: '2.0',
+      id: 1,
+      method: 'initialize',
+    });
+    assert.deepStrictEqual(await readMessage(reader, buffer), {
+      jsonrpc: '2.0',
+      id: 2,
+      method: 'tools/list',
+    });
+    assert.strictEqual(await readMessage(reader, buffer), null);
   });
 });
 

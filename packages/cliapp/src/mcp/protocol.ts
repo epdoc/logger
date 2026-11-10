@@ -1,22 +1,19 @@
 /**
  * @file MCP JSON-RPC protocol handler over stdio
- * @description Implements the MCP stdio transport protocol using Content-Length
- * delimited JSON-RPC 2.0 messages over stdin/stdout.
+ * @description Implements the MCP stdio transport protocol using
+ * newline-delimited JSON-RPC 2.0 messages over stdin/stdout.
  * @module
  */
 
 import type * as Mcp from './types.ts';
 
 /**
- * Reads a single MCP message from stdin using Content-Length framing.
+ * Reads a single MCP message from stdin.
  *
- * The MCP stdio transport uses HTTP-style headers with Content-Length
- * as the delimiter between messages:
- * ```
- * Content-Length: <byte-length>\r\n
- * \r\n
- * <JSON-RPC message>
- * ```
+ * The MCP stdio transport delimits messages by newline: each message is one
+ * JSON-RPC request, notification, or response on a single line, and must not
+ * contain embedded newlines. A trailing carriage return is tolerated so that
+ * clients which send CRLF still work.
  *
  * @param reader - A ReadableStreamDefaultReader for stdin
  * @param buffer - Mutable buffer object for carrying over partial reads
@@ -29,60 +26,42 @@ export async function readMessage(
   const decoder = new TextDecoder();
 
   while (true) {
-    // Look for the header/body separator in the buffer
-    const headerInfo = findHeader(buffer.data);
-    if (headerInfo) {
-      const headerEnd = headerInfo.index;
-      const sepLength = headerInfo.length;
+    const newline = buffer.data.indexOf(10);
+    if (newline >= 0) {
+      const line = buffer.data.slice(0, newline);
+      buffer.data = buffer.data.slice(newline + 1);
 
-      // Parse the Content-Length header
-      const headerStr = decoder.decode(buffer.data.slice(0, headerEnd));
-      const contentLength = parseContentLength(headerStr);
-      if (contentLength === null) {
-        // Malformed header, skip to next message
-        buffer.data = buffer.data.slice(headerEnd + sepLength);
+      const text = decoder.decode(line).replace(/\r$/, '');
+      if (text.trim() === '') {
         continue;
       }
-
-      const bodyStart = headerEnd + sepLength;
-      const totalNeeded = bodyStart + contentLength;
-
-      // Read more data if we don't have the full body yet
-      while (buffer.data.length < totalNeeded) {
-        const { done, value } = await reader.read();
-        if (done) return null;
-        buffer.data = concatUint8Arrays(buffer.data, value);
-      }
-
-      // Extract the message body
-      const body = buffer.data.slice(bodyStart, totalNeeded);
-      buffer.data = buffer.data.slice(totalNeeded);
-
-      const json = decoder.decode(body);
-      return JSON.parse(json) as Mcp.JsonRpcRequest;
+      return JSON.parse(text) as Mcp.JsonRpcRequest;
     }
 
-    // Need more data
     const { done, value } = await reader.read();
-    if (done) return null;
+    if (done) {
+      // Tolerate a final message that the client did not terminate with a newline.
+      const text = decoder.decode(buffer.data).replace(/\r$/, '');
+      buffer.data = new Uint8Array(0);
+      if (text.trim() === '') {
+        return null;
+      }
+      return JSON.parse(text) as Mcp.JsonRpcRequest;
+    }
     buffer.data = concatUint8Arrays(buffer.data, value);
   }
 }
 
 /**
- * Writes a JSON-RPC response to stdout using Content-Length framing.
- *
- * Similar to @epdoc/fs pattern: writes data then ensures it's flushed.
- * For stdout, we use writeSync as there's no sync() method available,
- * which provides the same guarantee of immediate disk flush.
+ * Writes a JSON-RPC response to stdout as a single newline-terminated line.
  *
  * @param msg - The JSON-RPC response to send
  */
 export function writeMessage(msg: Mcp.JsonRpcResponse): void {
   const output = frameMessage(msg);
   // writeSync may write fewer bytes than it is given (a non-blocking stdout, a
-  // large payload). Loop until the whole frame is out, otherwise the client
-  // sees a truncated Content-Length body and the stream desynchronises.
+  // large payload). Loop until the whole message is out, otherwise the client
+  // sees a truncated JSON line and the stream desynchronises.
   let offset = 0;
   while (offset < output.length) {
     const written = Deno.stdout.writeSync(output.subarray(offset));
@@ -94,49 +73,14 @@ export function writeMessage(msg: Mcp.JsonRpcResponse): void {
 }
 
 /**
- * Encode a JSON-RPC response as a `Content-Length` framed byte array.
+ * Encode a JSON-RPC response as a newline-terminated UTF-8 line.
  *
  * Exported for tests: a large payload is exactly where the old single
- * `writeSync` leaked, so the framing has to be verifiable without stdout.
+ * `writeSync` leaked, so the encoding has to be verifiable without stdout.
  */
 export function frameMessage(msg: Mcp.JsonRpcResponse): Uint8Array {
   const encoder = new TextEncoder();
-  const json = JSON.stringify(msg);
-  const bodyBytes = encoder.encode(json);
-  const header = `Content-Length: ${bodyBytes.length}\r\n\r\n`;
-  const headerBytes = encoder.encode(header);
-  return concatUint8Arrays(headerBytes, bodyBytes);
-}
-
-/**
- * Finds the position and length of the header/body separator in a Uint8Array.
- * Supports both \r\n\r\n and \n\n.
- *
- * @returns Object with index and length, or null if not found
- */
-function findHeader(data: Uint8Array): { index: number; length: number } | null {
-  for (let i = 0; i < data.length - 1; i++) {
-    // Check for \n\n
-    if (data[i] === 10 && data[i + 1] === 10) {
-      return { index: i, length: 2 };
-    }
-    // Check for \r\n\r\n
-    if (i < data.length - 3 && data[i] === 13 && data[i + 1] === 10 && data[i + 2] === 13 && data[i + 3] === 10) {
-      return { index: i, length: 4 };
-    }
-  }
-  return null;
-}
-
-/**
- * Parses the Content-Length value from a header string.
- *
- * @returns The content length in bytes, or null if parsing fails
- */
-function parseContentLength(headerStr: string): number | null {
-  const match = headerStr.match(/Content-Length:\s*(\d+)/i);
-  if (!match) return null;
-  return parseInt(match[1], 10);
+  return encoder.encode(`${JSON.stringify(msg)}\n`);
 }
 
 /**

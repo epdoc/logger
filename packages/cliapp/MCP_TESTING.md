@@ -269,10 +269,8 @@ describe('MCP Protocol', () => {
 
 function encodeMessage(msg: unknown): Uint8Array {
   const encoder = new TextEncoder();
-  const json = JSON.stringify(msg);
-  const header = `Content-Length: ${json.length}\r\n\r\n`;
-  const combined = header + json;
-  return encoder.encode(combined);
+  // The stdio transport delimits messages by newline: one JSON-RPC message per line.
+  return encoder.encode(`${JSON.stringify(msg)}\n`);
 }
 ```
 
