@@ -186,6 +186,23 @@ Deno.test('TextBuilder wrapping', async (t) => {
     assertEquals(widest(wide.emit()) <= 80, true);
   });
 
+  await t.step('a ceiling under the terminal is the ceiling, whatever width() says', () => {
+    // The ceiling is the tighter of maxWidth and the terminal. `width()` only
+    // matters when it is tighter still; it must never widen the result.
+    const tb = new TextBuilder();
+    tb.width(1000).maxWidth(30);
+    tb.line.text(SENTENCE);
+    assertEquals(widest(tb.emit()) <= 30, true);
+
+    // A width tighter than the ceiling is the tighter one of the two: the
+    // result is the lesser of width(), maxWidth() and the terminal.
+    const other = new TextBuilder();
+    other.maxWidth(120);
+    other.width(25);
+    other.line.text(SENTENCE);
+    assertEquals(widest(other.emit()) <= 25, true);
+  });
+
   await t.step('width() and maxWidth() together take the narrower', () => {
     const tb = new TextBuilder();
     tb.width(1000).maxWidth(30);

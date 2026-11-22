@@ -2163,9 +2163,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 629,
+                      "line": 632,
                       "col": 2,
-                      "byteIndex": 21795
+                      "byteIndex": 21981
                     }
                   }
                 ],

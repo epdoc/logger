@@ -581,7 +581,11 @@ export abstract class AbstractMsgBuilder implements IFormatter {
     let rowWidth = visualLength(row);
     let empty = true;
 
-    const place = (text: string, width: number): void => {
+    /** @param text - The part as it will be rendered, escape sequences included. */
+    const place = (text: string): void => {
+      // Measure the plain text: a styled part carries escape sequences that
+      // occupy no columns, so counting them would wrap far too early.
+      const width = visualLength(text);
       if (!empty && rowWidth + sepWidth + width > wrap.width) {
         rows.push(row);
         row = cont;
@@ -611,13 +615,12 @@ export abstract class AbstractMsgBuilder implements IFormatter {
       const plain = stripAnsi(part);
       if (plain.includes(' ') && visualLength(plain) > wrap.width) {
         for (const word of plain.split(' ')) {
-          const width = visualLength(word);
-          place(word, width);
+          place(word);
         }
       } else {
         // One unit: a word, or a run that is wider than a row and can only
         // overflow (there is nothing useful left to break).
-        place(part, visualLength(plain));
+        place(part);
       }
     }
     rows.push(row);

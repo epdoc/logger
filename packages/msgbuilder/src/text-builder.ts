@@ -224,11 +224,18 @@ export class TextBuilder<M extends Console.Builder = Console.Builder> {
    * `width()` call never touches it.
    */
   private renderWidth(): Integer | undefined {
+    // The tighter of everything that is in force. `width()` is a hard ceiling
+    // and never widens anything; `maxWidth()` is the lesser of its argument and
+    // the terminal, and with no argument it is the terminal alone.
+    const limits: Integer[] = [];
+    if (this._width !== undefined) {
+      limits.push(this._width);
+    }
     if (this._maxWidth !== undefined) {
       const terminal = getTerminalSize().columns;
-      return this._maxWidth === 0 ? terminal : Math.min(this._maxWidth, terminal);
+      limits.push(this._maxWidth === 0 ? terminal : Math.min(this._maxWidth, terminal));
     }
-    return this._width;
+    return limits.length === 0 ? undefined : Math.min(...limits);
   }
 }
 
