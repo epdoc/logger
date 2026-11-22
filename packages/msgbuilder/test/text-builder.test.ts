@@ -152,19 +152,21 @@ Deno.test('TextBuilder wrapping', async (t) => {
     assertEquals(lines.includes(token), true);
   });
 
-  await t.step('coloured parts keep their styling and measure by columns, not characters', () => {
+  await t.step('a styled part is measured by its columns, not its escape sequences', () => {
+    // A non-TTY emits no colour, so the styling is exercised on the format path
+    // directly: the part is styled, and the wrapper must still see 14 columns.
     const tb = new TextBuilder();
     tb.width(40);
-    tb.line.code('amzn_sfx_doorbell_chime_01').text(SENTENCE);
-    // `color: true` forces styling even though a test is not a TTY.
-    const lines = tb.toLines().map((row) => tb.lines.length > 0 ? row : row);
-    const forced = (tb.lines[0] as Console.Builder).format({ color: true });
-    // Styled output is longer than its plain text, so escapes are present.
-    assertEquals(forced.length > stripAnsi(forced).length, true);
-    for (const row of rows(forced)) {
+    const line = tb.line.code('amzn_sfx_doorbell_chime_01').text(SENTENCE);
+    const styled = (line as unknown as { _msgParts: { str: string; style?: (s: string) => string }[] })._msgParts
+      .map((part) => part.style?.(part.str) ?? part.str);
+    // The escape sequences are there, and the plain text is what counts.
+    assertEquals(styled.join(' ').length > stripAnsi(styled.join(' ')).length, true);
+    const lines = rows(tb.emit());
+    assertEquals(lines.length > 1, true);
+    for (const row of lines) {
       assertEquals(visualLength(row) <= 40, true);
     }
-    assertEquals(lines.length, 1);
   });
 
   await t.step('maxWidth() follows the terminal, capped by its argument', () => {
@@ -208,5 +210,79 @@ Deno.test('TextBuilder wrapping', async (t) => {
     tb.width(1000).maxWidth(30);
     tb.line.text(SENTENCE);
     assertEquals(widest(tb.emit()) <= 30, true);
+  });
+});
+
+/**
+ * The layouts the CLI help screens actually build: a styled flag, a padded
+ * alignment gap, and descriptions long enough to wrap. These are the cases that
+ * plain sentences do not exercise, and where wrapping went wrong before.
+ */
+Deno.test('TextBuilder wrapping laid out like a help screen', async (t) => {
+  /** The steps table: a styled flag, then a description that runs long. */
+  const steps = (width: number, wrap = 0) => {
+    const tb = new TextBuilder();
+    tb.width(width);
+    tb.indent();
+    tb.line.code('vol=30').text('Volume, a whole percentage 0 to 100. Applies to the next chime')
+      .text(' '.repeat(17)).text('or sentence, so the chime can be louder than the words.').wrap(wrap);
+    return tb;
+  };
+
+  await t.step('parts are one line: a break happens only when a word overflows', () => {
+    // Wide enough for everything, so all four parts form a single row and the
+    // padding between them is kept as it was written.
+    const lines = rows(steps(400).emit());
+    assertEquals(lines.length, 1);
+    assertEquals(
+      lines[0].trim(),
+      'vol=30 Volume, a whole percentage 0 to 100. Applies to the next chime' +
+        '                 or sentence, so the chime can be louder than the words.',
+    );
+  });
+
+  await t.step('a row is filled before it breaks', () => {
+    const lines = rows(steps(120).emit());
+    assertEquals(lines.length, 2);
+    // The first row runs close to the limit; a break at a part boundary would
+    // have cut it at 'chime', far short of the width.
+    assertEquals(visualLength(lines[0]) > 110, true);
+    assertEquals(visualLength(lines[0]) <= 120, true);
+    assertEquals(lines[1].trim(), 'louder than the words.');
+  });
+
+  await t.step('wrap(n) given after the line still indents the continuation', () => {
+    // Regression: `wrap()` chained at the end of a line used to update only the
+    // stored value, leaving the width options with an indent of 0.
+    const lines = rows(steps(120, 17).emit());
+    assertEquals(lines.length, 2);
+    assertEquals(visualLength(lines[1]) - visualLength(lines[1].trimStart()), 17 + 2);
+  });
+
+  await t.step('a part of spaces keeps the columns apart', () => {
+    const tb = new TextBuilder();
+    tb.width(400);
+    tb.indent();
+    tb.line.code('vol=30').text('first').text(' '.repeat(10)).text('second');
+    assertEquals(rows(tb.emit())[0].trim(), 'vol=30 first          second');
+  });
+
+  await t.step('a padded label keeps the padding before the text after it', () => {
+    const tb = new TextBuilder();
+    tb.width(120);
+    tb.indent();
+    tb.line.code('vol=30'.padEnd(16)).text('Volume.');
+    // One space between the parts, and the label's own padding kept as part of
+    // the line, so the text starts at its column.
+    assertEquals(rows(tb.emit())[0].trim(), 'vol=30 Volume.');
+  });
+
+  await t.step('nothing is lost: the rows rejoin to the words in order', () => {
+    const text = rows(steps(120).emit()).map((row) => row.trim()).join(' ');
+    assertEquals(
+      text.replace(/ +/g, ' '),
+      'vol=30 Volume, a whole percentage 0 to 100. Applies to the next chime' +
+        ' or sentence, so the chime can be louder than the words.',
+    );
   });
 });

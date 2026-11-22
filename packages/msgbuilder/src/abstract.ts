@@ -117,6 +117,11 @@ export abstract class AbstractMsgBuilder implements IFormatter {
    */
   public wrap(n: Integer = 0): this {
     this._wrapIndent = Number.isInteger(n) && n > 0 ? n : undefined;
+    // Called after a width was applied (the builder is chained at the end of a
+    // line), the continuation indent has to reach the options format() reads.
+    if (this._wrap !== undefined) {
+      this._wrap = { ...this._wrap, indent: this._wrapIndent ?? 0 };
+    }
     return this;
   }
 
@@ -574,54 +579,61 @@ export abstract class AbstractMsgBuilder implements IFormatter {
     // such part, so it pads by that same column and lands on the real indent.
     const lead = this._msgIndent;
     const cont = (lead.length > 0 ? lead + ' ' : '') + ' '.repeat(wrap.indent);
-    const sepWidth = visualLength(sep);
+
+    // The parts are one continuous line: rows are broken at spaces, never at a
+    // part boundary. Each word carries the gap in front of it, because between
+    // parts the renderer joins with `sep` and inside a part the spaces are
+    // literal, which is how a help screen aligns its columns.
+    // A word's gap is the whitespace in front of it: literal spaces inside a
+    // part (which is how an alignment column is built), or `sep` where the
+    // renderer would have inserted it between two parts.
+    const words: { text: string; width: number; gap: string }[] = [];
+    /** Whitespace seen but not yet attached to a word. */
+    let spaces = '';
+    for (const raw of parts) {
+      const plain = stripAnsi(raw);
+      // The line indent is already at the start of the first row.
+      if (words.length === 0 && spaces.length === 0 && raw === lead && lead.length > 0) {
+        continue;
+      }
+      // Whitespace with no word after it belongs to the next word, which may be
+      // in the following part. This is how a padded alignment column is built.
+      if (plain.length > 0 && plain.trim().length === 0) {
+        spaces += plain;
+        continue;
+      }
+      for (const piece of plain.match(/\s*(\S+)/g) ?? []) {
+        const word = piece.trimStart();
+        spaces += piece.slice(0, piece.length - word.length);
+        words.push({
+          text: word,
+          width: visualLength(word),
+          gap: words.length === 0 ? '' : spaces.length > 0 ? spaces : sep,
+        });
+        spaces = '';
+      }
+    }
 
     const rows: string[] = [];
     let row = lead;
     let rowWidth = visualLength(row);
     let empty = true;
+    let gap = '';
 
-    /** @param text - The part as it will be rendered, escape sequences included. */
-    const place = (text: string): void => {
-      // Measure the plain text: a styled part carries escape sequences that
-      // occupy no columns, so counting them would wrap far too early.
-      const width = visualLength(text);
-      if (!empty && rowWidth + sepWidth + width > wrap.width) {
+    for (const word of words) {
+      // The gap belongs to the word before it, since a break drops the gap and
+      // starts the continuation at the wrap indent.
+      gap = empty ? '' : word.gap;
+      if (!empty && rowWidth + visualLength(gap) + word.width > wrap.width) {
         rows.push(row);
         row = cont;
         rowWidth = visualLength(row);
         empty = true;
+        gap = '';
       }
-      if (!empty) {
-        row += sep;
-        rowWidth += sepWidth;
-      }
-      row += text;
-      rowWidth += width;
+      row += gap + word.text;
+      rowWidth += visualLength(gap) + word.width;
       empty = false;
-    };
-
-    for (const part of parts) {
-      // The line indent is already at the start of the first row.
-      if (empty && rows.length === 0 && part === lead && lead.length > 0) {
-        empty = false;
-        continue;
-      }
-      // A part is a styled run, and one `.text()` can be a whole sentence, so
-      // the break must happen between words inside it. The style has already
-      // been applied, so an escape sequence now sits inside the run; taking the
-      // plain text from it keeps the measurement honest and lands the row
-      // break at the last space, which is always before any escape sequence.
-      const plain = stripAnsi(part);
-      if (plain.includes(' ') && visualLength(plain) > wrap.width) {
-        for (const word of plain.split(' ')) {
-          place(word);
-        }
-      } else {
-        // One unit: a word, or a run that is wider than a row and can only
-        // overflow (there is nothing useful left to break).
-        place(part);
-      }
     }
     rows.push(row);
     return rows.join('\n');

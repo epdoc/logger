@@ -604,9 +604,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 132,
+                      "line": 137,
                       "col": 2,
-                      "byteIndex": 4744
+                      "byteIndex": 5014
                     }
                   },
                   {
@@ -671,9 +671,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 144,
+                      "line": 149,
                       "col": 2,
-                      "byteIndex": 5118
+                      "byteIndex": 5388
                     }
                   },
                   {
@@ -761,9 +761,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 161,
+                      "line": 166,
                       "col": 2,
-                      "byteIndex": 5656
+                      "byteIndex": 5926
                     }
                   },
                   {
@@ -810,9 +810,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 174,
+                      "line": 179,
                       "col": 2,
-                      "byteIndex": 6010
+                      "byteIndex": 6280
                     }
                   },
                   {
@@ -840,9 +840,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 179,
+                      "line": 184,
                       "col": 2,
-                      "byteIndex": 6119
+                      "byteIndex": 6389
                     }
                   },
                   {
@@ -870,9 +870,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 189,
+                      "line": 194,
                       "col": 2,
-                      "byteIndex": 6480
+                      "byteIndex": 6750
                     }
                   },
                   {
@@ -889,9 +889,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 211,
+                      "line": 216,
                       "col": 2,
-                      "byteIndex": 7301
+                      "byteIndex": 7571
                     }
                   },
                   {
@@ -908,9 +908,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 230,
+                      "line": 235,
                       "col": 2,
-                      "byteIndex": 8036
+                      "byteIndex": 8306
                     }
                   },
                   {
@@ -936,9 +936,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 244,
+                      "line": 249,
                       "col": 2,
-                      "byteIndex": 8449
+                      "byteIndex": 8719
                     }
                   },
                   {
@@ -1042,9 +1042,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 258,
+                      "line": 263,
                       "col": 2,
-                      "byteIndex": 8885
+                      "byteIndex": 9155
                     }
                   },
                   {
@@ -1148,9 +1148,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 283,
+                      "line": 288,
                       "col": 2,
-                      "byteIndex": 9673
+                      "byteIndex": 9943
                     }
                   },
                   {
@@ -1220,9 +1220,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 310,
+                      "line": 315,
                       "col": 2,
-                      "byteIndex": 10576
+                      "byteIndex": 10846
                     }
                   },
                   {
@@ -1264,9 +1264,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 328,
+                      "line": 333,
                       "col": 2,
-                      "byteIndex": 11046
+                      "byteIndex": 11316
                     }
                   },
                   {
@@ -1308,9 +1308,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 339,
+                      "line": 344,
                       "col": 2,
-                      "byteIndex": 11300
+                      "byteIndex": 11570
                     }
                   },
                   {
@@ -1436,9 +1436,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 351,
+                      "line": 356,
                       "col": 2,
-                      "byteIndex": 11692
+                      "byteIndex": 11962
                     }
                   },
                   {
@@ -1499,9 +1499,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 376,
+                      "line": 381,
                       "col": 2,
-                      "byteIndex": 12449
+                      "byteIndex": 12719
                     }
                   },
                   {
@@ -1562,9 +1562,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 387,
+                      "line": 392,
                       "col": 2,
-                      "byteIndex": 12750
+                      "byteIndex": 13020
                     }
                   },
                   {
@@ -1619,9 +1619,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 403,
+                      "line": 408,
                       "col": 2,
-                      "byteIndex": 13235
+                      "byteIndex": 13505
                     }
                   },
                   {
@@ -1721,9 +1721,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 430,
+                      "line": 435,
                       "col": 2,
-                      "byteIndex": 14261
+                      "byteIndex": 14531
                     }
                   },
                   {
@@ -1859,9 +1859,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 459,
+                      "line": 464,
                       "col": 2,
-                      "byteIndex": 15393
+                      "byteIndex": 15663
                     }
                   },
                   {
@@ -1926,9 +1926,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 495,
+                      "line": 500,
                       "col": 2,
-                      "byteIndex": 16654
+                      "byteIndex": 16924
                     }
                   },
                   {
@@ -1953,9 +1953,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 503,
+                      "line": 508,
                       "col": 2,
-                      "byteIndex": 16841
+                      "byteIndex": 17111
                     }
                   },
                   {
@@ -2078,9 +2078,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 519,
+                      "line": 524,
                       "col": 2,
-                      "byteIndex": 17762
+                      "byteIndex": 18032
                     }
                   },
                   {
@@ -2141,9 +2141,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 569,
+                      "line": 574,
                       "col": 2,
-                      "byteIndex": 19568
+                      "byteIndex": 19838
                     }
                   },
                   {
@@ -2163,9 +2163,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 632,
+                      "line": 644,
                       "col": 2,
-                      "byteIndex": 21981
+                      "byteIndex": 22659
                     }
                   }
                 ],
