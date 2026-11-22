@@ -258,6 +258,27 @@ This abstract class provides a fluent, chainable interface for constructing log 
 
 It manages message parts, indentation, conditional logic, and structured data, and implements the `IFormatter` interface for final string conversion.
 
+### `TextBuilder` wrapping
+
+`TextBuilder` builds multi-line blocks for help screens and other formatted output. By default a line is as long as its parts make it. Three methods turn wrapping on, and `wrap(n)` controls where continuation rows start:
+
+```typescript
+const tb = new TextBuilder(CustomMsgBuilder);
+
+tb.maxWidth(); // Follow the terminal: 80 columns when not in a TTY
+tb.width(100); // Or a hard ceiling, in columns
+tb.noWrap(); // Turn wrapping off again
+
+tb.wrap(16); // The next line only: continuation rows start 16 columns in
+tb.line.text('Doorbell').code('amzn_sfx_doorbell_chime_01').text('plays on every Echo that is in the group.');
+```
+
+- `width(n)` is a hard ceiling; `width()` or `width(0)` clears it.
+- `maxWidth(n)` is the lesser of `n` (or the terminal, when omitted) and the terminal; `maxWidth(0)` clears it.
+- `noWrap()` clears both.
+- `wrap(n)` is cumulative with `indent()`: inside `indent()`, a continuation row starts at `indent + n`.
+- Widths are measured in columns, so escape sequences never count against the width, and a word is never split. A part wider than a row overflows on a row of its own.
+
 ### Theming and Colors
 
 The `ConsoleMsgBuilder` uses a static `styleFormatters` property to determine how to style different message parts (text, headings, labels, values, etc.). You can customize the color theme globally or per-subclass.

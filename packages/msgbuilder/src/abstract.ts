@@ -4,6 +4,7 @@ import { DateTime } from '@epdoc/datetime';
 import type { HrMilliseconds } from '@epdoc/duration';
 import { _, type Dict, type Integer } from '@epdoc/type';
 import { bold, dim } from '@std/fmt/colors';
+import { stripAnsi, visualLength } from '@epdoc/terminal/screen';
 import { ConsoleEmitter } from './emitter.ts';
 import type {
   EmitterData,
@@ -15,6 +16,7 @@ import type {
   QuoteTheme,
   StyleArg,
   StyleFormatterFn,
+  WrapOptions,
 } from './types.ts';
 import { countTabsAtBeginningOfString } from './util.ts';
 
@@ -43,6 +45,16 @@ export abstract class AbstractMsgBuilder implements IFormatter {
   protected _emitter: IEmitter;
 
   protected _msgIndent: string = '';
+  /**
+   * How to wrap this message. Unset means one row, however long it is: wrapping
+   * only happens when a {@link TextBuilder} sets a width.
+   */
+  protected _wrap: WrapOptions | undefined;
+  /**
+   * The `wrap(n)` value: extra indentation for continuation rows. Kept apart
+   * from {@link _wrap} so it survives a width being applied later.
+   */
+  protected _wrapIndent: Integer | undefined;
   protected _msgParts: MsgPart[] = [];
   protected _data: Dict | undefined;
   protected _suffix: string[] = [];
@@ -90,6 +102,36 @@ export abstract class AbstractMsgBuilder implements IFormatter {
     this._data = undefined;
     this._dimMode = false;
     this._boldMode = false;
+    return this;
+  }
+
+  /**
+   * Indent every row after the first by `n` columns, when this message wraps.
+   *
+   * This is the wrap property a {@link TextBuilder} sets on a line. It has no
+   * effect until a width is in force, and the `n` is added to the line's own
+   * indent, so inside `indent()` a `wrap(16)` continuation starts at 18 columns.
+   *
+   * @param n - Columns of extra indentation for continuation rows. `0` clears it.
+   * @returns {this} The current instance for chaining.
+   */
+  public wrap(n: Integer = 0): this {
+    this._wrapIndent = Number.isInteger(n) && n > 0 ? n : undefined;
+    return this;
+  }
+
+  /**
+   * Wrap this message instead of letting it run past the terminal.
+   *
+   * Called by {@link TextBuilder} when a width is in force, so `format()` can
+   * break the message into rows without losing any part's styling.
+   *
+   * @param opts - The available width and the continuation indent. `undefined`
+   *   turns wrapping off again.
+   * @returns {this} The current instance for chaining.
+   */
+  public setWrap(opts: WrapOptions | undefined): this {
+    this._wrap = opts;
     return this;
   }
 
@@ -507,7 +549,79 @@ export abstract class AbstractMsgBuilder implements IFormatter {
     }
 
     if (opts.reset) this.clear();
+    if (this._wrap !== undefined) {
+      return this.wrapParts(parts, sep);
+    }
     return parts.join(sep);
+  }
+
+  /**
+   * Join the formatted parts into rows that fit the wrap width.
+   *
+   * A part is the smallest unit that moves: it is measured and placed whole, so
+   * a styled part is never split and its escape sequences are never broken. A
+   * part wider than the row is placed on a row of its own and allowed to
+   * overflow, because there is nothing useful left to break.
+   *
+   * @param parts - The already-styled parts, the indent first when there is one.
+   * @param sep - The separator between parts, normally a single space.
+   * @returns The message as one string with rows joined by newlines.
+   */
+  protected wrapParts(parts: string[], sep: string): string {
+    const wrap = this._wrap as WrapOptions;
+    // TextBuilder hands over an indent one column short of the rendered one, to
+    // cancel the space the first part gets before it. A continuation row has no
+    // such part, so it pads by that same column and lands on the real indent.
+    const lead = this._msgIndent;
+    const cont = (lead.length > 0 ? lead + ' ' : '') + ' '.repeat(wrap.indent);
+    const sepWidth = visualLength(sep);
+
+    const rows: string[] = [];
+    let row = lead;
+    let rowWidth = visualLength(row);
+    let empty = true;
+
+    const place = (text: string, width: number): void => {
+      if (!empty && rowWidth + sepWidth + width > wrap.width) {
+        rows.push(row);
+        row = cont;
+        rowWidth = visualLength(row);
+        empty = true;
+      }
+      if (!empty) {
+        row += sep;
+        rowWidth += sepWidth;
+      }
+      row += text;
+      rowWidth += width;
+      empty = false;
+    };
+
+    for (const part of parts) {
+      // The line indent is already at the start of the first row.
+      if (empty && rows.length === 0 && part === lead && lead.length > 0) {
+        empty = false;
+        continue;
+      }
+      // A part is a styled run, and one `.text()` can be a whole sentence, so
+      // the break must happen between words inside it. The style has already
+      // been applied, so an escape sequence now sits inside the run; taking the
+      // plain text from it keeps the measurement honest and lands the row
+      // break at the last space, which is always before any escape sequence.
+      const plain = stripAnsi(part);
+      if (plain.includes(' ') && visualLength(plain) > wrap.width) {
+        for (const word of plain.split(' ')) {
+          const width = visualLength(word);
+          place(word, width);
+        }
+      } else {
+        // One unit: a word, or a run that is wider than a row and can only
+        // overflow (there is nothing useful left to break).
+        place(part, visualLength(plain));
+      }
+    }
+    rows.push(row);
+    return rows.join('\n');
   }
 
   /**

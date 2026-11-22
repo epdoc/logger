@@ -15,9 +15,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                "line": 38,
+                "line": 40,
                 "col": 0,
-                "byteIndex": 1354
+                "byteIndex": 1435
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -60,9 +60,9 @@
                     ],
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 61,
+                      "line": 73,
                       "col": 2,
-                      "byteIndex": 2241
+                      "byteIndex": 2722
                     }
                   }
                 ],
@@ -84,9 +84,9 @@
                     "name": "_timestamp",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 39,
+                      "line": 41,
                       "col": 2,
-                      "byteIndex": 1421
+                      "byteIndex": 1502
                     }
                   },
                   {
@@ -106,9 +106,9 @@
                     "name": "_elapsed",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 40,
+                      "line": 42,
                       "col": 2,
-                      "byteIndex": 1480
+                      "byteIndex": 1561
                     }
                   },
                   {
@@ -128,9 +128,9 @@
                     "name": "_tabSize",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 41,
+                      "line": 43,
                       "col": 2,
-                      "byteIndex": 1522
+                      "byteIndex": 1603
                     }
                   },
                   {
@@ -150,9 +150,9 @@
                     "name": "_emitter",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 42,
+                      "line": 44,
                       "col": 2,
-                      "byteIndex": 1572
+                      "byteIndex": 1653
                     }
                   },
                   {
@@ -165,9 +165,79 @@
                     "name": "_msgIndent",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 44,
+                      "line": 46,
                       "col": 2,
-                      "byteIndex": 1605
+                      "byteIndex": 1686
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "How to wrap this message. Unset means one row, however long it is: wrapping\nonly happens when a {@link TextBuilder} sets a width."
+                    },
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "WrapOptions",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "WrapOptions",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "./types.ts",
+                              "name": "WrapOptions"
+                            }
+                          }
+                        },
+                        {
+                          "repr": "undefined",
+                          "kind": "keyword",
+                          "value": "undefined"
+                        }
+                      ]
+                    },
+                    "accessibility": "protected",
+                    "name": "_wrap",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 51,
+                      "col": 2,
+                      "byteIndex": 1875
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "The `wrap(n)` value: extra indentation for continuation rows. Kept apart\nfrom {@link _wrap} so it survives a width being applied later."
+                    },
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "Integer",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Integer",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/type",
+                              "name": "Integer"
+                            }
+                          }
+                        },
+                        {
+                          "repr": "undefined",
+                          "kind": "keyword",
+                          "value": "undefined"
+                        }
+                      ]
+                    },
+                    "accessibility": "protected",
+                    "name": "_wrapIndent",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 56,
+                      "col": 2,
+                      "byteIndex": 2077
                     }
                   },
                   {
@@ -190,9 +260,9 @@
                     "name": "_msgParts",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 45,
+                      "line": 57,
                       "col": 2,
-                      "byteIndex": 1642
+                      "byteIndex": 2123
                     }
                   },
                   {
@@ -222,9 +292,9 @@
                     "name": "_data",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 46,
+                      "line": 58,
                       "col": 2,
-                      "byteIndex": 1681
+                      "byteIndex": 2162
                     }
                   },
                   {
@@ -240,9 +310,9 @@
                     "name": "_suffix",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 47,
+                      "line": 59,
                       "col": 2,
-                      "byteIndex": 1718
+                      "byteIndex": 2199
                     }
                   },
                   {
@@ -255,9 +325,9 @@
                     "name": "_showElapsed",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 48,
+                      "line": 60,
                       "col": 2,
-                      "byteIndex": 1754
+                      "byteIndex": 2235
                     }
                   },
                   {
@@ -273,9 +343,9 @@
                     "name": "_allowStack",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 49,
+                      "line": 61,
                       "col": 2,
-                      "byteIndex": 1797
+                      "byteIndex": 2278
                     }
                   },
                   {
@@ -291,9 +361,9 @@
                     "name": "_conditionMetStack",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 50,
+                      "line": 62,
                       "col": 2,
-                      "byteIndex": 1838
+                      "byteIndex": 2319
                     }
                   },
                   {
@@ -306,9 +376,9 @@
                     "name": "_dimMode",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 51,
+                      "line": 63,
                       "col": 2,
-                      "byteIndex": 1886
+                      "byteIndex": 2367
                     }
                   },
                   {
@@ -321,9 +391,9 @@
                     "name": "_boldMode",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 52,
+                      "line": 64,
                       "col": 2,
-                      "byteIndex": 1925
+                      "byteIndex": 2406
                     }
                   },
                   {
@@ -346,9 +416,9 @@
                     "name": "quoteTheme",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 73,
+                      "line": 85,
                       "col": 2,
-                      "byteIndex": 2675
+                      "byteIndex": 3156
                     }
                   }
                 ],
@@ -378,9 +448,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 78,
+                      "line": 90,
                       "col": 2,
-                      "byteIndex": 2814
+                      "byteIndex": 3295
                     }
                   },
                   {
@@ -410,9 +480,133 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 87,
+                      "line": 99,
                       "col": 2,
-                      "byteIndex": 3094
+                      "byteIndex": 3575
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Indent every row after the first by `n` columns, when this message wraps.\n\nThis is the wrap property a {@link TextBuilder} sets on a line. It has no\neffect until a width is in force, and the `n` is added to the line's own\nindent, so inside `indent()` a `wrap(16)` continuation starts at 18 columns.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "n",
+                          "doc": "Columns of extra indentation for continuation rows. `0` clears it."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The current instance for chaining."
+                        }
+                      ]
+                    },
+                    "accessibility": "public",
+                    "name": "wrap",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "n",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "Integer",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Integer",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "@epdoc/type",
+                                  "name": "Integer"
+                                }
+                              }
+                            }
+                          },
+                          "right": "0"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 117,
+                      "col": 2,
+                      "byteIndex": 4209
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Wrap this message instead of letting it run past the terminal.\n\nCalled by {@link TextBuilder} when a width is in force, so `format()` can\nbreak the message into rows without losing any part's styling.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "opts",
+                          "doc": "The available width and the continuation indent. `undefined`\nturns wrapping off again."
+                        },
+                        {
+                          "kind": "return",
+                          "tsType": {
+                            "repr": "this",
+                            "kind": "this"
+                          },
+                          "doc": "The current instance for chaining."
+                        }
+                      ]
+                    },
+                    "accessibility": "public",
+                    "name": "setWrap",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "opts",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "union",
+                            "value": [
+                              {
+                                "repr": "WrapOptions",
+                                "kind": "typeRef",
+                                "value": {
+                                  "typeName": "WrapOptions",
+                                  "resolution": {
+                                    "kind": "import",
+                                    "specifier": "./types.ts",
+                                    "name": "WrapOptions"
+                                  }
+                                }
+                              },
+                              {
+                                "repr": "undefined",
+                                "kind": "keyword",
+                                "value": "undefined"
+                              }
+                            ]
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 132,
+                      "col": 2,
+                      "byteIndex": 4744
                     }
                   },
                   {
@@ -477,9 +671,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 102,
+                      "line": 144,
                       "col": 2,
-                      "byteIndex": 3522
+                      "byteIndex": 5118
                     }
                   },
                   {
@@ -567,9 +761,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 119,
+                      "line": 161,
                       "col": 2,
-                      "byteIndex": 4060
+                      "byteIndex": 5656
                     }
                   },
                   {
@@ -616,9 +810,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 132,
+                      "line": 174,
                       "col": 2,
-                      "byteIndex": 4414
+                      "byteIndex": 6010
                     }
                   },
                   {
@@ -646,9 +840,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 137,
+                      "line": 179,
                       "col": 2,
-                      "byteIndex": 4523
+                      "byteIndex": 6119
                     }
                   },
                   {
@@ -676,9 +870,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 147,
+                      "line": 189,
                       "col": 2,
-                      "byteIndex": 4884
+                      "byteIndex": 6480
                     }
                   },
                   {
@@ -695,9 +889,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 169,
+                      "line": 211,
                       "col": 2,
-                      "byteIndex": 5705
+                      "byteIndex": 7301
                     }
                   },
                   {
@@ -714,9 +908,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 188,
+                      "line": 230,
                       "col": 2,
-                      "byteIndex": 6440
+                      "byteIndex": 8036
                     }
                   },
                   {
@@ -742,9 +936,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 202,
+                      "line": 244,
                       "col": 2,
-                      "byteIndex": 6853
+                      "byteIndex": 8449
                     }
                   },
                   {
@@ -848,9 +1042,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 216,
+                      "line": 258,
                       "col": 2,
-                      "byteIndex": 7289
+                      "byteIndex": 8885
                     }
                   },
                   {
@@ -954,9 +1148,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 241,
+                      "line": 283,
                       "col": 2,
-                      "byteIndex": 8077
+                      "byteIndex": 9673
                     }
                   },
                   {
@@ -1026,9 +1220,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 268,
+                      "line": 310,
                       "col": 2,
-                      "byteIndex": 8980
+                      "byteIndex": 10576
                     }
                   },
                   {
@@ -1070,9 +1264,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 286,
+                      "line": 328,
                       "col": 2,
-                      "byteIndex": 9450
+                      "byteIndex": 11046
                     }
                   },
                   {
@@ -1114,9 +1308,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 297,
+                      "line": 339,
                       "col": 2,
-                      "byteIndex": 9704
+                      "byteIndex": 11300
                     }
                   },
                   {
@@ -1242,9 +1436,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 309,
+                      "line": 351,
                       "col": 2,
-                      "byteIndex": 10096
+                      "byteIndex": 11692
                     }
                   },
                   {
@@ -1305,9 +1499,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 334,
+                      "line": 376,
                       "col": 2,
-                      "byteIndex": 10853
+                      "byteIndex": 12449
                     }
                   },
                   {
@@ -1368,9 +1562,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 345,
+                      "line": 387,
                       "col": 2,
-                      "byteIndex": 11154
+                      "byteIndex": 12750
                     }
                   },
                   {
@@ -1425,9 +1619,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 361,
+                      "line": 403,
                       "col": 2,
-                      "byteIndex": 11639
+                      "byteIndex": 13235
                     }
                   },
                   {
@@ -1527,9 +1721,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 388,
+                      "line": 430,
                       "col": 2,
-                      "byteIndex": 12665
+                      "byteIndex": 14261
                     }
                   },
                   {
@@ -1665,9 +1859,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 417,
+                      "line": 459,
                       "col": 2,
-                      "byteIndex": 13797
+                      "byteIndex": 15393
                     }
                   },
                   {
@@ -1732,9 +1926,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 453,
+                      "line": 495,
                       "col": 2,
-                      "byteIndex": 15058
+                      "byteIndex": 16654
                     }
                   },
                   {
@@ -1759,9 +1953,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 461,
+                      "line": 503,
                       "col": 2,
-                      "byteIndex": 15245
+                      "byteIndex": 16841
                     }
                   },
                   {
@@ -1884,9 +2078,72 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 477,
+                      "line": 519,
                       "col": 2,
-                      "byteIndex": 16166
+                      "byteIndex": 17762
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Join the formatted parts into rows that fit the wrap width.\n\nA part is the smallest unit that moves: it is measured and placed whole, so\na styled part is never split and its escape sequences are never broken. A\npart wider than the row is placed on a row of its own and allowed to\noverflow, because there is nothing useful left to break.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "parts",
+                          "doc": "The already-styled parts, the indent first when there is one."
+                        },
+                        {
+                          "kind": "param",
+                          "name": "sep",
+                          "doc": "The separator between parts, normally a single space."
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "The message as one string with rows joined by newlines."
+                        }
+                      ]
+                    },
+                    "accessibility": "protected",
+                    "name": "wrapParts",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "parts",
+                          "optional": false,
+                          "tsType": {
+                            "kind": "array",
+                            "value": {
+                              "repr": "string",
+                              "kind": "keyword",
+                              "value": "string"
+                            }
+                          }
+                        },
+                        {
+                          "kind": "identifier",
+                          "name": "sep",
+                          "optional": false,
+                          "tsType": {
+                            "repr": "string",
+                            "kind": "keyword",
+                            "value": "string"
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "string",
+                        "kind": "keyword",
+                        "value": "string"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
+                      "line": 569,
+                      "col": 2,
+                      "byteIndex": 19568
                     }
                   },
                   {
@@ -1906,9 +2163,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/abstract.ts",
-                      "line": 515,
+                      "line": 629,
                       "col": 2,
-                      "byteIndex": 17396
+                      "byteIndex": 21795
                     }
                   }
                 ],
@@ -2399,9 +2656,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                "line": 18,
+                "line": 20,
                 "col": 0,
-                "byteIndex": 511
+                "byteIndex": 613
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -2452,9 +2709,9 @@
                     ],
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 23,
+                      "line": 31,
                       "col": 2,
-                      "byteIndex": 687
+                      "byteIndex": 1112
                     }
                   }
                 ],
@@ -2491,9 +2748,9 @@
                     "name": "lines",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 19,
+                      "line": 21,
                       "col": 2,
-                      "byteIndex": 585
+                      "byteIndex": 687
                     }
                   },
                   {
@@ -2520,9 +2777,9 @@
                     "name": "builderClass",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 20,
+                      "line": 22,
                       "col": 2,
-                      "byteIndex": 615
+                      "byteIndex": 717
                     }
                   },
                   {
@@ -2538,9 +2795,97 @@
                     "name": "_indent",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 21,
+                      "line": 23,
                       "col": 2,
-                      "byteIndex": 652
+                      "byteIndex": 754
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "A hard ceiling set by {@link width}, in columns."
+                    },
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "Integer",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Integer",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/type",
+                              "name": "Integer"
+                            }
+                          }
+                        },
+                        {
+                          "repr": "undefined",
+                          "kind": "keyword",
+                          "value": "undefined"
+                        }
+                      ]
+                    },
+                    "accessibility": "private",
+                    "name": "_width",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 25,
+                      "col": 2,
+                      "byteIndex": 846
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "A ceiling set by {@link maxWidth}, capped by the terminal when rendering."
+                    },
+                    "tsType": {
+                      "kind": "union",
+                      "value": [
+                        {
+                          "repr": "Integer",
+                          "kind": "typeRef",
+                          "value": {
+                            "typeName": "Integer",
+                            "resolution": {
+                              "kind": "import",
+                              "specifier": "@epdoc/type",
+                              "name": "Integer"
+                            }
+                          }
+                        },
+                        {
+                          "repr": "undefined",
+                          "kind": "keyword",
+                          "value": "undefined"
+                        }
+                      ]
+                    },
+                    "accessibility": "private",
+                    "name": "_maxWidth",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 27,
+                      "col": 2,
+                      "byteIndex": 968
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "The `wrap(n)` waiting for the next line; it applies to that line only."
+                    },
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    },
+                    "accessibility": "private",
+                    "name": "_wrap",
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 29,
+                      "col": 2,
+                      "byteIndex": 1090
                     }
                   }
                 ],
@@ -2606,9 +2951,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 34,
+                      "line": 42,
                       "col": 2,
-                      "byteIndex": 1139
+                      "byteIndex": 1564
                     }
                   },
                   {
@@ -2655,9 +3000,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 51,
+                      "line": 59,
                       "col": 2,
-                      "byteIndex": 1548
+                      "byteIndex": 1973
                     }
                   },
                   {
@@ -2676,9 +3021,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 63,
+                      "line": 71,
                       "col": 2,
-                      "byteIndex": 1763
+                      "byteIndex": 2188
                     }
                   },
                   {
@@ -2705,9 +3050,231 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 71,
+                      "line": 79,
                       "col": 2,
-                      "byteIndex": 1932
+                      "byteIndex": 2357
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Indent every row after the first on the *next* line by `n` columns.\n\nThe value belongs to that one line and is consumed when the line is taken,\nso `tb.wrap(16)` followed by two `tb.line`s affects only the first. It needs\na width ({@link width} or {@link maxWidth}) to take effect; without one there\nis nothing to wrap.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "n",
+                          "tsType": {
+                            "repr": "Integer",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Integer",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "optional": true,
+                          "doc": "Columns of extra indentation for continuation rows."
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "This builder, for chaining.\n"
+                        },
+                        {
+                          "kind": "example",
+                          "doc": "```typescript\ntb.maxWidth();\ntb.wrap(16);\ntb.line.text('Doorbell').code('amzn_sfx_doorbell_chime_01').text('plays on every Echo.');\n// Rows after the first start 16 columns in, plus any indent().\n```"
+                        }
+                      ]
+                    },
+                    "name": "wrap",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "assign",
+                          "left": {
+                            "kind": "identifier",
+                            "name": "n",
+                            "optional": false,
+                            "tsType": {
+                              "repr": "Integer",
+                              "kind": "typeRef",
+                              "value": {
+                                "typeName": "Integer",
+                                "resolution": {
+                                  "kind": "import",
+                                  "specifier": "@epdoc/type",
+                                  "name": "Integer"
+                                }
+                              }
+                            }
+                          },
+                          "right": "0"
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 124,
+                      "col": 2,
+                      "byteIndex": 4086
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Wrap this text block to a width, in columns.\n\nNothing wraps until a width is set: without one, a line is as long as its\nparts make it, which is what every existing caller relies on.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "n",
+                          "tsType": {
+                            "repr": "Integer",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Integer",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "optional": true,
+                          "doc": "Total columns a row may occupy, the line's own indent\nincluded. Omit it, or pass 0, to clear this ceiling;\n`maxWidth()` may still apply. Use {@link noWrap} to turn\nwrapping off completely."
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "This builder, for chaining.\n"
+                        },
+                        {
+                          "kind": "example",
+                          "doc": "```typescript\nconst tb = new TextBuilder(CustomMsgBuilder);\ntb.maxWidth(); // A terminal that is 80 columns wide wraps at 80\ntb.line.text('A sentence that is much longer than eighty columns once it is written out in full.');\n```"
+                        }
+                      ]
+                    },
+                    "name": "width",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "n",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "Integer",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Integer",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/type",
+                                "name": "Integer"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 148,
+                      "col": 2,
+                      "byteIndex": 5028
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Turn wrapping off entirely, clearing both {@link width} and {@link maxWidth}.\n",
+                      "tags": [
+                        {
+                          "kind": "return",
+                          "doc": "This builder, for chaining."
+                        }
+                      ]
+                    },
+                    "name": "noWrap",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 158,
+                      "col": 2,
+                      "byteIndex": 5273
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "Wrap this text block to the narrower of `n` and the terminal.\n\nUnlike {@link width}, which is a hard ceiling, this follows the terminal: a\n120-column ceiling on a 200-column terminal still wraps at 120, but on an\n80-column terminal it wraps at 80. Outside a TTY the terminal reports 80\ncolumns, so piped output wraps at that.\n",
+                      "tags": [
+                        {
+                          "kind": "param",
+                          "name": "n",
+                          "tsType": {
+                            "repr": "Integer",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Integer",
+                              "resolution": {
+                                "kind": "typeParam"
+                              }
+                            }
+                          },
+                          "optional": true,
+                          "doc": "A ceiling in columns. Omit it, or pass 0, to wrap at\nthe terminal width alone; `maxWidth(0)` also clears it.\nWrapping is turned off with {@link noWrap}."
+                        },
+                        {
+                          "kind": "return",
+                          "doc": "This builder, for chaining."
+                        }
+                      ]
+                    },
+                    "name": "maxWidth",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [
+                        {
+                          "kind": "identifier",
+                          "name": "n",
+                          "optional": true,
+                          "tsType": {
+                            "repr": "Integer",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Integer",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/type",
+                                "name": "Integer"
+                              }
+                            }
+                          }
+                        }
+                      ],
+                      "returnType": {
+                        "repr": "this",
+                        "kind": "this"
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 177,
+                      "col": 2,
+                      "byteIndex": 6026
                     }
                   },
                   {
@@ -2726,9 +3293,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 87,
+                      "line": 187,
                       "col": 2,
-                      "byteIndex": 2529
+                      "byteIndex": 6337
                     }
                   },
                   {
@@ -2747,9 +3314,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 95,
+                      "line": 195,
                       "col": 2,
-                      "byteIndex": 2630
+                      "byteIndex": 6438
                     }
                   },
                   {
@@ -2769,9 +3336,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 103,
+                      "line": 203,
                       "col": 2,
-                      "byteIndex": 2760
+                      "byteIndex": 6568
                     }
                   },
                   {
@@ -2791,9 +3358,9 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 107,
+                      "line": 207,
                       "col": 2,
-                      "byteIndex": 2822
+                      "byteIndex": 6630
                     }
                   },
                   {
@@ -2813,9 +3380,49 @@
                     },
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
-                      "line": 115,
+                      "line": 215,
                       "col": 2,
-                      "byteIndex": 3002
+                      "byteIndex": 6810
+                    }
+                  },
+                  {
+                    "jsDoc": {
+                      "doc": "The width every line is wrapped to, or `undefined` when wrapping is off.\n\nThe terminal is asked only when {@link maxWidth} is in force, so a plain\n`width()` call never touches it."
+                    },
+                    "accessibility": "private",
+                    "name": "renderWidth",
+                    "kind": "method",
+                    "functionDef": {
+                      "params": [],
+                      "returnType": {
+                        "kind": "union",
+                        "value": [
+                          {
+                            "repr": "Integer",
+                            "kind": "typeRef",
+                            "value": {
+                              "typeName": "Integer",
+                              "resolution": {
+                                "kind": "import",
+                                "specifier": "@epdoc/type",
+                                "name": "Integer"
+                              }
+                            }
+                          },
+                          {
+                            "repr": "undefined",
+                            "kind": "keyword",
+                            "value": "undefined"
+                          }
+                        ]
+                      },
+                      "hasBody": true
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/text-builder.ts",
+                      "line": 225,
+                      "col": 2,
+                      "byteIndex": 7087
                     }
                   }
                 ],
@@ -3567,14 +4174,70 @@
           ]
         },
         {
+          "name": "WrapOptions",
+          "declarations": [
+            {
+              "location": {
+                "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                "line": 126,
+                "col": 0,
+                "byteIndex": 3917
+              },
+              "declarationKind": "export",
+              "jsDoc": {
+                "doc": "How a message wraps its parts once they will not fit on one line.\n\nSet by {@link TextBuilder.width} and {@link TextBuilder.maxWidth}, carried on\nthe line builder, and honoured by `format()`."
+              },
+              "kind": "interface",
+              "def": {
+                "properties": [
+                  {
+                    "name": "width",
+                    "jsDoc": {
+                      "doc": "The total width a row may occupy, the line's own indent included. Only the\ncolumns the text needs are counted, never the escape sequences that colour it."
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                      "line": 131,
+                      "col": 2,
+                      "byteIndex": 4126
+                    },
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  },
+                  {
+                    "name": "indent",
+                    "jsDoc": {
+                      "doc": "Extra indentation, in columns, for every row after the first. This is the\n`wrap(n)` value, and it is added to the line's own indent."
+                    },
+                    "location": {
+                      "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
+                      "line": 136,
+                      "col": 2,
+                      "byteIndex": 4298
+                    },
+                    "tsType": {
+                      "repr": "number",
+                      "kind": "keyword",
+                      "value": "number"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "IndentLevel",
           "declarations": [
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                "line": 127,
+                "line": 146,
                 "col": 0,
-                "byteIndex": 3988
+                "byteIndex": 4598
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3593,9 +4256,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                          "line": 131,
+                          "line": 150,
                           "col": 2,
-                          "byteIndex": 4112
+                          "byteIndex": 4722
                         },
                         "tsType": {
                           "repr": "string",
@@ -3610,9 +4273,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                          "line": 136,
+                          "line": 155,
                           "col": 2,
-                          "byteIndex": 4292
+                          "byteIndex": 4902
                         },
                         "optional": true,
                         "tsType": {
@@ -3639,9 +4302,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                "line": 144,
+                "line": 163,
                 "col": 0,
-                "byteIndex": 4460
+                "byteIndex": 5070
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3688,9 +4351,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                "line": 152,
+                "line": 171,
                 "col": 0,
-                "byteIndex": 4688
+                "byteIndex": 5298
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3709,9 +4372,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                          "line": 156,
+                          "line": 175,
                           "col": 2,
-                          "byteIndex": 4806
+                          "byteIndex": 5416
                         },
                         "optional": true,
                         "tsType": {
@@ -3727,9 +4390,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                          "line": 161,
+                          "line": 180,
                           "col": 2,
-                          "byteIndex": 4945
+                          "byteIndex": 5555
                         },
                         "optional": true,
                         "tsType": {
@@ -3750,9 +4413,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                          "line": 165,
+                          "line": 184,
                           "col": 2,
-                          "byteIndex": 5049
+                          "byteIndex": 5659
                         },
                         "optional": true,
                         "tsType": {
@@ -3768,9 +4431,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                          "line": 169,
+                          "line": 188,
                           "col": 2,
-                          "byteIndex": 5158
+                          "byteIndex": 5768
                         },
                         "optional": true,
                         "tsType": {
@@ -3797,9 +4460,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                "line": 179,
+                "line": 198,
                 "col": 0,
-                "byteIndex": 5441
+                "byteIndex": 6051
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3818,9 +4481,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                          "line": 184,
+                          "line": 203,
                           "col": 2,
-                          "byteIndex": 5602
+                          "byteIndex": 6212
                         },
                         "optional": true,
                         "tsType": {
@@ -3836,9 +4499,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                          "line": 188,
+                          "line": 207,
                           "col": 2,
-                          "byteIndex": 5714
+                          "byteIndex": 6324
                         },
                         "optional": true,
                         "tsType": {
@@ -3859,9 +4522,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                          "line": 192,
+                          "line": 211,
                           "col": 2,
-                          "byteIndex": 5799
+                          "byteIndex": 6409
                         },
                         "optional": true,
                         "tsType": {
@@ -3877,9 +4540,9 @@
                         },
                         "location": {
                           "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                          "line": 197,
+                          "line": 216,
                           "col": 2,
-                          "byteIndex": 5937
+                          "byteIndex": 6547
                         },
                         "tsType": {
                           "kind": "array",
@@ -3908,9 +4571,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                "line": 203,
+                "line": 222,
                 "col": 0,
-                "byteIndex": 6021
+                "byteIndex": 6631
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -3963,9 +4626,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                      "line": 210,
+                      "line": 229,
                       "col": 2,
-                      "byteIndex": 6322
+                      "byteIndex": 6932
                     },
                     "params": [
                       {
@@ -4051,9 +4714,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                      "line": 217,
+                      "line": 236,
                       "col": 2,
-                      "byteIndex": 6620
+                      "byteIndex": 7230
                     },
                     "params": [
                       {
@@ -4164,9 +4827,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                      "line": 224,
+                      "line": 243,
                       "col": 2,
-                      "byteIndex": 6964
+                      "byteIndex": 7574
                     },
                     "params": [
                       {
@@ -4259,9 +4922,9 @@
                     "kind": "method",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                      "line": 230,
+                      "line": 249,
                       "col": 2,
-                      "byteIndex": 7278
+                      "byteIndex": 7888
                     },
                     "params": [
                       {
@@ -4305,9 +4968,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                "line": 243,
+                "line": 262,
                 "col": 0,
-                "byteIndex": 7784
+                "byteIndex": 8394
               },
               "declarationKind": "export",
               "jsDoc": {
@@ -4421,9 +5084,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                "line": 247,
+                "line": 266,
                 "col": 0,
-                "byteIndex": 7861
+                "byteIndex": 8471
               },
               "declarationKind": "export",
               "kind": "typeAlias",
@@ -4668,9 +5331,9 @@
             {
               "location": {
                 "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                "line": 251,
+                "line": 270,
                 "col": 0,
-                "byteIndex": 7997
+                "byteIndex": 8607
               },
               "declarationKind": "export",
               "kind": "interface",
@@ -4680,9 +5343,9 @@
                     "name": "version",
                     "location": {
                       "filename": "file:///Users/jpravetz/dev/@epdoc/logger/packages/msgbuilder/src/types.ts",
-                      "line": 252,
+                      "line": 271,
                       "col": 2,
-                      "byteIndex": 8027
+                      "byteIndex": 8637
                     },
                     "optional": true,
                     "tsType": {

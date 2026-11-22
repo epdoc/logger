@@ -119,6 +119,25 @@ export type MsgPart = {
 };
 
 /**
+ * How a message wraps its parts once they will not fit on one line.
+ *
+ * Set by {@link TextBuilder.width} and {@link TextBuilder.maxWidth}, carried on
+ * the line builder, and honoured by `format()`.
+ */
+export interface WrapOptions {
+  /**
+   * The total width a row may occupy, the line's own indent included. Only the
+   * columns the text needs are counted, never the escape sequences that colour it.
+   */
+  width: number;
+  /**
+   * Extra indentation, in columns, for every row after the first. This is the
+   * `wrap(n)` value, and it is added to the line's own indent.
+   */
+  indent: number;
+}
+
+/**
  * A single indentation level applied to a message by a logger.
  *
  * Unlike a plain string, an indentation level can carry a style formatter so

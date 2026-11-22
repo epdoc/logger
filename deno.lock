@@ -289,6 +289,7 @@
           "jsr:@epdoc/datetime@^4.2.9",
           "jsr:@epdoc/duration@~0.3.22",
           "jsr:@epdoc/fmt@^1.0.22",
+          "jsr:@epdoc/terminal@^0.0.15",
           "jsr:@epdoc/type@^2.0.2",
           "jsr:@std/assert@^1.0.19",
           "jsr:@std/fmt@^1.0.10"
