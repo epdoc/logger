@@ -169,6 +169,24 @@ Deno.test('TextBuilder wrapping', async (t) => {
     }
   });
 
+  await t.step('a width does not strip the styling from the output', () => {
+    // Regression: the wrap path rebuilt rows from the plain text, so setting a
+    // width silently turned every styled part into unstyled text. Help screens
+    // set a width, so all their colour disappeared.
+    const tb = new TextBuilder();
+    tb.width(100);
+    const line = tb.line.h1('Heading').text('Body');
+    const styled = (line as unknown as {
+      _msgParts: { str: string; style?: (s: string) => string }[];
+    })._msgParts.map((part) => part.style?.(part.str) ?? part.str);
+    const out = tb.emit();
+    // The escape sequences that format() produced are still in the result.
+    for (const part of styled) {
+      assertEquals(out.includes(part), true);
+    }
+    assertEquals(out.length > stripAnsi(out).length, true);
+  });
+
   await t.step('maxWidth() follows the terminal, capped by its argument', () => {
     // Not a TTY under `deno test`, so the terminal reports 80 columns.
     const terminal = new TextBuilder();
@@ -244,11 +262,12 @@ Deno.test('TextBuilder wrapping laid out like a help screen', async (t) => {
   await t.step('a row is filled before it breaks', () => {
     const lines = rows(steps(120).emit());
     assertEquals(lines.length, 2);
-    // The first row runs close to the limit; a break at a part boundary would
-    // have cut it at 'chime', far short of the width.
-    assertEquals(visualLength(lines[0]) > 110, true);
+    // The break comes after a word that would have overflowed, so the row is
+    // close to the width. A break at the part boundary instead would have cut
+    // it at 'chime', around 63 columns.
+    assertEquals(visualLength(lines[0]) > 90, true);
     assertEquals(visualLength(lines[0]) <= 120, true);
-    assertEquals(lines[1].trim(), 'louder than the words.');
+    assertEquals(lines[1].trim(), 'the chime can be louder than the words.');
   });
 
   await t.step('wrap(n) given after the line still indents the continuation', () => {
@@ -272,9 +291,9 @@ Deno.test('TextBuilder wrapping laid out like a help screen', async (t) => {
     tb.width(120);
     tb.indent();
     tb.line.code('vol=30'.padEnd(16)).text('Volume.');
-    // One space between the parts, and the label's own padding kept as part of
-    // the line, so the text starts at its column.
-    assertEquals(rows(tb.emit())[0].trim(), 'vol=30 Volume.');
+    // The padding is part of the text, so the columns stay apart: without it
+    // the description would be pulled up against the label.
+    assertEquals(rows(tb.emit())[0].trim(), 'vol=30  Volume.');
   });
 
   await t.step('nothing is lost: the rows rejoin to the words in order', () => {

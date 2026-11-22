@@ -602,12 +602,17 @@ export abstract class AbstractMsgBuilder implements IFormatter {
         spaces += plain;
         continue;
       }
-      for (const piece of plain.match(/\s*(\S+)/g) ?? []) {
-        const word = piece.trimStart();
-        spaces += piece.slice(0, piece.length - word.length);
+      // The rows are rebuilt from the rendered parts, so the words carry their
+      // escape sequences: the style is put on once, before this runs, and must
+      // survive to the output. Only the first and last word of a part have no
+      // escape in the way, so splitting happens on the raw text and each piece
+      // is measured with the escapes removed.
+      for (const piece of raw.split(/(?<=\s)(?=\S)/)) {
+        const text = piece.trimStart();
+        spaces += piece.slice(0, piece.length - text.length);
         words.push({
-          text: word,
-          width: visualLength(word),
+          text: text.trimEnd(),
+          width: visualLength(text),
           gap: words.length === 0 ? '' : spaces.length > 0 ? spaces : sep,
         });
         spaces = '';
