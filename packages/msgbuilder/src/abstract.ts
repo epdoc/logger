@@ -574,9 +574,11 @@ export abstract class AbstractMsgBuilder implements IFormatter {
    */
   protected wrapParts(parts: string[], sep: string): string {
     const wrap = this._wrap as WrapOptions;
-    // TextBuilder hands over an indent one column short of the rendered one, to
-    // cancel the space the first part gets before it. A continuation row has no
-    // such part, so it pads by that same column and lands on the real indent.
+    // `format()` joins the parts with `sep`, and the indent is one of the parts,
+    // so the first row is rendered as `indent + sep + text`. TextBuilder passes
+    // the indent one column short to allow for that; a continuation row has no
+    // first part to carry the separator, so the same column is added here. That
+    // is what keeps every row of a wrapped message aligned with the first.
     const lead = this._msgIndent;
     const cont = (lead.length > 0 ? lead + ' ' : '') + ' '.repeat(wrap.indent);
 
@@ -608,19 +610,25 @@ export abstract class AbstractMsgBuilder implements IFormatter {
       // escape in the way, so splitting happens on the raw text and each piece
       // is measured with the escapes removed.
       for (const piece of raw.split(/(?<=\s)(?=\S)/)) {
-        const text = piece.trimStart();
-        spaces += piece.slice(0, piece.length - text.length);
+        const leadingText = piece.trimStart();
+        const text = leadingText.trimEnd();
+        // Padding before a word joins whatever the previous part left, and
+        // padding after it belongs to the gap that follows, so nothing a caller
+        // used to align a column is lost.
+        spaces += piece.slice(0, piece.length - leadingText.length);
         words.push({
-          text: text.trimEnd(),
+          text: text,
           width: visualLength(text),
           gap: words.length === 0 ? '' : spaces.length > 0 ? spaces : sep,
         });
-        spaces = '';
+        spaces = leadingText.slice(text.length);
       }
     }
 
+    // The first row starts the way `format()` would have joined it: the indent,
+    // then `sep`, then the first part.
     const rows: string[] = [];
-    let row = lead;
+    let row = lead + (lead.length > 0 ? sep : '');
     let rowWidth = visualLength(row);
     let empty = true;
     let gap = '';

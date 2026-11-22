@@ -187,6 +187,27 @@ Deno.test('TextBuilder wrapping', async (t) => {
     assertEquals(out.length > stripAnsi(out).length, true);
   });
 
+  await t.step('every row of a wrapped line starts at the same indent', () => {
+    // Regression: the first row was rendered as `indent + sep + text` by
+    // format(), but the wrapper built its rows without that `sep`, so each row
+    // drifted one column right of the row above it.
+    const leading = (text: string) => rows(text).map((row) => row.length - row.trimStart().length);
+
+    for (const depth of [0, 1, 2]) {
+      const tb = new TextBuilder();
+      tb.width(60);
+      if (depth > 0) tb.indent(depth);
+      tb.line.text(SENTENCE);
+      const indents = new Set(leading(tb.emit()));
+      assertEquals(indents.size, 1, `indent(${depth}) produced ${[...indents].join(', ')}`);
+      // And that one indent is the one the unwrapped line would have had.
+      const plain = new TextBuilder();
+      if (depth > 0) plain.indent(depth);
+      plain.line.text('short');
+      assertEquals([...indents][0], leading(plain.emit())[0]);
+    }
+  });
+
   await t.step('maxWidth() follows the terminal, capped by its argument', () => {
     // Not a TTY under `deno test`, so the terminal reports 80 columns.
     const terminal = new TextBuilder();
@@ -262,12 +283,11 @@ Deno.test('TextBuilder wrapping laid out like a help screen', async (t) => {
   await t.step('a row is filled before it breaks', () => {
     const lines = rows(steps(120).emit());
     assertEquals(lines.length, 2);
-    // The break comes after a word that would have overflowed, so the row is
-    // close to the width. A break at the part boundary instead would have cut
-    // it at 'chime', around 63 columns.
-    assertEquals(visualLength(lines[0]) > 90, true);
-    assertEquals(visualLength(lines[0]) <= 120, true);
-    assertEquals(lines[1].trim(), 'the chime can be louder than the words.');
+    // The first row is packed to the width: the next word would have overflowed.
+    // A break at the part boundary instead would have cut it at 'chime', around
+    // 63 columns, leaving most of the row empty.
+    assertEquals(visualLength(lines[0]), 120);
+    assertEquals(lines[1].trim(), 'louder than the words.');
   });
 
   await t.step('wrap(n) given after the line still indents the continuation', () => {
@@ -286,14 +306,23 @@ Deno.test('TextBuilder wrapping laid out like a help screen', async (t) => {
     assertEquals(rows(tb.emit())[0].trim(), 'vol=30 first          second');
   });
 
-  await t.step('a padded label keeps the padding before the text after it', () => {
-    const tb = new TextBuilder();
-    tb.width(120);
-    tb.indent();
-    tb.line.code('vol=30'.padEnd(16)).text('Volume.');
-    // The padding is part of the text, so the columns stay apart: without it
-    // the description would be pulled up against the label.
-    assertEquals(rows(tb.emit())[0].trim(), 'vol=30  Volume.');
+  await t.step('a padded label keeps its full column width, wrapping or not', () => {
+    // Regression: the padding inside a styled label was trimmed away by the
+    // wrapper, so a table built with padEnd() collapsed to a single space and
+    // the columns no longer lined up. Padding on either side of a word is part
+    // of the text and must survive.
+    const build = (width?: number) => {
+      const tb = new TextBuilder();
+      if (width !== undefined) tb.width(width);
+      tb.indent();
+      tb.line.code('vol=30'.padEnd(16)).text('Volume.').wrap(17);
+      return rows(tb.emit())[0];
+    };
+    // Two columns of indent, the label 16 wide, its padding, the separator, the
+    // text: the description starts at column 19 as it would without wrapping.
+    const expected = '  vol=30           Volume.';
+    assertEquals(build(), expected);
+    assertEquals(build(120), expected);
   });
 
   await t.step('nothing is lost: the rows rejoin to the words in order', () => {
